@@ -1,0 +1,134 @@
+datasource db {
+  provider = "sqlite"
+}
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated"
+}
+
+model User {
+  id            String   @id @default(cuid())
+  email         String   @unique
+  username      String   @unique
+  password      String
+  role          String   @default("user")
+  credits       Int      @default(1000)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  subscriptions Subscription[]
+  apiUsage      ApiUsage[]
+  accounts      Account[]
+  apiTokens     ApiToken[]
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  provider          String
+  providerAccountId String
+  access_token      String?
+  refresh_token     String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+}
+
+model ApiCategory {
+  id          String @id @default(cuid())
+  name        String @unique
+  description String
+  icon        String?
+  apis        Api[]
+}
+
+model Api {
+  id              String      @id @default(cuid())
+  name            String
+  alias           String?     @unique
+  description     String
+  endpoint        String      @unique
+  method          String
+  categoryId      String
+  category        ApiCategory @relation(fields: [categoryId], references: [id])
+  pricing         String
+  documentation   String?
+  preScript       String?
+  postScript      String?
+  isActive        Boolean     @default(true)
+  callCount       Int         @default(0)
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  parameters      ApiParameter[]
+  responses       ApiResponse[]
+  usageRecords    ApiUsage[]
+}
+
+model ApiParameter {
+  id          String @id @default(cuid())
+  apiId       String
+  api         Api    @relation(fields: [apiId], references: [id])
+  name        String
+  type        String
+  required    Boolean
+  description String
+  defaultValue String?
+}
+
+model ApiResponse {
+  id          String @id @default(cuid())
+  apiId       String
+  api         Api    @relation(fields: [apiId], references: [id])
+  name        String
+  type        String
+  description String
+}
+
+model ApiUsage {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  apiId       String
+  api         Api      @relation(fields: [apiId], references: [id])
+  credits     Int
+  status      String
+  createdAt   DateTime @default(now())
+}
+
+model Subscription {
+  id              String   @id @default(cuid())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id])
+  plan            String
+  credits         Int
+  price           Float
+  startDate       DateTime @default(now())
+  endDate         DateTime
+  isActive        Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model ApiToken {
+  id          String    @id @default(cuid())
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name        String
+  token       String    @unique
+  permissions String
+  lastUsedAt  DateTime?
+  expiresAt   DateTime?
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([userId])
+  @@index([token])
+}
