@@ -7,6 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Search, Star, Zap, Shield, Users, TrendingUp } from "lucide-react";
 import { MainLayout } from "@/components/main-layout";
+import { BannerAd, InlineAd } from "@/components/ads";
 
 export default function Home() {
   return (
@@ -135,6 +136,9 @@ export default function Home() {
               </CardContent>
             </Card>
           </Link>
+
+          {/* Inline Ad */}
+          <InlineAd size="md" />
 
           {/* API Card 2 */}
           <Link href="/api-detail">

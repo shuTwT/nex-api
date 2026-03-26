@@ -52,13 +52,13 @@ model ApiCategory {
 model Api {
   id              String      @id @default(cuid())
   name            String
-  alias           String?     @unique
+  alias           String      @unique
   description     String
   endpoint        String      @unique
   method          String
   categoryId      String
   category        ApiCategory @relation(fields: [categoryId], references: [id])
-  pricing         String
+  pricing         Int         @default(0)
   documentation   String?
   preScript       String?
   postScript      String?

@@ -27,10 +27,12 @@ export type AggregateApi = {
 }
 
 export type ApiAvgAggregateOutputType = {
+  pricing: number | null
   callCount: number | null
 }
 
 export type ApiSumAggregateOutputType = {
+  pricing: number | null
   callCount: number | null
 }
 
@@ -42,7 +44,7 @@ export type ApiMinAggregateOutputType = {
   endpoint: string | null
   method: string | null
   categoryId: string | null
-  pricing: string | null
+  pricing: number | null
   documentation: string | null
   preScript: string | null
   postScript: string | null
@@ -60,7 +62,7 @@ export type ApiMaxAggregateOutputType = {
   endpoint: string | null
   method: string | null
   categoryId: string | null
-  pricing: string | null
+  pricing: number | null
   documentation: string | null
   preScript: string | null
   postScript: string | null
@@ -91,10 +93,12 @@ export type ApiCountAggregateOutputType = {
 
 
 export type ApiAvgAggregateInputType = {
+  pricing?: true
   callCount?: true
 }
 
 export type ApiSumAggregateInputType = {
+  pricing?: true
   callCount?: true
 }
 
@@ -242,12 +246,12 @@ export type ApiGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs
 export type ApiGroupByOutputType = {
   id: string
   name: string
-  alias: string | null
+  alias: string
   description: string
   endpoint: string
   method: string
   categoryId: string
-  pricing: string
+  pricing: number
   documentation: string | null
   preScript: string | null
   postScript: string | null
@@ -283,12 +287,12 @@ export type ApiWhereInput = {
   NOT?: Prisma.ApiWhereInput | Prisma.ApiWhereInput[]
   id?: Prisma.StringFilter<"Api"> | string
   name?: Prisma.StringFilter<"Api"> | string
-  alias?: Prisma.StringNullableFilter<"Api"> | string | null
+  alias?: Prisma.StringFilter<"Api"> | string
   description?: Prisma.StringFilter<"Api"> | string
   endpoint?: Prisma.StringFilter<"Api"> | string
   method?: Prisma.StringFilter<"Api"> | string
   categoryId?: Prisma.StringFilter<"Api"> | string
-  pricing?: Prisma.StringFilter<"Api"> | string
+  pricing?: Prisma.IntFilter<"Api"> | number
   documentation?: Prisma.StringNullableFilter<"Api"> | string | null
   preScript?: Prisma.StringNullableFilter<"Api"> | string | null
   postScript?: Prisma.StringNullableFilter<"Api"> | string | null
@@ -305,7 +309,7 @@ export type ApiWhereInput = {
 export type ApiOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
-  alias?: Prisma.SortOrderInput | Prisma.SortOrder
+  alias?: Prisma.SortOrder
   description?: Prisma.SortOrder
   endpoint?: Prisma.SortOrder
   method?: Prisma.SortOrder
@@ -335,7 +339,7 @@ export type ApiWhereUniqueInput = Prisma.AtLeast<{
   description?: Prisma.StringFilter<"Api"> | string
   method?: Prisma.StringFilter<"Api"> | string
   categoryId?: Prisma.StringFilter<"Api"> | string
-  pricing?: Prisma.StringFilter<"Api"> | string
+  pricing?: Prisma.IntFilter<"Api"> | number
   documentation?: Prisma.StringNullableFilter<"Api"> | string | null
   preScript?: Prisma.StringNullableFilter<"Api"> | string | null
   postScript?: Prisma.StringNullableFilter<"Api"> | string | null
@@ -352,7 +356,7 @@ export type ApiWhereUniqueInput = Prisma.AtLeast<{
 export type ApiOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
-  alias?: Prisma.SortOrderInput | Prisma.SortOrder
+  alias?: Prisma.SortOrder
   description?: Prisma.SortOrder
   endpoint?: Prisma.SortOrder
   method?: Prisma.SortOrder
@@ -378,12 +382,12 @@ export type ApiScalarWhereWithAggregatesInput = {
   NOT?: Prisma.ApiScalarWhereWithAggregatesInput | Prisma.ApiScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"Api"> | string
   name?: Prisma.StringWithAggregatesFilter<"Api"> | string
-  alias?: Prisma.StringNullableWithAggregatesFilter<"Api"> | string | null
+  alias?: Prisma.StringWithAggregatesFilter<"Api"> | string
   description?: Prisma.StringWithAggregatesFilter<"Api"> | string
   endpoint?: Prisma.StringWithAggregatesFilter<"Api"> | string
   method?: Prisma.StringWithAggregatesFilter<"Api"> | string
   categoryId?: Prisma.StringWithAggregatesFilter<"Api"> | string
-  pricing?: Prisma.StringWithAggregatesFilter<"Api"> | string
+  pricing?: Prisma.IntWithAggregatesFilter<"Api"> | number
   documentation?: Prisma.StringNullableWithAggregatesFilter<"Api"> | string | null
   preScript?: Prisma.StringNullableWithAggregatesFilter<"Api"> | string | null
   postScript?: Prisma.StringNullableWithAggregatesFilter<"Api"> | string | null
@@ -396,11 +400,11 @@ export type ApiScalarWhereWithAggregatesInput = {
 export type ApiCreateInput = {
   id?: string
   name: string
-  alias?: string | null
+  alias: string
   description: string
   endpoint: string
   method: string
-  pricing: string
+  pricing?: number
   documentation?: string | null
   preScript?: string | null
   postScript?: string | null
@@ -417,12 +421,12 @@ export type ApiCreateInput = {
 export type ApiUncheckedCreateInput = {
   id?: string
   name: string
-  alias?: string | null
+  alias: string
   description: string
   endpoint: string
   method: string
   categoryId: string
-  pricing: string
+  pricing?: number
   documentation?: string | null
   preScript?: string | null
   postScript?: string | null
@@ -438,11 +442,11 @@ export type ApiUncheckedCreateInput = {
 export type ApiUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  alias?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  alias?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   endpoint?: Prisma.StringFieldUpdateOperationsInput | string
   method?: Prisma.StringFieldUpdateOperationsInput | string
-  pricing?: Prisma.StringFieldUpdateOperationsInput | string
+  pricing?: Prisma.IntFieldUpdateOperationsInput | number
   documentation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   preScript?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   postScript?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -459,12 +463,12 @@ export type ApiUpdateInput = {
 export type ApiUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  alias?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  alias?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   endpoint?: Prisma.StringFieldUpdateOperationsInput | string
   method?: Prisma.StringFieldUpdateOperationsInput | string
   categoryId?: Prisma.StringFieldUpdateOperationsInput | string
-  pricing?: Prisma.StringFieldUpdateOperationsInput | string
+  pricing?: Prisma.IntFieldUpdateOperationsInput | number
   documentation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   preScript?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   postScript?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -480,12 +484,12 @@ export type ApiUncheckedUpdateInput = {
 export type ApiCreateManyInput = {
   id?: string
   name: string
-  alias?: string | null
+  alias: string
   description: string
   endpoint: string
   method: string
   categoryId: string
-  pricing: string
+  pricing?: number
   documentation?: string | null
   preScript?: string | null
   postScript?: string | null
@@ -498,11 +502,11 @@ export type ApiCreateManyInput = {
 export type ApiUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  alias?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  alias?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   endpoint?: Prisma.StringFieldUpdateOperationsInput | string
   method?: Prisma.StringFieldUpdateOperationsInput | string
-  pricing?: Prisma.StringFieldUpdateOperationsInput | string
+  pricing?: Prisma.IntFieldUpdateOperationsInput | number
   documentation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   preScript?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   postScript?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -515,12 +519,12 @@ export type ApiUpdateManyMutationInput = {
 export type ApiUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  alias?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  alias?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   endpoint?: Prisma.StringFieldUpdateOperationsInput | string
   method?: Prisma.StringFieldUpdateOperationsInput | string
   categoryId?: Prisma.StringFieldUpdateOperationsInput | string
-  pricing?: Prisma.StringFieldUpdateOperationsInput | string
+  pricing?: Prisma.IntFieldUpdateOperationsInput | number
   documentation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   preScript?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   postScript?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -559,6 +563,7 @@ export type ApiCountOrderByAggregateInput = {
 }
 
 export type ApiAvgOrderByAggregateInput = {
+  pricing?: Prisma.SortOrder
   callCount?: Prisma.SortOrder
 }
 
@@ -599,6 +604,7 @@ export type ApiMinOrderByAggregateInput = {
 }
 
 export type ApiSumOrderByAggregateInput = {
+  pricing?: Prisma.SortOrder
   callCount?: Prisma.SortOrder
 }
 
@@ -698,11 +704,11 @@ export type ApiUpdateOneRequiredWithoutUsageRecordsNestedInput = {
 export type ApiCreateWithoutCategoryInput = {
   id?: string
   name: string
-  alias?: string | null
+  alias: string
   description: string
   endpoint: string
   method: string
-  pricing: string
+  pricing?: number
   documentation?: string | null
   preScript?: string | null
   postScript?: string | null
@@ -718,11 +724,11 @@ export type ApiCreateWithoutCategoryInput = {
 export type ApiUncheckedCreateWithoutCategoryInput = {
   id?: string
   name: string
-  alias?: string | null
+  alias: string
   description: string
   endpoint: string
   method: string
-  pricing: string
+  pricing?: number
   documentation?: string | null
   preScript?: string | null
   postScript?: string | null
@@ -766,12 +772,12 @@ export type ApiScalarWhereInput = {
   NOT?: Prisma.ApiScalarWhereInput | Prisma.ApiScalarWhereInput[]
   id?: Prisma.StringFilter<"Api"> | string
   name?: Prisma.StringFilter<"Api"> | string
-  alias?: Prisma.StringNullableFilter<"Api"> | string | null
+  alias?: Prisma.StringFilter<"Api"> | string
   description?: Prisma.StringFilter<"Api"> | string
   endpoint?: Prisma.StringFilter<"Api"> | string
   method?: Prisma.StringFilter<"Api"> | string
   categoryId?: Prisma.StringFilter<"Api"> | string
-  pricing?: Prisma.StringFilter<"Api"> | string
+  pricing?: Prisma.IntFilter<"Api"> | number
   documentation?: Prisma.StringNullableFilter<"Api"> | string | null
   preScript?: Prisma.StringNullableFilter<"Api"> | string | null
   postScript?: Prisma.StringNullableFilter<"Api"> | string | null
@@ -784,11 +790,11 @@ export type ApiScalarWhereInput = {
 export type ApiCreateWithoutParametersInput = {
   id?: string
   name: string
-  alias?: string | null
+  alias: string
   description: string
   endpoint: string
   method: string
-  pricing: string
+  pricing?: number
   documentation?: string | null
   preScript?: string | null
   postScript?: string | null
@@ -804,12 +810,12 @@ export type ApiCreateWithoutParametersInput = {
 export type ApiUncheckedCreateWithoutParametersInput = {
   id?: string
   name: string
-  alias?: string | null
+  alias: string
   description: string
   endpoint: string
   method: string
   categoryId: string
-  pricing: string
+  pricing?: number
   documentation?: string | null
   preScript?: string | null
   postScript?: string | null
@@ -840,11 +846,11 @@ export type ApiUpdateToOneWithWhereWithoutParametersInput = {
 export type ApiUpdateWithoutParametersInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  alias?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  alias?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   endpoint?: Prisma.StringFieldUpdateOperationsInput | string
   method?: Prisma.StringFieldUpdateOperationsInput | string
-  pricing?: Prisma.StringFieldUpdateOperationsInput | string
+  pricing?: Prisma.IntFieldUpdateOperationsInput | number
   documentation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   preScript?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   postScript?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -860,12 +866,12 @@ export type ApiUpdateWithoutParametersInput = {
 export type ApiUncheckedUpdateWithoutParametersInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  alias?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  alias?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   endpoint?: Prisma.StringFieldUpdateOperationsInput | string
   method?: Prisma.StringFieldUpdateOperationsInput | string
   categoryId?: Prisma.StringFieldUpdateOperationsInput | string
-  pricing?: Prisma.StringFieldUpdateOperationsInput | string
+  pricing?: Prisma.IntFieldUpdateOperationsInput | number
   documentation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   preScript?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   postScript?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -880,11 +886,11 @@ export type ApiUncheckedUpdateWithoutParametersInput = {
 export type ApiCreateWithoutResponsesInput = {
   id?: string
   name: string
-  alias?: string | null
+  alias: string
   description: string
   endpoint: string
   method: string
-  pricing: string
+  pricing?: number
   documentation?: string | null
   preScript?: string | null
   postScript?: string | null
@@ -900,12 +906,12 @@ export type ApiCreateWithoutResponsesInput = {
 export type ApiUncheckedCreateWithoutResponsesInput = {
   id?: string
   name: string
-  alias?: string | null
+  alias: string
   description: string
   endpoint: string
   method: string
   categoryId: string
-  pricing: string
+  pricing?: number
   documentation?: string | null
   preScript?: string | null
   postScript?: string | null
@@ -936,11 +942,11 @@ export type ApiUpdateToOneWithWhereWithoutResponsesInput = {
 export type ApiUpdateWithoutResponsesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  alias?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  alias?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   endpoint?: Prisma.StringFieldUpdateOperationsInput | string
   method?: Prisma.StringFieldUpdateOperationsInput | string
-  pricing?: Prisma.StringFieldUpdateOperationsInput | string
+  pricing?: Prisma.IntFieldUpdateOperationsInput | number
   documentation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   preScript?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   postScript?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -956,12 +962,12 @@ export type ApiUpdateWithoutResponsesInput = {
 export type ApiUncheckedUpdateWithoutResponsesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  alias?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  alias?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   endpoint?: Prisma.StringFieldUpdateOperationsInput | string
   method?: Prisma.StringFieldUpdateOperationsInput | string
   categoryId?: Prisma.StringFieldUpdateOperationsInput | string
-  pricing?: Prisma.StringFieldUpdateOperationsInput | string
+  pricing?: Prisma.IntFieldUpdateOperationsInput | number
   documentation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   preScript?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   postScript?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -976,11 +982,11 @@ export type ApiUncheckedUpdateWithoutResponsesInput = {
 export type ApiCreateWithoutUsageRecordsInput = {
   id?: string
   name: string
-  alias?: string | null
+  alias: string
   description: string
   endpoint: string
   method: string
-  pricing: string
+  pricing?: number
   documentation?: string | null
   preScript?: string | null
   postScript?: string | null
@@ -996,12 +1002,12 @@ export type ApiCreateWithoutUsageRecordsInput = {
 export type ApiUncheckedCreateWithoutUsageRecordsInput = {
   id?: string
   name: string
-  alias?: string | null
+  alias: string
   description: string
   endpoint: string
   method: string
   categoryId: string
-  pricing: string
+  pricing?: number
   documentation?: string | null
   preScript?: string | null
   postScript?: string | null
@@ -1032,11 +1038,11 @@ export type ApiUpdateToOneWithWhereWithoutUsageRecordsInput = {
 export type ApiUpdateWithoutUsageRecordsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  alias?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  alias?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   endpoint?: Prisma.StringFieldUpdateOperationsInput | string
   method?: Prisma.StringFieldUpdateOperationsInput | string
-  pricing?: Prisma.StringFieldUpdateOperationsInput | string
+  pricing?: Prisma.IntFieldUpdateOperationsInput | number
   documentation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   preScript?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   postScript?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1052,12 +1058,12 @@ export type ApiUpdateWithoutUsageRecordsInput = {
 export type ApiUncheckedUpdateWithoutUsageRecordsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  alias?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  alias?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   endpoint?: Prisma.StringFieldUpdateOperationsInput | string
   method?: Prisma.StringFieldUpdateOperationsInput | string
   categoryId?: Prisma.StringFieldUpdateOperationsInput | string
-  pricing?: Prisma.StringFieldUpdateOperationsInput | string
+  pricing?: Prisma.IntFieldUpdateOperationsInput | number
   documentation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   preScript?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   postScript?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1072,11 +1078,11 @@ export type ApiUncheckedUpdateWithoutUsageRecordsInput = {
 export type ApiCreateManyCategoryInput = {
   id?: string
   name: string
-  alias?: string | null
+  alias: string
   description: string
   endpoint: string
   method: string
-  pricing: string
+  pricing?: number
   documentation?: string | null
   preScript?: string | null
   postScript?: string | null
@@ -1089,11 +1095,11 @@ export type ApiCreateManyCategoryInput = {
 export type ApiUpdateWithoutCategoryInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  alias?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  alias?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   endpoint?: Prisma.StringFieldUpdateOperationsInput | string
   method?: Prisma.StringFieldUpdateOperationsInput | string
-  pricing?: Prisma.StringFieldUpdateOperationsInput | string
+  pricing?: Prisma.IntFieldUpdateOperationsInput | number
   documentation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   preScript?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   postScript?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1109,11 +1115,11 @@ export type ApiUpdateWithoutCategoryInput = {
 export type ApiUncheckedUpdateWithoutCategoryInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  alias?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  alias?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   endpoint?: Prisma.StringFieldUpdateOperationsInput | string
   method?: Prisma.StringFieldUpdateOperationsInput | string
-  pricing?: Prisma.StringFieldUpdateOperationsInput | string
+  pricing?: Prisma.IntFieldUpdateOperationsInput | number
   documentation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   preScript?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   postScript?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1129,11 +1135,11 @@ export type ApiUncheckedUpdateWithoutCategoryInput = {
 export type ApiUncheckedUpdateManyWithoutCategoryInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  alias?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  alias?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   endpoint?: Prisma.StringFieldUpdateOperationsInput | string
   method?: Prisma.StringFieldUpdateOperationsInput | string
-  pricing?: Prisma.StringFieldUpdateOperationsInput | string
+  pricing?: Prisma.IntFieldUpdateOperationsInput | number
   documentation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   preScript?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   postScript?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1297,12 +1303,12 @@ export type $ApiPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     name: string
-    alias: string | null
+    alias: string
     description: string
     endpoint: string
     method: string
     categoryId: string
-    pricing: string
+    pricing: number
     documentation: string | null
     preScript: string | null
     postScript: string | null
@@ -1744,7 +1750,7 @@ export interface ApiFieldRefs {
   readonly endpoint: Prisma.FieldRef<"Api", 'String'>
   readonly method: Prisma.FieldRef<"Api", 'String'>
   readonly categoryId: Prisma.FieldRef<"Api", 'String'>
-  readonly pricing: Prisma.FieldRef<"Api", 'String'>
+  readonly pricing: Prisma.FieldRef<"Api", 'Int'>
   readonly documentation: Prisma.FieldRef<"Api", 'String'>
   readonly preScript: Prisma.FieldRef<"Api", 'String'>
   readonly postScript: Prisma.FieldRef<"Api", 'String'>

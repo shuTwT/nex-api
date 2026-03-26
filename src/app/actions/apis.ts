@@ -120,7 +120,8 @@ export async function createApi(formData: FormData) {
     const endpoint = formData.get("endpoint") as string;
     const method = formData.get("method") as string;
     const categoryId = formData.get("categoryId") as string;
-    const pricing = formData.get("pricing") as string;
+    const pricingStr = formData.get("pricing") as string;
+    const pricing = parseInt(pricingStr) || 0;
     const documentation = formData.get("documentation") as string;
     const preScript = formData.get("preScript") as string;
     const postScript = formData.get("postScript") as string;
@@ -159,7 +160,7 @@ export async function createApi(formData: FormData) {
         endpoint,
         method,
         categoryId,
-        pricing: pricing || "免费",
+        pricing,
         documentation,
         preScript,
         postScript,
@@ -189,7 +190,8 @@ export async function updateApi(formData: FormData) {
     const endpoint = formData.get("endpoint") as string;
     const method = formData.get("method") as string;
     const categoryId = formData.get("categoryId") as string;
-    const pricing = formData.get("pricing") as string;
+    const pricingStr = formData.get("pricing") as string;
+    const pricing = parseInt(pricingStr) || 0;
     const documentation = formData.get("documentation") as string;
     const preScript = formData.get("preScript") as string;
     const postScript = formData.get("postScript") as string;
@@ -235,7 +237,7 @@ export async function updateApi(formData: FormData) {
         endpoint,
         method,
         categoryId,
-        pricing: pricing || "免费",
+        pricing: pricing || 0,
         documentation,
         preScript,
         postScript,

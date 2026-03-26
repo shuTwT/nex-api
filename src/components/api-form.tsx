@@ -157,13 +157,19 @@ export function ApiForm({ api, categories, onClose, onSuccess, formId }: ApiForm
       </div>
 
       <div className="space-y-2">
-        <label className="text-sm font-medium text-slate-700">定价</label>
+        <label className="text-sm font-medium text-slate-700">定价（积分/次）</label>
         <Input
           name="pricing"
-          placeholder="如：0.02积分/次 或 免费"
-          defaultValue={api?.pricing || ""}
+          type="number"
+          min="0"
+          step="1"
+          placeholder="如：10（表示每次调用消耗10积分）"
+          defaultValue={api?.pricing || "0"}
           disabled={isLoading}
         />
+        <p className="text-xs text-slate-500">
+          每次调用此接口消耗的积分数量，0 表示免费
+        </p>
       </div>
 
       <div className="space-y-2">

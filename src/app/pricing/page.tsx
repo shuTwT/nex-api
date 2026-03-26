@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardFooter } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge";
 import { Check, X, Zap, Star, Crown, ArrowRight, HelpCircle } from "lucide-react";
 import { MainLayout } from "@/components/main-layout";
+import { BannerAd, InlineAd } from "@/components/ads";
 
 const plans = [
   {
@@ -272,6 +273,11 @@ export default function PricingPage() {
                 </div>
               </CardContent>
             </Card>
+
+            {/* Inline Ad in FAQ */}
+            <div className="md:col-span-2">
+              <InlineAd size="sm" />
+            </div>
           </div>
         </div>
       </section>

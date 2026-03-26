@@ -21,6 +21,7 @@ import {
   Sparkles
 } from "lucide-react";
 import { MainLayout } from "@/components/main-layout";
+import { BannerAd, InlineAd } from "@/components/ads";
 
 const categories = [
   { name: "全部", icon: Grid3x3, count: 3000 },
@@ -308,6 +309,9 @@ export default function ApiMarketPage() {
                 </div>
               </div>
             </div>
+
+            {/* Sidebar Ad */}
+            <InlineAd size="lg" />
           </aside>
 
           {/* Main Content */}
@@ -373,7 +377,68 @@ export default function ApiMarketPage() {
             {/* API Grid */}
             {viewMode === "grid" ? (
               <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                {sortedAPIs.map((api) => (
+                {sortedAPIs.slice(0, 3).map((api) => (
+                  <Link key={api.id} href="/api-detail">
+                    <Card className="group hover:shadow-lg transition-all cursor-pointer border-0 shadow-md h-full">
+                      <CardContent className="p-6 space-y-4">
+                        <div className="flex items-start justify-between">
+                          <div className="flex items-center gap-2">
+                            <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+                              正常
+                            </Badge>
+                            <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+                              {api.format}
+                            </Badge>
+                          </div>
+                          {api.price === "free" ? (
+                            <div className="flex items-center gap-1 text-orange-500">
+                              <Star className="h-4 w-4 fill-current" />
+                              <span className="text-sm font-medium">免费</span>
+                            </div>
+                          ) : (
+                            <Badge className="bg-gradient-to-r from-purple-500 to-pink-500 border-0">
+                              会员专享
+                            </Badge>
+                          )}
+                        </div>
+                        <div>
+                          <h3 className="text-lg font-semibold mb-1 group-hover:text-blue-600 transition-colors">
+                            {api.name}
+                          </h3>
+                          <p className="text-sm text-gray-500">
+                            {api.description}
+                          </p>
+                        </div>
+                        <div className="flex flex-wrap gap-1">
+                          {api.tags.map((tag, index) => (
+                            <Badge key={index} variant="secondary" className="text-xs bg-gray-100">
+                              {tag}
+                            </Badge>
+                          ))}
+                        </div>
+                        <div className="flex items-center justify-between text-xs text-gray-400">
+                          <div className="flex items-center gap-1">
+                            <Users className="h-3 w-3" />
+                            <span>{api.users}</span>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <Zap className="h-3 w-3" />
+                            <span>{api.todayCalls}</span>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <Star className="h-3 w-3 fill-current text-yellow-500" />
+                            <span>{api.rating}</span>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </Link>
+                ))}
+                
+                {/* Inline Ad in Grid */}
+                <InlineAd size="md" />
+                
+                {sortedAPIs.slice(3).map((api) => (
                   <Link key={api.id} href="/api-detail">
                     <Card className="group hover:shadow-lg transition-all cursor-pointer border-0 shadow-md h-full">
                       <CardContent className="p-6 space-y-4">
