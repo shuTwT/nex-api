@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.11.1",
+    "@monaco-editor/react": "^4.7.0",
     "@prisma/adapter-better-sqlite3": "^7.5.0",
     "@prisma/client": "^7.5.0",
     "@radix-ui/react-dialog": "^1.1.15",
@@ -26,6 +27,7 @@
     "clsx": "^2.1.1",
     "jsonwebtoken": "^9.0.3",
     "lucide-react": "^0.577.0",
+    "monaco-editor": "^0.55.1",
     "next": "16.1.6",
     "next-auth": "^4.24.13",
     "prisma": "^7.5.0",

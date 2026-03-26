@@ -6,13 +6,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import {
   Select,
   SelectContent,
   SelectGroup,
@@ -40,8 +33,8 @@ import {
 } from "@/app/actions/apis";
 import { getCategories } from "@/app/actions/categories";
 import { Pagination } from "@/components/pagination";
-import { ApiForm } from "@/components/api-form";
-import { CategoryForm } from "@/components/category-form";
+import { ApiFormDialog } from "./components/api-form-dialog";
+import { CategoryFormDialog } from "./components/category-form-dialog";
 
 export interface Api {
   id: string;
@@ -204,12 +197,24 @@ export default function APIManagementPage() {
     setShowApiForm(true);
   }
 
-  function handleApiFormSuccess() {
-    startTransition(() => {
-      loadApis();
-      loadCategories();
-      loadStats();
+  async function handleApiFormSuccess() {
+    const result = await getApis({
+      category: selectedCategory,
+      search: searchQuery,
+      status: selectedStatus,
+      page: currentPage,
+      limit: pageSize,
     });
+
+    if (result.success && result.data) {
+      setApis(result.data);
+      if (result.pagination) {
+        setPagination(result.pagination);
+      }
+    }
+
+    await loadCategories();
+    await loadStats();
   }
 
   function handleAddCategory() {
@@ -562,67 +567,21 @@ export default function APIManagementPage() {
       </Card>
 
       {/* API Form Dialog */}
-      <Dialog open={showApiForm} onOpenChange={setShowApiForm}>
-        <DialogContent className="max-w-2xl max-h-[85vh] flex flex-col">
-          <DialogHeader>
-            <DialogTitle>{editingApi ? "编辑接口" : "添加接口"}</DialogTitle>
-          </DialogHeader>
-          <div className="flex-1 overflow-y-auto pr-2 -mr-2">
-            <ApiForm
-              api={editingApi || undefined}
-              categories={categories.map((c) => ({ id: c.id, name: c.name }))}
-              onClose={() => setShowApiForm(false)}
-              onSuccess={handleApiFormSuccess}
-              formId="api-form"
-            />
-          </div>
-          <DialogFooter className="border-t pt-4 mt-4">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => setShowApiForm(false)}
-              className="cursor-pointer"
-            >
-              取消
-            </Button>
-            <Button type="submit" form="api-form" className="cursor-pointer">
-              {editingApi ? "保存" : "添加"}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <ApiFormDialog
+        open={showApiForm}
+        onOpenChange={setShowApiForm}
+        api={editingApi}
+        categories={categories.map((c) => ({ id: c.id, name: c.name }))}
+        onSuccess={handleApiFormSuccess}
+      />
 
       {/* Category Form Dialog */}
-      <Dialog open={showCategoryForm} onOpenChange={setShowCategoryForm}>
-        <DialogContent className="max-h-[85vh] flex flex-col">
-          <DialogHeader>
-            <DialogTitle>
-              {editingCategory ? "编辑分类" : "添加分类"}
-            </DialogTitle>
-          </DialogHeader>
-          <div className="flex-1 overflow-y-auto">
-            <CategoryForm
-              category={editingCategory || undefined}
-              onClose={() => setShowCategoryForm(false)}
-              onSuccess={handleCategoryFormSuccess}
-              formId="category-form"
-            />
-          </div>
-          <DialogFooter className="border-t pt-4 mt-4">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => setShowCategoryForm(false)}
-              className="cursor-pointer"
-            >
-              取消
-            </Button>
-            <Button type="submit" form="category-form" className="cursor-pointer">
-              {editingCategory ? "保存" : "添加"}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <CategoryFormDialog
+        open={showCategoryForm}
+        onOpenChange={setShowCategoryForm}
+        category={editingCategory}
+        onSuccess={handleCategoryFormSuccess}
+      />
     </div>
   );
 }

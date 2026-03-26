@@ -151,6 +151,7 @@ export const authOptions: NextAuthOptions = {
       if (session?.user) {
         (session.user as AuthUser).role = token.role as string;
       }
+      console.log("session callback", session);
       return session;
     },
     async jwt({ token, user, account, profile, isNewUser }) {
