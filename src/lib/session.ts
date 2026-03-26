@@ -1,6 +1,7 @@
 import { sign, verify } from "jsonwebtoken";
 import { cookies } from "next/headers";
 import { AuthUser } from "./middleware/auth";
+import { getServerSession } from "next-auth";
 
 const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key";
 const TOKEN_EXPIRY = "7d";
@@ -68,18 +69,23 @@ export async function getCurrentUser(): Promise<SessionUser | null> {
 }
 
 export async function requireAuth(): Promise<SessionUser> {
-  const user = await getCurrentUser();
-  
-  if (!user) {
+  const session = await getServerSession();
+  if (!session?.user) {
     throw new Error("Unauthorized");
   }
   
-  return user;
+  return session.user as SessionUser;
 }
 
 export async function requireAdmin(): Promise<SessionUser> {
-  const user = await requireAuth();
+  const session = await getServerSession();
+  if(session==null){
+    throw new Error("Unauthorized");
+  }
+  const user = session.user as AuthUser;
   
+  console.log(user)
+
   if (user.role !== "admin") {
     throw new Error("Forbidden: Admin access required");
   }

@@ -3,12 +3,14 @@
 import { useEffect } from "react";
 import { useAuthStore } from "@/stores/auth-store";
 import type { User } from "@/types/auth";
+import type { Session } from "next-auth";
 
 interface AuthProviderProps {
-  children: React.ReactNode;
+  session?: Session|null;
+   children: React.ReactNode;
 }
 
-export function AuthProvider({ children }: AuthProviderProps) {
+export function AuthProvider({ session, children }: AuthProviderProps) {
   const { login, logout, setLoading } = useAuthStore();
 
   useEffect(() => {

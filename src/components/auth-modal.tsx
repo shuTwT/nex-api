@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Github, MessageCircle, Shield } from "lucide-react";
+import {signIn} from "next-auth/react"
 
 interface AuthModalProps {
   open: boolean;
@@ -22,7 +23,8 @@ export function AuthModal({ open, onOpenChange }: AuthModalProps) {
   const handleOAuthLogin = async (provider: string) => {
     setIsLoading(provider);
     try {
-      window.location.href = `/api/auth/${provider}`;
+      // window.location.href = `/api/auth/${provider}`;
+      await signIn(provider)
     } catch (error) {
       console.error(`${provider} login error:`, error);
       setIsLoading(null);
@@ -86,10 +88,10 @@ export function AuthModal({ open, onOpenChange }: AuthModalProps) {
             variant="outline"
             size="lg"
             className="w-full h-12 text-base font-medium cursor-pointer transition-all duration-200 hover:bg-purple-50 hover:border-purple-400 hover:text-purple-600"
-            onClick={() => handleOAuthLogin("sso")}
+            onClick={() => handleOAuthLogin("easy1auth")}
             disabled={isLoading !== null}
           >
-            {isLoading === "sso" ? (
+            {isLoading === "easy1auth" ? (
               <div className="flex items-center gap-2">
                 <div className="h-4 w-4 animate-spin rounded-full border-2 border-purple-600 border-t-transparent" />
                 <span>正在跳转...</span>

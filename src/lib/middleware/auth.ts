@@ -3,7 +3,7 @@ import { verify } from "jsonwebtoken";
 
 const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key";
 
-export interface AuthUser {
+export interface AuthUser{
   id: string;
   email: string;
   username: string;

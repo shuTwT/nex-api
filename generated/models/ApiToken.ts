@@ -469,10 +469,6 @@ export type ApiTokenUncheckedUpdateManyWithoutUserNestedInput = {
   deleteMany?: Prisma.ApiTokenScalarWhereInput | Prisma.ApiTokenScalarWhereInput[]
 }
 
-export type NullableDateTimeFieldUpdateOperationsInput = {
-  set?: Date | string | null
-}
-
 export type ApiTokenCreateWithoutUserInput = {
   id?: string
   name: string

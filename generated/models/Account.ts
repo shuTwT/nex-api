@@ -45,6 +45,7 @@ export type AccountMinAggregateOutputType = {
   token_type: string | null
   scope: string | null
   id_token: string | null
+  session_state: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -60,6 +61,7 @@ export type AccountMaxAggregateOutputType = {
   token_type: string | null
   scope: string | null
   id_token: string | null
+  session_state: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -75,6 +77,7 @@ export type AccountCountAggregateOutputType = {
   token_type: number
   scope: number
   id_token: number
+  session_state: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -100,6 +103,7 @@ export type AccountMinAggregateInputType = {
   token_type?: true
   scope?: true
   id_token?: true
+  session_state?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -115,6 +119,7 @@ export type AccountMaxAggregateInputType = {
   token_type?: true
   scope?: true
   id_token?: true
+  session_state?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -130,6 +135,7 @@ export type AccountCountAggregateInputType = {
   token_type?: true
   scope?: true
   id_token?: true
+  session_state?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -232,6 +238,7 @@ export type AccountGroupByOutputType = {
   token_type: string | null
   scope: string | null
   id_token: string | null
+  session_state: string | null
   createdAt: Date
   updatedAt: Date
   _count: AccountCountAggregateOutputType | null
@@ -270,6 +277,7 @@ export type AccountWhereInput = {
   token_type?: Prisma.StringNullableFilter<"Account"> | string | null
   scope?: Prisma.StringNullableFilter<"Account"> | string | null
   id_token?: Prisma.StringNullableFilter<"Account"> | string | null
+  session_state?: Prisma.StringNullableFilter<"Account"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Account"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Account"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
@@ -286,6 +294,7 @@ export type AccountOrderByWithRelationInput = {
   token_type?: Prisma.SortOrderInput | Prisma.SortOrder
   scope?: Prisma.SortOrderInput | Prisma.SortOrder
   id_token?: Prisma.SortOrderInput | Prisma.SortOrder
+  session_state?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   user?: Prisma.UserOrderByWithRelationInput
@@ -306,6 +315,7 @@ export type AccountWhereUniqueInput = Prisma.AtLeast<{
   token_type?: Prisma.StringNullableFilter<"Account"> | string | null
   scope?: Prisma.StringNullableFilter<"Account"> | string | null
   id_token?: Prisma.StringNullableFilter<"Account"> | string | null
+  session_state?: Prisma.StringNullableFilter<"Account"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Account"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Account"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
@@ -322,6 +332,7 @@ export type AccountOrderByWithAggregationInput = {
   token_type?: Prisma.SortOrderInput | Prisma.SortOrder
   scope?: Prisma.SortOrderInput | Prisma.SortOrder
   id_token?: Prisma.SortOrderInput | Prisma.SortOrder
+  session_state?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.AccountCountOrderByAggregateInput
@@ -345,6 +356,7 @@ export type AccountScalarWhereWithAggregatesInput = {
   token_type?: Prisma.StringNullableWithAggregatesFilter<"Account"> | string | null
   scope?: Prisma.StringNullableWithAggregatesFilter<"Account"> | string | null
   id_token?: Prisma.StringNullableWithAggregatesFilter<"Account"> | string | null
+  session_state?: Prisma.StringNullableWithAggregatesFilter<"Account"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Account"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Account"> | Date | string
 }
@@ -359,6 +371,7 @@ export type AccountCreateInput = {
   token_type?: string | null
   scope?: string | null
   id_token?: string | null
+  session_state?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutAccountsInput
@@ -375,6 +388,7 @@ export type AccountUncheckedCreateInput = {
   token_type?: string | null
   scope?: string | null
   id_token?: string | null
+  session_state?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -389,6 +403,7 @@ export type AccountUpdateInput = {
   token_type?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scope?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   id_token?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  session_state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutAccountsNestedInput
@@ -405,6 +420,7 @@ export type AccountUncheckedUpdateInput = {
   token_type?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scope?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   id_token?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  session_state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -420,6 +436,7 @@ export type AccountCreateManyInput = {
   token_type?: string | null
   scope?: string | null
   id_token?: string | null
+  session_state?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -434,6 +451,7 @@ export type AccountUpdateManyMutationInput = {
   token_type?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scope?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   id_token?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  session_state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -449,6 +467,7 @@ export type AccountUncheckedUpdateManyInput = {
   token_type?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scope?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   id_token?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  session_state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -479,6 +498,7 @@ export type AccountCountOrderByAggregateInput = {
   token_type?: Prisma.SortOrder
   scope?: Prisma.SortOrder
   id_token?: Prisma.SortOrder
+  session_state?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -498,6 +518,7 @@ export type AccountMaxOrderByAggregateInput = {
   token_type?: Prisma.SortOrder
   scope?: Prisma.SortOrder
   id_token?: Prisma.SortOrder
+  session_state?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -513,6 +534,7 @@ export type AccountMinOrderByAggregateInput = {
   token_type?: Prisma.SortOrder
   scope?: Prisma.SortOrder
   id_token?: Prisma.SortOrder
+  session_state?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -563,10 +585,6 @@ export type AccountUncheckedUpdateManyWithoutUserNestedInput = {
   deleteMany?: Prisma.AccountScalarWhereInput | Prisma.AccountScalarWhereInput[]
 }
 
-export type NullableStringFieldUpdateOperationsInput = {
-  set?: string | null
-}
-
 export type NullableIntFieldUpdateOperationsInput = {
   set?: number | null
   increment?: number
@@ -585,6 +603,7 @@ export type AccountCreateWithoutUserInput = {
   token_type?: string | null
   scope?: string | null
   id_token?: string | null
+  session_state?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -599,6 +618,7 @@ export type AccountUncheckedCreateWithoutUserInput = {
   token_type?: string | null
   scope?: string | null
   id_token?: string | null
+  session_state?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -642,6 +662,7 @@ export type AccountScalarWhereInput = {
   token_type?: Prisma.StringNullableFilter<"Account"> | string | null
   scope?: Prisma.StringNullableFilter<"Account"> | string | null
   id_token?: Prisma.StringNullableFilter<"Account"> | string | null
+  session_state?: Prisma.StringNullableFilter<"Account"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Account"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Account"> | Date | string
 }
@@ -656,6 +677,7 @@ export type AccountCreateManyUserInput = {
   token_type?: string | null
   scope?: string | null
   id_token?: string | null
+  session_state?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -670,6 +692,7 @@ export type AccountUpdateWithoutUserInput = {
   token_type?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scope?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   id_token?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  session_state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -684,6 +707,7 @@ export type AccountUncheckedUpdateWithoutUserInput = {
   token_type?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scope?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   id_token?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  session_state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -698,6 +722,7 @@ export type AccountUncheckedUpdateManyWithoutUserInput = {
   token_type?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scope?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   id_token?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  session_state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -715,6 +740,7 @@ export type AccountSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   token_type?: boolean
   scope?: boolean
   id_token?: boolean
+  session_state?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -731,6 +757,7 @@ export type AccountSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   token_type?: boolean
   scope?: boolean
   id_token?: boolean
+  session_state?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -747,6 +774,7 @@ export type AccountSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   token_type?: boolean
   scope?: boolean
   id_token?: boolean
+  session_state?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -763,11 +791,12 @@ export type AccountSelectScalar = {
   token_type?: boolean
   scope?: boolean
   id_token?: boolean
+  session_state?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type AccountOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "provider" | "providerAccountId" | "access_token" | "refresh_token" | "expires_at" | "token_type" | "scope" | "id_token" | "createdAt" | "updatedAt", ExtArgs["result"]["account"]>
+export type AccountOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "provider" | "providerAccountId" | "access_token" | "refresh_token" | "expires_at" | "token_type" | "scope" | "id_token" | "session_state" | "createdAt" | "updatedAt", ExtArgs["result"]["account"]>
 export type AccountInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }
@@ -794,6 +823,7 @@ export type $AccountPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     token_type: string | null
     scope: string | null
     id_token: string | null
+    session_state: string | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["account"]>
@@ -1230,6 +1260,7 @@ export interface AccountFieldRefs {
   readonly token_type: Prisma.FieldRef<"Account", 'String'>
   readonly scope: Prisma.FieldRef<"Account", 'String'>
   readonly id_token: Prisma.FieldRef<"Account", 'String'>
+  readonly session_state: Prisma.FieldRef<"Account", 'String'>
   readonly createdAt: Prisma.FieldRef<"Account", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Account", 'DateTime'>
 }

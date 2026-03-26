@@ -10,6 +10,8 @@
  */
 export type * from './models/User'
 export type * from './models/Account'
+export type * from './models/Session'
+export type * from './models/VerificationToken'
 export type * from './models/ApiCategory'
 export type * from './models/Api'
 export type * from './models/ApiParameter'
