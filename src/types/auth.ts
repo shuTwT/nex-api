@@ -10,6 +10,9 @@ export interface User {
 
 export interface AuthState {
   user: User | null;
+  /**
+   * @deprecated
+   */
   token: string | null;
   isAuthenticated: boolean;
   isLoading: boolean;

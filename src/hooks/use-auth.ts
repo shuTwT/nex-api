@@ -2,6 +2,7 @@
 
 import { useAuthStore } from "@/stores/auth-store";
 import type { User } from "@/types/auth";
+import { signOut } from "next-auth/react";
 
 export function useAuth() {
   const {
@@ -23,15 +24,7 @@ export function useAuth() {
 
   const handleLogout = async () => {
     try {
-      if (token) {
-        await fetch("/api/auth/logout", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        });
-      }
+      await signOut()
     } catch (error) {
       console.error("Logout API call failed:", error);
     } finally {

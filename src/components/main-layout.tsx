@@ -16,7 +16,6 @@ export function MainLayout({ children }: MainLayoutProps) {
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const pathname = usePathname();
   const { user, isAuthenticated, logout } = useAuth();
-  console.log(user,isAuthenticated)
 
   const isActive = (path: string) => {
     if (path === "/console") {

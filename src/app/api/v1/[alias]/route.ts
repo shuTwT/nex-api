@@ -248,6 +248,7 @@ async function handleRequest(request: NextRequest, params: Promise<{ alias: stri
       }
     }
 
+    console.log("准备发送请求", upstreamUrl.toString(), upstreamRequest);
     const upstreamResponse = await fetch(upstreamUrl.toString(), upstreamRequest);
 
     let responseBody: unknown;
@@ -267,6 +268,8 @@ async function handleRequest(request: NextRequest, params: Promise<{ alias: stri
     } else {
       responseBody = await upstreamResponse.text();
     }
+
+    console.log("收到响应", upstreamResponse.status, upstreamResponse.statusText, responseBody);
 
     let finalResponseBody = responseBody;
     let finalResponseHeaders = responseHeaders;

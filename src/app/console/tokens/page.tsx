@@ -19,7 +19,7 @@ import {
   Edit
 } from "lucide-react";
 import { getTokens, getTokenStats, toggleTokenStatus } from "@/app/actions/tokens";
-import { TokenForm } from "@/components/token-form";
+import { TokenFormDialog } from "@/components/token-form-dialog";
 import { DeleteTokenDialog } from "@/components/delete-token-dialog";
 import { Pagination } from "@/components/pagination";
 
@@ -453,15 +453,12 @@ export default function TokensPage() {
       )}
 
       {/* Token Form Dialog */}
-      {showTokenForm && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <TokenForm
-            token={editingToken || undefined}
-            onClose={() => setShowTokenForm(false)}
-            onSuccess={handleFormSuccess}
-          />
-        </div>
-      )}
+      <TokenFormDialog
+        open={showTokenForm}
+        onOpenChange={setShowTokenForm}
+        token={editingToken}
+        onSuccess={handleFormSuccess}
+      />
 
       {/* Delete Confirmation Dialog */}
       {deletingToken && (

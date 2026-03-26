@@ -112,6 +112,8 @@ export async function createToken(formData: FormData): Promise<{
 
     const token = generateToken();
 
+    console.log(user);
+
     const newToken = await prisma.apiToken.create({
       data: {
         userId: user.id,

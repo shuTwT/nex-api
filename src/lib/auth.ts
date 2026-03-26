@@ -60,7 +60,7 @@ export function generateToken(length: number = 32): string {
 }
 
 export const authOptions: NextAuthOptions = {
-  session:{
+  session: {
     strategy: "jwt",
   },
   secret: process.env.NEXTAUTH_SECRET!,
@@ -109,7 +109,7 @@ export const authOptions: NextAuthOptions = {
           return null;
         }
 
-        console.log(user);
+        // console.log(user);
         return user;
       },
     }),
@@ -148,17 +148,27 @@ export const authOptions: NextAuthOptions = {
       return baseUrl;
     },
     async session({ session, user, token }) {
+      // console.log("session_callback_user", user);
+      // console.log("session_callback_token", token);
       if (session?.user) {
         (session.user as AuthUser).role = token.role as string;
+        (session.user as AuthUser).id = token.id as string;
       }
-      console.log("session callback", session);
+      // console.log("session_callback_session", session);
       return session;
     },
-    async jwt({ token, user, account, profile, isNewUser }) {
+    async jwt({ token, user, account, profile, trigger }) {
+      // 登录
+      // console.log("jwt_callback_user", user);
+      // console.log("jwt_callback_account", account);
+      // console.log("jwt_callback_profile", profile);
       if (user) {
         token.role = (user as AuthUser).role;
+        token.id = (user as AuthUser).id;
+        token.name = (user as AuthUser).username;
       }
-      console.log("token", token);
+
+      // console.log("jwt_callback_token", token);
       return token;
     },
   },

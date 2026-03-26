@@ -2,6 +2,7 @@ import { sign, verify } from "jsonwebtoken";
 import { cookies } from "next/headers";
 import { AuthUser } from "./middleware/auth";
 import { getServerSession } from "next-auth";
+import { authOptions } from "./auth";
 
 const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key";
 const TOKEN_EXPIRY = "7d";
@@ -69,7 +70,7 @@ export async function getCurrentUser(): Promise<SessionUser | null> {
 }
 
 export async function requireAuth(): Promise<SessionUser> {
-  const session = await getServerSession();
+  const session = await getServerSession(authOptions);
   if (!session?.user) {
     throw new Error("Unauthorized");
   }
@@ -78,7 +79,7 @@ export async function requireAuth(): Promise<SessionUser> {
 }
 
 export async function requireAdmin(): Promise<SessionUser> {
-  const session = await getServerSession();
+  const session = await getServerSession(authOptions);
   if(session==null){
     throw new Error("Unauthorized");
   }
