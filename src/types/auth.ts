@@ -22,6 +22,7 @@ export interface AuthActions {
   updateCredits: (credits: number) => void;
   setLoading: (loading: boolean) => void;
   initializeAuth: () => void;
+  fetchUserInfo: () => Promise<void>;
 }
 
 export type AuthStore = AuthState & AuthActions;

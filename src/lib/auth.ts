@@ -9,9 +9,9 @@ import type {
   NextApiResponse,
 } from "next";
 import { AuthUser } from "./middleware/auth";
-import Credentials from "next-auth/providers/credentials"
-import {PrismaAdapter} from "@auth/prisma-adapter"
-import prisma from "@/lib/prisma"
+import Credentials from "next-auth/providers/credentials";
+import { PrismaAdapter } from "@auth/prisma-adapter";
+import prisma from "@/lib/prisma";
 
 const randomBytesAsync = promisify(randomBytes);
 
@@ -60,6 +60,9 @@ export function generateToken(length: number = 32): string {
 }
 
 export const authOptions: NextAuthOptions = {
+  session:{
+    strategy: "jwt",
+  },
   secret: process.env.NEXTAUTH_SECRET!,
   // pages: {
   //   signIn: '/auth/signin',
@@ -68,43 +71,47 @@ export const authOptions: NextAuthOptions = {
   //   verifyRequest: '/auth/verify-request', // (used for check email message)
   //   newUser: '/auth/new-user' // New users will be directed here on first sign in (leave the property out if not of interest)
   // },
-  adapter:PrismaAdapter(prisma),
+  adapter: PrismaAdapter(prisma),
   providers: [
     Credentials({
-      credentials:{
-        email:{},
-        password:{}
+      credentials: {
+        email: {},
+        password: {},
       },
-      authorize:async(credentials)=>{
-        console.log("credentials",credentials)
-        let user = null
+      authorize: async (credentials) => {
+        console.log("credentials", credentials);
+        let user = null;
 
-        if(!credentials){
-          return null
+        if (!credentials) {
+          return null;
         }
 
-        const pwHash = await hashPassword(credentials.password)
-        console.log("pwHash",pwHash)
+        const pwHash = await hashPassword(credentials.password);
+        // console.log("pwHash",pwHash)
         //!TODO 验证用户是否存在
         user = await prisma.user.findUnique({
-          where:{
-            email:credentials.email
-          }
-        })
+          where: {
+            email: credentials.email,
+          },
+        });
 
-        if(!user){
-          return null
+        if (!user) {
+          return null;
         }
 
-        console.log("isMatch",user.password,credentials.password)
-        const isMatch = await verifyPassword(credentials.password, user.password)
+        console.log("isMatch", credentials.password, user.password);
+        const isMatch = await verifyPassword(
+          credentials.password,
+          user.password,
+        );
 
-        if(!isMatch){
-          return null
+        if (!isMatch) {
+          return null;
         }
 
-        return user
-      }
+        console.log(user);
+        return user;
+      },
     }),
     GitHubProvider({
       clientId: process.env.GITHUB_OAUTH_CLIENT_ID!,
@@ -120,7 +127,6 @@ export const authOptions: NextAuthOptions = {
       clientId: process.env.SSO_CLIENT_ID!,
       clientSecret: process.env.SSO_CLIENT_SECRET!,
       profile(profile) {
-        console.log(profile);
         return {
           id: profile.sub,
           name: profile.name,
@@ -143,7 +149,7 @@ export const authOptions: NextAuthOptions = {
     },
     async session({ session, user, token }) {
       if (session?.user) {
-        (session.user as AuthUser).role = token.role as string ;
+        (session.user as AuthUser).role = token.role as string;
       }
       return session;
     },
@@ -151,6 +157,7 @@ export const authOptions: NextAuthOptions = {
       if (user) {
         token.role = (user as AuthUser).role;
       }
+      console.log("token", token);
       return token;
     },
   },

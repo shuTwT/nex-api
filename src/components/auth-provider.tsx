@@ -11,37 +11,12 @@ interface AuthProviderProps {
 }
 
 export function AuthProvider({ session, children }: AuthProviderProps) {
-  const { login, logout, setLoading } = useAuthStore();
+  const { login, logout, setLoading, fetchUserInfo } = useAuthStore();
 
   useEffect(() => {
     const syncAuthState = async () => {
       setLoading(true);
-      try {
-        const response = await fetch("/api/auth/me", {
-          credentials: "include",
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          if (data.success && data.data) {
-            const user: User = {
-              id: data.data.id,
-              email: data.data.email,
-              username: data.data.username,
-              role: data.data.role,
-              credits: data.data.credits ?? 0,
-            };
-            login(user, "session");
-          } else {
-            logout();
-          }
-        } else {
-          logout();
-        }
-      } catch (error) {
-        console.error("Failed to sync auth state:", error);
-        logout();
-      }
+      await fetchUserInfo()
     };
 
     syncAuthState();

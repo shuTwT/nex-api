@@ -66,6 +66,34 @@ export const useAuthStore = create<AuthStore>()(
           });
         }
       },
+      fetchUserInfo:async()=>{
+        try{
+          const response = await fetch("/api/auth/me",{
+            credentials: "include",
+          })
+
+          if(response.ok) {
+            const data = await response.json();
+            if(data.success && data.data) {
+              const user: User = {
+                id: data.data.id,
+                email: data.data.email,
+                username: data.data.username,
+                role: data.data.role,
+                credits: data.data.credits ?? 0,
+              };
+              set({
+                user,
+                isAuthenticated: true,
+                isLoading: false,
+              });
+            }
+          }
+        }catch(error){
+          console.error("Failed to fetch user info:", error);
+        }
+        
+      }
     }),
     {
       name: STORAGE_KEY,
