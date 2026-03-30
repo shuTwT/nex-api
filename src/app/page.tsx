@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,9 +8,58 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Search, Star, Zap, Shield, Users, TrendingUp } from "lucide-react";
 import { MainLayout } from "@/components/main-layout";
-import { BannerAd, InlineAd } from "@/components/ads";
+import { InlineAd } from "@/components/ads";
+import { getMarketplaceApis, getMarketplaceStats } from "@/app/actions/marketplace";
+
+interface MarketplaceApi {
+  id: string;
+  name: string;
+  description: string;
+  alias: string;
+  endpoint: string;
+  method: string;
+  pricing: number;
+  category: string;
+  isFree: boolean;
+  todayCallCount: number;
+  userCount: number;
+  totalCallCount: number;
+}
+
+interface MarketplaceStats {
+  totalApis: number;
+  freeApis: number;
+  paidApis: number;
+  totalCallCount: number;
+}
 
 export default function Home() {
+  const [apis, setApis] = useState<MarketplaceApi[]>([]);
+  const [stats, setStats] = useState<MarketplaceStats | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  async function loadData() {
+    setIsLoading(true);
+    const [apisResult, statsResult] = await Promise.all([
+      getMarketplaceApis(),
+      getMarketplaceStats(),
+    ]);
+
+    if (apisResult.success && apisResult.data) {
+      setApis(apisResult.data);
+    }
+
+    if (statsResult.success && statsResult.data) {
+      setStats(statsResult.data);
+    }
+
+    setIsLoading(false);
+  }
+
   return (
     <MainLayout>
       {/* Hero Section */}
@@ -28,8 +78,8 @@ export default function Home() {
                 发现、集成、创新
               </h1>
               <p className="text-lg md:text-xl text-slate-600 max-w-3xl mx-auto">
-                一站式 API 聚合平台，为您提供<span className="font-bold text-blue-600">3000+</span>高质量 API 接口，
-                <span className="font-bold text-blue-600">80% 免费</span>，让开发更简单
+                一站式 API 聚合平台，为您提供<span className="font-bold text-blue-600">{stats?.totalApis || 0}+</span>高质量 API 接口，
+                <span className="font-bold text-blue-600">{stats?.freeApis || 0} 免费</span>，让开发更简单
               </p>
             </div>
 
@@ -50,29 +100,19 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Hot Tags */}
-            <div className="flex flex-wrap items-center justify-center gap-2 text-sm">
-              <span className="text-slate-600">热门搜索：</span>
-              <Badge variant="secondary" className="bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 cursor-pointer">天气 API</Badge>
-              <Badge variant="secondary" className="bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 cursor-pointer">短信验证</Badge>
-              <Badge variant="secondary" className="bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 cursor-pointer">IP 查询</Badge>
-              <Badge variant="secondary" className="bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 cursor-pointer">OCR 识别</Badge>
-              <Badge variant="secondary" className="bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 cursor-pointer">AI 绘画</Badge>
-            </div>
-
             {/* Stats */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 w-full max-w-3xl mt-8">
               <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 text-center shadow-md border border-slate-100">
-                <div className="text-3xl font-bold mb-1 text-slate-900">2+</div>
+                <div className="text-3xl font-bold mb-1 text-slate-900">{stats?.totalApis || 0}+</div>
                 <div className="text-sm text-slate-600">可用 API 接口</div>
               </div>
               <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 text-center shadow-md border border-slate-100">
-                <div className="text-3xl font-bold mb-1 text-slate-900">237+</div>
+                <div className="text-3xl font-bold mb-1 text-slate-900">{stats?.totalCallCount?.toLocaleString() || 0}+</div>
                 <div className="text-sm text-slate-600">累计调用次数</div>
               </div>
               <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 text-center shadow-md border border-slate-100">
-                <div className="text-3xl font-bold mb-1 text-slate-900">1+</div>
-                <div className="text-sm text-slate-600">注册用户</div>
+                <div className="text-3xl font-bold mb-1 text-slate-900">{stats?.freeApis || 0}+</div>
+                <div className="text-sm text-slate-600">免费接口</div>
               </div>
               <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 text-center shadow-md border border-slate-100">
                 <div className="text-3xl font-bold mb-1 text-slate-900">99.9%</div>
@@ -96,129 +136,69 @@ export default function Home() {
           </Button>
         </div>
 
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {/* API Card 1 */}
-          <Link href="/api-detail">
-            <Card className="group hover:shadow-lg transition-all cursor-pointer border-0 shadow-md h-full">
-              <CardContent className="p-6 space-y-4">
-                <div className="flex items-start justify-between">
-                  <div className="flex items-center gap-2">
-                    <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
-                      正常
-                    </Badge>
-                    <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
-                      json
-                    </Badge>
-                  </div>
-                  <div className="flex items-center gap-1 text-orange-500">
-                    <Star className="h-4 w-4 fill-current" />
-                    <span className="text-sm font-medium">免费</span>
-                  </div>
-                </div>
-                <div>
-                  <h3 className="text-lg font-semibold mb-1 group-hover:text-blue-600 transition-colors">
-                    IP 地址查询
-                  </h3>
-                  <p className="text-sm text-gray-500">
-                    县级 IP 查询定位
-                  </p>
-                </div>
-                <div className="flex items-center gap-4 text-xs text-gray-400">
-                  <div className="flex items-center gap-1">
-                    <Users className="h-3 w-3" />
-                    <span>今日调用：1,452</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <Zap className="h-3 w-3" />
-                    <span>累计调用：237k</span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </Link>
-
-          {/* Inline Ad */}
-          <InlineAd size="md" />
-
-          {/* API Card 2 */}
-          <Link href="/api-detail">
-            <Card className="group hover:shadow-lg transition-all cursor-pointer border-0 shadow-md h-full">
-              <CardContent className="p-6 space-y-4">
-                <div className="flex items-start justify-between">
-                  <div className="flex items-center gap-2">
-                    <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
-                      正常
-                    </Badge>
-                    <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
-                      json
-                    </Badge>
-                  </div>
-                  <Badge className="bg-gradient-to-r from-purple-500 to-pink-500 border-0">
-                    会员专享
-                  </Badge>
-                </div>
-                <div>
-                  <h3 className="text-lg font-semibold mb-1 group-hover:text-blue-600 transition-colors">
-                    油价查询
-                  </h3>
-                  <p className="text-sm text-gray-500">
-                    查询实时油价
-                  </p>
-                </div>
-                <div className="flex items-center gap-4 text-xs text-gray-400">
-                  <div className="flex items-center gap-1">
-                    <Users className="h-3 w-3" />
-                    <span>今日调用：876</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <Zap className="h-3 w-3" />
-                    <span>累计调用：89k</span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </Link>
-
-          {/* API Card 3 */}
-          <Link href="/api-detail">
-            <Card className="group hover:shadow-lg transition-all cursor-pointer border-0 shadow-md h-full">
-              <CardContent className="p-6 space-y-4">
-                <div className="flex items-start justify-between">
-                  <div className="flex items-center gap-2">
-                    <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
-                      正常
-                    </Badge>
-                    <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
-                      json
-                    </Badge>
-                  </div>
-                  <div className="flex items-center gap-1 text-orange-500">
-                    <Star className="h-4 w-4 fill-current" />
-                    <span className="text-sm font-medium">免费</span>
-                  </div>
-                </div>
-                <div>
-                  <h3 className="text-lg font-semibold mb-1 group-hover:text-blue-600 transition-colors">
-                    天气查询
-                  </h3>
-                  <p className="text-sm text-gray-500">
-                    全国城市天气预报
-                  </p>
-                </div>
-                <div className="flex items-center gap-4 text-xs text-gray-400">
-                  <div className="flex items-center gap-1">
-                    <Users className="h-3 w-3" />
-                    <span>今日调用：2,341</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <Zap className="h-3 w-3" />
-                    <span>累计调用：456k</span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </Link>
-        </div>
+        {isLoading ? (
+          <div className="flex items-center justify-center py-12">
+            <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-600 border-t-transparent" />
+          </div>
+        ) : apis.length === 0 ? (
+          <div className="text-center py-12">
+            <Zap className="h-12 w-12 text-slate-300 mx-auto mb-4" />
+            <h3 className="text-lg font-medium text-slate-900 mb-2">暂无 API</h3>
+            <p className="text-slate-500">请稍后再来查看</p>
+          </div>
+        ) : (
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {apis.slice(0, 5).map((api, index) => (
+              <div key={api.id}>
+                <Link href={`/api-detail?id=${api.id}`}>
+                  <Card className="group hover:shadow-lg transition-all cursor-pointer border-0 shadow-md h-full">
+                    <CardContent className="p-6 space-y-4">
+                      <div className="flex items-start justify-between">
+                        <div className="flex items-center gap-2">
+                          <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+                            正常
+                          </Badge>
+                          <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+                            {api.method}
+                          </Badge>
+                        </div>
+                        {api.isFree ? (
+                          <div className="flex items-center gap-1 text-orange-500">
+                            <Star className="h-4 w-4 fill-current" />
+                            <span className="text-sm font-medium">免费</span>
+                          </div>
+                        ) : (
+                          <Badge className="bg-gradient-to-r from-purple-500 to-pink-500 border-0">
+                            会员专享
+                          </Badge>
+                        )}
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-semibold mb-1 group-hover:text-blue-600 transition-colors">
+                          {api.name}
+                        </h3>
+                        <p className="text-sm text-gray-500">
+                          {api.description}
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-4 text-xs text-gray-400">
+                        <div className="flex items-center gap-1">
+                          <Users className="h-3 w-3" />
+                          <span>{api.userCount} 人使用</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <Zap className="h-3 w-3" />
+                          <span>今日：{api.todayCallCount.toLocaleString()}</span>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </Link>
+                {index === 0 && <InlineAd size="md" />}
+              </div>
+            ))}
+          </div>
+        )}
       </section>
 
       {/* Features Section */}

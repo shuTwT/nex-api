@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -18,17 +19,59 @@ import {
   RotateCcw,
   AlertTriangle,
   CheckCircle,
-  Copy
+  Copy,
+  Users,
+  Zap
 } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
+import { getApiDetail } from "@/app/actions/marketplace";
 
-export default function ApiDetailPage() {
+interface ApiDetail {
+  id: string;
+  name: string;
+  description: string;
+  alias: string;
+  endpoint: string;
+  method: string;
+  pricing: number;
+  category: string;
+  isFree: boolean;
+  isActive: boolean;
+  todayCallCount: number;
+  userCount: number;
+  totalCallCount: number;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+function ApiDetailContent() {
+  const searchParams = useSearchParams();
+  const apiId = searchParams.get("id");
+  const [api, setApi] = useState<ApiDetail | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const [activeSection, setActiveSection] = useState("detail");
   const [baseUrl, setBaseUrl] = useState("");
 
   useEffect(() => {
     setBaseUrl(window.location.origin);
   }, []);
+
+  useEffect(() => {
+    if (apiId) {
+      loadApiDetail();
+    }
+  }, [apiId]);
+
+  async function loadApiDetail() {
+    if (!apiId) return;
+    
+    setIsLoading(true);
+    const result = await getApiDetail(apiId);
+    if (result.success && result.data) {
+      setApi(result.data);
+    }
+    setIsLoading(false);
+  }
 
   useEffect(() => {
     const handleScroll = () => {
@@ -64,6 +107,36 @@ export default function ApiDetailPage() {
     }
   };
 
+  if (isLoading) {
+    return (
+      <MainLayout>
+        <div className="flex items-center justify-center py-12">
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-600 border-t-transparent" />
+        </div>
+      </MainLayout>
+    );
+  }
+
+  if (!api) {
+    return (
+      <MainLayout>
+        <div className="flex flex-col items-center justify-center py-12">
+          <AlertTriangle className="h-12 w-12 text-slate-300 mb-4" />
+          <h3 className="text-lg font-medium text-slate-900 mb-2">API 不存在</h3>
+          <p className="text-slate-500 mb-4">请检查 API ID 是否正确</p>
+          <Link href="/api-market">
+            <Button>
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              返回 API 市场
+            </Button>
+          </Link>
+        </div>
+      </MainLayout>
+    );
+  }
+
+  const apiUrl = `${baseUrl}/api/v1/${api.alias}`;
+
   return (
     <MainLayout>
       {/* Hero Section */}
@@ -76,10 +149,10 @@ export default function ApiDetailPage() {
           <div className="flex flex-col items-center text-center space-y-6">
             <div>
               <h1 className="text-4xl md:text-5xl font-bold mb-3 text-slate-900">
-                IP 地址查询
+                {api.name}
               </h1>
               <p className="text-lg text-slate-600">
-                县级 IP 查询定位
+                {api.description}
               </p>
             </div>
 
@@ -89,21 +162,26 @@ export default function ApiDetailPage() {
                 <div className="text-sm text-slate-500 mb-1">接口状态</div>
                 <div className="flex items-center justify-center gap-1">
                   <CheckCircle className="h-4 w-4 text-green-600" />
-                  <span className="font-semibold text-slate-700">正常</span>
+                  <span className="font-semibold text-slate-700">{api.isActive ? "正常" : "停用"}</span>
                 </div>
               </div>
               <div className="text-center">
                 <div className="text-sm text-slate-500 mb-1">请求方式</div>
-                <Badge className="bg-blue-100 text-blue-700 border-blue-200">GET</Badge>
-              </div>
-              <div className="text-center">
-                <div className="text-sm text-slate-500 mb-1">数据格式</div>
-                <Badge className="bg-blue-100 text-blue-700 border-blue-200">json</Badge>
+                <Badge className="bg-blue-100 text-blue-700 border-blue-200">{api.method}</Badge>
               </div>
               <div className="text-center">
                 <div className="text-sm text-slate-500 mb-1">计费方式</div>
                 <div className="flex items-center justify-center gap-1">
-                  <span className="font-semibold text-slate-700">免费</span>
+                  <span className="font-semibold text-slate-700">
+                    {api.isFree ? "免费" : `${api.pricing} 积分/次`}
+                  </span>
+                </div>
+              </div>
+              <div className="text-center">
+                <div className="text-sm text-slate-500 mb-1">今日调用</div>
+                <div className="flex items-center justify-center gap-1">
+                  <Zap className="h-4 w-4 text-blue-600" />
+                  <span className="font-semibold text-slate-700">{api.todayCallCount.toLocaleString()}</span>
                 </div>
               </div>
             </div>
@@ -232,10 +310,10 @@ export default function ApiDetailPage() {
                 </ScrollArea>
               </div>
 
-              <Link href="/" className="block">
+              <Link href="/api-market" className="block">
                 <Button className="w-full gap-2" variant="outline">
                   <ArrowLeft className="h-4 w-4" />
-                  返回 API 列表
+                  返回 API 市场
                 </Button>
               </Link>
             </div>
@@ -262,7 +340,7 @@ export default function ApiDetailPage() {
                   </div>
                   <div className="flex gap-2">
                     <code className="flex-1 block bg-slate-900 text-white p-3 rounded-md text-sm font-mono">
-                      {baseUrl}/api/ip/
+                      {apiUrl}
                     </code>
                     <Button size="icon" variant="outline" className="shrink-0">
                       <Copy className="h-4 w-4" />
@@ -276,11 +354,15 @@ export default function ApiDetailPage() {
                     <Tag className="h-4 w-4 text-purple-600" />
                     接口标签
                   </div>
-                  <div className="flex gap-2">
-                    <Badge className="bg-green-50 text-green-700 border-green-200">GET</Badge>
-                    <Badge className="bg-blue-50 text-blue-700 border-blue-200">json</Badge>
-                    <Badge className="bg-green-50 text-green-700 border-green-200">正常</Badge>
-                    <Badge className="bg-green-50 text-green-700 border-green-200">免费</Badge>
+                  <div className="flex gap-2 flex-wrap">
+                    <Badge className="bg-blue-50 text-blue-700 border-blue-200">{api.method}</Badge>
+                    <Badge className="bg-green-50 text-green-700 border-green-200">{api.category}</Badge>
+                    <Badge className={api.isActive ? "bg-green-50 text-green-700 border-green-200" : "bg-red-50 text-red-700 border-red-200"}>
+                      {api.isActive ? "正常" : "停用"}
+                    </Badge>
+                    <Badge className={api.isFree ? "bg-orange-50 text-orange-700 border-orange-200" : "bg-purple-50 text-purple-700 border-purple-200"}>
+                      {api.isFree ? "免费" : "会员专享"}
+                    </Badge>
                   </div>
                 </div>
 
@@ -291,7 +373,29 @@ export default function ApiDetailPage() {
                     接口描述
                   </div>
                   <div className="bg-gray-50 p-4 rounded-md">
-                    <p className="text-sm text-gray-700">县级 IP 查询定位</p>
+                    <p className="text-sm text-gray-700">{api.description}</p>
+                  </div>
+                </div>
+
+                {/* API Stats */}
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2 text-sm font-medium">
+                    <Users className="h-4 w-4 text-gray-500" />
+                    使用统计
+                  </div>
+                  <div className="grid grid-cols-3 gap-4">
+                    <div className="bg-gray-50 p-4 rounded-md text-center">
+                      <p className="text-2xl font-bold text-slate-900">{api.userCount}</p>
+                      <p className="text-xs text-slate-500 mt-1">使用人数</p>
+                    </div>
+                    <div className="bg-gray-50 p-4 rounded-md text-center">
+                      <p className="text-2xl font-bold text-slate-900">{api.todayCallCount.toLocaleString()}</p>
+                      <p className="text-xs text-slate-500 mt-1">今日调用</p>
+                    </div>
+                    <div className="bg-gray-50 p-4 rounded-md text-center">
+                      <p className="text-2xl font-bold text-slate-900">{api.totalCallCount.toLocaleString()}</p>
+                      <p className="text-xs text-slate-500 mt-1">累计调用</p>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -316,91 +420,17 @@ export default function ApiDetailPage() {
                         <th className="text-left p-3 font-medium">类型</th>
                         <th className="text-left p-3 font-medium">必填</th>
                         <th className="text-left p-3 font-medium">说明</th>
-                        <th className="text-left p-3 font-medium">示例</th>
                       </tr>
                     </thead>
                     <tbody>
                       <tr className="border-b">
-                        <td className="p-3 font-mono text-blue-600">ip</td>
+                        <td className="p-3 font-mono text-blue-600">token</td>
                         <td className="p-3">string</td>
                         <td className="p-3"><Badge variant="outline" className="bg-red-50 text-red-700 border-red-200">是</Badge></td>
-                        <td className="p-3">要查询的 IP 地址</td>
-                        <td className="p-3 font-mono text-xs">114.114.114.114</td>
-                      </tr>
-                      <tr className="border-b">
-                        <td className="p-3 font-mono text-blue-600">format</td>
-                        <td className="p-3">string</td>
-                        <td className="p-3"><Badge variant="outline" className="bg-gray-50 text-gray-700 border-gray-200">否</Badge></td>
-                        <td className="p-3">返回数据格式</td>
-                        <td className="p-3 font-mono text-xs">json</td>
+                        <td className="p-3">您的 API Token</td>
                       </tr>
                     </tbody>
                   </table>
-                </div>
-              </div>
-            </div>
-
-            {/* Request Parameters Detail */}
-            <div className="rounded-lg border bg-white p-6">
-              <h2 className="text-2xl font-bold flex items-center gap-2 mb-4">
-                <Send className="h-5 w-5 text-blue-600" />
-                请求参数说明
-              </h2>
-              <Separator className="mb-6" />
-              
-              <div className="space-y-6">
-                <div className="space-y-2">
-                  <h3 className="font-semibold">请求方式</h3>
-                  <Badge className="bg-blue-50 text-blue-700 border-blue-200">GET</Badge>
-                </div>
-
-                <div className="space-y-2">
-                  <h3 className="font-semibold">请求地址</h3>
-                  <code className="block bg-slate-900 text-white p-3 rounded-md text-sm font-mono">
-                    {baseUrl}/api/ip/
-                  </code>
-                </div>
-
-                <div className="space-y-2">
-                  <h3 className="font-semibold">请求头</h3>
-                  <div className="bg-gray-50 p-4 rounded-md">
-                    <pre className="text-sm font-mono">
-{`Content-Type: application/x-www-form-urlencoded
-User-Agent: Your-Application-Name`}</pre>
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <h3 className="font-semibold">请求参数</h3>
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-sm">
-                      <thead>
-                        <tr className="border-b bg-gray-50">
-                          <th className="text-left p-3 font-medium">参数</th>
-                          <th className="text-left p-3 font-medium">类型</th>
-                          <th className="text-left p-3 font-medium">必填</th>
-                          <th className="text-left p-3 font-medium">默认值</th>
-                          <th className="text-left p-3 font-medium">说明</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr className="border-b">
-                          <td className="p-3 font-mono text-blue-600">ip</td>
-                          <td className="p-3">string</td>
-                          <td className="p-3"><Badge variant="outline" className="bg-red-50 text-red-700 border-red-200">是</Badge></td>
-                          <td className="p-3">-</td>
-                          <td className="p-3">IPv4 或 IPv6 地址</td>
-                        </tr>
-                        <tr className="border-b">
-                          <td className="p-3 font-mono text-blue-600">format</td>
-                          <td className="p-3">string</td>
-                          <td className="p-3"><Badge variant="outline" className="bg-gray-50 text-gray-700 border-gray-200">否</Badge></td>
-                          <td className="p-3">json</td>
-                          <td className="p-3">支持 json、xml 格式</td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
                 </div>
               </div>
             </div>
@@ -418,9 +448,8 @@ User-Agent: Your-Application-Name`}</pre>
                   <h3 className="font-semibold">cURL</h3>
                   <div className="bg-slate-900 text-white p-4 rounded-md overflow-x-auto">
                     <pre className="text-sm font-mono">
-{`curl -X GET "${baseUrl || '[YOUR_DOMAIN]'}/api/ip/?ip=114.114.114.114&format=json" \\
-  -H "Content-Type: application/x-www-form-urlencoded" \\
-  -H "User-Agent: Your-Application-Name"`}</pre>
+{`curl -X ${api.method} "${apiUrl}?token=YOUR_TOKEN" \\
+  -H "Content-Type: application/json"`}</pre>
                   </div>
                 </div>
 
@@ -428,10 +457,9 @@ User-Agent: Your-Application-Name`}</pre>
                   <h3 className="font-semibold">HTTP</h3>
                   <div className="bg-slate-900 text-white p-4 rounded-md overflow-x-auto">
                     <pre className="text-sm font-mono">
-{`GET /api/ip/?ip=114.114.114.114&format=json HTTP/1.1
+{`${api.method} ${api.endpoint}?token=YOUR_TOKEN HTTP/1.1
 Host: ${baseUrl?.replace(/^https?:\/\//, '') || '[YOUR_DOMAIN]'}
-Content-Type: application/x-www-form-urlencoded
-User-Agent: Your-Application-Name`}</pre>
+Content-Type: application/json`}</pre>
                   </div>
                 </div>
               </div>
@@ -447,25 +475,6 @@ User-Agent: Your-Application-Name`}</pre>
 
               <div className="space-y-6">
                 <div className="space-y-2">
-                  <h3 className="font-semibold">返回示例</h3>
-                  <div className="bg-slate-900 text-white p-4 rounded-md overflow-x-auto">
-                    <pre className="text-sm font-mono">
-{`{
-  "code": 200,
-  "msg": "success",
-  "data": {
-    "ip": "114.114.114.114",
-    "country": "中国",
-    "province": "江苏",
-    "city": "南京",
-    "district": "玄武区",
-    "carrier": "电信"
-  }
-}`}</pre>
-                  </div>
-                </div>
-
-                <div className="space-y-2">
                   <h3 className="font-semibold">返回参数</h3>
                   <div className="overflow-x-auto">
                     <table className="w-full text-sm">
@@ -478,14 +487,9 @@ User-Agent: Your-Application-Name`}</pre>
                       </thead>
                       <tbody>
                         <tr className="border-b">
-                          <td className="p-3 font-mono text-blue-600">code</td>
-                          <td className="p-3">integer</td>
-                          <td className="p-3">状态码，200 表示成功</td>
-                        </tr>
-                        <tr className="border-b">
-                          <td className="p-3 font-mono text-blue-600">msg</td>
-                          <td className="p-3">string</td>
-                          <td className="p-3">返回消息</td>
+                          <td className="p-3 font-mono text-blue-600">success</td>
+                          <td className="p-3">boolean</td>
+                          <td className="p-3">请求是否成功</td>
                         </tr>
                         <tr className="border-b">
                           <td className="p-3 font-mono text-blue-600">data</td>
@@ -493,34 +497,9 @@ User-Agent: Your-Application-Name`}</pre>
                           <td className="p-3">返回数据对象</td>
                         </tr>
                         <tr className="border-b">
-                          <td className="p-3 font-mono text-blue-600">data.ip</td>
+                          <td className="p-3 font-mono text-blue-600">error</td>
                           <td className="p-3">string</td>
-                          <td className="p-3">查询的 IP 地址</td>
-                        </tr>
-                        <tr className="border-b">
-                          <td className="p-3 font-mono text-blue-600">data.country</td>
-                          <td className="p-3">string</td>
-                          <td className="p-3">国家</td>
-                        </tr>
-                        <tr className="border-b">
-                          <td className="p-3 font-mono text-blue-600">data.province</td>
-                          <td className="p-3">string</td>
-                          <td className="p-3">省份</td>
-                        </tr>
-                        <tr className="border-b">
-                          <td className="p-3 font-mono text-blue-600">data.city</td>
-                          <td className="p-3">string</td>
-                          <td className="p-3">城市</td>
-                        </tr>
-                        <tr className="border-b">
-                          <td className="p-3 font-mono text-blue-600">data.district</td>
-                          <td className="p-3">string</td>
-                          <td className="p-3">区县</td>
-                        </tr>
-                        <tr className="border-b">
-                          <td className="p-3 font-mono text-blue-600">data.carrier</td>
-                          <td className="p-3">string</td>
-                          <td className="p-3">运营商</td>
+                          <td className="p-3">错误信息（失败时）</td>
                         </tr>
                       </tbody>
                     </table>
@@ -543,15 +522,9 @@ User-Agent: Your-Application-Name`}</pre>
                   <div className="bg-slate-900 text-white p-4 rounded-md overflow-x-auto">
                     <pre className="text-sm font-mono">
 {`{
-  "code": 200,
-  "msg": "success",
+  "success": true,
   "data": {
-    "ip": "114.114.114.114",
-    "country": "中国",
-    "province": "江苏",
-    "city": "南京",
-    "district": "玄武区",
-    "carrier": "电信"
+    // 具体返回数据根据接口而定
   }
 }`}</pre>
                   </div>
@@ -562,8 +535,8 @@ User-Agent: Your-Application-Name`}</pre>
                   <div className="bg-slate-900 text-white p-4 rounded-md overflow-x-auto">
                     <pre className="text-sm font-mono">
 {`{
-  "code": 400,
-  "msg": "Invalid IP address"
+  "success": false,
+  "error": "错误信息描述"
 }`}</pre>
                   </div>
                 </div>
@@ -596,7 +569,7 @@ User-Agent: Your-Application-Name`}</pre>
                     <tr className="border-b">
                       <td className="p-3 font-mono text-red-600">401</td>
                       <td className="p-3">未授权访问</td>
-                      <td className="p-3">请检查 API Key 是否正确</td>
+                      <td className="p-3">请检查 Token 是否正确</td>
                     </tr>
                     <tr className="border-b">
                       <td className="p-3 font-mono text-red-600">403</td>
@@ -617,16 +590,6 @@ User-Agent: Your-Application-Name`}</pre>
                       <td className="p-3 font-mono text-red-600">500</td>
                       <td className="p-3">服务器内部错误</td>
                       <td className="p-3">联系技术支持或稍后重试</td>
-                    </tr>
-                    <tr className="border-b">
-                      <td className="p-3 font-mono text-red-600">502</td>
-                      <td className="p-3">上游接口错误</td>
-                      <td className="p-3">检查上游接口状态或稍后重试</td>
-                    </tr>
-                    <tr>
-                      <td className="p-3 font-mono text-red-600">503</td>
-                      <td className="p-3">服务不可用</td>
-                      <td className="p-3">服务暂时不可用，请稍后重试</td>
                     </tr>
                   </tbody>
                 </table>
@@ -660,9 +623,8 @@ User-Agent: Your-Application-Name`}</pre>
                   </div>
                   <div className="bg-slate-900 text-white p-4 rounded-md overflow-x-auto">
                     <pre className="text-sm font-mono">
-{`curl -X GET "${baseUrl || '[YOUR_DOMAIN]'}/api/ip/?ip=114.114.114.114&format=json" \\
-  -H "Content-Type: application/x-www-form-urlencoded" \\
-  -H "User-Agent: Your-Application-Name"`}</pre>
+{`curl -X ${api.method} "${apiUrl}?token=YOUR_TOKEN" \\
+  -H "Content-Type: application/json"`}</pre>
                   </div>
                 </TabsContent>
 
@@ -676,17 +638,12 @@ User-Agent: Your-Application-Name`}</pre>
                   </div>
                   <div className="bg-slate-900 text-white p-4 rounded-md overflow-x-auto">
                     <pre className="text-sm font-mono">
-{`const url = '${baseUrl || '[YOUR_DOMAIN]'}/api/ip/';
-const params = new URLSearchParams({
-  ip: '114.114.114.114',
-  format: 'json'
-});
+{`const url = '${apiUrl}?token=YOUR_TOKEN';
 
-fetch(\`\${url}?\${params}\`, {
-  method: 'GET',
+fetch(url, {
+  method: '${api.method}',
   headers: {
-    'Content-Type': 'application/x-www-form-urlencoded',
-    'User-Agent': 'Your-Application-Name'
+    'Content-Type': 'application/json'
   }
 })
 .then(response => response.json())
@@ -711,17 +668,15 @@ fetch(\`\${url}?\${params}\`, {
                     <pre className="text-sm font-mono">
 {`import requests
 
-url = '${baseUrl || '[YOUR_DOMAIN]'}/api/ip/'
+url = '${apiUrl}'
 params = {
-    'ip': '114.114.114.114',
-    'format': 'json'
+    'token': 'YOUR_TOKEN'
 }
 headers = {
-    'Content-Type': 'application/x-www-form-urlencoded',
-    'User-Agent': 'Your-Application-Name'
+    'Content-Type': 'application/json'
 }
 
-response = requests.get(url, params=params, headers=headers)
+response = requests.${api.method.toLowerCase()}(url, params=params, headers=headers)
 data = response.json()
 print(data)`}</pre>
                   </div>
@@ -739,21 +694,12 @@ print(data)`}</pre>
                     <pre className="text-sm font-mono">
 {`OkHttpClient client = new OkHttpClient();
 
-HttpUrl url = new HttpUrl.Builder()
-    .scheme("https")
-    .host("${baseUrl?.replace(/^https?:\/\//, '') || '[YOUR_DOMAIN]'}")
-    .addPathSegment("api")
-    .addPathSegment("ip")
-    .addPathSegment("")
-    .addQueryParameter("ip", "114.114.114.114")
-    .addQueryParameter("format", "json")
-    .build();
+String url = "${apiUrl}?token=YOUR_TOKEN";
 
 Request request = new Request.Builder()
     .url(url)
-    .get()
-    .addHeader("Content-Type", "application/x-www-form-urlencoded")
-    .addHeader("User-Agent", "Your-Application-Name")
+    .${api.method.toLowerCase()}()
+    .addHeader("Content-Type", "application/json")
     .build();
 
 try (Response response = client.newCall(request).execute()) {
@@ -774,18 +720,13 @@ try (Response response = client.newCall(request).execute()) {
                   <div className="bg-slate-900 text-white p-4 rounded-md overflow-x-auto">
                     <pre className="text-sm font-mono">
 {`<?php
-$url = '${baseUrl || '[YOUR_DOMAIN]'}/api/ip/';
-$params = [
-    'ip' => '114.114.114.114',
-    'format' => 'json'
-];
+$url = '${apiUrl}?token=YOUR_TOKEN';
 
 $ch = curl_init();
-curl_setopt($ch, CURLOPT_URL, $url . '?' . http_build_query($params));
+curl_setopt($ch, CURLOPT_URL, $url);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($ch, CURLOPT_HTTPHEADER, [
-    'Content-Type: application/x-www-form-urlencoded',
-    'User-Agent: Your-Application-Name'
+    'Content-Type: application/json'
 ]);
 
 $response = curl_exec($ch);
@@ -802,5 +743,19 @@ print_r($data);
         </div>
       </div>
     </MainLayout>
+  );
+}
+
+export default function ApiDetailPage() {
+  return (
+    <Suspense fallback={
+      <MainLayout>
+        <div className="flex items-center justify-center py-12">
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-600 border-t-transparent" />
+        </div>
+      </MainLayout>
+    }>
+      <ApiDetailContent />
+    </Suspense>
   );
 }
