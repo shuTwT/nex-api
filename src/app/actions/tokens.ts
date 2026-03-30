@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { randomBytes } from "crypto";
 import prisma from "@/lib/prisma";
 import { requireAuth } from "@/lib/session";
+import { logAudit } from "@/lib/audit-log";
 
 function generateToken(): string {
   const prefix = "sk";
@@ -124,6 +125,15 @@ export async function createToken(formData: FormData): Promise<{
       },
     });
 
+    await logAudit({
+      userId: user.id,
+      action: "创建令牌",
+      resource: "令牌管理",
+      details: `创建了令牌: ${name}`,
+      level: "info",
+      status: "success",
+    });
+
     revalidatePath("/console/tokens");
     return {
       success: true,
@@ -131,6 +141,13 @@ export async function createToken(formData: FormData): Promise<{
     };
   } catch (error) {
     console.error("Create token error:", error);
+    await logAudit({
+      action: "创建令牌",
+      resource: "令牌管理",
+      details: `创建令牌失败: ${error}`,
+      level: "error",
+      status: "error",
+    });
     return {
       success: false,
       error: "创建令牌失败",
@@ -187,6 +204,15 @@ export async function updateToken(formData: FormData): Promise<{
       },
     });
 
+    await logAudit({
+      userId: user.id,
+      action: "更新令牌",
+      resource: "令牌管理",
+      details: `更新了令牌: ${name}`,
+      level: "info",
+      status: "success",
+    });
+
     revalidatePath("/console/tokens");
     return {
       success: true,
@@ -194,6 +220,13 @@ export async function updateToken(formData: FormData): Promise<{
     };
   } catch (error) {
     console.error("Update token error:", error);
+    await logAudit({
+      action: "更新令牌",
+      resource: "令牌管理",
+      details: `更新令牌失败: ${error}`,
+      level: "error",
+      status: "error",
+    });
     return {
       success: false,
       error: "更新令牌失败",
@@ -208,11 +241,27 @@ export async function deleteToken(id: string): Promise<{
   try {
     const user = await requireAuth();
 
+    const tokenToDelete = await prisma.apiToken.findUnique({
+      where: {
+        id,
+        userId: user.id,
+      },
+    });
+
     await prisma.apiToken.delete({
       where: {
         id,
         userId: user.id,
       },
+    });
+
+    await logAudit({
+      userId: user.id,
+      action: "删除令牌",
+      resource: "令牌管理",
+      details: `删除了令牌: ${tokenToDelete?.name || id}`,
+      level: "warning",
+      status: "success",
     });
 
     revalidatePath("/console/tokens");
@@ -221,6 +270,13 @@ export async function deleteToken(id: string): Promise<{
     };
   } catch (error) {
     console.error("Delete token error:", error);
+    await logAudit({
+      action: "删除令牌",
+      resource: "令牌管理",
+      details: `删除令牌失败: ${error}`,
+      level: "error",
+      status: "error",
+    });
     return {
       success: false,
       error: "删除令牌失败",

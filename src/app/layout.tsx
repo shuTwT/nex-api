@@ -5,6 +5,7 @@ import { AuthProvider } from "@/components/auth-provider";
 import { InitCheck } from "@/components/init-check";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
+import { Toaster } from "sonner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -34,6 +35,7 @@ export default async function RootLayout({
       >
         <AuthProvider session={session}>
           <InitCheck>{children}</InitCheck>
+          <Toaster position="top-center" richColors={true} expand={true}/>
         </AuthProvider>
       </body>
     </html>

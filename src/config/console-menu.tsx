@@ -3,10 +3,12 @@ import {
   Crown, 
   Settings, 
   BarChart3, 
-  Receipt, 
   FileText, 
   Users,
   Key,
+  Sliders,
+  User,
+  CreditCard,
   LucideIcon
 } from "lucide-react";
 
@@ -22,6 +24,12 @@ export const consoleMenuItems: MenuItem[] = [
     name: "概览",
     icon: LayoutDashboard,
     href: "/console",
+    adminOnly: false,
+  },
+  {
+    name: "个人中心",
+    icon: User,
+    href: "/console/personal",
     adminOnly: false,
   },
   {
@@ -43,15 +51,15 @@ export const consoleMenuItems: MenuItem[] = [
     adminOnly: true,
   },
   {
+    name: "订阅计划",
+    icon: CreditCard,
+    href: "/console/subscription-plans",
+    adminOnly: true,
+  },
+  {
     name: "用量统计",
     icon: BarChart3,
     href: "/console/usage",
-    adminOnly: false,
-  },
-  {
-    name: "账单",
-    icon: Receipt,
-    href: "/console/billing",
     adminOnly: false,
   },
   {
@@ -64,6 +72,12 @@ export const consoleMenuItems: MenuItem[] = [
     name: "用户管理",
     icon: Users,
     href: "/console/users",
+    adminOnly: true,
+  },
+  {
+    name: "系统设置",
+    icon: Sliders,
+    href: "/console/settings",
     adminOnly: true,
   },
 ];

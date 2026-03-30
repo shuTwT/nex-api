@@ -60,8 +60,11 @@ export const ModelName = {
   ApiParameter: 'ApiParameter',
   ApiResponse: 'ApiResponse',
   ApiUsage: 'ApiUsage',
+  SubscriptionPlan: 'SubscriptionPlan',
   Subscription: 'Subscription',
-  ApiToken: 'ApiToken'
+  ApiToken: 'ApiToken',
+  AuditLog: 'AuditLog',
+  SystemSetting: 'SystemSetting'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -201,10 +204,28 @@ export const ApiUsageScalarFieldEnum = {
 export type ApiUsageScalarFieldEnum = (typeof ApiUsageScalarFieldEnum)[keyof typeof ApiUsageScalarFieldEnum]
 
 
+export const SubscriptionPlanScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  price: 'price',
+  totalCredits: 'totalCredits',
+  sortOrder: 'sortOrder',
+  validityDuration: 'validityDuration',
+  validityUnit: 'validityUnit',
+  creditResetCycle: 'creditResetCycle',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type SubscriptionPlanScalarFieldEnum = (typeof SubscriptionPlanScalarFieldEnum)[keyof typeof SubscriptionPlanScalarFieldEnum]
+
+
 export const SubscriptionScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
-  plan: 'plan',
+  planId: 'planId',
+  planName: 'planName',
   credits: 'credits',
   price: 'price',
   startDate: 'startDate',
@@ -231,6 +252,36 @@ export const ApiTokenScalarFieldEnum = {
 } as const
 
 export type ApiTokenScalarFieldEnum = (typeof ApiTokenScalarFieldEnum)[keyof typeof ApiTokenScalarFieldEnum]
+
+
+export const AuditLogScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  action: 'action',
+  resource: 'resource',
+  details: 'details',
+  ipAddress: 'ipAddress',
+  userAgent: 'userAgent',
+  level: 'level',
+  status: 'status',
+  metadata: 'metadata',
+  createdAt: 'createdAt'
+} as const
+
+export type AuditLogScalarFieldEnum = (typeof AuditLogScalarFieldEnum)[keyof typeof AuditLogScalarFieldEnum]
+
+
+export const SystemSettingScalarFieldEnum = {
+  id: 'id',
+  key: 'key',
+  value: 'value',
+  category: 'category',
+  description: 'description',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type SystemSettingScalarFieldEnum = (typeof SystemSettingScalarFieldEnum)[keyof typeof SystemSettingScalarFieldEnum]
 
 
 export const SortOrder = {

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { executePreScript, executePostScript } from "@/lib/sandbox";
+import { logAudit } from "@/lib/audit-log";
 
 interface RouteParams {
   params: Promise<{ alias: string }>;
@@ -105,11 +106,23 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
 }
 
 async function handleRequest(request: NextRequest, params: Promise<{ alias: string }>) {
+  const ipAddress = request.ip || request.headers.get("x-forwarded-for") || "unknown";
+  const userAgent = request.headers.get("user-agent") || "unknown";
+
   try {
     const { alias } = await params;
 
     const tokenInfo = await verifyApiToken(request);
     if (!tokenInfo) {
+      await logAudit({
+        action: "API 调用失败",
+        resource: `API: ${alias}`,
+        details: "无效的 API Token",
+        ipAddress,
+        userAgent,
+        level: "warning",
+        status: "error",
+      });
       return NextResponse.json(
         { success: false, error: "无效的 API Token" },
         { status: 401 }
@@ -131,6 +144,16 @@ async function handleRequest(request: NextRequest, params: Promise<{ alias: stri
     });
 
     if (!api) {
+      await logAudit({
+        userId: tokenInfo.userId,
+        action: "API 调用失败",
+        resource: `API: ${alias}`,
+        details: "API 不存在",
+        ipAddress,
+        userAgent,
+        level: "warning",
+        status: "error",
+      });
       return NextResponse.json(
         { success: false, error: "API 不存在" },
         { status: 404 }
@@ -138,6 +161,16 @@ async function handleRequest(request: NextRequest, params: Promise<{ alias: stri
     }
 
     if (!api.isActive) {
+      await logAudit({
+        userId: tokenInfo.userId,
+        action: "API 调用失败",
+        resource: api.name,
+        details: "API 已禁用",
+        ipAddress,
+        userAgent,
+        level: "warning",
+        status: "error",
+      });
       return NextResponse.json(
         { success: false, error: "API 已禁用" },
         { status: 403 }
@@ -298,11 +331,32 @@ async function handleRequest(request: NextRequest, params: Promise<{ alias: stri
 
     const deducted = await deductCredits(tokenInfo.userId, api.id, api.pricing);
     if (!deducted) {
+      await logAudit({
+        userId: tokenInfo.userId,
+        action: "API 调用失败",
+        resource: api.name,
+        details: "积分扣除失败",
+        ipAddress,
+        userAgent,
+        level: "error",
+        status: "error",
+      });
       return NextResponse.json(
         { success: false, error: "积分扣除失败" },
         { status: 500 }
       );
     }
+
+    await logAudit({
+      userId: tokenInfo.userId,
+      action: "API 调用",
+      resource: api.name,
+      details: `成功调用 API，状态码: ${upstreamResponse.status}`,
+      ipAddress,
+      userAgent,
+      level: "info",
+      status: "success",
+    });
 
     const response = NextResponse.json(finalResponseBody, {
       status: upstreamResponse.status,
@@ -317,6 +371,15 @@ async function handleRequest(request: NextRequest, params: Promise<{ alias: stri
     return response;
   } catch (error) {
     console.error("API proxy error:", error);
+    await logAudit({
+      action: "API 调用失败",
+      resource: "API 代理",
+      details: `服务器内部错误: ${error}`,
+      ipAddress,
+      userAgent,
+      level: "error",
+      status: "error",
+    });
     return NextResponse.json(
       { success: false, error: "服务器内部错误" },
       { status: 500 }

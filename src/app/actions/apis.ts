@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import prisma from "@/lib/prisma";
 import { requireAdmin } from "@/lib/session";
+import { logAudit } from "@/lib/audit-log";
 
 export async function getApis(params: {
   category?: string;
@@ -171,10 +172,25 @@ export async function createApi(formData: FormData) {
       },
     });
 
+    await logAudit({
+      action: "创建 API",
+      resource: "API 管理",
+      details: `创建了 API: ${name} (${alias})`,
+      level: "info",
+      status: "success",
+    });
+
     revalidatePath("/console/api-management");
     return { success: true, data: api };
   } catch (error) {
     console.error("Create API error:", error);
+    await logAudit({
+      action: "创建 API",
+      resource: "API 管理",
+      details: `创建 API 失败: ${error}`,
+      level: "error",
+      status: "error",
+    });
     return { success: false, error: "创建 API 失败" };
   }
 }
@@ -248,10 +264,25 @@ export async function updateApi(formData: FormData) {
       },
     });
 
+    await logAudit({
+      action: "更新 API",
+      resource: "API 管理",
+      details: `更新了 API: ${name} (${alias})`,
+      level: "info",
+      status: "success",
+    });
+
     revalidatePath("/console/api-management");
     return { success: true, data: api };
   } catch (error) {
     console.error("Update API error:", error);
+    await logAudit({
+      action: "更新 API",
+      resource: "API 管理",
+      details: `更新 API 失败: ${error}`,
+      level: "error",
+      status: "error",
+    });
     return { success: false, error: "更新 API 失败" };
   }
 }
@@ -260,14 +291,33 @@ export async function deleteApi(id: string) {
   try {
     await requireAdmin();
 
+    const apiToDelete = await prisma.api.findUnique({
+      where: { id },
+    });
+
     await prisma.api.delete({
       where: { id },
+    });
+
+    await logAudit({
+      action: "删除 API",
+      resource: "API 管理",
+      details: `删除了 API: ${apiToDelete?.name || id}`,
+      level: "warning",
+      status: "success",
     });
 
     revalidatePath("/console/api-management");
     return { success: true };
   } catch (error) {
     console.error("Delete API error:", error);
+    await logAudit({
+      action: "删除 API",
+      resource: "API 管理",
+      details: `删除 API 失败: ${error}`,
+      level: "error",
+      status: "error",
+    });
     return { success: false, error: "删除 API 失败" };
   }
 }

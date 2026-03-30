@@ -23,10 +23,11 @@ export function ConsoleLayout({ children }: ConsoleLayoutProps) {
   const filteredMenuItems = consoleMenuItems.filter(item => !item.adminOnly || isAdmin);
 
   return (
-    <div className="flex-1 flex">
+    <div className="flex-1 flex justify-center">
+      <div className="relative container">
       {/* Sidebar */}
       <aside
-        className={`fixed left-0 top-14 z-40 h-[calc(100vh-3.5rem)] bg-white border-r border-slate-200 transition-all duration-300 ${
+        className={`absolute left-0 top-0 z-40 bottom-0 bg-white border-r border-slate-200 transition-all duration-300 ${
           collapsed ? "w-16" : "w-64"
         }`}
       >
@@ -67,7 +68,7 @@ export function ConsoleLayout({ children }: ConsoleLayoutProps) {
       </aside>
 
       {/* Main Content */}
-      <main
+      <section
         className={`flex-1 transition-all duration-300 ${
           collapsed ? "ml-16" : "ml-64"
         }`}
@@ -75,7 +76,8 @@ export function ConsoleLayout({ children }: ConsoleLayoutProps) {
         <div className="p-8">
           {children}
         </div>
-      </main>
+      </section>
+      </div>
     </div>
   );
 }

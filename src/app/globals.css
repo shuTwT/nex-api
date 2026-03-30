@@ -127,3 +127,21 @@
     @apply font-sans;
   }
 }
+
+html{
+  overflow-y: auto;
+}
+
+:root{
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+:root body{
+  position: absolute;
+}
+
+body{
+  width: 100vw;
+  overflow: hidden;
+}

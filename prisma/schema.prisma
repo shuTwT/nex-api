@@ -24,6 +24,7 @@ model User {
   accounts      Account[]
   sessions      Session[]
   apiTokens     ApiToken[]
+  auditLogs     AuditLog[]
 }
 
 model Account {
@@ -127,18 +128,43 @@ model ApiUsage {
   createdAt   DateTime @default(now())
 }
 
+model SubscriptionPlan {
+  id                    String   @id @default(cuid())
+  title                 String
+  price                 Float
+  totalCredits          Int
+  sortOrder             Int      @default(0)
+  validityDuration      Int
+  validityUnit          String   @default("day")
+  creditResetCycle      String   @default("month")
+  isActive              Boolean  @default(true)
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+  
+  subscriptions         Subscription[]
+  
+  @@index([sortOrder])
+  @@index([isActive])
+}
+
 model Subscription {
-  id              String   @id @default(cuid())
+  id              String            @id @default(cuid())
   userId          String
-  user            User     @relation(fields: [userId], references: [id])
-  plan            String
+  user            User              @relation(fields: [userId], references: [id])
+  planId          String?
+  plan            SubscriptionPlan? @relation(fields: [planId], references: [id])
+  planName        String
   credits         Int
   price           Float
-  startDate       DateTime @default(now())
+  startDate       DateTime          @default(now())
   endDate         DateTime
-  isActive        Boolean  @default(true)
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  isActive        Boolean           @default(true)
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  
+  @@index([userId])
+  @@index([planId])
+  @@index([isActive])
 }
 
 model ApiToken {
@@ -156,4 +182,37 @@ model ApiToken {
 
   @@index([userId])
   @@index([token])
+}
+
+model AuditLog {
+  id          String   @id @default(cuid())
+  userId      String?
+  user        User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  action      String
+  resource    String
+  details     String?
+  ipAddress   String?
+  userAgent   String?
+  level       String   @default("info")
+  status      String   @default("success")
+  metadata    String?
+  createdAt   DateTime @default(now())
+
+  @@index([userId])
+  @@index([level])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model SystemSetting {
+  id          String   @id @default(cuid())
+  key         String   @unique
+  value       String
+  category    String   @default("general")
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([key])
+  @@index([category])
 }

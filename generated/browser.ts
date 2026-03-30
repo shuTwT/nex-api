@@ -63,6 +63,11 @@ export type ApiResponse = Prisma.ApiResponseModel
  */
 export type ApiUsage = Prisma.ApiUsageModel
 /**
+ * Model SubscriptionPlan
+ * 
+ */
+export type SubscriptionPlan = Prisma.SubscriptionPlanModel
+/**
  * Model Subscription
  * 
  */
@@ -72,3 +77,13 @@ export type Subscription = Prisma.SubscriptionModel
  * 
  */
 export type ApiToken = Prisma.ApiTokenModel
+/**
+ * Model AuditLog
+ * 
+ */
+export type AuditLog = Prisma.AuditLogModel
+/**
+ * Model SystemSetting
+ * 
+ */
+export type SystemSetting = Prisma.SystemSettingModel
