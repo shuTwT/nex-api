@@ -1,162 +1,236 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Crown, Check } from "lucide-react";
+import { Crown, Check, Calendar, CreditCard, Zap } from "lucide-react";
+import { getCurrentSubscription, getAvailablePlans, subscribeToPlan } from "@/app/actions/membership";
+import { toast } from "sonner";
 
-const currentPlan = {
-  name: "专业版",
-  price: "29.9",
-  period: "月",
-  credits: "3000",
-  usedCredits: 1234,
-  startDate: "2024-01-01",
-  endDate: "2024-12-31",
-  status: "active",
-};
+interface SubscriptionPlan {
+  id: string;
+  title: string;
+  price: number;
+  totalCredits: number;
+  sortOrder: number;
+  validityDuration: number;
+  validityUnit: string;
+  creditResetCycle: string;
+  isActive: boolean;
+}
 
-const plans = [
-  {
-    name: "免费版",
-    price: "0",
-    period: "月",
-    credits: "1000",
-    features: ["1000 积分/月", "基础接口访问", "社区支持"],
-    current: false,
-    color: "gray",
-  },
-  {
-    name: "专业版",
-    price: "29.9",
-    period: "月",
-    credits: "3000",
-    features: ["3000 积分/月", "全部接口访问", "邮件+工单支持", "会员专享接口"],
-    current: true,
-    color: "blue",
-    popular: true,
-  },
-  {
-    name: "企业版",
-    price: "联系我们",
-    period: "",
-    credits: "无限",
-    features: ["无限积分", "专属客服", "定制化服务", "SLA 保障"],
-    current: false,
-    color: "purple",
-  },
-];
+interface Subscription {
+  id: string;
+  planId: string | null;
+  planName: string;
+  credits: number;
+  price: number;
+  startDate: Date;
+  endDate: Date;
+  isActive: boolean;
+  plan: SubscriptionPlan | null;
+}
 
 export default function MembershipPage() {
+  const [currentSubscription, setCurrentSubscription] = useState<Subscription | null>(null);
+  const [availablePlans, setAvailablePlans] = useState<SubscriptionPlan[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [subscribingPlanId, setSubscribingPlanId] = useState<string | null>(null);
+
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  async function loadData() {
+    setIsLoading(true);
+    const [subscriptionResult, plansResult] = await Promise.all([
+      getCurrentSubscription(),
+      getAvailablePlans(),
+    ]);
+
+    if (subscriptionResult.success && subscriptionResult.data) {
+      setCurrentSubscription(subscriptionResult.data);
+    }
+
+    if (plansResult.success && plansResult.data) {
+      setAvailablePlans(plansResult.data);
+    }
+
+    setIsLoading(false);
+  }
+
+  async function handleSubscribe(planId: string) {
+    setSubscribingPlanId(planId);
+    const result = await subscribeToPlan(planId);
+
+    if (result.success) {
+      toast.success("订阅成功！");
+      await loadData();
+    } else {
+      toast.error(result.error || "订阅失败");
+    }
+
+    setSubscribingPlanId(null);
+  }
+
+  const validityUnitLabels: Record<string, string> = {
+    day: "天",
+    week: "周",
+    month: "月",
+    year: "年",
+  };
+
+  const creditResetCycleLabels: Record<string, string> = {
+    day: "每天",
+    week: "每周",
+    month: "每月",
+    year: "每年",
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-600 border-t-transparent" />
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
-      {/* Page Header */}
       <div>
         <h1 className="text-2xl font-bold text-slate-900">我的会员</h1>
-        <p className="text-slate-500 mt-1">管理您的订阅计划和积分使用</p>
+        <p className="text-slate-500 mt-1">管理您的订阅计划</p>
       </div>
 
-      {/* Current Plan */}
-      <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <CardTitle className="text-lg">当前计划</CardTitle>
-            <Badge className="bg-green-50 text-green-700 border-green-200">
-              {currentPlan.status === "active" ? "已激活" : "已过期"}
-            </Badge>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-            <div>
-              <p className="text-sm text-slate-500">计划名称</p>
-              <div className="flex items-center gap-2 mt-1">
+      {currentSubscription && (
+        <Card className="border-blue-200 bg-gradient-to-r from-blue-50 to-cyan-50">
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <CardTitle className="flex items-center gap-2">
                 <Crown className="h-5 w-5 text-blue-600" />
-                <span className="text-xl font-bold text-slate-900">{currentPlan.name}</span>
-              </div>
+                当前订阅
+              </CardTitle>
+              <Badge className="bg-green-100 text-green-700 border-green-200">
+                {currentSubscription.isActive ? "有效" : "已过期"}
+              </Badge>
             </div>
-            <div>
-              <p className="text-sm text-slate-500">月费</p>
-              <p className="text-xl font-bold text-slate-900 mt-1">¥{currentPlan.price}/月</p>
-            </div>
-            <div>
-              <p className="text-sm text-slate-500">积分使用</p>
-              <div className="mt-1">
-                <div className="flex items-center gap-2 mb-1">
-                  <span className="text-xl font-bold text-slate-900">
-                    {currentPlan.usedCredits.toLocaleString()}
-                  </span>
-                  <span className="text-slate-500">/</span>
-                  <span className="text-slate-600">{currentPlan.credits.toLocaleString()}</span>
+          </CardHeader>
+          <CardContent>
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+              <div className="flex items-center gap-3">
+                <div className="h-10 w-10 rounded-lg bg-blue-100 flex items-center justify-center">
+                  <Crown className="h-5 w-5 text-blue-600" />
                 </div>
-                <div className="w-full bg-slate-100 rounded-full h-2">
-                  <div 
-                    className="bg-blue-600 h-2 rounded-full transition-all duration-300"
-                    style={{ width: `${(currentPlan.usedCredits / parseInt(currentPlan.credits)) * 100}%` }}
-                  />
+                <div>
+                  <p className="text-sm text-slate-500">计划名称</p>
+                  <p className="font-medium text-slate-900">{currentSubscription.planName}</p>
                 </div>
               </div>
-            </div>
-            <div>
-              <p className="text-sm text-slate-500">有效期至</p>
-              <p className="text-xl font-bold text-slate-900 mt-1">{currentPlan.endDate}</p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
 
-      {/* Plan Comparison */}
+              <div className="flex items-center gap-3">
+                <div className="h-10 w-10 rounded-lg bg-green-100 flex items-center justify-center">
+                  <Zap className="h-5 w-5 text-green-600" />
+                </div>
+                <div>
+                  <p className="text-sm text-slate-500">剩余积分</p>
+                  <p className="font-medium text-slate-900">{currentSubscription.credits.toLocaleString()}</p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <div className="h-10 w-10 rounded-lg bg-purple-100 flex items-center justify-center">
+                  <Calendar className="h-5 w-5 text-purple-600" />
+                </div>
+                <div>
+                  <p className="text-sm text-slate-500">到期时间</p>
+                  <p className="font-medium text-slate-900">
+                    {new Date(currentSubscription.endDate).toLocaleDateString("zh-CN")}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <div className="h-10 w-10 rounded-lg bg-orange-100 flex items-center justify-center">
+                  <CreditCard className="h-5 w-5 text-orange-600" />
+                </div>
+                <div>
+                  <p className="text-sm text-slate-500">订阅价格</p>
+                  <p className="font-medium text-slate-900">¥{currentSubscription.price}</p>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       <div>
-        <h2 className="text-lg font-bold text-slate-900 mb-4">升级计划</h2>
-        <div className="grid gap-6 md:grid-cols-3">
-          {plans.map((plan) => {
-            const colorClasses = {
-              gray: "border-slate-200",
-              blue: "border-blue-500 ring-2 ring-blue-500",
-              purple: "border-purple-200",
-            };
-            
+        <h2 className="text-lg font-semibold text-slate-900 mb-4">
+          {currentSubscription ? "升级计划" : "选择计划"}
+        </h2>
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {availablePlans.map((plan) => {
+            const isCurrentPlan = currentSubscription?.planId === plan.id;
+            const isSubscribing = subscribingPlanId === plan.id;
+
             return (
-              <Card 
-                key={plan.name} 
-                className={`relative overflow-visible ${colorClasses[plan.color as keyof typeof colorClasses]} ${
-                  plan.current ? "" : "hover:shadow-lg transition-shadow cursor-pointer"
+              <Card
+                key={plan.id}
+                className={`hover:shadow-md transition-shadow ${
+                  isCurrentPlan ? "border-blue-500 border-2" : ""
                 }`}
               >
-                {plan.popular && (
-                  <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                    <Badge className="bg-blue-600 text-white border-0">最受欢迎</Badge>
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="text-lg">{plan.title}</CardTitle>
+                    {isCurrentPlan && (
+                      <Badge className="bg-blue-100 text-blue-700 border-blue-200">
+                        当前计划
+                      </Badge>
+                    )}
                   </div>
-                )}
-                <CardContent className="p-6">
-                  <div className="text-center mb-6">
-                    <h3 className="text-xl font-bold text-slate-900">{plan.name}</h3>
-                    <div className="mt-3">
-                      <span className="text-3xl font-bold text-slate-900">¥{plan.price}</span>
-                      {plan.period && (
-                        <span className="text-slate-500">/{plan.period}</span>
-                      )}
+                </CardHeader>
+                <CardContent>
+                  <div className="mb-4">
+                    <div className="flex items-baseline gap-1">
+                      <span className="text-3xl font-bold text-slate-900">
+                        ¥{plan.price}
+                      </span>
+                      <span className="text-slate-500">
+                        /{validityUnitLabels[plan.validityUnit]}
+                      </span>
                     </div>
                     <p className="text-sm text-slate-500 mt-1">
-                      {plan.credits === "无限" ? "无限积分" : `${plan.credits} 积分/月`}
+                      {plan.totalCredits.toLocaleString()} 积分/{creditResetCycleLabels[plan.creditResetCycle]}
                     </p>
                   </div>
-                  
+
                   <ul className="space-y-3 mb-6">
-                    {plan.features.map((feature, index) => (
-                      <li key={index} className="flex items-center gap-2 text-sm text-slate-600">
-                        <Check className="h-4 w-4 text-green-600 flex-shrink-0" />
-                        <span>{feature}</span>
-                      </li>
-                    ))}
+                    <li className="flex items-center gap-2 text-sm text-slate-600">
+                      <Check className="h-4 w-4 text-green-600 flex-shrink-0" />
+                      <span>{plan.totalCredits.toLocaleString()} 积分/{creditResetCycleLabels[plan.creditResetCycle]}</span>
+                    </li>
+                    <li className="flex items-center gap-2 text-sm text-slate-600">
+                      <Check className="h-4 w-4 text-green-600 flex-shrink-0" />
+                      <span>有效期 {plan.validityDuration} {validityUnitLabels[plan.validityUnit]}</span>
+                    </li>
+                    <li className="flex items-center gap-2 text-sm text-slate-600">
+                      <Check className="h-4 w-4 text-green-600 flex-shrink-0" />
+                      <span>全部接口访问</span>
+                    </li>
+                    <li className="flex items-center gap-2 text-sm text-slate-600">
+                      <Check className="h-4 w-4 text-green-600 flex-shrink-0" />
+                      <span>邮件+工单支持</span>
+                    </li>
                   </ul>
-                  
-                  <Button 
+
+                  <Button
                     className="w-full cursor-pointer"
-                    variant={plan.current ? "outline" : "default"}
-                    disabled={plan.current}
+                    variant={isCurrentPlan ? "outline" : "default"}
+                    disabled={isCurrentPlan || isSubscribing}
+                    onClick={() => handleSubscribe(plan.id)}
                   >
-                    {plan.current ? "当前计划" : "升级"}
+                    {isSubscribing ? "订阅中..." : isCurrentPlan ? "当前计划" : plan.price === 0 ? "免费订阅" : "立即订阅"}
                   </Button>
                 </CardContent>
               </Card>
@@ -164,7 +238,6 @@ export default function MembershipPage() {
           })}
         </div>
       </div>
-
     </div>
   );
 }

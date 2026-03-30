@@ -22,6 +22,8 @@
 - **数据库**: SQLite (better-sqlite3)、mysql8、postgresql
 - **运行时**: ESM (ECMAScript Modules)
 
+**必须启用 redis 功能，否则无法统计用量和限流**
+
 ## 项目结构
 
 ```

@@ -224,6 +224,38 @@ async function main() {
     }
   }
 
+  const subscriptionPlans = [
+    {
+      title: "免费版",
+      price: 0,
+      totalCredits: 1000,
+      sortOrder: 1,
+      validityDuration: 1,
+      validityUnit: "month",
+      creditResetCycle: "month",
+      isActive: true,
+    },
+    {
+      title: "专业版",
+      price: 29.9,
+      totalCredits: 3000,
+      sortOrder: 2,
+      validityDuration: 1,
+      validityUnit: "month",
+      creditResetCycle: "month",
+      isActive: true,
+    },
+  ];
+
+  for (const plan of subscriptionPlans) {
+    const created = await prisma.subscriptionPlan.upsert({
+      where: { title: plan.title },
+      update: {},
+      create: plan,
+    });
+    console.log(`Created subscription plan: ${created.title}`);
+  }
+
   console.log("Seed completed!");
 }
 

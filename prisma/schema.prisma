@@ -130,7 +130,7 @@ model ApiUsage {
 
 model SubscriptionPlan {
   id                    String   @id @default(cuid())
-  title                 String
+  title                 String   @unique
   price                 Float
   totalCredits          Int
   sortOrder             Int      @default(0)

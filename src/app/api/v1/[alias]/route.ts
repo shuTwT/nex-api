@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { executePreScript, executePostScript } from "@/lib/sandbox";
 import { logAudit } from "@/lib/audit-log";
+import { incrementRequestCount } from "@/lib/request-stats";
 
 interface RouteParams {
   params: Promise<{ alias: string }>;
@@ -346,6 +347,8 @@ async function handleRequest(request: NextRequest, params: Promise<{ alias: stri
         { status: 500 }
       );
     }
+
+    await incrementRequestCount(tokenInfo.userId, alias, api.pricing);
 
     await logAudit({
       userId: tokenInfo.userId,

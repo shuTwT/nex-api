@@ -296,10 +296,10 @@ export type SubscriptionPlanOrderByWithRelationInput = {
 
 export type SubscriptionPlanWhereUniqueInput = Prisma.AtLeast<{
   id?: string
+  title?: string
   AND?: Prisma.SubscriptionPlanWhereInput | Prisma.SubscriptionPlanWhereInput[]
   OR?: Prisma.SubscriptionPlanWhereInput[]
   NOT?: Prisma.SubscriptionPlanWhereInput | Prisma.SubscriptionPlanWhereInput[]
-  title?: Prisma.StringFilter<"SubscriptionPlan"> | string
   price?: Prisma.FloatFilter<"SubscriptionPlan"> | number
   totalCredits?: Prisma.IntFilter<"SubscriptionPlan"> | number
   sortOrder?: Prisma.IntFilter<"SubscriptionPlan"> | number
@@ -310,7 +310,7 @@ export type SubscriptionPlanWhereUniqueInput = Prisma.AtLeast<{
   createdAt?: Prisma.DateTimeFilter<"SubscriptionPlan"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"SubscriptionPlan"> | Date | string
   subscriptions?: Prisma.SubscriptionListRelationFilter
-}, "id">
+}, "id" | "title">
 
 export type SubscriptionPlanOrderByWithAggregationInput = {
   id?: Prisma.SortOrder

@@ -37,7 +37,7 @@ interface User {
   credits: number;
   createdAt: Date;
   subscription?: {
-    plan: string;
+    planName: string;
     endDate: Date;
   } | null;
 }
@@ -326,7 +326,7 @@ export default function UsersPage() {
                           </Badge>
                         </td>
                         <td className="py-3 px-4 text-sm text-slate-600">
-                          {user.subscription?.plan || "免费版"}
+                          {user.subscription?.planName || "免费版"}
                         </td>
                         <td className="py-3 px-4">
                           <span className="text-sm font-medium text-slate-900">

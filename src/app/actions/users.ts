@@ -44,7 +44,7 @@ export async function getUsers(params: {
           subscriptions: {
             where: { isActive: true },
             select: {
-              plan: true,
+              planName: true,
               endDate: true,
             },
             take: 1,
