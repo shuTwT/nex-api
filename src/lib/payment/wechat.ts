@@ -34,7 +34,7 @@ class WechatPaymentService implements PaymentService {
       
       const result = await this.wechat.native.create({
         out_trade_no: outTradeNo,
-        description: `订阅计划-${params.planId}`,
+        description: '支付订单',
         amount: Math.round(params.amount * 100),
       });
 
@@ -47,7 +47,6 @@ class WechatPaymentService implements PaymentService {
 
       const payment = await createPaymentRecord({
         userId: params.userId,
-        planId: params.planId,
         outTradeNo,
         method: 'wechat',
         amount: params.amount,

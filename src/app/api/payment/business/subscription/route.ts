@@ -15,7 +15,8 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    if (!payload.planId) {
+    const planId = payload.metadata?.planId;
+    if (!planId) {
       return NextResponse.json({ 
         success: true, 
         message: "无订阅计划ID，跳过处理" 
@@ -23,7 +24,7 @@ export async function POST(request: NextRequest) {
     }
 
     const plan = await prisma.subscriptionPlan.findUnique({
-      where: { id: payload.planId },
+      where: { id: planId },
     });
 
     if (!plan) {
@@ -72,7 +73,7 @@ export async function POST(request: NextRequest) {
       await tx.subscription.create({
         data: {
           userId: payload.userId,
-          planId: payload.planId,
+          planId,
           planName: plan.title,
           credits: plan.totalCredits,
           price: payload.amount,

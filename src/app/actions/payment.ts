@@ -35,10 +35,13 @@ export async function createPayment(planId: string, method: PaymentMethod) {
 
     const result = await PaymentServiceFactory.createPayment({
       userId: sessionUser.id,
-      planId: plan.id,
       amount: plan.price,
       method,
       notifyUrl,
+      metadata: {
+        type: "subscription",
+        planId: plan.id,
+      },
     });
 
     if (!result.success) {
@@ -60,7 +63,6 @@ export async function getPaymentInfo(outTradeNo: string) {
     const payment = await prisma.payment.findUnique({
       where: { outTradeNo },
       include: {
-        plan: true,
         user: true,
       },
     });
@@ -150,9 +152,6 @@ export async function getUserPayments() {
 
     const payments = await prisma.payment.findMany({
       where: { userId: sessionUser.id },
-      include: {
-        plan: true,
-      },
       orderBy: { createdAt: "desc" },
     });
 

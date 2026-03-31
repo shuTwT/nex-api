@@ -4,7 +4,7 @@ export type PaymentStatus = 'pending' | 'paid' | 'failed' | 'cancelled' | 'expir
 
 export interface CreatePaymentParams {
   userId: string;
-  planId: string;
+  planId?: string;
   amount: number;
   method: PaymentMethod;
   notifyUrl?: string;

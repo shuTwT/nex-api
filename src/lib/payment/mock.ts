@@ -18,7 +18,6 @@ class MockPaymentService implements PaymentService {
 
       const payment = await createPaymentRecord({
         userId: params.userId,
-        planId: params.planId,
         outTradeNo,
         method: 'mock',
         amount: params.amount,

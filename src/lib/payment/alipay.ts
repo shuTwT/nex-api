@@ -36,7 +36,7 @@ class AlipayPaymentService implements PaymentService {
             out_trade_no: outTradeNo,
             product_code: 'FAST_INSTANT_TRADE_PAY',
             total_amount: params.amount.toFixed(2),
-            subject: `订阅计划-${params.planId}`,
+            subject: '支付订单',
           },
         }
       );
@@ -46,7 +46,6 @@ class AlipayPaymentService implements PaymentService {
 
       const payment = await createPaymentRecord({
         userId: params.userId,
-        planId: params.planId,
         outTradeNo,
         method: 'alipay',
         amount: params.amount,

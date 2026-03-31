@@ -84,10 +84,6 @@ export default function PaymentResultPage() {
                   <span className="font-mono">{payment.outTradeNo}</span>
                 </div>
                 <div className="flex justify-between text-sm">
-                  <span className="text-slate-600">订阅计划</span>
-                  <span className="font-semibold">{payment.plan?.title || "自定义计划"}</span>
-                </div>
-                <div className="flex justify-between text-sm">
                   <span className="text-slate-600">支付金额</span>
                   <span className="font-bold">¥{payment.amount}</span>
                 </div>

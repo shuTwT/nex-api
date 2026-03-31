@@ -105,10 +105,6 @@ export default function MockPaymentPage() {
                   <span className="font-mono text-sm">{payment.outTradeNo}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-slate-600">订阅计划</span>
-                  <span className="font-semibold">{payment.plan?.title || "自定义计划"}</span>
-                </div>
-                <div className="flex justify-between">
                   <span className="text-slate-600">支付金额</span>
                   <span className="font-bold text-lg">¥{payment.amount}</span>
                 </div>

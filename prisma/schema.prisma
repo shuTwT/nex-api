@@ -143,7 +143,6 @@ model SubscriptionPlan {
   updatedAt             DateTime @updatedAt
   
   subscriptions         Subscription[]
-  payments              Payment[]
   
   @@index([sortOrder])
   @@index([isActive])
@@ -226,8 +225,6 @@ model Payment {
   id              String   @id @default(cuid())
   userId          String
   user            User     @relation(fields: [userId], references: [id])
-  planId          String?
-  plan            SubscriptionPlan? @relation(fields: [planId], references: [id])
   
   outTradeNo      String   @unique
   transactionId   String?
@@ -254,7 +251,6 @@ model Payment {
   updatedAt       DateTime @updatedAt
 
   @@index([userId])
-  @@index([planId])
   @@index([status])
   @@index([method])
   @@index([outTradeNo])

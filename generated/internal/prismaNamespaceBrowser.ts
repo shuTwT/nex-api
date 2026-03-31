@@ -289,7 +289,6 @@ export type SystemSettingScalarFieldEnum = (typeof SystemSettingScalarFieldEnum)
 export const PaymentScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
-  planId: 'planId',
   outTradeNo: 'outTradeNo',
   transactionId: 'transactionId',
   method: 'method',

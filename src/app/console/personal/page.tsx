@@ -3,8 +3,10 @@
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { getCurrentUserProfile } from "@/app/actions/personal";
-import { User, CreditCard, Activity, Calendar, Shield, Coins } from "lucide-react";
+import { User, CreditCard, Activity, Calendar, Shield, Coins, Plus } from "lucide-react";
+import { RechargeDialog } from "@/components/recharge-dialog";
 
 interface UserProfile {
   id: string;
@@ -22,6 +24,7 @@ interface UserProfile {
 export default function PersonalPage() {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [rechargeDialogOpen, setRechargeDialogOpen] = useState(false);
 
   useEffect(() => {
     loadProfile();
@@ -80,6 +83,11 @@ export default function PersonalPage() {
         <p className="text-slate-500 mt-1">查看和管理您的个人信息</p>
       </div>
 
+      <RechargeDialog
+        open={rechargeDialogOpen}
+        onOpenChange={setRechargeDialogOpen}
+      />
+
       <div className="grid gap-6 lg:grid-cols-3">
         <Card className="lg:col-span-1">
           <CardContent className="p-6">
@@ -122,7 +130,7 @@ export default function PersonalPage() {
             </CardHeader>
             <CardContent>
               <div className="grid gap-4 md:grid-cols-3">
-                {statsCards.map((stat) => {
+                {statsCards.map((stat, index) => {
                   const Icon = stat.icon;
                   const colorClasses = {
                     blue: "bg-blue-50 text-blue-600",
@@ -142,6 +150,16 @@ export default function PersonalPage() {
                             <Icon className="h-5 w-5" />
                           </div>
                         </div>
+                        {index === 0 && (
+                          <Button
+                            size="sm"
+                            className="w-full mt-3"
+                            onClick={() => setRechargeDialogOpen(true)}
+                          >
+                            <Plus className="mr-1 h-4 w-4" />
+                            充值
+                          </Button>
+                        )}
                       </CardContent>
                     </Card>
                   );

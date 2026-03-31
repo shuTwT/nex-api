@@ -18,7 +18,6 @@ export interface BusinessCallbackPayload {
   status: PaymentStatus;
   paidAt?: Date;
   userId: string;
-  planId?: string;
   metadata?: Record<string, any>;
 }
 
@@ -43,7 +42,6 @@ export async function updatePaymentRecord(
     },
     include: {
       user: true,
-      plan: true,
     },
   });
 
@@ -116,7 +114,6 @@ export async function processPaymentCallback(
         status: payment.status as PaymentStatus,
         paidAt: payment.paidAt || undefined,
         userId: payment.userId,
-        planId: payment.planId || undefined,
         metadata: payment.metadata ? JSON.parse(payment.metadata) : undefined,
       };
 

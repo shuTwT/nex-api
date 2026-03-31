@@ -10,7 +10,6 @@ export function generateOutTradeNo(): string {
 
 export async function createPaymentRecord(params: {
   userId: string;
-  planId?: string;
   outTradeNo: string;
   method: string;
   amount: number;
@@ -23,7 +22,6 @@ export async function createPaymentRecord(params: {
   return await prisma.payment.create({
     data: {
       userId: params.userId,
-      planId: params.planId,
       outTradeNo: params.outTradeNo,
       method: params.method,
       amount: params.amount,
@@ -64,7 +62,6 @@ export async function getPaymentByOutTradeNo(outTradeNo: string): Promise<Paymen
     where: { outTradeNo },
     include: {
       user: true,
-      plan: true,
     },
   });
 }
@@ -74,7 +71,6 @@ export async function getPaymentById(id: string): Promise<Payment | null> {
     where: { id },
     include: {
       user: true,
-      plan: true,
     },
   });
 }
@@ -82,9 +78,6 @@ export async function getPaymentById(id: string): Promise<Payment | null> {
 export async function getUserPayments(userId: string): Promise<Payment[]> {
   return await prisma.payment.findMany({
     where: { userId },
-    include: {
-      plan: true,
-    },
     orderBy: { createdAt: 'desc' },
   });
 }
@@ -97,9 +90,6 @@ export async function getPendingPayments(userId: string): Promise<Payment[]> {
       expiredAt: {
         gte: new Date(),
       },
-    },
-    include: {
-      plan: true,
     },
     orderBy: { createdAt: 'desc' },
   });
