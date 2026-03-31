@@ -1,5 +1,5 @@
 import "dotenv/config";
-import { PrismaClient } from "../generated/client";
+import { Prisma, PrismaClient } from "../generated/client";
 import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
 
 const databaseUrl = process.env.DATABASE_URL;
@@ -65,29 +65,8 @@ async function main() {
   });
 
   if (aiCategory) {
-    const apis = [
-      {
-        name: "GPT-4 对话",
-        alias: "gpt4-chat",
-        description: "OpenAI GPT-4 模型对话接口，支持上下文对话",
-        endpoint: "/api/v1/chat/gpt4",
-        method: "POST",
-        categoryId: aiCategory.id,
-        pricing: 20,
-        documentation: "https://docs.example.com/gpt4",
-        isActive: true,
-      },
-      {
-        name: "Claude 对话",
-        alias: "claude-chat",
-        description: "Anthropic Claude 模型对话接口，支持长文本",
-        endpoint: "/api/v1/chat/claude",
-        method: "POST",
-        categoryId: aiCategory.id,
-        pricing: 15,
-        documentation: "https://docs.example.com/claude",
-        isActive: true,
-      },
+    const apis: Prisma.ApiCreateManyInput[] = [
+      
     ];
 
     for (const api of apis) {
@@ -105,29 +84,8 @@ async function main() {
   }
 
   if (imageCategory) {
-    const apis = [
-      {
-        name: "图像识别",
-        alias: "image-recognition",
-        description: "通用图像识别接口，支持物体、场景识别",
-        endpoint: "http://localhost:3000/api/v1/image/recognize",
-        method: "POST",
-        categoryId: imageCategory.id,
-        pricing: 5,
-        documentation: "https://docs.example.com/image-recognition",
-        isActive: true,
-      },
-      {
-        name: "OCR 文字识别",
-        alias: "ocr",
-        description: "图片文字识别提取，支持多语言",
-        endpoint: "http://localhost:3000/api/v1/image/ocr",
-        method: "POST",
-        categoryId: imageCategory.id,
-        pricing: 3,
-        documentation: "https://docs.example.com/ocr",
-        isActive: true,
-      },
+    const apis: Prisma.ApiCreateManyInput[] = [
+      
     ];
 
     for (const api of apis) {
@@ -145,12 +103,12 @@ async function main() {
   }
 
   if (weatherCategory) {
-    const apis = [
+    const apis: Prisma.ApiCreateManyInput[] = [
       {
         name: "天气查询",
         alias: "weather",
         description: "实时天气查询，支持城市名称或经纬度",
-        endpoint: "http://localhost:3000/api/v1/weather/query",
+        endpoint: "http://api-collection:8005/api/v1/weather/query",
         method: "GET",
         categoryId: weatherCategory.id,
         pricing: 1,
@@ -161,7 +119,7 @@ async function main() {
         name: "IP 地址查询",
         alias: "ip-query",
         description: "IP 地址定位查询，返回地理位置信息",
-        endpoint: "http://localhost:3000/api/v1/ip/query",
+        endpoint: "http://api-collection:8005/api/v1/ip/query",
         method: "GET",
         categoryId: weatherCategory.id,
         pricing: 0,
@@ -190,7 +148,7 @@ async function main() {
         name: "二维码生成",
         alias: "qrcode-gen",
         description: "生成二维码图片，支持自定义尺寸和颜色",
-        endpoint: "http://localhost:3000/api/v1/qrcode/generate",
+        endpoint: "http://api-collection:8005/api/v1/qrcode",
         method: "POST",
         categoryId: toolCategory.id,
         pricing: 0,
@@ -201,7 +159,7 @@ async function main() {
         name: "短链接生成",
         alias: "shorturl",
         description: "将长链接转换为短链接",
-        endpoint: "http://localhost:3000/api/v1/shorturl/create",
+        endpoint: "http://api-collection:8005/api/v1/shorturl/create",
         method: "POST",
         categoryId: toolCategory.id,
         pricing: 0,

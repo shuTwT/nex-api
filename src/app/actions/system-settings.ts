@@ -93,7 +93,7 @@ export async function getDefaultSettings() {
 function getCategoryFromKey(key: string): string {
   const defaultSettings = getDefaultSettings();
   for (const [category, settings] of Object.entries(defaultSettings)) {
-    if (settings.some((s) => s.key === key)) {
+    if (settings.some((s: { key: string }) => s.key === key)) {
       return category;
     }
   }

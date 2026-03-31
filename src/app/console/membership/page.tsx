@@ -1,11 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Crown, Check, Calendar, CreditCard, Zap } from "lucide-react";
-import { getCurrentSubscription, getAvailablePlans, subscribeToPlan } from "@/app/actions/membership";
+import { Crown, Check, Calendar, CreditCard, Zap, Loader2, Wallet } from "lucide-react";
+import { getCurrentSubscription, getAvailablePlans } from "@/app/actions/membership";
+import { createPayment, getPaymentMethods } from "@/app/actions/payment";
 import { toast } from "sonner";
 
 interface SubscriptionPlan {
@@ -32,11 +34,21 @@ interface Subscription {
   plan: SubscriptionPlan | null;
 }
 
+interface PaymentMethod {
+  id: string;
+  name: string;
+  icon: string;
+}
+
 export default function MembershipPage() {
+  const router = useRouter();
   const [currentSubscription, setCurrentSubscription] = useState<Subscription | null>(null);
   const [availablePlans, setAvailablePlans] = useState<SubscriptionPlan[]>([]);
+  const [paymentMethods, setPaymentMethods] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [subscribingPlanId, setSubscribingPlanId] = useState<string | null>(null);
+  const [selectedPlan, setSelectedPlan] = useState<SubscriptionPlan | null>(null);
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string>("");
+  const [isProcessing, setIsProcessing] = useState(false);
 
   useEffect(() => {
     loadData();
@@ -44,9 +56,10 @@ export default function MembershipPage() {
 
   async function loadData() {
     setIsLoading(true);
-    const [subscriptionResult, plansResult] = await Promise.all([
+    const [subscriptionResult, plansResult, paymentMethodsResult] = await Promise.all([
       getCurrentSubscription(),
       getAvailablePlans(),
+      getPaymentMethods(),
     ]);
 
     if (subscriptionResult.success && subscriptionResult.data) {
@@ -57,21 +70,44 @@ export default function MembershipPage() {
       setAvailablePlans(plansResult.data);
     }
 
+    if (paymentMethodsResult.success && paymentMethodsResult.data) {
+      setPaymentMethods(paymentMethodsResult.data);
+      if (paymentMethodsResult.data.length > 0) {
+        setSelectedPaymentMethod(paymentMethodsResult.data[0]);
+      }
+    }
+
     setIsLoading(false);
   }
 
-  async function handleSubscribe(planId: string) {
-    setSubscribingPlanId(planId);
-    const result = await subscribeToPlan(planId);
-
-    if (result.success) {
-      toast.success("订阅成功！");
-      await loadData();
-    } else {
-      toast.error(result.error || "订阅失败");
+  async function handlePayment(plan: SubscriptionPlan) {
+    if (plan.price === 0) {
+      toast.error("免费计划无需支付");
+      return;
     }
 
-    setSubscribingPlanId(null);
+    if (!selectedPaymentMethod) {
+      toast.error("请选择支付方式");
+      return;
+    }
+
+    setIsProcessing(true);
+    
+    try {
+      const result = await createPayment(plan.id, selectedPaymentMethod as any);
+
+      if (result.success && result.data) {
+        toast.success("支付订单已创建");
+        router.push(`/payment?outTradeNo=${result.data.outTradeNo}`);
+      } else {
+        toast.error(result.error || "创建支付订单失败");
+      }
+    } catch (error) {
+      console.error("支付失败:", error);
+      toast.error("支付失败，请重试");
+    } finally {
+      setIsProcessing(false);
+    }
   }
 
   const validityUnitLabels: Record<string, string> = {
@@ -86,6 +122,12 @@ export default function MembershipPage() {
     week: "每周",
     month: "每月",
     year: "每年",
+  };
+
+  const paymentMethodLabels: Record<string, { name: string; icon: string; color: string }> = {
+    wechat: { name: "微信支付", icon: "💬", color: "bg-green-500" },
+    alipay: { name: "支付宝", icon: "💳", color: "bg-blue-500" },
+    mock: { name: "模拟支付", icon: "🧪", color: "bg-purple-500" },
   };
 
   if (isLoading) {
@@ -164,6 +206,49 @@ export default function MembershipPage() {
         </Card>
       )}
 
+      {paymentMethods.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Wallet className="h-5 w-5" />
+              支付方式
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid gap-3 md:grid-cols-3">
+              {paymentMethods.map((method) => {
+                const methodInfo = paymentMethodLabels[method];
+                const isSelected = selectedPaymentMethod === method;
+
+                return (
+                  <button
+                    key={method}
+                    onClick={() => setSelectedPaymentMethod(method)}
+                    className={`p-4 rounded-lg border-2 transition-all ${
+                      isSelected
+                        ? "border-blue-500 bg-blue-50"
+                        : "border-slate-200 hover:border-slate-300"
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className={`h-10 w-10 rounded-lg ${methodInfo.color} flex items-center justify-center text-white text-xl`}>
+                        {methodInfo.icon}
+                      </div>
+                      <div className="text-left">
+                        <p className="font-medium text-slate-900">{methodInfo.name}</p>
+                        {isSelected && (
+                          <p className="text-xs text-blue-600">已选择</p>
+                        )}
+                      </div>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       <div>
         <h2 className="text-lg font-semibold text-slate-900 mb-4">
           {currentSubscription ? "升级计划" : "选择计划"}
@@ -171,7 +256,6 @@ export default function MembershipPage() {
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {availablePlans.map((plan) => {
             const isCurrentPlan = currentSubscription?.planId === plan.id;
-            const isSubscribing = subscribingPlanId === plan.id;
 
             return (
               <Card
@@ -227,10 +311,21 @@ export default function MembershipPage() {
                   <Button
                     className="w-full cursor-pointer"
                     variant={isCurrentPlan ? "outline" : "default"}
-                    disabled={isCurrentPlan || isSubscribing}
-                    onClick={() => handleSubscribe(plan.id)}
+                    disabled={isCurrentPlan || isProcessing}
+                    onClick={() => handlePayment(plan)}
                   >
-                    {isSubscribing ? "订阅中..." : isCurrentPlan ? "当前计划" : plan.price === 0 ? "免费订阅" : "立即订阅"}
+                    {isProcessing ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        处理中...
+                      </>
+                    ) : isCurrentPlan ? (
+                      "当前计划"
+                    ) : plan.price === 0 ? (
+                      "免费订阅"
+                    ) : (
+                      "立即订阅"
+                    )}
                   </Button>
                 </CardContent>
               </Card>

@@ -64,7 +64,8 @@ export const ModelName = {
   Subscription: 'Subscription',
   ApiToken: 'ApiToken',
   AuditLog: 'AuditLog',
-  SystemSetting: 'SystemSetting'
+  SystemSetting: 'SystemSetting',
+  Payment: 'Payment'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -232,7 +233,8 @@ export const SubscriptionScalarFieldEnum = {
   endDate: 'endDate',
   isActive: 'isActive',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  paymentId: 'paymentId'
 } as const
 
 export type SubscriptionScalarFieldEnum = (typeof SubscriptionScalarFieldEnum)[keyof typeof SubscriptionScalarFieldEnum]
@@ -282,6 +284,30 @@ export const SystemSettingScalarFieldEnum = {
 } as const
 
 export type SystemSettingScalarFieldEnum = (typeof SystemSettingScalarFieldEnum)[keyof typeof SystemSettingScalarFieldEnum]
+
+
+export const PaymentScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  planId: 'planId',
+  outTradeNo: 'outTradeNo',
+  transactionId: 'transactionId',
+  method: 'method',
+  amount: 'amount',
+  currency: 'currency',
+  status: 'status',
+  qrcodeUrl: 'qrcodeUrl',
+  payUrl: 'payUrl',
+  notifyUrl: 'notifyUrl',
+  paidAt: 'paidAt',
+  expiredAt: 'expiredAt',
+  cancelledAt: 'cancelledAt',
+  metadata: 'metadata',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PaymentScalarFieldEnum = (typeof PaymentScalarFieldEnum)[keyof typeof PaymentScalarFieldEnum]
 
 
 export const SortOrder = {

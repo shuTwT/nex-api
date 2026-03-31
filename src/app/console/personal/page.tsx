@@ -31,7 +31,12 @@ export default function PersonalPage() {
     setIsLoading(true);
     const result = await getCurrentUserProfile();
     if (result.success && result.data) {
-      setProfile(result.data);
+      setProfile({
+        ...result.data,
+        createdAt: result.data.createdAt instanceof Date 
+          ? result.data.createdAt.toISOString() 
+          : result.data.createdAt,
+      });
     }
     setIsLoading(false);
   }

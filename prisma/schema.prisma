@@ -25,6 +25,7 @@ model User {
   sessions      Session[]
   apiTokens     ApiToken[]
   auditLogs     AuditLog[]
+  payments      Payment[]
 }
 
 model Account {
@@ -142,6 +143,7 @@ model SubscriptionPlan {
   updatedAt             DateTime @updatedAt
   
   subscriptions         Subscription[]
+  payments              Payment[]
   
   @@index([sortOrder])
   @@index([isActive])
@@ -161,10 +163,13 @@ model Subscription {
   isActive        Boolean           @default(true)
   createdAt       DateTime          @default(now())
   updatedAt       DateTime          @updatedAt
+  paymentId       String?           @unique
+  payment         Payment?          @relation(fields: [paymentId], references: [id])
   
   @@index([userId])
   @@index([planId])
   @@index([isActive])
+  @@index([paymentId])
 }
 
 model ApiToken {
@@ -215,4 +220,44 @@ model SystemSetting {
 
   @@index([key])
   @@index([category])
+}
+
+model Payment {
+  id              String   @id @default(cuid())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id])
+  planId          String?
+  plan            SubscriptionPlan? @relation(fields: [planId], references: [id])
+  
+  outTradeNo      String   @unique
+  transactionId   String?
+  
+  method          String
+  amount          Float
+  currency        String   @default("CNY")
+  
+  status          String   @default("pending")
+  
+  qrcodeUrl       String?
+  payUrl          String?
+  notifyUrl       String?
+  
+  paidAt          DateTime?
+  expiredAt       DateTime?
+  cancelledAt     DateTime?
+  
+  metadata        String?
+  
+  subscription    Subscription?
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([userId])
+  @@index([planId])
+  @@index([status])
+  @@index([method])
+  @@index([outTradeNo])
+  @@index([transactionId])
+  @@index([createdAt])
 }

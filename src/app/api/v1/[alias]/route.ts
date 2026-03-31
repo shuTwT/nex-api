@@ -107,7 +107,7 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
 }
 
 async function handleRequest(request: NextRequest, params: Promise<{ alias: string }>) {
-  const ipAddress = request.ip || request.headers.get("x-forwarded-for") || "unknown";
+  const ipAddress = request.headers.get("x-forwarded-for") || "unknown";
   const userAgent = request.headers.get("user-agent") || "unknown";
 
   try {

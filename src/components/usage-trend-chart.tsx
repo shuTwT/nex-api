@@ -89,9 +89,9 @@ export function UsageTrendChart({ className }: UsageTrendChartProps) {
         mode: "index" as const,
         intersect: false,
         callbacks: {
-          label: function (context: { dataset: { label?: string }; parsed: { y: number } }) {
+          label: function (context: any) {
             const label = context.dataset.label || "";
-            const value = context.parsed.y;
+            const value = context.parsed.y || 0;
             return `${label}: ${value} 积分`;
           },
         },

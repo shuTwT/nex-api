@@ -42,7 +42,7 @@ export default function SettingsPage() {
     const result = await getSystemSettings();
     if (result.success && result.data) {
       const settingsMap: Record<string, string> = {};
-      result.data.forEach((s: SystemSetting) => {
+      result.data.forEach((s: any) => {
         settingsMap[s.key] = s.value;
       });
       setSettings(settingsMap);
