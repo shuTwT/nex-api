@@ -172,7 +172,7 @@ export default function ApiMarketPage() {
         <div className="grid grid-cols-1 md:grid-cols-[240px_1fr] gap-6">
           {/* Sidebar - Categories */}
           <aside className="space-y-4">
-            <div className="rounded-lg border bg-white p-4">
+            <div className="rounded-lg border bg-white dark:bg-black p-4">
               <div className="flex items-center gap-2 mb-4">
                 <Filter className="h-5 w-5 text-blue-600" />
                 <h3 className="font-semibold">API 分类</h3>
@@ -201,7 +201,7 @@ export default function ApiMarketPage() {
             </div>
 
             {/* Quick Stats */}
-            <div className="rounded-lg border bg-white p-4">
+            <div className="rounded-lg border bg-white dark:bg-black p-4">
               <div className="flex items-center gap-2 mb-4">
                 <TrendingUp className="h-5 w-5 text-blue-600" />
                 <h3 className="font-semibold">市场动态</h3>

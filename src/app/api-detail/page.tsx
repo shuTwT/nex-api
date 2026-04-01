@@ -211,7 +211,7 @@ function ApiDetailContent() {
           {/* Sidebar - Documentation Navigation */}
           <aside className="hidden md:block">
             <div className="sticky top-20 space-y-4">
-              <div className="rounded-lg border bg-white p-4">
+              <div className="rounded-lg border bg-white dark:bg-black p-4">
                 <div className="flex items-center gap-2 mb-4">
                   <Book className="h-5 w-5 text-blue-600" />
                   <h3 className="font-semibold">文档目录</h3>

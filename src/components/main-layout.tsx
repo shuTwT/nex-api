@@ -4,9 +4,10 @@ import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { Zap, LogOut, User as UserIcon } from "lucide-react";
+import { Zap, LogOut } from "lucide-react";
 import { AuthModal } from "@/components/auth-modal";
 import { useAuth } from "@/hooks/use-auth";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -74,6 +75,7 @@ export function MainLayout({ children }: MainLayoutProps) {
             </Link>
           </nav>
           <div className="absolute right-4 flex items-center gap-4">
+            <ThemeToggle />
             {isAuthenticated && user ? (
               <>
                 <div className="flex items-center gap-2">
@@ -114,7 +116,7 @@ export function MainLayout({ children }: MainLayoutProps) {
       </main>
 
       {/* Footer */}
-      <footer className="border-t bg-white">
+      <footer className="border-t bg-white dark:bg-black">
         <div className="container px-4 py-8 md:px-6 mx-auto">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-2">

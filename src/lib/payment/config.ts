@@ -1,58 +1,124 @@
-export const paymentConfig = {
+import prisma from "@/lib/prisma";
+
+export interface PaymentConfig {
   wechat: {
-    appId: process.env.WECHAT_PAY_APP_ID || '',
-    mchId: process.env.WECHAT_PAY_MCH_ID || '',
-    apiKey: process.env.WECHAT_PAY_API_KEY || '',
-    privateKey: process.env.WECHAT_PAY_PRIVATE_KEY || '',
-    publicKey: process.env.WECHAT_PAY_PUBLIC_KEY || '',
-    paymentPublicKey: process.env.WECHAT_PAY_PAYMENT_PUBLIC_KEY || '',
-    publicKeyId: process.env.WECHAT_PAY_PUBLIC_KEY_ID || '',
-    notifyUrl: process.env.WECHAT_PAY_NOTIFY_URL || `${process.env.NEXT_PUBLIC_APP_URL}/api/payment/callback/wechat`,
-    debug: process.env.WECHAT_PAY_DEBUG === 'true',
-  },
+    appId: string;
+    mchId: string;
+    apiKey: string;
+    privateKey: string;
+    publicKey: string;
+    paymentPublicKey: string;
+    publicKeyId: string;
+    notifyUrl: string;
+    debug: boolean;
+  };
   alipay: {
-    appId: process.env.ALIPAY_APP_ID || '',
-    privateKey: process.env.ALIPAY_PRIVATE_KEY || '',
-    alipayPublicKey: process.env.ALIPAY_PUBLIC_KEY || '',
-    notifyUrl: process.env.ALIPAY_NOTIFY_URL || `${process.env.NEXT_PUBLIC_APP_URL}/api/payment/callback/alipay`,
-    returnUrl: process.env.ALIPAY_RETURN_URL || `${process.env.NEXT_PUBLIC_APP_URL}/payment/result`,
-    sandbox: process.env.ALIPAY_SANDBOX === 'true',
-  },
+    appId: string;
+    privateKey: string;
+    alipayPublicKey: string;
+    notifyUrl: string;
+    returnUrl: string;
+    sandbox: boolean;
+  };
   mock: {
-    enabled: process.env.MOCK_PAYMENT_ENABLED === 'true',
-    autoSuccess: process.env.MOCK_PAYMENT_AUTO_SUCCESS === 'true',
-    delay: parseInt(process.env.MOCK_PAYMENT_DELAY || '2000'),
-  },
-};
+    enabled: boolean;
+    autoSuccess: boolean;
+    delay: number;
+  };
+}
 
-export const isWechatPayConfigured = (): boolean => {
-  const { appId, mchId, apiKey, privateKey, publicKey } = paymentConfig.wechat;
+let cachedConfig: PaymentConfig | null = null;
+let cacheTime: number = 0;
+const CACHE_TTL = 60000;
+
+export async function getPaymentConfig(): Promise<PaymentConfig> {
+  const now = Date.now();
+  
+  if (cachedConfig && (now - cacheTime) < CACHE_TTL) {
+    return cachedConfig;
+  }
+
+  const settings = await prisma.systemSetting.findMany({
+    where: {
+      category: "payment",
+    },
+  });
+
+  const settingsMap: Record<string, string> = {};
+  settings.forEach((s) => {
+    settingsMap[s.key] = s.value;
+  });
+
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "";
+
+  cachedConfig = {
+    wechat: {
+      appId: settingsMap.wechatPayAppId || "",
+      mchId: settingsMap.wechatPayMchId || "",
+      apiKey: settingsMap.wechatPayApiKey || "",
+      privateKey: settingsMap.wechatPayPrivateKey || "",
+      publicKey: settingsMap.wechatPayPublicKey || "",
+      paymentPublicKey: settingsMap.wechatPayPaymentPublicKey || "",
+      publicKeyId: settingsMap.wechatPayPublicKeyId || "",
+      notifyUrl: settingsMap.wechatPayNotifyUrl || `${appUrl}/api/payment/callback/wechat`,
+      debug: settingsMap.wechatPayDebug === "true",
+    },
+    alipay: {
+      appId: settingsMap.alipayAppId || "",
+      privateKey: settingsMap.alipayPrivateKey || "",
+      alipayPublicKey: settingsMap.alipayPublicKey || "",
+      notifyUrl: settingsMap.alipayNotifyUrl || `${appUrl}/api/payment/callback/alipay`,
+      returnUrl: settingsMap.alipayReturnUrl || `${appUrl}/payment/result`,
+      sandbox: settingsMap.alipaySandbox === "true",
+    },
+    mock: {
+      enabled: settingsMap.mockPaymentEnabled === "true",
+      autoSuccess: settingsMap.mockPaymentAutoSuccess === "true",
+      delay: parseInt(settingsMap.mockPaymentDelay || "2000"),
+    },
+  };
+
+  cacheTime = now;
+  
+  return cachedConfig;
+}
+
+export async function isWechatPayConfigured(): Promise<boolean> {
+  const config = await getPaymentConfig();
+  const { appId, mchId, apiKey, privateKey, publicKey } = config.wechat;
   return !!(appId && mchId && apiKey && privateKey && publicKey);
-};
+}
 
-export const isAlipayConfigured = (): boolean => {
-  const { appId, privateKey, alipayPublicKey } = paymentConfig.alipay;
+export async function isAlipayConfigured(): Promise<boolean> {
+  const config = await getPaymentConfig();
+  const { appId, privateKey, alipayPublicKey } = config.alipay;
   return !!(appId && privateKey && alipayPublicKey);
-};
+}
 
-export const isMockPaymentEnabled = (): boolean => {
-  return paymentConfig.mock.enabled;
-};
+export async function isMockPaymentEnabled(): Promise<boolean> {
+  const config = await getPaymentConfig();
+  return config.mock.enabled;
+}
 
-export const getAvailablePaymentMethods = (): string[] => {
+export async function getAvailablePaymentMethods(): Promise<string[]> {
   const methods: string[] = [];
   
-  if (isWechatPayConfigured()) {
-    methods.push('wechat');
+  if (await isWechatPayConfigured()) {
+    methods.push("wechat");
   }
   
-  if (isAlipayConfigured()) {
-    methods.push('alipay');
+  if (await isAlipayConfigured()) {
+    methods.push("alipay");
   }
   
-  if (isMockPaymentEnabled()) {
-    methods.push('mock');
+  if (await isMockPaymentEnabled()) {
+    methods.push("mock");
   }
   
   return methods;
-};
+}
+
+export function clearPaymentConfigCache(): void {
+  cachedConfig = null;
+  cacheTime = 0;
+}

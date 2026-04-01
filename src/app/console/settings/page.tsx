@@ -27,9 +27,21 @@ interface DefaultSetting {
   description: string;
 }
 
+interface PaymentSettings {
+  basic: DefaultSetting[];
+  alipay: DefaultSetting[];
+  wechat: DefaultSetting[];
+}
+
+interface DefaultSettings {
+  general: DefaultSetting[];
+  operation: DefaultSetting[];
+  payment: PaymentSettings;
+}
+
 export default function SettingsPage() {
   const [settings, setSettings] = useState<Record<string, string>>({});
-  const [defaultSettings, setDefaultSettings] = useState<Record<string, DefaultSetting[]>>({});
+  const [defaultSettings, setDefaultSettings] = useState<DefaultSettings | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
 
@@ -52,7 +64,7 @@ export default function SettingsPage() {
 
   async function loadDefaultSettings() {
     const defaults = await getDefaultSettings();
-    setDefaultSettings(defaults);
+    setDefaultSettings(defaults as DefaultSettings);
   }
 
   function handleSettingChange(key: string, value: string) {
@@ -109,7 +121,7 @@ export default function SettingsPage() {
     );
   }
 
-  if (isLoading) {
+  if (isLoading || !defaultSettings) {
     return (
       <div className="flex items-center justify-center py-12">
         <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-600 border-t-transparent" />
@@ -119,7 +131,6 @@ export default function SettingsPage() {
 
   return (
     <div className="space-y-6">
-      {/* Page Header */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-slate-900">系统设置</h1>
@@ -173,14 +184,36 @@ export default function SettingsPage() {
           </Card>
         </TabsContent>
 
-        <TabsContent value="payment" className="mt-6">
+        <TabsContent value="payment" className="mt-6 space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle className="text-lg">支付设置</CardTitle>
+              <CardTitle className="text-lg">基本设置</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-2">
-                {defaultSettings.payment?.map(renderSetting)}
+                {defaultSettings.payment.basic?.map(renderSetting)}
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">支付宝设置</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-2">
+                {defaultSettings.payment.alipay?.map(renderSetting)}
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">微信设置</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-2">
+                {defaultSettings.payment.wechat?.map(renderSetting)}
               </div>
             </CardContent>
           </Card>

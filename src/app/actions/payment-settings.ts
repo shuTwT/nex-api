@@ -27,7 +27,7 @@ export async function getPaymentSettings() {
         minRecharge: parseFloat(settingsMap.minRecharge || "10"),
         alipayEnabled: settingsMap.alipayEnabled === "true",
         wechatEnabled: settingsMap.wechatEnabled === "true",
-        mockEnabled: isMockPaymentEnabled(),
+        mockEnabled: await isMockPaymentEnabled(),
       },
     };
   } catch (error) {

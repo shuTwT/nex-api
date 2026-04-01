@@ -1,14 +1,15 @@
-import { paymentConfig, isMockPaymentEnabled } from './config';
+import { getPaymentConfig, isMockPaymentEnabled } from './config';
 import type { PaymentService, CreatePaymentParams, CreatePaymentResult, PaymentCallbackData } from './types';
 import { createPaymentRecord, updatePaymentStatus, getPaymentByOutTradeNo } from './utils';
 
 class MockPaymentService implements PaymentService {
   async createPayment(params: CreatePaymentParams): Promise<CreatePaymentResult> {
-    if (!isMockPaymentEnabled()) {
+    if (!(await isMockPaymentEnabled())) {
       return { success: false, error: '模拟支付未启用' };
     }
 
     try {
+      const config = await getPaymentConfig();
       const outTradeNo = `MOCK${Date.now()}${Math.random().toString(36).substring(2, 8)}`;
       
       const expiredAt = new Date();
@@ -27,10 +28,10 @@ class MockPaymentService implements PaymentService {
         metadata: params.metadata,
       });
 
-      if (paymentConfig.mock.autoSuccess) {
+      if (config.mock.autoSuccess) {
         setTimeout(async () => {
           await this.handleCallback({ outTradeNo, success: true });
-        }, paymentConfig.mock.delay);
+        }, config.mock.delay);
       }
 
       return {

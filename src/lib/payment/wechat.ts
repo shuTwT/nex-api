@@ -1,30 +1,46 @@
 import WeChatPay from 'better-wechatpay';
-import { paymentConfig, isWechatPayConfigured } from './config';
+import { getPaymentConfig, isWechatPayConfigured } from './config';
 import type { PaymentService, CreatePaymentParams, CreatePaymentResult, PaymentCallbackData } from './types';
 import { createPaymentRecord, updatePaymentStatus, getPaymentByOutTradeNo } from './utils';
 
 class WechatPaymentService implements PaymentService {
   private wechat: WeChatPay | null = null;
+  private initPromise: Promise<void> | null = null;
 
-  constructor() {
-    if (isWechatPayConfigured()) {
-      this.wechat = new WeChatPay({
-        config: {
-          appId: paymentConfig.wechat.appId,
-          mchId: paymentConfig.wechat.mchId,
-          apiKey: paymentConfig.wechat.apiKey,
-          privateKey: paymentConfig.wechat.privateKey,
-          publicKey: paymentConfig.wechat.publicKey,
-          notifyUrl: paymentConfig.wechat.notifyUrl,
-          debug: paymentConfig.wechat.debug,
-          paymentPublicKey: paymentConfig.wechat.paymentPublicKey || undefined,
-          publicKeyId: paymentConfig.wechat.publicKeyId || undefined,
-        },
-      });
+  private async ensureInitialized(): Promise<void> {
+    if (this.wechat) return;
+    
+    if (!this.initPromise) {
+      this.initPromise = this.initialize();
     }
+    
+    await this.initPromise;
+  }
+
+  private async initialize(): Promise<void> {
+    if (!(await isWechatPayConfigured())) {
+      return;
+    }
+
+    const config = await getPaymentConfig();
+    this.wechat = new WeChatPay({
+      config: {
+        appId: config.wechat.appId,
+        mchId: config.wechat.mchId,
+        apiKey: config.wechat.apiKey,
+        privateKey: config.wechat.privateKey,
+        publicKey: config.wechat.publicKey,
+        notifyUrl: config.wechat.notifyUrl,
+        debug: config.wechat.debug,
+        paymentPublicKey: config.wechat.paymentPublicKey || undefined,
+        publicKeyId: config.wechat.publicKeyId || undefined,
+      },
+    });
   }
 
   async createPayment(params: CreatePaymentParams): Promise<CreatePaymentResult> {
+    await this.ensureInitialized();
+    
     if (!this.wechat) {
       return { success: false, error: '微信支付未配置' };
     }
@@ -69,6 +85,8 @@ class WechatPaymentService implements PaymentService {
   }
 
   async handleCallback(data: any): Promise<PaymentCallbackData> {
+    await this.ensureInitialized();
+    
     if (!this.wechat) {
       throw new Error('微信支付未配置');
     }
@@ -105,6 +123,8 @@ class WechatPaymentService implements PaymentService {
   }
 
   async queryPayment(outTradeNo: string): Promise<PaymentCallbackData | null> {
+    await this.ensureInitialized();
+    
     if (!this.wechat) {
       throw new Error('微信支付未配置');
     }
@@ -142,6 +162,8 @@ class WechatPaymentService implements PaymentService {
   }
 
   async closePayment(outTradeNo: string): Promise<boolean> {
+    await this.ensureInitialized();
+    
     if (!this.wechat) {
       throw new Error('微信支付未配置');
     }

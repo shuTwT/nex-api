@@ -27,7 +27,7 @@ export function ConsoleLayout({ children }: ConsoleLayoutProps) {
       <div className="relative container">
       {/* Sidebar */}
       <aside
-        className={`absolute left-0 top-0 z-40 bottom-0 bg-white border-r border-slate-200 transition-all duration-300 ${
+        className={`absolute left-0 top-0 z-40 bottom-0 bg-white dark:bg-black border-r border-slate-200 dark:border-slate-700 transition-all duration-300 ${
           collapsed ? "w-16" : "w-64"
         }`}
       >
@@ -41,8 +41,8 @@ export function ConsoleLayout({ children }: ConsoleLayoutProps) {
                 href={item.href}
                 className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 cursor-pointer ${
                   isActive
-                    ? "bg-blue-50 text-blue-600 font-medium"
-                    : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                    ? "bg-blue-50 dark:bg-blue-700 text-blue-600 dark:text-white font-medium"
+                    : "text-slate-600 hover:bg-slate-50 dark:hover:bg-slate-700 hover:text-slate-900"
                 }`}
               >
                 <item.icon className="h-5 w-5 flex-shrink-0" />

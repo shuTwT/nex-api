@@ -6,6 +6,7 @@ import { InitCheck } from "@/components/init-check";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { Toaster } from "sonner";
+import { ThemeProvider } from "@/components/theme-provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -29,14 +30,21 @@ export default async function RootLayout({
 }>) {
   const session = await getServerSession(authOptions)
   return (
-    <html lang="zh-CN">
+    <html lang="zh-CN" suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <AuthProvider session={session}>
-          <InitCheck>{children}</InitCheck>
-          <Toaster position="top-center" richColors={true} expand={true}/>
-        </AuthProvider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="light"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <AuthProvider session={session}>
+            <InitCheck>{children}</InitCheck>
+            <Toaster position="top-center" richColors={true} expand={true}/>
+          </AuthProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

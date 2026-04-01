@@ -7,7 +7,7 @@ import prisma from "@/lib/prisma";
 
 export async function getPaymentMethods() {
   try {
-    const methods = getAvailablePaymentMethods();
+    const methods = await getAvailablePaymentMethods();
     return { success: true, data: methods };
   } catch (error) {
     console.error("Error fetching payment methods:", error);

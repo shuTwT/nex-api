@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Check, X, Zap, Star, Crown, ArrowRight, HelpCircle } from "lucide-react";
 import { MainLayout } from "@/components/main-layout";
 import { BannerAd, InlineAd } from "@/components/ads";
+import { AdPosition } from "@/types/ad-position";
 
 const plans = [
   {
@@ -206,10 +207,10 @@ export default function PricingPage() {
       </section>
 
       {/* FAQ Section */}
-      <section className="bg-slate-50 py-16">
+      <section className="bg-slate-50 dark:bg-slate-800 py-16">
         <div className="container px-4 md:px-6 mx-auto">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold tracking-tight mb-4 text-slate-900">
+            <h2 className="text-3xl font-bold tracking-tight mb-4 text-slate-900 dark:text-white">
               常见问题
             </h2>
             <p className="text-slate-600 max-w-2xl mx-auto">
@@ -223,7 +224,7 @@ export default function PricingPage() {
                 <div className="flex items-start gap-3">
                   <HelpCircle className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" />
                   <div>
-                    <h3 className="font-semibold text-slate-900">积分如何重置？</h3>
+                    <h3 className="font-semibold text-slate-900 dark:text-white">积分如何重置？</h3>
                     <p className="text-sm text-slate-600 mt-1">
                       所有计划的积分都会在每月 1 号 0 点自动重置。未使用的积分不会累积到下个月。
                     </p>
@@ -237,7 +238,7 @@ export default function PricingPage() {
                 <div className="flex items-start gap-3">
                   <HelpCircle className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" />
                   <div>
-                    <h3 className="font-semibold text-slate-900">如何计算 API 调用消耗的积分？</h3>
+                    <h3 className="font-semibold text-slate-900 dark:text-white">如何计算 API 调用消耗的积分？</h3>
                     <p className="text-sm text-slate-600 mt-1">
                       不同 API 接口消耗的积分不同。基础接口通常消耗 1 积分/次，高级接口可能消耗 5-10 积分/次。
                     </p>
@@ -251,7 +252,7 @@ export default function PricingPage() {
                 <div className="flex items-start gap-3">
                   <HelpCircle className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" />
                   <div>
-                    <h3 className="font-semibold text-slate-900">可以随时升级或降级吗？</h3>
+                    <h3 className="font-semibold text-slate-900 dark:text-white">可以随时升级或降级吗？</h3>
                     <p className="text-sm text-slate-600 mt-1">
                       是的，您可以随时升级或降级您的计划。升级会立即生效，降级会在下个计费周期生效。
                     </p>
@@ -265,7 +266,7 @@ export default function PricingPage() {
                 <div className="flex items-start gap-3">
                   <HelpCircle className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" />
                   <div>
-                    <h3 className="font-semibold text-slate-900">私有化部署包含哪些服务？</h3>
+                    <h3 className="font-semibold text-slate-900 dark:text-white">私有化部署包含哪些服务？</h3>
                     <p className="text-sm text-slate-600 mt-1">
                       私有化部署包含完整的 API 系统部署到您的服务器、专属技术支持、定制开发、SLA 保障等服务。
                     </p>
@@ -276,7 +277,7 @@ export default function PricingPage() {
 
             {/* Inline Ad in FAQ */}
             <div className="md:col-span-2">
-              <InlineAd size="sm" />
+              <InlineAd size="sm" position={AdPosition.CONTENT_BOTTOM} />
             </div>
           </div>
         </div>

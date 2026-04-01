@@ -1,37 +1,54 @@
 import { AlipaySdk } from 'alipay-sdk';
-import { paymentConfig, isAlipayConfigured } from './config';
+import { getPaymentConfig, isAlipayConfigured } from './config';
 import type { PaymentService, CreatePaymentParams, CreatePaymentResult, PaymentCallbackData } from './types';
 import { createPaymentRecord, updatePaymentStatus, getPaymentByOutTradeNo } from './utils';
 
 class AlipayPaymentService implements PaymentService {
   private alipay: AlipaySdk | null = null;
+  private initPromise: Promise<void> | null = null;
 
-  constructor() {
-    if (isAlipayConfigured()) {
-      this.alipay = new AlipaySdk({
-        appId: paymentConfig.alipay.appId,
-        privateKey: paymentConfig.alipay.privateKey,
-        alipayPublicKey: paymentConfig.alipay.alipayPublicKey,
-        gateway: paymentConfig.alipay.sandbox 
-          ? 'https://openapi.alipaydev.com/gateway.do' 
-          : 'https://openapi.alipay.com/gateway.do',
-      });
+  private async ensureInitialized(): Promise<void> {
+    if (this.alipay) return;
+    
+    if (!this.initPromise) {
+      this.initPromise = this.initialize();
     }
+    
+    await this.initPromise;
+  }
+
+  private async initialize(): Promise<void> {
+    if (!(await isAlipayConfigured())) {
+      return;
+    }
+
+    const config = await getPaymentConfig();
+    this.alipay = new AlipaySdk({
+      appId: config.alipay.appId,
+      privateKey: config.alipay.privateKey,
+      alipayPublicKey: config.alipay.alipayPublicKey,
+      gateway: config.alipay.sandbox 
+        ? 'https://openapi.alipaydev.com/gateway.do' 
+        : 'https://openapi.alipay.com/gateway.do',
+    });
   }
 
   async createPayment(params: CreatePaymentParams): Promise<CreatePaymentResult> {
+    await this.ensureInitialized();
+    
     if (!this.alipay) {
       return { success: false, error: '支付宝支付未配置' };
     }
 
     try {
+      const config = await getPaymentConfig();
       const outTradeNo = `ALI${Date.now()}${Math.random().toString(36).substring(2, 8)}`;
       
       const result = this.alipay.pageExec(
         'alipay.trade.page.pay',
         {
-          notify_url: paymentConfig.alipay.notifyUrl,
-          return_url: paymentConfig.alipay.returnUrl,
+          notify_url: config.alipay.notifyUrl,
+          return_url: config.alipay.returnUrl,
           bizContent: {
             out_trade_no: outTradeNo,
             product_code: 'FAST_INSTANT_TRADE_PAY',
@@ -68,6 +85,8 @@ class AlipayPaymentService implements PaymentService {
   }
 
   async handleCallback(data: any): Promise<PaymentCallbackData> {
+    await this.ensureInitialized();
+    
     if (!this.alipay) {
       throw new Error('支付宝支付未配置');
     }
@@ -115,6 +134,8 @@ class AlipayPaymentService implements PaymentService {
   }
 
   async queryPayment(outTradeNo: string): Promise<PaymentCallbackData | null> {
+    await this.ensureInitialized();
+    
     if (!this.alipay) {
       throw new Error('支付宝支付未配置');
     }
@@ -157,6 +178,8 @@ class AlipayPaymentService implements PaymentService {
   }
 
   async closePayment(outTradeNo: string): Promise<boolean> {
+    await this.ensureInitialized();
+    
     if (!this.alipay) {
       throw new Error('支付宝支付未配置');
     }
