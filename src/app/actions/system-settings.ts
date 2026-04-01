@@ -128,6 +128,11 @@ export async function getDefaultSettings() {
         { key: "wechatPayDebug", value: "false", category: "payment", description: "微信支付调试模式" },
       ],
     },
+    oauth: {
+      basic: [
+        { key: "oauthProviders", value: "[]", category: "oauth", description: "OAuth 提供商配置" },
+      ],
+    },
   };
 }
 
@@ -154,7 +159,7 @@ export async function getPublicAnnouncement() {
 async function getCategoryFromKey(key: string): Promise<string> {
   const defaultSettings = await  getDefaultSettings();
   for (const [category, settings] of Object.entries(defaultSettings)) {
-    if (category === "payment" || category === "operation") {
+    if (category === "payment" || category === "operation" || category === "oauth") {
       const subSettings = settings as Record<string, Array<{ key: string }>>;
       for (const s of Object.values(subSettings)) {
         if (s.some((setting) => setting.key === key)) {
