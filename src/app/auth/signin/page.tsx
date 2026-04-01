@@ -1,0 +1,205 @@
+"use client";
+
+import { useState } from "react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
+import { Github, Mail, Shield, Loader2, ArrowLeft } from "lucide-react";
+import { signIn } from "next-auth/react";
+import { useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link";
+
+export default function SignInPage() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get("callbackUrl") || "/";
+
+  const [isLoading, setIsLoading] = useState<string | null>(null);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+
+  const handleOAuthLogin = async (provider: string) => {
+    setIsLoading(provider);
+    try {
+      await signIn(provider, { callbackUrl });
+    } catch (error) {
+      console.error(`${provider} login error:`, error);
+      setIsLoading(null);
+    }
+  };
+
+  const handleCredentialsLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    setIsLoading("credentials");
+    try {
+      const result = await signIn("credentials", {
+        email,
+        password,
+        redirect: false,
+      });
+
+      if (result?.error) {
+        setError("邮箱或密码错误");
+        setIsLoading(null);
+        return;
+      }
+
+      router.push(callbackUrl);
+      router.refresh();
+    } catch (error) {
+      console.error("Credentials login error:", error);
+      setError("登录失败，请稍后重试");
+      setIsLoading(null);
+    }
+  };
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-950 dark:to-slate-900 p-4">
+      <div className="w-full max-w-md">
+        <Link
+          href="/"
+          className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors mb-6 cursor-pointer"
+        >
+          <ArrowLeft className="size-4" />
+          返回首页
+        </Link>
+
+        <Card className="shadow-lg">
+          <CardHeader className="space-y-3">
+            <CardTitle className="text-2xl font-bold text-center">
+              欢迎回来
+            </CardTitle>
+            <CardDescription className="text-center">
+              登录您的 One API 账户
+            </CardDescription>
+          </CardHeader>
+
+          <CardContent className="space-y-4">
+            <form onSubmit={handleCredentialsLogin} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="email">邮箱</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="请输入邮箱"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  disabled={isLoading !== null}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="password">密码</Label>
+                <Input
+                  id="password"
+                  type="password"
+                  placeholder="请输入密码"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  disabled={isLoading !== null}
+                />
+              </div>
+
+              {error && (
+                <p className="text-sm text-red-500 text-center">{error}</p>
+              )}
+
+              <Button
+                type="submit"
+                className="w-full h-11"
+                disabled={isLoading !== null}
+              >
+                {isLoading === "credentials" ? (
+                  <div className="flex items-center gap-2">
+                    <Loader2 className="size-4 animate-spin" />
+                    <span>登录中...</span>
+                  </div>
+                ) : (
+                  <>
+                    <Mail className="size-4" data-icon="inline-start" />
+                    邮箱登录
+                  </>
+                )}
+              </Button>
+            </form>
+
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <Separator />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-card px-2 text-muted-foreground">
+                  或使用第三方账号
+                </span>
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-3">
+              <Button
+                variant="outline"
+                className="w-full h-11 cursor-pointer transition-all duration-200 hover:bg-accent"
+                onClick={() => handleOAuthLogin("github")}
+                disabled={isLoading !== null}
+              >
+                {isLoading === "github" ? (
+                  <div className="flex items-center gap-2">
+                    <Loader2 className="size-4 animate-spin" />
+                    <span>正在跳转...</span>
+                  </div>
+                ) : (
+                  <>
+                    <Github className="size-4" data-icon="inline-start" />
+                    使用 GitHub 登录
+                  </>
+                )}
+              </Button>
+
+              <Button
+                variant="outline"
+                className="w-full h-11 cursor-pointer transition-all duration-200 hover:bg-purple-50 hover:text-purple-600 dark:hover:bg-purple-950 dark:hover:text-purple-400"
+                onClick={() => handleOAuthLogin("easy1auth")}
+                disabled={isLoading !== null}
+              >
+                {isLoading === "easy1auth" ? (
+                  <div className="flex items-center gap-2">
+                    <Loader2 className="size-4 animate-spin" />
+                    <span>正在跳转...</span>
+                  </div>
+                ) : (
+                  <>
+                    <Shield className="size-4" data-icon="inline-start" />
+                    使用统一身份认证
+                  </>
+                )}
+              </Button>
+            </div>
+
+            <div className="pt-4 border-t">
+              <p className="text-xs text-center text-muted-foreground leading-relaxed">
+                登录即表示您同意我们的
+                <a
+                  href="/terms"
+                  className="text-primary hover:underline cursor-pointer mx-1"
+                >
+                  服务条款
+                </a>
+                和
+                <a
+                  href="/privacy"
+                  className="text-primary hover:underline cursor-pointer mx-1"
+                >
+                  隐私政策
+                </a>
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+}

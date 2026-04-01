@@ -8,10 +8,10 @@ import type {
   NextApiRequest,
   NextApiResponse,
 } from "next";
-import { AuthUser } from "./middleware/auth";
 import Credentials from "next-auth/providers/credentials";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import prisma from "@/lib/prisma";
+import { SessionUser } from "./session";
 
 const randomBytesAsync = promisify(randomBytes);
 
@@ -64,13 +64,16 @@ export const authOptions: NextAuthOptions = {
     strategy: "jwt",
   },
   secret: process.env.NEXTAUTH_SECRET!,
-  // pages: {
-  //   signIn: '/auth/signin',
-  //   signOut: '/auth/signout',
-  //   error: '/auth/error', // Error code passed in query string as ?error=
-  //   verifyRequest: '/auth/verify-request', // (used for check email message)
+  theme:{
+    colorScheme:"light"
+  },
+  pages: {
+    signIn: '/auth/signin',
+    signOut: '/auth/signout',
+     error: '/auth/error', // Error code passed in query string as ?error=
+     verifyRequest: '/auth/verify-request', // (used for check email message)
   //   newUser: '/auth/new-user' // New users will be directed here on first sign in (leave the property out if not of interest)
-  // },
+  },
   adapter: PrismaAdapter(prisma),
   providers: [
     Credentials({
@@ -151,8 +154,8 @@ export const authOptions: NextAuthOptions = {
       // console.log("session_callback_user", user);
       // console.log("session_callback_token", token);
       if (session?.user) {
-        (session.user as AuthUser).role = token.role as string;
-        (session.user as AuthUser).id = token.id as string;
+        (session.user as SessionUser).role = token.role as string;
+        (session.user as SessionUser).id = token.id as string;
       }
       // console.log("session_callback_session", session);
       return session;
@@ -163,9 +166,9 @@ export const authOptions: NextAuthOptions = {
       // console.log("jwt_callback_account", account);
       // console.log("jwt_callback_profile", profile);
       if (user) {
-        token.role = (user as AuthUser).role;
-        token.id = (user as AuthUser).id;
-        token.name = (user as AuthUser).username;
+        token.role = (user as SessionUser).role;
+        token.id = (user as SessionUser).id;
+        token.name = (user as SessionUser).username;
       }
 
       // console.log("jwt_callback_token", token);

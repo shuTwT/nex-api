@@ -5,6 +5,7 @@ import prisma from "@/lib/prisma";
 import { requireAdmin } from "@/lib/session";
 import { logAudit } from "@/lib/audit-log";
 import { clearPaymentConfigCache } from "@/lib/payment/config";
+import { clearConfigCache, getConfigByCategory, getConfigValueAsBoolean } from "@/lib/config";
 
 export async function getSystemSettings(category?: string) {
   try {
@@ -33,14 +34,16 @@ export async function updateSystemSettings(settings: Array<{ key: string; value:
   try {
     await requireAdmin();
 
+
     for (const setting of settings) {
+      console.log(await getCategoryFromKey(setting.key))
       await prisma.systemSetting.upsert({
         where: { key: setting.key },
         update: { value: setting.value },
         create: {
           key: setting.key,
           value: setting.value,
-          category: getCategoryFromKey(setting.key),
+          category: await getCategoryFromKey(setting.key),
         },
       });
     }
@@ -53,11 +56,12 @@ export async function updateSystemSettings(settings: Array<{ key: string; value:
       status: "success",
     });
 
-    const hasPaymentSettings = settings.some(s => getCategoryFromKey(s.key) === "payment");
+    const hasPaymentSettings = settings.some(async s => await getCategoryFromKey(s.key) === "payment");
     if (hasPaymentSettings) {
       clearPaymentConfigCache();
     }
 
+    clearConfigCache();
     revalidatePath("/console/settings");
     return { success: true };
   } catch (error) {
@@ -81,12 +85,18 @@ export async function getDefaultSettings() {
       { key: "siteLogo", value: "", category: "general", description: "网站 Logo" },
       { key: "contactEmail", value: "support@example.com", category: "general", description: "联系邮箱" },
     ],
-    operation: [
-      { key: "registrationEnabled", value: "true", category: "operation", description: "是否允许用户注册" },
-      { key: "defaultCredits", value: "1000", category: "operation", description: "新用户默认积分" },
-      { key: "inviteRewards", value: "100", category: "operation", description: "邀请奖励积分" },
-      { key: "maintenanceMode", value: "false", category: "operation", description: "是否开启维护模式" },
-    ],
+    operation: {
+      basic: [
+        { key: "registrationEnabled", value: "true", category: "operation", description: "是否允许用户注册" },
+        { key: "defaultCredits", value: "1000", category: "operation", description: "新用户默认积分" },
+        { key: "inviteRewards", value: "100", category: "operation", description: "邀请奖励积分" },
+        { key: "maintenanceMode", value: "false", category: "operation", description: "是否开启维护模式" },
+      ],
+      announcement: [
+        { key: "announcementEnabled", value: "false", category: "operation", description: "是否启用公告" },
+        { key: "announcementContent", value: "", category: "operation", description: "公告内容" },
+      ],
+    },
     payment: {
       basic: [
         { key: "alipayEnabled", value: "false", category: "payment", description: "是否开启支付宝支付" },
@@ -120,14 +130,34 @@ export async function getDefaultSettings() {
   };
 }
 
-function getCategoryFromKey(key: string): string {
-  const defaultSettings = getDefaultSettings();
+export async function getPublicAnnouncement() {
+  try {
+    const operationConfig = await getConfigByCategory("operation");
+    console.log(operationConfig)
+    const enabled = operationConfig.announcementEnabled === "true";
+    const content = operationConfig.announcementContent || "";
+    
+    return { 
+      success: true, 
+      data: { 
+        enabled, 
+        content 
+      } 
+    };
+  } catch (error) {
+    console.error("Get public announcement error:", error);
+    return { success: false, error: "获取公告失败" };
+  }
+}
+
+async function getCategoryFromKey(key: string): Promise<string> {
+  const defaultSettings = await  getDefaultSettings();
   for (const [category, settings] of Object.entries(defaultSettings)) {
-    if (category === "payment") {
-      const paymentSettings = settings as Record<string, Array<{ key: string }>>;
-      for (const subSettings of Object.values(paymentSettings)) {
-        if (subSettings.some((s) => s.key === key)) {
-          return "payment";
+    if (category === "payment" || category === "operation") {
+      const subSettings = settings as Record<string, Array<{ key: string }>>;
+      for (const s of Object.values(subSettings)) {
+        if (s.some((setting) => setting.key === key)) {
+          return category;
         }
       }
     } else if ((settings as Array<{ key: string }>).some((s) => s.key === key)) {

@@ -9,12 +9,10 @@ export function useAuth() {
     user,
     token,
     isAuthenticated,
-    isLoading,
     login,
     logout,
     updateUser,
     updateCredits,
-    setLoading,
     initializeAuth,
   } = useAuthStore();
 
@@ -36,7 +34,6 @@ export function useAuth() {
     if (!token) return;
 
     try {
-      setLoading(true);
       const response = await fetch("/api/auth/me", {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -51,16 +48,13 @@ export function useAuth() {
       }
     } catch (error) {
       console.error("Failed to refresh user info:", error);
-    } finally {
-      setLoading(false);
-    }
+    } 
   };
 
   return {
     user,
     token,
     isAuthenticated,
-    isLoading,
     isAdmin: user?.role === "admin",
     credits: user?.credits ?? 0,
     login: handleLogin,

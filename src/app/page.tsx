@@ -7,10 +7,16 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Search, Star, Zap, Shield, Users, TrendingUp } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import { MainLayout } from "@/components/main-layout";
-import { InlineAd } from "@/components/ads";
 import { getMarketplaceApis, getMarketplaceStats } from "@/app/actions/marketplace";
-import { AdPosition } from "@/types/ad-position";
+import { getPublicAnnouncement } from "@/app/actions/system-settings";
 
 interface MarketplaceApi {
   id: string;
@@ -38,16 +44,27 @@ export default function Home() {
   const [apis, setApis] = useState<MarketplaceApi[]>([]);
   const [stats, setStats] = useState<MarketplaceStats | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [announcement, setAnnouncement] = useState<{ enabled: boolean; content: string } | null>(null);
+  const [showAnnouncement, setShowAnnouncement] = useState(false);
 
-  useEffect(() => {
-    loadData();
-  }, []);
+  function checkShouldShowAnnouncement(): boolean {
+    const lastDismissDate = localStorage.getItem("announcementDismissDate");
+    if (!lastDismissDate) return true;
+    const today = new Date().toDateString();
+    return lastDismissDate !== today;
+  }
+
+  function dismissForToday() {
+    localStorage.setItem("announcementDismissDate", new Date().toDateString());
+    setShowAnnouncement(false);
+  }
 
   async function loadData() {
     setIsLoading(true);
-    const [apisResult, statsResult] = await Promise.all([
+    const [apisResult, statsResult, announcementResult] = await Promise.all([
       getMarketplaceApis(),
       getMarketplaceStats(),
+      getPublicAnnouncement(),
     ]);
 
     if (apisResult.success && apisResult.data) {
@@ -58,11 +75,43 @@ export default function Home() {
       setStats(statsResult.data);
     }
 
+    console.log(announcementResult);
+    if (announcementResult.success && announcementResult.data) {
+      setAnnouncement(announcementResult.data);
+      if (announcementResult.data.enabled && announcementResult.data.content) {
+        if (checkShouldShowAnnouncement()) {
+          setShowAnnouncement(true);
+        }
+      }
+    }
+
     setIsLoading(false);
   }
 
+  useEffect(() => {
+    loadData();
+  }, []);
+
   return (
     <MainLayout>
+      <Dialog open={showAnnouncement} onOpenChange={setShowAnnouncement}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="text-xl">公告</DialogTitle>
+          </DialogHeader>
+          <DialogDescription className="text-sm text-slate-700 whitespace-pre-wrap">
+            {announcement?.content}
+          </DialogDescription>
+          <div className="flex justify-end gap-3 pt-4">
+            <Button variant="outline" onClick={dismissForToday}>
+              今日不再提示
+            </Button>
+            <Button onClick={() => setShowAnnouncement(false)}>
+              我知道了
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
       {/* Hero Section */}
       <section className="relative bg-gradient-to-br from-blue-50 via-white to-blue-50">
         {/* Background decorative elements */}

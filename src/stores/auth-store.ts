@@ -48,10 +48,6 @@ export const useAuthStore = create<AuthStore>()(
         }
       },
 
-      setLoading: (loading: boolean) => {
-        set({ isLoading: loading });
-      },
-
       initializeAuth: () => {
         const state = get();
         if (state.token && state.user) {

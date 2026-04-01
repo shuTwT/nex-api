@@ -1,4 +1,4 @@
-import prisma from "@/lib/prisma";
+import { getConfigByCategory } from "../config";
 
 export interface PaymentConfig {
   wechat: {
@@ -38,16 +38,7 @@ export async function getPaymentConfig(): Promise<PaymentConfig> {
     return cachedConfig;
   }
 
-  const settings = await prisma.systemSetting.findMany({
-    where: {
-      category: "payment",
-    },
-  });
-
-  const settingsMap: Record<string, string> = {};
-  settings.forEach((s) => {
-    settingsMap[s.key] = s.value;
-  });
+  const settingsMap: Record<string, string> = await getConfigByCategory("payment");
 
   const appUrl = process.env.NEXT_PUBLIC_APP_URL || "";
 

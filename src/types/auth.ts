@@ -23,7 +23,6 @@ export interface AuthActions {
   logout: () => void;
   updateUser: (user: Partial<User>) => void;
   updateCredits: (credits: number) => void;
-  setLoading: (loading: boolean) => void;
   initializeAuth: () => void;
   fetchUserInfo: () => Promise<void>;
 }

@@ -1,6 +1,5 @@
 import { sign, verify } from "jsonwebtoken";
 import { cookies } from "next/headers";
-import { AuthUser } from "./middleware/auth";
 import { getServerSession } from "next-auth";
 import { authOptions } from "./auth";
 
@@ -83,7 +82,7 @@ export async function requireAdmin(): Promise<SessionUser> {
   if(session==null){
     throw new Error("Unauthorized");
   }
-  const user = session.user as AuthUser;
+  const user = session.user as SessionUser;
   
   console.log("requireAdmin",user)
 

@@ -7,6 +7,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { Toaster } from "sonner";
 import { ThemeProvider } from "@/components/theme-provider";
+import { getConfigValue } from "@/lib/config";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -18,10 +19,29 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
-  title: "One API - API 聚合管理系统",
-  description: "一站式 API 聚合平台，提供高质量 API 接口服务",
-};
+const getMetadata = async():Promise<Metadata>=>{
+  try{
+    const siteName = await getConfigValue("general","siteName")
+    const siteDescription = await getConfigValue("general","siteDescription")
+    return {
+      title: siteName||"One API - API 聚合管理系统",
+      description: siteDescription||"一站式 API 聚合平台，提供高质量 API 接口服务",
+    }
+  }catch(e){
+    console.error("Get config value error:", e);
+    return {
+      title: "One API - API 聚合管理系统",
+      description: "一站式 API 聚合平台，提供高质量 API 接口服务",
+    }
+  }
+}
+
+export const metadata: Metadata = await getMetadata();
+
+
+
+
+
 
 export default async function RootLayout({
   children,
