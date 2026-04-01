@@ -9,6 +9,7 @@ import {
   Sliders,
   User,
   CreditCard,
+  Megaphone,
   LucideIcon
 } from "lucide-react";
 
@@ -54,6 +55,12 @@ export const consoleMenuItems: MenuItem[] = [
     name: "订阅计划",
     icon: CreditCard,
     href: "/console/subscription-plans",
+    adminOnly: true,
+  },
+  {
+    name: "广告位管理",
+    icon: Megaphone,
+    href: "/console/advertisements",
     adminOnly: true,
   },
   {

@@ -10,6 +10,7 @@ import { Search, Star, Zap, Shield, Users, TrendingUp } from "lucide-react";
 import { MainLayout } from "@/components/main-layout";
 import { InlineAd } from "@/components/ads";
 import { getMarketplaceApis, getMarketplaceStats } from "@/app/actions/marketplace";
+import { AdPosition } from "@/types/ad-position";
 
 interface MarketplaceApi {
   id: string;
@@ -194,7 +195,6 @@ export default function Home() {
                     </CardContent>
                   </Card>
                 </Link>
-                {index === 0 && <InlineAd size="md" />}
               </div>
             ))}
           </div>

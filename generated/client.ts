@@ -116,3 +116,8 @@ export type SystemSetting = Prisma.SystemSettingModel
  * 
  */
 export type Payment = Prisma.PaymentModel
+/**
+ * Model Advertisement
+ * 
+ */
+export type Advertisement = Prisma.AdvertisementModel

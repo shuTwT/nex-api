@@ -257,3 +257,19 @@ model Payment {
   @@index([transactionId])
   @@index([createdAt])
 }
+
+model Advertisement {
+  id          String   @id @default(cuid())
+  image       String
+  imageWidth  Int
+  imageHeight Int
+  link        String
+  title       String
+  position    String   @unique
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([position])
+  @@index([isActive])
+}

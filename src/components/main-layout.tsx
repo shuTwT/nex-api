@@ -124,7 +124,7 @@ export function MainLayout({ children }: MainLayoutProps) {
               <span className="text-sm font-semibold">one API 聚合管理系统</span>
             </div>
             <p className="text-sm text-gray-500">
-              © 2024 one API. All rights reserved.
+              © 2026 one API. All rights reserved.
             </p>
           </div>
         </div>

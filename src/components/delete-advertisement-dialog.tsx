@@ -1,0 +1,77 @@
+"use client";
+
+import { useState } from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { deleteAdvertisement } from "@/app/actions/advertisements";
+
+interface DeleteAdvertisementDialogProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  advertisementId: string;
+  advertisementTitle: string;
+  onSuccess: () => void;
+}
+
+export function DeleteAdvertisementDialog({
+  open,
+  onOpenChange,
+  advertisementId,
+  advertisementTitle,
+  onSuccess,
+}: DeleteAdvertisementDialogProps) {
+  const [isLoading, setIsLoading] = useState(false);
+
+  async function handleDelete() {
+    setIsLoading(true);
+    try {
+      const result = await deleteAdvertisement(advertisementId);
+      if (result.success) {
+        onSuccess();
+        onOpenChange(false);
+      }
+    } catch (error) {
+      console.error("Failed to delete advertisement:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>删除广告</DialogTitle>
+          <DialogDescription>
+            确定要删除广告 <span className="font-medium text-slate-900">{advertisementTitle}</span> 吗？此操作无法撤销。
+          </DialogDescription>
+        </DialogHeader>
+        <DialogFooter>
+          <Button
+            variant="outline"
+            onClick={() => onOpenChange(false)}
+            disabled={isLoading}
+            className="cursor-pointer"
+          >
+            取消
+          </Button>
+          <Button
+            variant="destructive"
+            onClick={handleDelete}
+            disabled={isLoading}
+            className="cursor-pointer"
+          >
+            {isLoading ? "删除中..." : "删除"}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}

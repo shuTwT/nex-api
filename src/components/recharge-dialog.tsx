@@ -34,6 +34,7 @@ export function RechargeDialog({ open, onOpenChange }: RechargeDialogProps) {
     minRecharge: number;
     alipayEnabled: boolean;
     wechatEnabled: boolean;
+    mockEnabled: boolean;
   } | null>(null);
 
   useEffect(() => {
@@ -47,7 +48,9 @@ export function RechargeDialog({ open, onOpenChange }: RechargeDialogProps) {
     const result = await getPaymentSettings();
     if (result.success && result.data) {
       setSettings(result.data);
-      if (result.data.alipayEnabled) {
+      if (result.data.mockEnabled) {
+        setPaymentMethod("mock");
+      } else if (result.data.alipayEnabled) {
         setPaymentMethod("alipay");
       } else if (result.data.wechatEnabled) {
         setPaymentMethod("wechat");
@@ -97,6 +100,12 @@ export function RechargeDialog({ open, onOpenChange }: RechargeDialogProps) {
     return (
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Coins className="h-5 w-5 text-cyan-500" />
+              积分充值
+            </DialogTitle>
+          </DialogHeader>
           <div className="flex items-center justify-center py-8">
             <Loader2 className="h-8 w-8 animate-spin text-cyan-500" />
           </div>
@@ -173,7 +182,18 @@ export function RechargeDialog({ open, onOpenChange }: RechargeDialogProps) {
 
           <div className="space-y-2">
             <Label>支付方式</Label>
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-3 gap-2">
+              {settings?.mockEnabled && (
+                <Button
+                  variant={paymentMethod === "mock" ? "default" : "outline"}
+                  onClick={() => setPaymentMethod("mock")}
+                  className="h-auto py-4 flex-col gap-1"
+                >
+                  <span className="text-2xl">🧪</span>
+                  <span className="font-medium">模拟支付</span>
+                  <span className="text-xs text-slate-500">测试用</span>
+                </Button>
+              )}
               {settings?.wechatEnabled && (
                 <Button
                   variant={paymentMethod === "wechat" ? "default" : "outline"}

@@ -65,7 +65,8 @@ export const ModelName = {
   ApiToken: 'ApiToken',
   AuditLog: 'AuditLog',
   SystemSetting: 'SystemSetting',
-  Payment: 'Payment'
+  Payment: 'Payment',
+  Advertisement: 'Advertisement'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -307,6 +308,22 @@ export const PaymentScalarFieldEnum = {
 } as const
 
 export type PaymentScalarFieldEnum = (typeof PaymentScalarFieldEnum)[keyof typeof PaymentScalarFieldEnum]
+
+
+export const AdvertisementScalarFieldEnum = {
+  id: 'id',
+  image: 'image',
+  imageWidth: 'imageWidth',
+  imageHeight: 'imageHeight',
+  link: 'link',
+  title: 'title',
+  position: 'position',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type AdvertisementScalarFieldEnum = (typeof AdvertisementScalarFieldEnum)[keyof typeof AdvertisementScalarFieldEnum]
 
 
 export const SortOrder = {

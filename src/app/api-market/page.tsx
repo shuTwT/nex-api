@@ -23,6 +23,7 @@ import {
 import { MainLayout } from "@/components/main-layout";
 import { InlineAd } from "@/components/ads";
 import { getMarketplaceApis, getMarketplaceStats } from "@/app/actions/marketplace";
+import { AdPosition } from "@/types/ad-position";
 
 interface MarketplaceApi {
   id: string;
@@ -222,7 +223,7 @@ export default function ApiMarketPage() {
             </div>
 
             {/* Sidebar Ad */}
-            <InlineAd size="lg" />
+            <InlineAd size="lg" position={AdPosition.SIDEBAR_BOTTOM} />
           </aside>
 
           {/* Main Content */}
@@ -335,7 +336,6 @@ export default function ApiMarketPage() {
                         </CardContent>
                       </Card>
                     </Link>
-                    {index === 2 && <InlineAd size="md" />}
                   </div>
                 ))}
               </div>

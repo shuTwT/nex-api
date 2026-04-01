@@ -3,6 +3,8 @@
 import prisma from "@/lib/prisma";
 import { requireAuth } from "@/lib/session";
 
+import { isMockPaymentEnabled } from "@/lib/payment/config";
+
 export async function getPaymentSettings() {
   try {
     await requireAuth();
@@ -25,6 +27,7 @@ export async function getPaymentSettings() {
         minRecharge: parseFloat(settingsMap.minRecharge || "10"),
         alipayEnabled: settingsMap.alipayEnabled === "true",
         wechatEnabled: settingsMap.wechatEnabled === "true",
+        mockEnabled: isMockPaymentEnabled(),
       },
     };
   } catch (error) {
