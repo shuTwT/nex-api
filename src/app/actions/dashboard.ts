@@ -1,13 +1,14 @@
 "use server";
 
 import prisma from "@/lib/prisma";
-import { requireAuth } from "@/lib/session";
+import { requireAuth } from "@/lib/auth/util";
 import redis from "@/lib/redis";
 import { getHourlyUsageTrend } from "@/lib/request-stats";
+import { authOptions } from "@/lib/auth/config";
 
 export async function getDashboardStats() {
   try {
-    const user = await requireAuth();
+    const user = await requireAuth(authOptions);
 
     const now = new Date();
     const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
@@ -62,7 +63,7 @@ export async function getDashboardStats() {
 
 export async function getRecentActivity() {
   try {
-    const user = await requireAuth();
+    const user = await requireAuth(authOptions);
 
     const recentUsage = await prisma.apiUsage.findMany({
       where: {
@@ -100,7 +101,7 @@ export async function getRecentActivity() {
 
 export async function getTopApis() {
   try {
-    const user = await requireAuth();
+    const user = await requireAuth(authOptions);
 
     const userApiKeys = await redis.keys(`user:api:request:count:${user.id}:*`);
     
@@ -151,7 +152,7 @@ export async function getTopApis() {
 
 export async function getUsageTrend() {
   try {
-    const user = await requireAuth();
+    const user = await requireAuth(authOptions);
     const isAdmin = user.role === "admin";
 
     const now = new Date();

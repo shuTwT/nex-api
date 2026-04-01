@@ -1,11 +1,12 @@
 "use server";
 
 import prisma from "@/lib/prisma";
-import { requireAuth } from "@/lib/session";
+import { requireAuth } from "@/lib/auth/util";
+import { authOptions } from "@/lib/auth/config";
 
 export async function getCurrentUserProfile() {
   try {
-    const sessionUser = await requireAuth();
+    const sessionUser = await requireAuth(authOptions);
 
     console.log(sessionUser)
     

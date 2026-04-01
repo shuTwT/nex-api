@@ -3,9 +3,9 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import prisma from "@/lib/prisma";
-import { hashPassword } from "@/lib/auth";
+import { authOptions } from "@/lib/auth/config";
 import { userCreateSchema, userUpdateSchema } from "@/lib/validations/user";
-import { requireAdmin } from "@/lib/session";
+import { requireAdmin,hashPassword } from "@/lib/auth/util";
 
 export async function getUsers(params: {
   role?: string;
@@ -144,7 +144,7 @@ export async function getUserById(id: string) {
 
 export async function createUser(formData: FormData) {
   try {
-    await requireAdmin();
+    await requireAdmin(authOptions);
 
     const data = {
       email: formData.get("email") as string,
@@ -210,7 +210,7 @@ export async function createUser(formData: FormData) {
 
 export async function updateUser(formData: FormData) {
   try {
-    await requireAdmin();
+    await requireAdmin(authOptions);
 
     const id = formData.get("id") as string;
     const data = {
@@ -276,7 +276,7 @@ export async function updateUser(formData: FormData) {
 
 export async function deleteUser(id: string) {
   try {
-    await requireAdmin();
+    await requireAdmin(authOptions);
 
     await prisma.user.delete({
       where: { id },

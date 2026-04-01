@@ -2,8 +2,9 @@
 
 import { revalidatePath } from "next/cache";
 import { PaymentServiceFactory, getAvailablePaymentMethods, type PaymentMethod } from "@/lib/payment";
-import { requireAuth } from "@/lib/session";
+import { requireAuth } from "@/lib/auth/util";
 import prisma from "@/lib/prisma";
+import { authOptions } from "@/lib/auth/config";
 
 export async function getPaymentMethods() {
   try {
@@ -17,7 +18,7 @@ export async function getPaymentMethods() {
 
 export async function createPayment(planId: string, method: PaymentMethod) {
   try {
-    const sessionUser = await requireAuth();
+    const sessionUser = await requireAuth(authOptions);
 
     const plan = await prisma.subscriptionPlan.findUnique({
       where: { id: planId },
@@ -58,7 +59,7 @@ export async function createPayment(planId: string, method: PaymentMethod) {
 
 export async function getPaymentInfo(outTradeNo: string) {
   try {
-    await requireAuth();
+    await requireAuth(authOptions);
 
     const payment = await prisma.payment.findUnique({
       where: { outTradeNo },
@@ -80,7 +81,7 @@ export async function getPaymentInfo(outTradeNo: string) {
 
 export async function queryPaymentStatus(outTradeNo: string) {
   try {
-    await requireAuth();
+    await requireAuth(authOptions);
 
     const payment = await prisma.payment.findUnique({
       where: { outTradeNo },
@@ -115,7 +116,7 @@ export async function queryPaymentStatus(outTradeNo: string) {
 
 export async function cancelPayment(outTradeNo: string) {
   try {
-    await requireAuth();
+    await requireAuth(authOptions);
 
     const payment = await prisma.payment.findUnique({
       where: { outTradeNo },
@@ -148,7 +149,7 @@ export async function cancelPayment(outTradeNo: string) {
 
 export async function getUserPayments() {
   try {
-    const sessionUser = await requireAuth();
+    const sessionUser = await requireAuth(authOptions);
 
     const payments = await prisma.payment.findMany({
       where: { userId: sessionUser.id },

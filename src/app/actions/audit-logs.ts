@@ -2,7 +2,8 @@
 
 import { revalidatePath } from "next/cache";
 import prisma from "@/lib/prisma";
-import { requireAuth } from "@/lib/session";
+import { requireAuth } from "@/lib/auth/util";
+import { authOptions } from "@/lib/auth/config";
 
 export async function getAuditLogs(params?: {
   search?: string;
@@ -24,7 +25,7 @@ export async function getAuditLogs(params?: {
   error?: string;
 }> {
   try {
-    const user = await requireAuth();
+    const user = await requireAuth(authOptions);
     const { search, level, status, startDate, endDate, page = 1, limit = 10 } = params || {};
     const skip = (page - 1) * limit;
 
@@ -102,7 +103,7 @@ export async function createAuditLog(formData: FormData): Promise<{
   error?: string;
 }> {
   try {
-    const user = await requireAuth();
+    const user = await requireAuth(authOptions);
 
     const action = formData.get("action") as string;
     const resource = formData.get("resource") as string;
@@ -154,7 +155,7 @@ export async function updateAuditLog(formData: FormData): Promise<{
   error?: string;
 }> {
   try {
-    const user = await requireAuth();
+    const user = await requireAuth(authOptions);
 
     const id = formData.get("id") as string;
     const action = formData.get("action") as string;
@@ -206,7 +207,7 @@ export async function deleteAuditLog(id: string): Promise<{
   error?: string;
 }> {
   try {
-    await requireAuth();
+    await requireAuth(authOptions);
 
     await prisma.auditLog.delete({
       where: { id },
@@ -238,7 +239,7 @@ export async function getAuditLogStats(): Promise<{
   error?: string;
 }> {
   try {
-    await requireAuth();
+    await requireAuth(authOptions);
 
     const [totalLogs, infoLogs, warningLogs, errorLogs, successLogs, failedLogs] = await Promise.all([
       prisma.auditLog.count(),
@@ -280,7 +281,7 @@ export async function exportAuditLogs(params?: {
   error?: string;
 }> {
   try {
-    await requireAuth();
+    await requireAuth(authOptions);
 
     const { level, status, startDate, endDate } = params || {};
 

@@ -1,11 +1,12 @@
 "use server";
 
 import prisma from "@/lib/prisma";
-import { requireAuth } from "@/lib/session";
+import { requireAuth } from "@/lib/auth/util";
+import { authOptions } from "@/lib/auth/config";
 
 export async function getUsageStats() {
   try {
-    const user = await requireAuth();
+    const user = await requireAuth(authOptions);
 
     const now = new Date();
     const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());

@@ -435,7 +435,6 @@ export default function AdvertisementsPage() {
           <div className="flex-1 overflow-y-auto">
             <AdvertisementForm
               advertisement={editingAd || undefined}
-              onClose={() => setShowForm(false)}
               onSuccess={handleFormSuccess}
               formId="advertisement-form"
             />

@@ -1,13 +1,14 @@
 "use server";
 
 import prisma from "@/lib/prisma";
-import { requireAuth } from "@/lib/session";
+import { requireAuth } from "@/lib/auth/util";
 
 import { isMockPaymentEnabled } from "@/lib/payment/config";
+import { authOptions } from "@/lib/auth/config";
 
 export async function getPaymentSettings() {
   try {
-    await requireAuth();
+    await requireAuth(authOptions);
 
     const settings = await prisma.systemSetting.findMany({
       where: {

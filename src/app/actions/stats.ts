@@ -1,6 +1,7 @@
 "use server";
 
-import { requireAuth } from "@/lib/session";
+import { authOptions } from "@/lib/auth/config";
+import { requireAuth } from "@/lib/auth/util";
 import {
   getGlobalRequestCount,
   getApiRequestCount,
@@ -10,7 +11,7 @@ import {
 
 export async function getGlobalStats() {
   try {
-    await requireAuth();
+    await requireAuth(authOptions);
     const count = await getGlobalRequestCount();
     return { success: true, data: { totalRequests: count } };
   } catch (error) {
@@ -21,7 +22,7 @@ export async function getGlobalStats() {
 
 export async function getApiStats(apiAlias: string) {
   try {
-    await requireAuth();
+    await requireAuth(authOptions);
     const count = await getApiRequestCount(apiAlias);
     return { success: true, data: { apiAlias, requestCount: count } };
   } catch (error) {
@@ -32,7 +33,7 @@ export async function getApiStats(apiAlias: string) {
 
 export async function getUserApiStats(apiAlias: string) {
   try {
-    const user = await requireAuth();
+    const user = await requireAuth(authOptions);
     const count = await getUserApiRequestCount(user.id, apiAlias);
     return { success: true, data: { apiAlias, requestCount: count } };
   } catch (error) {
@@ -43,7 +44,7 @@ export async function getUserApiStats(apiAlias: string) {
 
 export async function getAllApiStats() {
   try {
-    await requireAuth();
+    await requireAuth(authOptions);
     const stats = await getAllApiRequestCounts();
     return { success: true, data: stats };
   } catch (error) {

@@ -1,6 +1,8 @@
 import Redis from "ioredis";
 
-const globalForRedis = global as unknown as { redis: Redis };
+const globalForRedis = globalThis as unknown as {
+   redis: Redis | undefined 
+};
 
 export const redis =
   globalForRedis.redis ||

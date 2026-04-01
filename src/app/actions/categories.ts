@@ -2,11 +2,12 @@
 
 import { revalidatePath } from "next/cache";
 import prisma from "@/lib/prisma";
-import { requireAdmin } from "@/lib/session";
+import { requireAdmin } from "@/lib/auth/util";
+import { authOptions } from "@/lib/auth/config";
 
 export async function getCategories() {
   try {
-    await requireAdmin();
+    await requireAdmin(authOptions);
 
     const categories = await prisma.apiCategory.findMany({
       include: {
@@ -42,7 +43,7 @@ export async function getCategories() {
 
 export async function createCategory(formData: FormData) {
   try {
-    await requireAdmin();
+    await requireAdmin(authOptions);
 
     const name = formData.get("name") as string;
     const description = formData.get("description") as string;
@@ -90,7 +91,7 @@ export async function createCategory(formData: FormData) {
 
 export async function updateCategory(formData: FormData) {
   try {
-    await requireAdmin();
+    await requireAdmin(authOptions);
 
     const id = formData.get("id") as string;
     const name = formData.get("name") as string;
@@ -143,7 +144,7 @@ export async function updateCategory(formData: FormData) {
 
 export async function deleteCategory(id: string) {
   try {
-    await requireAdmin();
+    await requireAdmin(authOptions);
 
     const apisCount = await prisma.api.count({
       where: { categoryId: id },

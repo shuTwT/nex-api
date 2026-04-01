@@ -2,8 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import prisma from "@/lib/prisma";
-import { hashPassword } from "@/lib/auth";
-import { createSessionToken, setSessionCookie } from "@/lib/session";
+import { hashPassword } from "@/lib/auth/util";
 
 export async function initializeSystem(formData: FormData): Promise<{
   success: boolean;
@@ -70,15 +69,6 @@ export async function initializeSystem(formData: FormData): Promise<{
         role: true,
       },
     });
-
-    const token = createSessionToken({
-      id: user.id,
-      email: user.email,
-      username: user.username,
-      role: user.role,
-    });
-
-    await setSessionCookie(token);
 
     revalidatePath("/");
     return {

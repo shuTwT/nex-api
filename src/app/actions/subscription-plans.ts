@@ -2,7 +2,8 @@
 
 import { revalidatePath } from "next/cache";
 import prisma from "@/lib/prisma";
-import { requireAdmin } from "@/lib/session";
+import { requireAdmin } from "@/lib/auth/util";
+import { authOptions } from "@/lib/auth/config";
 
 export async function getSubscriptionPlans() {
   try {
@@ -36,7 +37,7 @@ export async function getSubscriptionPlanById(id: string) {
 
 export async function createSubscriptionPlan(formData: FormData) {
   try {
-    await requireAdmin();
+    await requireAdmin(authOptions);
 
     const data = {
       title: formData.get("title") as string,
@@ -63,7 +64,7 @@ export async function createSubscriptionPlan(formData: FormData) {
 
 export async function updateSubscriptionPlan(formData: FormData) {
   try {
-    await requireAdmin();
+    await requireAdmin(authOptions);
 
     const id = formData.get("id") as string;
     const data = {
@@ -92,7 +93,7 @@ export async function updateSubscriptionPlan(formData: FormData) {
 
 export async function deleteSubscriptionPlan(id: string) {
   try {
-    await requireAdmin();
+    await requireAdmin(authOptions);
 
     await prisma.subscriptionPlan.delete({
       where: { id },

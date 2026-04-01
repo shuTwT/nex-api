@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { writeFile, mkdir } from "fs/promises";
 import { existsSync } from "fs";
 import path from "path";
-import { requireAuth } from "@/lib/session";
+import { requireAuth } from "@/lib/auth/util";
+import { authOptions } from "@/lib/auth/config";
 
 const UPLOAD_DIR = path.join(process.cwd(), "data", "upload");
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
@@ -16,7 +17,7 @@ async function ensureUploadDir() {
 
 export async function POST(request: NextRequest) {
   try {
-    const user = await requireAuth();
+    const user = await requireAuth(authOptions);
     if (!user) {
       return NextResponse.json(
         { success: false, error: "未授权" },

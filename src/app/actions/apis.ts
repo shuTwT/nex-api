@@ -2,8 +2,9 @@
 
 import { revalidatePath } from "next/cache";
 import prisma from "@/lib/prisma";
-import { requireAdmin } from "@/lib/session";
+import { requireAdmin } from "@/lib/auth/util";
 import { logAudit } from "@/lib/audit-log";
+import { authOptions } from "@/lib/auth/config";
 
 export async function getApis(params: {
   category?: string;
@@ -23,7 +24,7 @@ export async function getApis(params: {
   error?: string;
 }> {
   try {
-    await requireAdmin();
+    await requireAdmin(authOptions);
 
     const { category, search, status, page = 1, limit = 10 } = params;
     const skip = (page - 1) * limit;
@@ -89,7 +90,7 @@ export async function getApis(params: {
 
 export async function getApiById(id: string) {
   try {
-    await requireAdmin();
+    await requireAdmin(authOptions);
 
     const api = await prisma.api.findUnique({
       where: { id },
@@ -113,7 +114,7 @@ export async function getApiById(id: string) {
 
 export async function createApi(formData: FormData) {
   try {
-    await requireAdmin();
+    await requireAdmin(authOptions);
 
     const name = formData.get("name") as string;
     const alias = formData.get("alias") as string;
@@ -197,7 +198,7 @@ export async function createApi(formData: FormData) {
 
 export async function updateApi(formData: FormData) {
   try {
-    await requireAdmin();
+    await requireAdmin(authOptions);
 
     const id = formData.get("id") as string;
     const name = formData.get("name") as string;
@@ -289,7 +290,7 @@ export async function updateApi(formData: FormData) {
 
 export async function deleteApi(id: string) {
   try {
-    await requireAdmin();
+    await requireAdmin(authOptions);
 
     const apiToDelete = await prisma.api.findUnique({
       where: { id },
@@ -324,7 +325,7 @@ export async function deleteApi(id: string) {
 
 export async function toggleApiStatus(id: string) {
   try {
-    await requireAdmin();
+    await requireAdmin(authOptions);
 
     const api = await prisma.api.findUnique({
       where: { id },
@@ -351,7 +352,7 @@ export async function toggleApiStatus(id: string) {
 
 export async function getApiStats() {
   try {
-    await requireAdmin();
+    await requireAdmin(authOptions);
 
     const [totalApis, activeApis, inactiveApis, totalCalls, categoriesCount] = await Promise.all([
       prisma.api.count(),

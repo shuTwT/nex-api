@@ -3,8 +3,9 @@
 import { revalidatePath } from "next/cache";
 import { randomBytes } from "crypto";
 import prisma from "@/lib/prisma";
-import { requireAuth } from "@/lib/session";
+import { requireAuth } from "@/lib/auth/util";
 import { logAudit } from "@/lib/audit-log";
+import { authOptions } from "@/lib/auth/config";
 
 function generateToken(): string {
   const prefix = "sk";
@@ -29,7 +30,7 @@ export async function getTokens(params?: {
   error?: string;
 }> {
   try {
-    const user = await requireAuth();
+    const user = await requireAuth(authOptions);
     const { search, status, page = 1, limit = 10 } = params || {};
     const skip = (page - 1) * limit;
 
@@ -84,7 +85,7 @@ export async function createToken(formData: FormData): Promise<{
   error?: string;
 }> {
   try {
-    const user = await requireAuth();
+    const user = await requireAuth(authOptions);
 
     const name = formData.get("name") as string;
     const permissions = formData.get("permissions") as string;
@@ -161,7 +162,7 @@ export async function updateToken(formData: FormData): Promise<{
   error?: string;
 }> {
   try {
-    const user = await requireAuth();
+    const user = await requireAuth(authOptions);
 
     const id = formData.get("id") as string;
     const name = formData.get("name") as string;
@@ -239,7 +240,7 @@ export async function deleteToken(id: string): Promise<{
   error?: string;
 }> {
   try {
-    const user = await requireAuth();
+    const user = await requireAuth(authOptions);
 
     const tokenToDelete = await prisma.apiToken.findUnique({
       where: {
@@ -290,7 +291,7 @@ export async function toggleTokenStatus(id: string): Promise<{
   error?: string;
 }> {
   try {
-    const user = await requireAuth();
+    const user = await requireAuth(authOptions);
 
     const token = await prisma.apiToken.findUnique({
       where: {
@@ -338,7 +339,7 @@ export async function getTokenStats(): Promise<{
   error?: string;
 }> {
   try {
-    const user = await requireAuth();
+    const user = await requireAuth(authOptions);
 
     const now = new Date();
 

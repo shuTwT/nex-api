@@ -2,14 +2,15 @@
 
 import { revalidatePath } from "next/cache";
 import prisma from "@/lib/prisma";
-import { requireAdmin } from "@/lib/session";
+import { requireAdmin } from "@/lib/auth/util";
 import { logAudit } from "@/lib/audit-log";
 import { clearPaymentConfigCache } from "@/lib/payment/config";
 import { clearConfigCache, getConfigByCategory, getConfigValueAsBoolean } from "@/lib/config";
+import { authOptions } from "@/lib/auth/config";
 
 export async function getSystemSettings(category?: string) {
   try {
-    await requireAdmin();
+    await requireAdmin(authOptions);
 
     const where: any = {};
     if (category) {
@@ -32,7 +33,7 @@ export async function getSystemSettings(category?: string) {
 
 export async function updateSystemSettings(settings: Array<{ key: string; value: string }>) {
   try {
-    await requireAdmin();
+    await requireAdmin(authOptions);
 
 
     for (const setting of settings) {

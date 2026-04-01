@@ -3,8 +3,9 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import prisma from "@/lib/prisma";
-import { requireAdmin } from "@/lib/session";
+import { requireAdmin } from "@/lib/auth/util";
 import { AdPosition } from "@/types/ad-position";
+import { authOptions } from "@/lib/auth/config";
 
 export interface Advertisement {
   id: string;
@@ -97,7 +98,7 @@ export async function getAdvertisementByPosition(position: AdPosition) {
 
 export async function createAdvertisement(formData: FormData) {
   try {
-    await requireAdmin();
+    await requireAdmin(authOptions);
 
     const data = {
       image: formData.get("image") as string,
@@ -146,7 +147,7 @@ export async function createAdvertisement(formData: FormData) {
 
 export async function updateAdvertisement(formData: FormData) {
   try {
-    await requireAdmin();
+    await requireAdmin(authOptions);
 
     const id = formData.get("id") as string;
     const position = formData.get("position") as string;
@@ -199,7 +200,7 @@ export async function updateAdvertisement(formData: FormData) {
 
 export async function deleteAdvertisement(id: string) {
   try {
-    await requireAdmin();
+    await requireAdmin(authOptions);
 
     await prisma.advertisement.delete({
       where: { id },
@@ -220,7 +221,7 @@ export async function deleteAdvertisement(id: string) {
 
 export async function toggleAdvertisementStatus(id: string) {
   try {
-    await requireAdmin();
+    await requireAdmin(authOptions);
 
     const advertisement = await prisma.advertisement.findUnique({
       where: { id },

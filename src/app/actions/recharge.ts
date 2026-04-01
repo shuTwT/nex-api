@@ -2,8 +2,9 @@
 
 import { revalidatePath } from "next/cache";
 import { PaymentServiceFactory, type PaymentMethod } from "@/lib/payment";
-import { requireAuth } from "@/lib/session";
+import { requireAuth } from "@/lib/auth/util";
 import prisma from "@/lib/prisma";
+import { authOptions } from "@/lib/auth/config";
 
 export async function createRechargePayment(params: {
   amount: number;
@@ -11,7 +12,7 @@ export async function createRechargePayment(params: {
   method: PaymentMethod;
 }) {
   try {
-    const sessionUser = await requireAuth();
+    const sessionUser = await requireAuth(authOptions);
 
     const settings = await prisma.systemSetting.findMany({
       where: {
