@@ -5,7 +5,15 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { getCurrentUserProfile, redeemCode } from "@/app/actions/personal";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { getCurrentUserProfile, lookupRedemptionCode, redeemCode } from "@/app/actions/personal";
 import {
   CreditCard,
   Activity,
@@ -13,6 +21,8 @@ import {
   Plus,
   Wallet,
   Ticket,
+  Gift,
+  AlertTriangle,
 } from "lucide-react";
 import { RechargeDialog } from "@/components/recharge-dialog";
 import { toast } from "sonner";
@@ -36,6 +46,12 @@ export default function PersonalPage() {
   const [rechargeDialogOpen, setRechargeDialogOpen] = useState(false);
   const [redeemInput, setRedeemInput] = useState("");
   const [isRedeeming, setIsRedeeming] = useState(false);
+  const [confirmDialog, setConfirmDialog] = useState<{
+    open: boolean;
+    type: string;
+    planName: string | null;
+    credits: number | null;
+  }>({ open: false, type: "", planName: null, credits: null });
 
   useEffect(() => {
     loadProfile();
@@ -59,10 +75,27 @@ export default function PersonalPage() {
   async function handleRedeem() {
     if (!redeemInput.trim()) return;
     setIsRedeeming(true);
+    const result = await lookupRedemptionCode(redeemInput);
+    if (result.success && result.data) {
+      setConfirmDialog({
+        open: true,
+        type: result.data.type,
+        planName: result.data.planName,
+        credits: result.data.credits,
+      });
+    } else {
+      toast.error(result.error || "查询失败");
+    }
+    setIsRedeeming(false);
+  }
+
+  async function handleConfirmRedeem() {
+    setIsRedeeming(true);
     const result = await redeemCode(redeemInput);
     if (result.success) {
       toast.success(result.message || "兑换成功");
       setRedeemInput("");
+      setConfirmDialog({ open: false, type: "", planName: null, credits: null });
       loadProfile();
     } else {
       toast.error(result.error || "兑换失败");
@@ -257,6 +290,84 @@ export default function PersonalPage() {
           </Card>
         </div>
       </div>
+
+      <Dialog
+        open={confirmDialog.open}
+        onOpenChange={(open) => {
+          if (!open) setConfirmDialog((prev) => ({ ...prev, open: false }));
+        }}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <AlertTriangle className="h-5 w-5 text-amber-500" />
+              确认兑换
+            </DialogTitle>
+            <DialogDescription className="space-y-3 pt-2">
+              <p>您即将使用兑换码，请确认以下信息：</p>
+              <div className="rounded-lg bg-slate-50 p-4 space-y-2">
+                {confirmDialog.type === "subscription" ? (
+                  <>
+                    <div className="flex items-center gap-2 text-sm">
+                      <span className="text-slate-500">类型：</span>
+                      <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+                        <Gift className="h-3 w-3 mr-1" />
+                        订阅兑换码
+                      </Badge>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm">
+                      <span className="text-slate-500">订阅计划：</span>
+                      <span className="font-medium text-slate-900">
+                        {confirmDialog.planName || "-"}
+                      </span>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className="flex items-center gap-2 text-sm">
+                      <span className="text-slate-500">类型：</span>
+                      <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-200">
+                        <Coins className="h-3 w-3 mr-1" />
+                        额度兑换码
+                      </Badge>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm">
+                      <span className="text-slate-500">获得额度：</span>
+                      <span className="font-medium text-slate-900">
+                        {(confirmDialog.credits || 0).toLocaleString()} 积分
+                      </span>
+                    </div>
+                  </>
+                )}
+              </div>
+              <p className="text-sm text-amber-600">
+                兑换后不可撤销，确认要继续吗？
+              </p>
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() =>
+                setConfirmDialog((prev) => ({ ...prev, open: false }))
+              }
+              disabled={isRedeeming}
+              className="cursor-pointer"
+            >
+              取消
+            </Button>
+            <Button
+              type="button"
+              onClick={handleConfirmRedeem}
+              disabled={isRedeeming}
+              className="cursor-pointer"
+            >
+              {isRedeeming ? "兑换中..." : "确认兑换"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

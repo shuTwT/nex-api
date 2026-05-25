@@ -57,6 +57,45 @@ export async function getCurrentUserProfile() {
   }
 }
 
+export async function lookupRedemptionCode(codeInput: string) {
+  try {
+    await requireAuth(authOptions);
+
+    const trimmed = codeInput.trim().toUpperCase();
+    if (!trimmed) {
+      return { success: false, error: "请输入兑换码" };
+    }
+
+    const code = await prisma.redemptionCode.findUnique({
+      where: { code: trimmed },
+    });
+
+    if (!code) {
+      return { success: false, error: "兑换码不存在" };
+    }
+
+    if (code.isUsed) {
+      return { success: false, error: "该兑换码已被使用" };
+    }
+
+    if (code.expiresAt && new Date(code.expiresAt) < new Date()) {
+      return { success: false, error: "该兑换码已过期" };
+    }
+
+    return {
+      success: true,
+      data: {
+        type: code.type,
+        planName: code.planName,
+        credits: code.credits,
+      },
+    };
+  } catch (error) {
+    console.error("Error looking up redemption code:", error);
+    return { success: false, error: "查询兑换码失败" };
+  }
+}
+
 export async function redeemCode(codeInput: string) {
   try {
     const sessionUser = await requireAuth(authOptions);
