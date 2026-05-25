@@ -93,6 +93,11 @@ export type SystemSetting = Prisma.SystemSettingModel
  */
 export type Payment = Prisma.PaymentModel
 /**
+ * Model RedemptionCode
+ * 
+ */
+export type RedemptionCode = Prisma.RedemptionCodeModel
+/**
  * Model Advertisement
  * 
  */

@@ -258,6 +258,29 @@ model Payment {
   @@index([createdAt])
 }
 
+model RedemptionCode {
+  id          String    @id @default(cuid())
+  code        String    @unique
+  type        String
+  planId      String?
+  planName    String?
+  credits     Int?
+  expiresAt   DateTime?
+  isUsed      Boolean   @default(false)
+  usedBy      String?
+  usedAt      DateTime?
+  createdBy   String
+  batchId     String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([code])
+  @@index([type])
+  @@index([isUsed])
+  @@index([batchId])
+  @@index([createdBy])
+}
+
 model Advertisement {
   id          String   @id @default(cuid())
   image       String

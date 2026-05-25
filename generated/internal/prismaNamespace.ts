@@ -399,6 +399,7 @@ export const ModelName = {
   AuditLog: 'AuditLog',
   SystemSetting: 'SystemSetting',
   Payment: 'Payment',
+  RedemptionCode: 'RedemptionCode',
   Advertisement: 'Advertisement'
 } as const
 
@@ -415,7 +416,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "account" | "session" | "verificationToken" | "apiCategory" | "api" | "apiParameter" | "apiResponse" | "apiUsage" | "subscriptionPlan" | "subscription" | "apiToken" | "auditLog" | "systemSetting" | "payment" | "advertisement"
+    modelProps: "user" | "account" | "session" | "verificationToken" | "apiCategory" | "api" | "apiParameter" | "apiResponse" | "apiUsage" | "subscriptionPlan" | "subscription" | "apiToken" | "auditLog" | "systemSetting" | "payment" | "redemptionCode" | "advertisement"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1529,6 +1530,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    RedemptionCode: {
+      payload: Prisma.$RedemptionCodePayload<ExtArgs>
+      fields: Prisma.RedemptionCodeFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.RedemptionCodeFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RedemptionCodePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.RedemptionCodeFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RedemptionCodePayload>
+        }
+        findFirst: {
+          args: Prisma.RedemptionCodeFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RedemptionCodePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.RedemptionCodeFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RedemptionCodePayload>
+        }
+        findMany: {
+          args: Prisma.RedemptionCodeFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RedemptionCodePayload>[]
+        }
+        create: {
+          args: Prisma.RedemptionCodeCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RedemptionCodePayload>
+        }
+        createMany: {
+          args: Prisma.RedemptionCodeCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.RedemptionCodeCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RedemptionCodePayload>[]
+        }
+        delete: {
+          args: Prisma.RedemptionCodeDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RedemptionCodePayload>
+        }
+        update: {
+          args: Prisma.RedemptionCodeUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RedemptionCodePayload>
+        }
+        deleteMany: {
+          args: Prisma.RedemptionCodeDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.RedemptionCodeUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.RedemptionCodeUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RedemptionCodePayload>[]
+        }
+        upsert: {
+          args: Prisma.RedemptionCodeUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RedemptionCodePayload>
+        }
+        aggregate: {
+          args: Prisma.RedemptionCodeAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateRedemptionCode>
+        }
+        groupBy: {
+          args: Prisma.RedemptionCodeGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.RedemptionCodeGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.RedemptionCodeCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.RedemptionCodeCountAggregateOutputType> | number
+        }
+      }
+    }
     Advertisement: {
       payload: Prisma.$AdvertisementPayload<ExtArgs>
       fields: Prisma.AdvertisementFieldRefs
@@ -1867,6 +1942,26 @@ export const PaymentScalarFieldEnum = {
 export type PaymentScalarFieldEnum = (typeof PaymentScalarFieldEnum)[keyof typeof PaymentScalarFieldEnum]
 
 
+export const RedemptionCodeScalarFieldEnum = {
+  id: 'id',
+  code: 'code',
+  type: 'type',
+  planId: 'planId',
+  planName: 'planName',
+  credits: 'credits',
+  expiresAt: 'expiresAt',
+  isUsed: 'isUsed',
+  usedBy: 'usedBy',
+  usedAt: 'usedAt',
+  createdBy: 'createdBy',
+  batchId: 'batchId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type RedemptionCodeScalarFieldEnum = (typeof RedemptionCodeScalarFieldEnum)[keyof typeof RedemptionCodeScalarFieldEnum]
+
+
 export const AdvertisementScalarFieldEnum = {
   id: 'id',
   image: 'image',
@@ -2049,6 +2144,7 @@ export type GlobalOmitConfig = {
   auditLog?: Prisma.AuditLogOmit
   systemSetting?: Prisma.SystemSettingOmit
   payment?: Prisma.PaymentOmit
+  redemptionCode?: Prisma.RedemptionCodeOmit
   advertisement?: Prisma.AdvertisementOmit
 }
 

@@ -66,6 +66,7 @@ export const ModelName = {
   AuditLog: 'AuditLog',
   SystemSetting: 'SystemSetting',
   Payment: 'Payment',
+  RedemptionCode: 'RedemptionCode',
   Advertisement: 'Advertisement'
 } as const
 
@@ -308,6 +309,26 @@ export const PaymentScalarFieldEnum = {
 } as const
 
 export type PaymentScalarFieldEnum = (typeof PaymentScalarFieldEnum)[keyof typeof PaymentScalarFieldEnum]
+
+
+export const RedemptionCodeScalarFieldEnum = {
+  id: 'id',
+  code: 'code',
+  type: 'type',
+  planId: 'planId',
+  planName: 'planName',
+  credits: 'credits',
+  expiresAt: 'expiresAt',
+  isUsed: 'isUsed',
+  usedBy: 'usedBy',
+  usedAt: 'usedAt',
+  createdBy: 'createdBy',
+  batchId: 'batchId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type RedemptionCodeScalarFieldEnum = (typeof RedemptionCodeScalarFieldEnum)[keyof typeof RedemptionCodeScalarFieldEnum]
 
 
 export const AdvertisementScalarFieldEnum = {
