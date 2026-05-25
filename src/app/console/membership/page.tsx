@@ -86,6 +86,11 @@ export default function MembershipPage() {
       return;
     }
 
+    if (paymentMethods.length === 0) {
+      toast.error("暂无可用支付方式，请先在系统设置中配置支付渠道");
+      return;
+    }
+
     if (!selectedPaymentMethod) {
       toast.error("请选择支付方式");
       return;
@@ -206,15 +211,19 @@ export default function MembershipPage() {
         </Card>
       )}
 
-      {paymentMethods.length > 0 && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Wallet className="h-5 w-5" />
-              支付方式
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Wallet className="h-5 w-5" />
+            支付方式
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          {paymentMethods.length === 0 ? (
+            <p className="text-sm text-amber-600">
+              暂无可用支付方式，请联系管理员在系统设置中配置支付渠道
+            </p>
+          ) : (
             <div className="grid gap-3 md:grid-cols-3">
               {paymentMethods.map((method) => {
                 const methodInfo = paymentMethodLabels[method];
@@ -245,9 +254,9 @@ export default function MembershipPage() {
                 );
               })}
             </div>
-          </CardContent>
-        </Card>
-      )}
+          )}
+        </CardContent>
+      </Card>
 
       <div>
         <h2 className="text-lg font-semibold text-slate-900 mb-4">
