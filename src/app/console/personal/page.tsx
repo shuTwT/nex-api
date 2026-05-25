@@ -304,7 +304,7 @@ export default function PersonalPage() {
               确认兑换
             </DialogTitle>
             <DialogDescription className="space-y-3 pt-2">
-              <p>您即将使用兑换码，请确认以下信息：</p>
+              <div>您即将使用兑换码，请确认以下信息：</div>
               <div className="rounded-lg bg-slate-50 p-4 space-y-2">
                 {confirmDialog.type === "subscription" ? (
                   <>
@@ -340,9 +340,9 @@ export default function PersonalPage() {
                   </>
                 )}
               </div>
-              <p className="text-sm text-amber-600">
+              <div className="text-sm text-amber-600">
                 兑换后不可撤销，确认要继续吗？
-              </p>
+              </div>
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
