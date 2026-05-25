@@ -303,48 +303,51 @@ export default function PersonalPage() {
               <AlertTriangle className="h-5 w-5 text-amber-500" />
               确认兑换
             </DialogTitle>
-            <DialogDescription className="space-y-3 pt-2">
-              <div>您即将使用兑换码，请确认以下信息：</div>
-              <div className="rounded-lg bg-slate-50 p-4 space-y-2">
-                {confirmDialog.type === "subscription" ? (
-                  <>
-                    <div className="flex items-center gap-2 text-sm">
-                      <span className="text-slate-500">类型：</span>
-                      <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
-                        <Gift className="h-3 w-3 mr-1" />
-                        订阅兑换码
-                      </Badge>
-                    </div>
-                    <div className="flex items-center gap-2 text-sm">
-                      <span className="text-slate-500">订阅计划：</span>
-                      <span className="font-medium text-slate-900">
-                        {confirmDialog.planName || "-"}
-                      </span>
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    <div className="flex items-center gap-2 text-sm">
-                      <span className="text-slate-500">类型：</span>
-                      <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-200">
-                        <Coins className="h-3 w-3 mr-1" />
-                        额度兑换码
-                      </Badge>
-                    </div>
-                    <div className="flex items-center gap-2 text-sm">
-                      <span className="text-slate-500">获得额度：</span>
-                      <span className="font-medium text-slate-900">
-                        {(confirmDialog.credits || 0).toLocaleString()} 积分
-                      </span>
-                    </div>
-                  </>
-                )}
-              </div>
-              <div className="text-sm text-amber-600">
-                兑换后不可撤销，确认要继续吗？
-              </div>
+            <DialogDescription>
+              您即将使用兑换码，请确认以下信息：
             </DialogDescription>
           </DialogHeader>
+
+          <div className="rounded-lg bg-slate-50 p-4 space-y-2">
+            {confirmDialog.type === "subscription" ? (
+              <>
+                <div className="flex items-center gap-2 text-sm">
+                  <span className="text-slate-500">类型：</span>
+                  <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+                    <Gift className="h-3 w-3 mr-1" />
+                    订阅兑换码
+                  </Badge>
+                </div>
+                <div className="flex items-center gap-2 text-sm">
+                  <span className="text-slate-500">订阅计划：</span>
+                  <span className="font-medium text-slate-900">
+                    {confirmDialog.planName || "-"}
+                  </span>
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="flex items-center gap-2 text-sm">
+                  <span className="text-slate-500">类型：</span>
+                  <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-200">
+                    <Coins className="h-3 w-3 mr-1" />
+                    额度兑换码
+                  </Badge>
+                </div>
+                <div className="flex items-center gap-2 text-sm">
+                  <span className="text-slate-500">获得额度：</span>
+                  <span className="font-medium text-slate-900">
+                    {(confirmDialog.credits || 0).toLocaleString()} 积分
+                  </span>
+                </div>
+              </>
+            )}
+          </div>
+
+          <p className="text-sm text-amber-600">
+            兑换后不可撤销，确认要继续吗？
+          </p>
+
           <DialogFooter>
             <Button
               type="button"
