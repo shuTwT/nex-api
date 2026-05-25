@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { checkSystemInitialized } from "@/app/actions/system";
 import { InitializationForm } from "@/components/initialization-form";
 
 export function InitCheck({ children }: { children: React.ReactNode }) {
@@ -9,7 +8,8 @@ export function InitCheck({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     async function checkInit() {
-      const result = await checkSystemInitialized();
+      const response = await fetch("/api/system/initialized");
+      const result = await response.json();
       setIsInitialized(result.initialized);
     }
     checkInit();

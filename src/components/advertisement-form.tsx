@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { createAdvertisement, updateAdvertisement } from "@/app/actions/advertisements";
+import { api } from "@/lib/api-client";
 import { AdPosition, AdPositionOptions } from "@/types/ad-position";
 import { ImageUpload } from "@/components/image-upload";
 
@@ -45,13 +45,13 @@ export function AdvertisementForm({ advertisement, onSuccess, formId }: Advertis
 
   const isEdit = !!advertisement;
 
-  async function handleSubmit(formData: FormData) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
     setIsLoading(true);
     setError(null);
 
-    if (position) {
-      formData.set("position", position);
-    }
+    const formData = new FormData(e.currentTarget);
+    if (position) formData.set("position", position);
 
     if (!imageUrl) {
       setError("请上传广告图片");
@@ -60,11 +60,12 @@ export function AdvertisementForm({ advertisement, onSuccess, formId }: Advertis
     }
 
     formData.set("image", imageUrl);
+    const body = Object.fromEntries(formData.entries());
 
     try {
       const result = isEdit
-        ? await updateAdvertisement(formData)
-        : await createAdvertisement(formData);
+        ? await api.put(`/api/advertisements/${body.id}`, body)
+        : await api.post("/api/advertisements", body);
 
       if (result.success) {
         onSuccess();
@@ -79,7 +80,7 @@ export function AdvertisementForm({ advertisement, onSuccess, formId }: Advertis
   }
 
   return (
-    <form id={formId} action={handleSubmit} className="space-y-4">
+    <form id={formId} onSubmit={handleSubmit} className="space-y-4">
       {advertisement?.id && (
         <input type="hidden" name="id" value={advertisement.id} />
       )}

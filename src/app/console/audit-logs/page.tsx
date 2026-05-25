@@ -19,7 +19,7 @@ import {
   Clock,
   Trash2
 } from "lucide-react";
-import { getAuditLogs, getAuditLogStats, exportAuditLogs } from "@/app/actions/audit-logs";
+import { api } from "@/lib/api-client";
 import { DeleteAuditLogDialog } from "@/components/delete-audit-log-dialog";
 import { Pagination } from "@/components/pagination";
 
@@ -79,7 +79,7 @@ export default function AuditLogsPage() {
 
   async function loadLogs() {
     setIsLoading(true);
-    const result = await getAuditLogs({
+    const result = await api.paginated("/api/audit-logs", {
       search: searchQuery,
       level: selectedLevel,
       status: selectedStatus,
@@ -99,7 +99,7 @@ export default function AuditLogsPage() {
   }
 
   async function loadStats() {
-    const result = await getAuditLogStats();
+    const result = await api.get("/api/audit-logs/stats");
     if (result.success && result.data) {
       setStats(result.data);
     }
@@ -139,7 +139,7 @@ export default function AuditLogsPage() {
   }
 
   async function handleExport() {
-    const result = await exportAuditLogs({
+    const result = await api.get("/api/audit-logs/export", {
       level: selectedLevel,
       status: selectedStatus,
       startDate,

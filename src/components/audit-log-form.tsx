@@ -12,7 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { createAuditLog, updateAuditLog } from "@/app/actions/audit-logs";
+import { api } from "@/lib/api-client";
 
 interface AuditLog {
   id: string;
@@ -46,21 +46,17 @@ export function AuditLogForm({ auditLog, onClose, onSuccess, formId }: AuditLogF
   const [metadata, setMetadata] = useState(auditLog?.metadata || "");
   const isEdit = !!auditLog;
 
-  async function handleSubmit(formData: FormData) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
     setIsLoading(true);
     setError(null);
 
-    formData.set("action", action);
-    formData.set("resource", resource);
-    formData.set("details", details);
-    formData.set("ipAddress", ipAddress);
-    formData.set("userAgent", userAgent);
-    formData.set("level", level);
-    formData.set("status", status);
-    formData.set("metadata", metadata);
+    const body = { action, resource, details, ipAddress, userAgent, level, status, metadata };
 
     try {
-      const result = isEdit ? await updateAuditLog(formData) : await createAuditLog(formData);
+      const result = isEdit
+        ? await api.put(`/api/audit-logs/${auditLog!.id}`, body)
+        : await api.post("/api/audit-logs", body);
 
       if (result.success) {
         onSuccess();
@@ -76,7 +72,7 @@ export function AuditLogForm({ auditLog, onClose, onSuccess, formId }: AuditLogF
   }
 
   return (
-    <form id={formId} action={handleSubmit} className="space-y-4">
+    <form id={formId} onSubmit={handleSubmit} className="space-y-4">
       {isEdit && <input type="hidden" name="id" value={auditLog.id} />}
 
       <div className="space-y-2">

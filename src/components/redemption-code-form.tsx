@@ -10,10 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  createRedemptionCodes,
-  getSubscriptionPlansForSelect,
-} from "@/app/actions/redemption-codes";
+import { api } from "@/lib/api-client";
 
 interface RedemptionCodeFormProps {
   onSuccess: () => void;
@@ -33,7 +30,7 @@ export function RedemptionCodeForm({ onSuccess, formId }: RedemptionCodeFormProp
   useEffect(() => {
     async function loadPlans() {
       setPlansLoading(true);
-      const result = await getSubscriptionPlansForSelect();
+      const result = await api.get("/api/redemption-codes/plans");
       if (result.success && result.data) {
         setPlans(result.data);
       }
@@ -42,23 +39,17 @@ export function RedemptionCodeForm({ onSuccess, formId }: RedemptionCodeFormProp
     loadPlans();
   }, []);
 
-  async function handleSubmit(formData: FormData) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
     setError(null);
 
-    formData.set("type", type);
-    formData.set("count", count.toString());
-    if (type === "subscription") {
-      formData.set("planId", planId);
-    }
-    if (type === "quota") {
-      formData.set("credits", credits.toString());
-    }
-    if (expiresAt) {
-      formData.set("expiresAt", new Date(expiresAt).toISOString());
-    }
+    const body: Record<string, unknown> = { type, count };
+    if (type === "subscription") body.planId = planId;
+    if (type === "quota") body.credits = credits;
+    if (expiresAt) body.expiresAt = new Date(expiresAt).toISOString();
 
     try {
-      const result = await createRedemptionCodes(formData);
+      const result = await api.post("/api/redemption-codes", body);
 
       if (result.success) {
         onSuccess();
@@ -71,7 +62,7 @@ export function RedemptionCodeForm({ onSuccess, formId }: RedemptionCodeFormProp
   }
 
   return (
-    <form id={formId} action={handleSubmit} className="space-y-4">
+    <form id={formId} onSubmit={handleSubmit} className="space-y-4">
       <div className="grid gap-4 md:grid-cols-2">
         <div className="space-y-2">
           <Label>兑换码类型 *</Label>

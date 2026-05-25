@@ -13,8 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Loader2, Coins } from "lucide-react";
-import { getPaymentSettings } from "@/app/actions/payment-settings";
-import { createRechargePayment } from "@/app/actions/recharge";
+import { api } from "@/lib/api-client";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 
@@ -45,7 +44,7 @@ export function RechargeDialog({ open, onOpenChange }: RechargeDialogProps) {
 
   async function loadSettings() {
     setLoading(true);
-    const result = await getPaymentSettings();
+    const result = await api.get("/api/payment/settings");
     if (result.success && result.data) {
       setSettings(result.data);
       if (result.data.mockEnabled) {
@@ -73,10 +72,10 @@ export function RechargeDialog({ open, onOpenChange }: RechargeDialogProps) {
 
     setProcessing(true);
     try {
-      const result = await createRechargePayment({
+      const result = await api.post("/api/recharge", {
         amount: parseFloat(amount),
         credits,
-        method: paymentMethod as any,
+        method: paymentMethod,
       });
 
       if (result.success && result.data) {

@@ -13,7 +13,7 @@ import {
   Filler,
 } from "chart.js";
 import { Line } from "react-chartjs-2";
-import { getUsageTrend } from "@/app/actions/dashboard";
+import { api } from "@/lib/api-client";
 
 ChartJS.register(
   CategoryScale,
@@ -46,7 +46,7 @@ export function UsageTrendChart({ className }: UsageTrendChartProps) {
 
   async function loadChartData() {
     setIsLoading(true);
-    const result = await getUsageTrend();
+    const result = await api.get("/api/dashboard/usage-trend");
 
     if (result.success && result.data) {
       setChartData(result.data);

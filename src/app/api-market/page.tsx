@@ -22,7 +22,7 @@ import {
 } from "lucide-react";
 import { MainLayout } from "@/components/main-layout";
 import { InlineAd } from "@/components/ads";
-import { getMarketplaceApis, getMarketplaceStats } from "@/app/actions/marketplace";
+import { api } from "@/lib/api-client";
 import { AdPosition } from "@/types/ad-position";
 
 interface MarketplaceApi {
@@ -63,8 +63,8 @@ export default function ApiMarketPage() {
   async function loadData() {
     setIsLoading(true);
     const [apisResult, statsResult] = await Promise.all([
-      getMarketplaceApis(),
-      getMarketplaceStats(),
+      api.get("/api/marketplace/apis"),
+      api.get("/api/marketplace/stats"),
     ]);
 
     if (apisResult.success && apisResult.data) {

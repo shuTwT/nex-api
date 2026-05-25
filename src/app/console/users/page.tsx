@@ -24,7 +24,7 @@ import {
   Calendar,
   Users as UsersIcon
 } from "lucide-react";
-import { getUsers, getUserStats } from "@/app/actions/users";
+import { api } from "@/lib/api-client";
 import { UserForm } from "@/components/user-form";
 import { DeleteUserDialog } from "@/components/delete-user-dialog";
 import { Pagination } from "@/components/pagination";
@@ -77,7 +77,7 @@ export default function UsersPage() {
 
   async function loadUsers() {
     setIsLoading(true);
-    const result = await getUsers({
+    const result = await api.paginated("/api/users", {
       role: selectedRole,
       search: searchQuery,
       page: currentPage,
@@ -94,7 +94,7 @@ export default function UsersPage() {
   }
 
   async function loadStats() {
-    const result = await getUserStats();
+    const result = await api.get("/api/users/stats");
     if (result.success && result.data) {
       setStats(result.data);
     }

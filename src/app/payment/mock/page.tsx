@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { CheckCircle2, XCircle, Loader2 } from "lucide-react";
 import { MainLayout } from "@/components/main-layout";
-import { getPaymentInfo } from "@/app/actions/payment";
+import { api } from "@/lib/api-client";
 
 export default function MockPaymentPage() {
   const searchParams = useSearchParams();
@@ -28,7 +28,7 @@ export default function MockPaymentPage() {
 
   const loadPaymentInfo = async () => {
     try {
-      const result = await getPaymentInfo(outTradeNo!);
+      const result = await api.get(`/api/payment/${outTradeNo}`);
       if (result.success && result.data) {
         setPayment(result.data);
       } else {

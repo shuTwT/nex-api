@@ -13,7 +13,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { getCurrentUserProfile, lookupRedemptionCode, redeemCode } from "@/app/actions/personal";
+import { api } from "@/lib/api-client";
 import {
   CreditCard,
   Activity,
@@ -59,7 +59,7 @@ export default function PersonalPage() {
 
   async function loadProfile() {
     setIsLoading(true);
-    const result = await getCurrentUserProfile();
+    const result = await api.get("/api/personal/profile");
     if (result.success && result.data) {
       setProfile({
         ...result.data,
@@ -75,7 +75,7 @@ export default function PersonalPage() {
   async function handleRedeem() {
     if (!redeemInput.trim()) return;
     setIsRedeeming(true);
-    const result = await lookupRedemptionCode(redeemInput);
+    const result = await api.post("/api/personal/redeem/lookup", { code: redeemInput });
     if (result.success && result.data) {
       setConfirmDialog({
         open: true,
@@ -91,7 +91,7 @@ export default function PersonalPage() {
 
   async function handleConfirmRedeem() {
     setIsRedeeming(true);
-    const result = await redeemCode(redeemInput);
+    const result = await api.post("/api/personal/redeem", { code: redeemInput });
     if (result.success) {
       toast.success(result.message || "兑换成功");
       setRedeemInput("");

@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { CheckCircle2, XCircle, Clock, QrCode, ExternalLink, Loader2 } from "lucide-react";
 import { MainLayout } from "@/components/main-layout";
-import { getPaymentInfo, queryPaymentStatus } from "@/app/actions/payment";
+import { api } from "@/lib/api-client";
 
 export default function PaymentPage() {
   const searchParams = useSearchParams();
@@ -31,7 +31,7 @@ export default function PaymentPage() {
   useEffect(() => {
     if (payment && payment.status === "pending") {
       const interval = setInterval(async () => {
-        const result = await queryPaymentStatus(outTradeNo!);
+        const result = await api.get(`/api/payment/${outTradeNo}/status`);
         if (result.success && result.data) {
           if (result.data.status !== "pending") {
             setPayment(result.data);
@@ -50,7 +50,7 @@ export default function PaymentPage() {
 
   const loadPaymentInfo = async () => {
     try {
-      const result = await getPaymentInfo(outTradeNo!);
+      const result = await api.get(`/api/payment/${outTradeNo}`);
       if (result.success && result.data) {
         setPayment(result.data);
       } else {

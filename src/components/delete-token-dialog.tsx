@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { deleteToken } from "@/app/actions/tokens";
+import { api } from "@/lib/api-client";
 
 interface DeleteTokenDialogProps {
   open: boolean;
@@ -24,7 +24,7 @@ export function DeleteTokenDialog({
   async function handleDelete() {
     setIsLoading(true);
     try {
-      const result = await deleteToken(tokenId);
+      const result = await api.delete(`/api/tokens/${tokenId}`);
       if (result.success) {
         onSuccess();
         onOpenChange(false);

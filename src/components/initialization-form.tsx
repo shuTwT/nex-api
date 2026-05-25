@@ -3,22 +3,53 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { initializeSystem } from "@/app/actions/initialize";
+import { api } from "@/lib/api-client";
 import { Zap, Shield, Users, Sparkles, CheckCircle2 } from "lucide-react";
+import { signIn } from "next-auth/react";
+import { useAuth } from "@/hooks/use-auth";
 
 export function InitializationForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { login } = useAuth();
 
-  async function handleSubmit(formData: FormData) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
     setIsLoading(true);
     setError(null);
 
-    try {
-      const result = await initializeSystem(formData);
+    const formData = new FormData(e.currentTarget);
+    const body = Object.fromEntries(formData.entries());
 
-      if (result.success) {
-        window.location.href = "/console";
+    try {
+      const result = await api.post("/api/system/initialize", body);
+
+      if (result.success && result.data) {
+        login(
+          {
+            id: result.data.id,
+            email: result.data.email,
+            username: result.data.username,
+            role: result.data.role,
+            credits: result.data.credits,
+          },
+          ""
+        );
+
+        const loginResult = await signIn("credentials", {
+          email: result.data.email,
+          password: result.data.password,
+          redirect: false,
+        });
+
+        if (loginResult?.error) {
+          setError("初始化成功但自动登录失败，请手动登录");
+          setTimeout(() => {
+            window.location.href = "/auth/signin";
+          }, 2000);
+        } else {
+          window.location.href = "/console";
+        }
       } else {
         setError(result.error || "初始化失败");
       }
@@ -90,7 +121,7 @@ export function InitializationForm() {
               <p className="text-slate-500 text-sm">这是系统的第一个账户，将自动成为管理员</p>
             </div>
 
-            <form action={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
                 <label className="text-sm font-medium text-slate-700">
                   邮箱地址 <span className="text-red-500">*</span>

@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { createSubscriptionPlan, updateSubscriptionPlan } from "@/app/actions/subscription-plans";
+import { api } from "@/lib/api-client";
 
 interface SubscriptionPlan {
   id?: string;
@@ -33,17 +33,20 @@ export function SubscriptionPlanForm({ plan, onSuccess, formId }: SubscriptionPl
 
   const isEdit = !!plan;
 
-  async function handleSubmit(formData: FormData) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
     setIsLoading(true);
     setError(null);
 
+    const formData = new FormData(e.currentTarget);
     formData.set("validityUnit", validityUnit);
     formData.set("creditResetCycle", creditResetCycle);
+    const body = Object.fromEntries(formData.entries());
 
     try {
       const result = isEdit
-        ? await updateSubscriptionPlan(formData)
-        : await createSubscriptionPlan(formData);
+        ? await api.put(`/api/subscription-plans/${body.id}`, body)
+        : await api.post("/api/subscription-plans", body);
 
       if (result.success) {
         onSuccess();
@@ -58,7 +61,7 @@ export function SubscriptionPlanForm({ plan, onSuccess, formId }: SubscriptionPl
   }
 
   return (
-    <form id={formId} action={handleSubmit} className="space-y-4">
+    <form id={formId} onSubmit={handleSubmit} className="space-y-4">
       {plan?.id && (
         <input type="hidden" name="id" value={plan.id} />
       )}

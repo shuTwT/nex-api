@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { MonacoEditor } from "@/components/monaco-editor";
-import { createApi, updateApi } from "@/app/actions/apis";
+import { api as apiClient } from "@/lib/api-client";
 import type { Api } from "@/app/console/api-management/page";
 
 interface ApiFormProps {
@@ -52,24 +52,20 @@ export function ApiForm({ api, categories, onClose, onSuccess, formId }: ApiForm
 }
   `
 
-  async function handleSubmit(formData: FormData) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
     setIsLoading(true);
     setError(null);
 
-    formData.set("name", name);
-    formData.set("alias", alias);
-    formData.set("description", description);
-    formData.set("endpoint", endpoint);
-    formData.set("method", method);
-    formData.set("categoryId", categoryId);
-    formData.set("pricing", pricing);
-    formData.set("documentation", documentation);
-    formData.set("isActive", isActive ? "true" : "false");
-    formData.set("preScript", preScript);
-    formData.set("postScript", postScript);
+    const body = {
+      name, alias, description, endpoint, method, categoryId, pricing: parseInt(pricing) || 0,
+      documentation, isActive, preScript, postScript,
+    };
 
     try {
-      const result = isEdit ? await updateApi(formData) : await createApi(formData);
+      const result = isEdit
+        ? await apiClient.put(`/api/apis/${api!.id}`, body)
+        : await apiClient.post("/api/apis", body);
 
       if (result.success) {
         onSuccess();
@@ -85,7 +81,7 @@ export function ApiForm({ api, categories, onClose, onSuccess, formId }: ApiForm
   }
 
   return (
-    <form id={formId} ref={formRef} action={handleSubmit} className="space-y-4">
+    <form id={formId} ref={formRef} onSubmit={handleSubmit} className="space-y-4">
       {isEdit && <input type="hidden" name="id" value={api.id} />}
 
       <Tabs defaultValue="basic" className="w-full">

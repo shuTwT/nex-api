@@ -10,7 +10,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { deleteSubscriptionPlan } from "@/app/actions/subscription-plans";
+import { api } from "@/lib/api-client";
 import { toast } from "sonner";
 
 interface DeleteSubscriptionPlanDialogProps {
@@ -32,7 +32,7 @@ export function DeleteSubscriptionPlanDialog({
 
   async function handleDelete() {
     setIsDeleting(true);
-    const result = await deleteSubscriptionPlan(planId);
+    const result = await api.delete(`/api/subscription-plans/${planId}`);
     
     if (result.success) {
       toast.success(result.message || "订阅计划已删除");

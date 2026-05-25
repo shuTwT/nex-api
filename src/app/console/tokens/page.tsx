@@ -18,7 +18,7 @@ import {
   CheckCircle,
   Edit
 } from "lucide-react";
-import { getTokens, getTokenStats, toggleTokenStatus } from "@/app/actions/tokens";
+import { api } from "@/lib/api-client";
 import { TokenFormDialog } from "@/components/token-form-dialog";
 import { DeleteTokenDialog } from "@/components/delete-token-dialog";
 import { Pagination } from "@/components/pagination";
@@ -71,7 +71,7 @@ export default function TokensPage() {
 
   async function loadTokens() {
     setIsLoading(true);
-    const result = await getTokens({
+    const result = await api.paginated("/api/tokens", {
       search: searchQuery,
       status: selectedStatus,
       page: currentPage,
@@ -88,7 +88,7 @@ export default function TokensPage() {
   }
 
   async function loadStats() {
-    const result = await getTokenStats();
+    const result = await api.get("/api/tokens/stats");
     if (result.success && result.data) {
       setStats(result.data);
     }
@@ -136,7 +136,7 @@ export default function TokensPage() {
 
   async function handleToggleStatus(id: string) {
     startTransition(async () => {
-      const result = await toggleTokenStatus(id);
+      const result = await api.put(`/api/tokens/${id}/toggle`);
       if (result.success) {
         loadTokens();
         loadStats();

@@ -10,7 +10,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { deleteAuditLog } from "@/app/actions/audit-logs";
+import { api } from "@/lib/api-client";
 
 interface DeleteAuditLogDialogProps {
   open: boolean;
@@ -35,7 +35,7 @@ export function DeleteAuditLogDialog({
     setError(null);
 
     try {
-      const result = await deleteAuditLog(auditLogId);
+      const result = await api.delete(`/api/audit-logs/${auditLogId}`);
       if (result.success) {
         onSuccess();
         onOpenChange(false);

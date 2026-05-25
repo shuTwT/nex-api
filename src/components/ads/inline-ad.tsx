@@ -34,7 +34,7 @@ export function InlineAd({ className = "", size = "md", position }: InlineAdProp
   useEffect(() => {
     async function loadAd() {
       try {
-        const response = await fetch(`/api/advertisements/${position}`);
+        const response = await fetch(`/api/advertisements/by-position/${position}`);
         const result = await response.json();
         if (result.success && result.data) {
           setAd(result.data);

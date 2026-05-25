@@ -15,8 +15,7 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { MainLayout } from "@/components/main-layout";
-import { getMarketplaceApis, getMarketplaceStats } from "@/app/actions/marketplace";
-import { getPublicAnnouncement } from "@/app/actions/system-settings";
+import { api } from "@/lib/api-client";
 
 interface MarketplaceApi {
   id: string;
@@ -62,9 +61,9 @@ export default function Home() {
   async function loadData() {
     setIsLoading(true);
     const [apisResult, statsResult, announcementResult] = await Promise.all([
-      getMarketplaceApis(),
-      getMarketplaceStats(),
-      getPublicAnnouncement(),
+      api.get("/api/marketplace/apis"),
+      api.get("/api/marketplace/stats"),
+      api.get("/api/system-settings/announcement"),
     ]);
 
     if (apisResult.success && apisResult.data) {

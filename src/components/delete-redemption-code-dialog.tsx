@@ -10,10 +10,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import {
-  deleteRedemptionCode,
-  deleteRedemptionCodeBatch,
-} from "@/app/actions/redemption-codes";
+import { api } from "@/lib/api-client";
 import { toast } from "sonner";
 
 interface DeleteRedemptionCodeDialogProps {
@@ -40,8 +37,8 @@ export function DeleteRedemptionCodeDialog({
   async function handleDelete() {
     setIsDeleting(true);
     const result = isBatchDelete
-      ? await deleteRedemptionCodeBatch(batchId!)
-      : await deleteRedemptionCode(codeId!);
+      ? await api.delete("/api/redemption-codes/batch", { batchId: batchId! })
+      : await api.delete(`/api/redemption-codes/${codeId}`);
 
     if (result.success) {
       toast.success(result.message || "兑换码已删除");

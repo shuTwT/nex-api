@@ -10,7 +10,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { deleteUser } from "@/app/actions/users";
+import { api } from "@/lib/api-client";
 import { AlertCircle } from "lucide-react";
 
 interface DeleteUserDialogProps {
@@ -34,7 +34,7 @@ export function DeleteUserDialog({
     setIsLoading(true);
 
     try {
-      const result = await deleteUser(userId);
+      const result = await api.delete(`/api/users/${userId}`);
 
       if (result.success) {
         onSuccess();

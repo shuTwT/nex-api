@@ -10,7 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { createUser, updateUser } from "@/app/actions/users";
+import { api } from "@/lib/api-client";
 
 interface User {
   id: string;
@@ -34,16 +34,23 @@ export function UserForm({ user, onClose, onSuccess, formId }: UserFormProps) {
 
   const isEdit = !!user;
 
-  async function handleSubmit(formData: FormData) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
     setIsLoading(true);
     setError(null);
 
+    const formData = new FormData(e.currentTarget);
     formData.set("role", role);
+
+    const body = Object.fromEntries(formData.entries());
+    if (!isEdit) {
+      body.credits = String(parseInt(body.credits as string) || 1000);
+    }
 
     try {
       const result = isEdit
-        ? await updateUser(formData)
-        : await createUser(formData);
+        ? await api.put(`/api/users/${body.id}`, body)
+        : await api.post("/api/users", body);
 
       if (result.success) {
         onSuccess();
@@ -59,7 +66,7 @@ export function UserForm({ user, onClose, onSuccess, formId }: UserFormProps) {
   }
 
   return (
-    <form id={formId} action={handleSubmit} className="space-y-4">
+    <form id={formId} onSubmit={handleSubmit} className="space-y-4">
       {isEdit && (
         <input type="hidden" name="id" value={user.id} />
       )}

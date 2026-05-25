@@ -21,11 +21,7 @@ import {
   Check,
   Download,
 } from "lucide-react";
-import {
-  getRedemptionCodes,
-  deleteRedemptionCodes,
-  exportRedemptionCodes,
-} from "@/app/actions/redemption-codes";
+import { api } from "@/lib/api-client";
 import { RedemptionCodeForm } from "@/components/redemption-code-form";
 import { DeleteRedemptionCodeDialog } from "@/components/delete-redemption-code-dialog";
 import { Pagination } from "@/components/pagination";
@@ -81,7 +77,7 @@ export default function RedemptionCodesPage() {
 
   const loadCodes = useCallback(async () => {
     setIsLoading(true);
-    const result = await getRedemptionCodes({
+    const result = await api.paginated("/api/redemption-codes", {
       page: currentPage,
       limit: pageSize,
     });
@@ -143,7 +139,7 @@ export default function RedemptionCodesPage() {
       toast.error("请先选择兑换码");
       return;
     }
-    const result = await deleteRedemptionCodes(Array.from(selectedIds));
+    const result = await api.post("/api/redemption-codes/batch", { ids: Array.from(selectedIds) });
     if (result.success) {
       toast.success(result.message || "删除成功");
       handleDeleteSuccess();
@@ -155,7 +151,7 @@ export default function RedemptionCodesPage() {
   async function handleExport() {
     const ids =
       selectedIds.size > 0 ? Array.from(selectedIds) : undefined;
-    const result = await exportRedemptionCodes(ids);
+    const result = await api.get("/api/redemption-codes/export", ids ? { ids: ids.join(",") } : undefined);
     if (result.success && result.data) {
       const blob = new Blob([result.data], {
         type: "text/csv;charset=utf-8;",

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { createCategory, updateCategory } from "@/app/actions/categories";
+import { api } from "@/lib/api-client";
 
 interface CategoryFormProps {
   category?: {
@@ -22,12 +22,18 @@ export function CategoryForm({ category, onClose, onSuccess, formId }: CategoryF
   const [error, setError] = useState<string | null>(null);
   const isEdit = !!category;
 
-  async function handleSubmit(formData: FormData) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
     setIsLoading(true);
     setError(null);
 
+    const formData = new FormData(e.currentTarget);
+    const body = Object.fromEntries(formData.entries());
+
     try {
-      const result = isEdit ? await updateCategory(formData) : await createCategory(formData);
+      const result = isEdit
+        ? await api.put(`/api/categories/${body.id}`, body)
+        : await api.post("/api/categories", body);
 
       if (result.success) {
         onSuccess();
@@ -43,7 +49,7 @@ export function CategoryForm({ category, onClose, onSuccess, formId }: CategoryF
   }
 
   return (
-    <form id={formId} action={handleSubmit} className="space-y-4">
+    <form id={formId} onSubmit={handleSubmit} className="space-y-4">
       {isEdit && <input type="hidden" name="id" value={category.id} />}
 
       <div className="space-y-2">

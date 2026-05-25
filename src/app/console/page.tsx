@@ -9,7 +9,7 @@ import {
   DollarSign,
   Activity,
 } from "lucide-react";
-import { getDashboardStats, getRecentActivity, getTopApis } from "@/app/actions/dashboard";
+import { api } from "@/lib/api-client";
 import { UsageTrendChart } from "@/components/usage-trend-chart";
 
 interface DashboardStats {
@@ -47,9 +47,9 @@ export default function ConsoleDashboard() {
   async function loadData() {
     setIsLoading(true);
     const [statsResult, activityResult, topApisResult] = await Promise.all([
-      getDashboardStats(),
-      getRecentActivity(),
-      getTopApis(),
+      api.get("/api/dashboard/stats"),
+      api.get("/api/dashboard/activity"),
+      api.get("/api/dashboard/top-apis"),
     ]);
 
     if (statsResult.success && statsResult.data) {

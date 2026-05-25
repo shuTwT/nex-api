@@ -12,7 +12,7 @@ import {
   Activity,
   BarChart3
 } from "lucide-react";
-import { getUsageStats } from "@/app/actions/usage";
+import { api } from "@/lib/api-client";
 
 interface UsageStats {
   freeCredits: number;
@@ -32,7 +32,7 @@ export default function UsagePage() {
   useEffect(() => {
     async function loadStats() {
       setIsLoading(true);
-      const result = await getUsageStats();
+      const result = await api.get("/api/usage");
       if (result.success && result.data) {
         setStats(result.data);
       }

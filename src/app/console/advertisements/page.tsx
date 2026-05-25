@@ -23,11 +23,7 @@ import {
   Power,
   Eye
 } from "lucide-react";
-import { 
-  getAdvertisements, 
-  getAdvertisementStats,
-  toggleAdvertisementStatus 
-} from "@/app/actions/advertisements";
+import { api } from "@/lib/api-client";
 import { AdvertisementForm } from "@/components/advertisement-form";
 import { DeleteAdvertisementDialog } from "@/components/delete-advertisement-dialog";
 import { Pagination } from "@/components/pagination";
@@ -98,7 +94,7 @@ export default function AdvertisementsPage() {
       params.isActive = selectedStatus === "active";
     }
 
-    const result = await getAdvertisements(params);
+    const result = await api.paginated("/api/advertisements", params);
     
     if (result.success && result.data) {
       setAdvertisements(result.data);
@@ -110,7 +106,7 @@ export default function AdvertisementsPage() {
   }
 
   async function loadStats() {
-    const result = await getAdvertisementStats();
+    const result = await api.get("/api/advertisements/stats");
     if (result.success && result.data) {
       setStats(result.data);
     }
@@ -147,7 +143,7 @@ export default function AdvertisementsPage() {
   }
 
   async function handleToggleStatus(ad: Advertisement) {
-    const result = await toggleAdvertisementStatus(ad.id);
+    const result = await api.put(`/api/advertisements/${ad.id}/toggle`);
     if (result.success) {
       startTransition(() => {
         loadAdvertisements();

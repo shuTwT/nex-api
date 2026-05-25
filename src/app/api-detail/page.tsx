@@ -24,7 +24,7 @@ import {
   Zap
 } from "lucide-react";
 import { useState, useEffect, Suspense } from "react";
-import { getApiDetail } from "@/app/actions/marketplace";
+import { api as apiClient } from "@/lib/api-client";
 
 interface ApiDetail {
   id: string;
@@ -66,7 +66,7 @@ function ApiDetailContent() {
     if (!apiId) return;
     
     setIsLoading(true);
-    const result = await getApiDetail(apiId);
+    const result = await apiClient.get(`/api/marketplace/apis/${apiId}`);
     if (result.success && result.data) {
       setApi(result.data);
     }

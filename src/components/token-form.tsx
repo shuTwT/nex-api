@@ -11,7 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { createToken, updateToken } from "@/app/actions/tokens";
+import { api } from "@/lib/api-client";
 
 interface Token {
   id: string;
@@ -35,15 +35,20 @@ export function TokenForm({ token, onClose, onSuccess, formId }: TokenFormProps)
   const [permissions, setPermissions] = useState(token?.permissions || "read");
   const isEdit = !!token;
 
-  async function handleSubmit(formData: FormData) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
     setIsLoading(true);
     setError(null);
     setCreatedToken(null);
 
+    const formData = new FormData(e.currentTarget);
     formData.set("permissions", permissions);
+    const body = Object.fromEntries(formData.entries());
 
     try {
-      const result = isEdit ? await updateToken(formData) : await createToken(formData);
+      const result = isEdit
+        ? await api.put(`/api/tokens/${body.id}`, body)
+        : await api.post("/api/tokens", body);
 
       if (result.success) {
         if (!isEdit && result.data) {
@@ -108,7 +113,7 @@ export function TokenForm({ token, onClose, onSuccess, formId }: TokenFormProps)
   }
 
   return (
-    <form id={formId} action={handleSubmit} className="space-y-4">
+    <form id={formId} onSubmit={handleSubmit} className="space-y-4">
       {isEdit && <input type="hidden" name="id" value={token.id} />}
 
       <div className="space-y-2">

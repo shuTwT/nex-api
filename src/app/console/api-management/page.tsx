@@ -25,13 +25,7 @@ import {
   Database,
   FolderOpen,
 } from "lucide-react";
-import {
-  getApis,
-  getApiStats,
-  toggleApiStatus,
-  deleteApi,
-} from "@/app/actions/apis";
-import { getCategories } from "@/app/actions/categories";
+import { api } from "@/lib/api-client";
 import { Pagination } from "@/components/pagination";
 import { ApiFormDialog } from "./components/api-form-dialog";
 import { CategoryFormDialog } from "./components/category-form-dialog";
@@ -104,7 +98,7 @@ export default function APIManagementPage() {
 
   async function loadApis() {
     setIsLoading(true);
-    const result = await getApis({
+    const result = await api.paginated("/api/apis", {
       category: selectedCategory,
       search: searchQuery,
       status: selectedStatus,
@@ -122,14 +116,14 @@ export default function APIManagementPage() {
   }
 
   async function loadCategories() {
-    const result = await getCategories();
+    const result = await api.get("/api/categories");
     if (result.success && result.data) {
       setCategories(result.data);
     }
   }
 
   async function loadStats() {
-    const result = await getApiStats();
+    const result = await api.get("/api/apis/stats");
     if (result.success && result.data) {
       setStats(result.data);
     }
@@ -161,7 +155,7 @@ export default function APIManagementPage() {
 
   async function handleToggleStatus(id: string) {
     startTransition(async () => {
-      const result = await toggleApiStatus(id);
+      const result = await api.put(`/api/apis/${id}/toggle`);
       if (result.success) {
         loadApis();
         loadStats();
@@ -177,7 +171,7 @@ export default function APIManagementPage() {
     }
 
     startTransition(async () => {
-      const result = await deleteApi(id);
+      const result = await api.delete(`/api/apis/${id}`);
       if (result.success) {
         loadApis();
         loadStats();
@@ -198,7 +192,7 @@ export default function APIManagementPage() {
   }
 
   async function handleApiFormSuccess() {
-    const result = await getApis({
+    const result = await api.paginated("/api/apis", {
       category: selectedCategory,
       search: searchQuery,
       status: selectedStatus,

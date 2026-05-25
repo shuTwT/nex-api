@@ -10,7 +10,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { deleteAdvertisement } from "@/app/actions/advertisements";
+import { api } from "@/lib/api-client";
 
 interface DeleteAdvertisementDialogProps {
   open: boolean;
@@ -32,7 +32,7 @@ export function DeleteAdvertisementDialog({
   async function handleDelete() {
     setIsLoading(true);
     try {
-      const result = await deleteAdvertisement(advertisementId);
+      const result = await api.delete(`/api/advertisements/${advertisementId}`);
       if (result.success) {
         onSuccess();
         onOpenChange(false);

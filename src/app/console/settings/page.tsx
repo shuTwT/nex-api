@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Save, Settings as SettingsIcon, Upload, Plus, Trash2, ChevronDown, ChevronUp } from "lucide-react";
-import { getSystemSettings, updateSystemSettings, getDefaultSettings } from "@/app/actions/system-settings";
+import { api } from "@/lib/api-client";
 import { toast } from "sonner";
 
 interface SystemSetting {
@@ -83,7 +83,7 @@ export default function SettingsPage() {
   }, []);
 
   async function loadSettings() {
-    const result = await getSystemSettings();
+    const result = await api.get("/api/system-settings");
     if (result.success && result.data) {
       const settingsMap: Record<string, string> = {};
       result.data.forEach((s: any) => {
@@ -103,8 +103,8 @@ export default function SettingsPage() {
   }
 
   async function loadDefaultSettings() {
-    const defaults = await getDefaultSettings();
-    setDefaultSettings(defaults as DefaultSettings);
+    const defaults = await api.get("/api/system-settings/defaults");
+    setDefaultSettings(defaults.data as DefaultSettings);
   }
 
   function handleSettingChange(key: string, value: string) {
@@ -124,7 +124,7 @@ export default function SettingsPage() {
       value: JSON.stringify(oauthProviders),
     });
 
-    const result = await updateSystemSettings(settingsToUpdate);
+    const result = await api.put("/api/system-settings", { settings: settingsToUpdate });
     if (result.success) {
       toast.success("设置保存成功");
     }

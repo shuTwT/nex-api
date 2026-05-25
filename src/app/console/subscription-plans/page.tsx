@@ -12,7 +12,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Plus, Edit, Trash2, CreditCard, Calendar, DollarSign, ArrowUpDown } from "lucide-react";
-import { getSubscriptionPlans } from "@/app/actions/subscription-plans";
+import { api } from "@/lib/api-client";
 import { SubscriptionPlanForm } from "@/components/subscription-plan-form";
 import { DeleteSubscriptionPlanDialog } from "@/components/delete-subscription-plan-dialog";
 import { toast } from "sonner";
@@ -40,7 +40,7 @@ export default function SubscriptionPlansPage() {
 
   async function loadPlans() {
     setIsLoading(true);
-    const result = await getSubscriptionPlans();
+    const result = await api.get("/api/subscription-plans");
     if (result.success && result.data) {
       setPlans(result.data);
     }
