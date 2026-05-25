@@ -1,4 +1,4 @@
-# One API 控制台系统实现总结
+# NexApi 控制台系统实现总结
 
 ## 完成的工作
 
@@ -7,7 +7,7 @@
 - **风格**: Data-Dense Dashboard（数据密集型仪表板）
 - **配色**: 蓝色数据主题 (#1E40AF 主色, #F59E0B CTA色)
 - **字体**: Fira Code / Fira Sans
-- **设计文件**: [design-system/one-api/pages/console.md](file:///Users/shuyuanqi/code/one-api/design-system/one-api/pages/console.md)
+- **设计文件**: [design-system/nex-api/pages/console.md](file:///Users/shuyuanqi/code/one-api/design-system/nex-api/pages/console.md)
 
 ### 📐 控制台布局组件
 
@@ -24,7 +24,7 @@
 **菜单项:**
 1. 概览 - 所有用户可见
 2. 我的会员 - 所有用户可见
-3. 接口管理 - 仅管理员可见
+3. HTTP接口管理 - 仅管理员可见
 4. 用量统计 - 所有用户可见
 5. 账单 - 所有用户可见
 6. 审计日志 - 仅管理员可见
@@ -54,7 +54,7 @@
 - ✅ 历史用量记录
 - ✅ "最受欢迎"标签
 
-### ⚙️ 接口管理页面（管理员）
+### ⚙️ HTTP接口管理页面（管理员）
 
 创建了 [src/app/console/api-management/page.tsx](file:///Users/shuyuanqi/code/one-api/src/app/console/api-management/page.tsx)
 
@@ -126,7 +126,7 @@ src/app/console/
 ├── membership/
 │   └── page.tsx           # 我的会员
 ├── api-management/
-│   └── page.tsx           # 接口管理（管理员）
+│   └── page.tsx           # HTTP接口管理（管理员）
 ├── usage/
 │   └── page.tsx           # 用量统计
 ├── billing/
@@ -157,7 +157,7 @@ src/app/console/
 |------|------|------|
 | `/console` | 概览 | 所有用户 |
 | `/console/membership` | 我的会员 | 所有用户 |
-| `/console/api-management` | 接口管理 | 仅管理员 |
+| `/console/api-management` | HTTP接口管理 | 仅管理员 |
 | `/console/usage` | 用量统计 | 所有用户 |
 | `/console/billing` | 账单 | 所有用户 |
 | `/console/audit-logs` | 审计日志 | 仅管理员 |

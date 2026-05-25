@@ -24,13 +24,13 @@ const getMetadata = async():Promise<Metadata>=>{
     const siteName = await getConfigValue("general","siteName")
     const siteDescription = await getConfigValue("general","siteDescription")
     return {
-      title: siteName||"One API - API 聚合管理系统",
+      title: siteName||"NexApi - API 聚合管理系统",
       description: siteDescription||"一站式 API 聚合平台，提供高质量 API 接口服务",
     }
   }catch(e){
     console.error("Get config value error:", e);
     return {
-      title: "One API - API 聚合管理系统",
+      title: "NexApi - API 聚合管理系统",
       description: "一站式 API 聚合平台，提供高质量 API 接口服务",
     }
   }

@@ -1,6 +1,6 @@
 # Auth Modal Page Overrides
 
-> **PROJECT:** One API
+> **PROJECT:** NexApi
 > **Generated:** 2026-03-13 17:23:15
 > **Page Type:** Authentication
 

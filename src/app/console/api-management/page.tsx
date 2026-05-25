@@ -266,7 +266,7 @@ export default function APIManagementPage() {
       {/* Page Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">接口管理</h1>
+          <h1 className="text-2xl font-bold text-slate-900">HTTP接口管理</h1>
           <p className="text-slate-500 mt-1">管理系统 API 接口</p>
         </div>
         <Button className="gap-2 cursor-pointer" onClick={handleAddApi}>

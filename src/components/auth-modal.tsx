@@ -72,7 +72,7 @@ export function AuthModal({ open, onOpenChange }: AuthModalProps) {
       <DialogContent className="sm:max-w-md">
         <DialogHeader className="space-y-3">
           <DialogTitle className="text-2xl font-bold text-center">
-            欢迎来到 One API
+            欢迎来到 NexApi
           </DialogTitle>
           <DialogDescription className="text-center text-base">
             登录或注册您的账户

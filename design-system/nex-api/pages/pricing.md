@@ -1,6 +1,6 @@
 # Pricing Page Overrides
 
-> **PROJECT:** one API
+> **PROJECT:** nex API
 > **Generated:** 2026-03-13 16:05:33
 > **Page Type:** Pricing / Plans
 

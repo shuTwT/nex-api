@@ -204,7 +204,7 @@ selectIsAdmin(state)       // 选择是否是管理员
 ## 持久化策略
 
 - **存储位置**：localStorage
-- **存储键名**：`one-api-auth`
+- **存储键名**：`nex-api-auth`
 - **存储内容**：user、token、isAuthenticated
 - **自动恢复**：页面加载时自动从 localStorage 恢复状态
 - **安全清理**：登出时自动清除 localStorage
@@ -267,14 +267,14 @@ console.log({ id: user.id, username: user.username });
 
 ```typescript
 // 在浏览器控制台
-localStorage.getItem('one-api-auth')
+localStorage.getItem('nex-api-auth')
 ```
 
 ### 2. **手动清除状态**
 
 ```typescript
 // 在浏览器控制台
-localStorage.removeItem('one-api-auth')
+localStorage.removeItem('nex-api-auth')
 location.reload()
 ```
 

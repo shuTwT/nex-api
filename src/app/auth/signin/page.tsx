@@ -74,7 +74,7 @@ export default function SignInPage() {
               欢迎回来
             </CardTitle>
             <CardDescription className="text-center">
-              登录您的 One API 账户
+              登录您的 NexApi 账户
             </CardDescription>
           </CardHeader>
 

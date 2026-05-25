@@ -2,7 +2,7 @@ import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import type { AuthStore, User } from "@/types/auth";
 
-const STORAGE_KEY = "one-api-auth";
+const STORAGE_KEY = "nex-api-auth";
 
 export const useAuthStore = create<AuthStore>()(
   persist(

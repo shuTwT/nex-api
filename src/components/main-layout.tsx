@@ -38,7 +38,7 @@ export function MainLayout({ children }: MainLayoutProps) {
             <div className="h-8 w-8 rounded-lg bg-blue-600 flex items-center justify-center">
               <Zap className="h-5 w-5 text-white" />
             </div>
-            <span className="text-lg font-semibold">one API 聚合管理系统</span>
+            <span className="text-lg font-semibold">NexApi 聚合管理系统</span>
           </Link>
           <nav className="flex items-center gap-6 mx-auto">
             <Link 
@@ -123,10 +123,10 @@ export function MainLayout({ children }: MainLayoutProps) {
               <div className="h-6 w-6 rounded bg-blue-600 flex items-center justify-center">
                 <Zap className="h-4 w-4 text-white" />
               </div>
-              <span className="text-sm font-semibold">one API 聚合管理系统</span>
+              <span className="text-sm font-semibold">NexApi 聚合管理系统</span>
             </div>
             <p className="text-sm text-gray-500">
-              © 2026 one API. All rights reserved.
+              © 2026 NexApi. All rights reserved.
             </p>
           </div>
         </div>

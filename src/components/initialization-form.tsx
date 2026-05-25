@@ -40,7 +40,7 @@ export function InitializationForm() {
                 <Zap className="h-7 w-7 text-white" />
               </div>
               <div>
-                <h1 className="text-3xl font-bold text-slate-900">One API</h1>
+                <h1 className="text-3xl font-bold text-slate-900">NexApi</h1>
                 <p className="text-sm text-slate-500">聚合管理系统</p>
               </div>
             </div>
@@ -50,7 +50,7 @@ export function InitializationForm() {
             <h2 className="text-4xl font-bold text-slate-900 leading-tight">
               欢迎使用<br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-cyan-600">
-                One API
+                NexApi
               </span>
             </h2>
             <p className="text-lg text-slate-600 leading-relaxed">

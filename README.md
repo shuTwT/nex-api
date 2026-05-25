@@ -1,4 +1,4 @@
-# One API - 全栈 SSR 项目
+# NexApi - 全栈 SSR 项目
 
 一个基于 Next.js 16 的全栈 API 管理系统。
 
@@ -27,7 +27,7 @@
 ## 项目结构
 
 ```
-one-api/
+nex-api/
 ├── prisma/
 │   ├── schema.prisma          # Prisma 数据模型定义
 │   ├── seed.ts                # 数据库种子文件

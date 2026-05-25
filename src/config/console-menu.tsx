@@ -46,7 +46,7 @@ export const consoleMenuItems: MenuItem[] = [
     adminOnly: false,
   },
   {
-    name: "接口管理",
+    name: "HTTP接口管理",
     icon: Settings,
     href: "/console/api-management",
     adminOnly: true,
