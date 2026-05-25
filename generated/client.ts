@@ -126,3 +126,13 @@ export type RedemptionCode = Prisma.RedemptionCodeModel
  * 
  */
 export type Advertisement = Prisma.AdvertisementModel
+/**
+ * Model McpService
+ * 
+ */
+export type McpService = Prisma.McpServiceModel
+/**
+ * Model McpUsage
+ * 
+ */
+export type McpUsage = Prisma.McpUsageModel

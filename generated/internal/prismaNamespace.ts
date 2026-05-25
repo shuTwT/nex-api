@@ -400,7 +400,9 @@ export const ModelName = {
   SystemSetting: 'SystemSetting',
   Payment: 'Payment',
   RedemptionCode: 'RedemptionCode',
-  Advertisement: 'Advertisement'
+  Advertisement: 'Advertisement',
+  McpService: 'McpService',
+  McpUsage: 'McpUsage'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -416,7 +418,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "account" | "session" | "verificationToken" | "apiCategory" | "api" | "apiParameter" | "apiResponse" | "apiUsage" | "subscriptionPlan" | "subscription" | "apiToken" | "auditLog" | "systemSetting" | "payment" | "redemptionCode" | "advertisement"
+    modelProps: "user" | "account" | "session" | "verificationToken" | "apiCategory" | "api" | "apiParameter" | "apiResponse" | "apiUsage" | "subscriptionPlan" | "subscription" | "apiToken" | "auditLog" | "systemSetting" | "payment" | "redemptionCode" | "advertisement" | "mcpService" | "mcpUsage"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1678,6 +1680,154 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    McpService: {
+      payload: Prisma.$McpServicePayload<ExtArgs>
+      fields: Prisma.McpServiceFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.McpServiceFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$McpServicePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.McpServiceFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$McpServicePayload>
+        }
+        findFirst: {
+          args: Prisma.McpServiceFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$McpServicePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.McpServiceFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$McpServicePayload>
+        }
+        findMany: {
+          args: Prisma.McpServiceFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$McpServicePayload>[]
+        }
+        create: {
+          args: Prisma.McpServiceCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$McpServicePayload>
+        }
+        createMany: {
+          args: Prisma.McpServiceCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.McpServiceCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$McpServicePayload>[]
+        }
+        delete: {
+          args: Prisma.McpServiceDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$McpServicePayload>
+        }
+        update: {
+          args: Prisma.McpServiceUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$McpServicePayload>
+        }
+        deleteMany: {
+          args: Prisma.McpServiceDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.McpServiceUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.McpServiceUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$McpServicePayload>[]
+        }
+        upsert: {
+          args: Prisma.McpServiceUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$McpServicePayload>
+        }
+        aggregate: {
+          args: Prisma.McpServiceAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateMcpService>
+        }
+        groupBy: {
+          args: Prisma.McpServiceGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.McpServiceGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.McpServiceCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.McpServiceCountAggregateOutputType> | number
+        }
+      }
+    }
+    McpUsage: {
+      payload: Prisma.$McpUsagePayload<ExtArgs>
+      fields: Prisma.McpUsageFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.McpUsageFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$McpUsagePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.McpUsageFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$McpUsagePayload>
+        }
+        findFirst: {
+          args: Prisma.McpUsageFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$McpUsagePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.McpUsageFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$McpUsagePayload>
+        }
+        findMany: {
+          args: Prisma.McpUsageFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$McpUsagePayload>[]
+        }
+        create: {
+          args: Prisma.McpUsageCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$McpUsagePayload>
+        }
+        createMany: {
+          args: Prisma.McpUsageCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.McpUsageCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$McpUsagePayload>[]
+        }
+        delete: {
+          args: Prisma.McpUsageDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$McpUsagePayload>
+        }
+        update: {
+          args: Prisma.McpUsageUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$McpUsagePayload>
+        }
+        deleteMany: {
+          args: Prisma.McpUsageDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.McpUsageUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.McpUsageUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$McpUsagePayload>[]
+        }
+        upsert: {
+          args: Prisma.McpUsageUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$McpUsagePayload>
+        }
+        aggregate: {
+          args: Prisma.McpUsageAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateMcpUsage>
+        }
+        groupBy: {
+          args: Prisma.McpUsageGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.McpUsageGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.McpUsageCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.McpUsageCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -1978,6 +2128,36 @@ export const AdvertisementScalarFieldEnum = {
 export type AdvertisementScalarFieldEnum = (typeof AdvertisementScalarFieldEnum)[keyof typeof AdvertisementScalarFieldEnum]
 
 
+export const McpServiceScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  identifier: 'identifier',
+  type: 'type',
+  command: 'command',
+  endpoint: 'endpoint',
+  envVars: 'envVars',
+  pricing: 'pricing',
+  isActive: 'isActive',
+  callCount: 'callCount',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type McpServiceScalarFieldEnum = (typeof McpServiceScalarFieldEnum)[keyof typeof McpServiceScalarFieldEnum]
+
+
+export const McpUsageScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  mcpId: 'mcpId',
+  credits: 'credits',
+  status: 'status',
+  createdAt: 'createdAt'
+} as const
+
+export type McpUsageScalarFieldEnum = (typeof McpUsageScalarFieldEnum)[keyof typeof McpUsageScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -2146,6 +2326,8 @@ export type GlobalOmitConfig = {
   payment?: Prisma.PaymentOmit
   redemptionCode?: Prisma.RedemptionCodeOmit
   advertisement?: Prisma.AdvertisementOmit
+  mcpService?: Prisma.McpServiceOmit
+  mcpUsage?: Prisma.McpUsageOmit
 }
 
 /* Types for Logging */

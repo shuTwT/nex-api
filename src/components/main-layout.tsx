@@ -58,6 +58,14 @@ export function MainLayout({ children }: MainLayoutProps) {
               API 市场
             </Link>
             <Link 
+              href="/mcp-market" 
+              className={`text-sm font-medium transition-colors ${
+                isActive("/mcp-market") ? "text-blue-600" : "hover:text-blue-600"
+              }`}
+            >
+              MCP 市场
+            </Link>
+            <Link 
               href="/pricing" 
               className={`text-sm font-medium transition-colors ${
                 isActive("/pricing") ? "text-blue-600" : "hover:text-blue-600"

@@ -67,7 +67,9 @@ export const ModelName = {
   SystemSetting: 'SystemSetting',
   Payment: 'Payment',
   RedemptionCode: 'RedemptionCode',
-  Advertisement: 'Advertisement'
+  Advertisement: 'Advertisement',
+  McpService: 'McpService',
+  McpUsage: 'McpUsage'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -345,6 +347,36 @@ export const AdvertisementScalarFieldEnum = {
 } as const
 
 export type AdvertisementScalarFieldEnum = (typeof AdvertisementScalarFieldEnum)[keyof typeof AdvertisementScalarFieldEnum]
+
+
+export const McpServiceScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  identifier: 'identifier',
+  type: 'type',
+  command: 'command',
+  endpoint: 'endpoint',
+  envVars: 'envVars',
+  pricing: 'pricing',
+  isActive: 'isActive',
+  callCount: 'callCount',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type McpServiceScalarFieldEnum = (typeof McpServiceScalarFieldEnum)[keyof typeof McpServiceScalarFieldEnum]
+
+
+export const McpUsageScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  mcpId: 'mcpId',
+  credits: 'credits',
+  status: 'status',
+  createdAt: 'createdAt'
+} as const
+
+export type McpUsageScalarFieldEnum = (typeof McpUsageScalarFieldEnum)[keyof typeof McpUsageScalarFieldEnum]
 
 
 export const SortOrder = {

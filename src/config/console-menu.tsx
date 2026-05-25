@@ -11,6 +11,7 @@ import {
   CreditCard,
   Megaphone,
   Ticket,
+  Plug,
   LucideIcon
 } from "lucide-react";
 
@@ -50,6 +51,12 @@ export const consoleMenuItems: MenuItem[] = [
     name: "HTTP接口管理",
     icon: Settings,
     href: "/console/api-management",
+    adminOnly: true,
+  },
+  {
+    name: "MCP服务管理",
+    icon: Plug,
+    href: "/console/mcp-services",
     adminOnly: true,
   },
   {

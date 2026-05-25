@@ -26,6 +26,7 @@ model User {
   apiTokens     ApiToken[]
   auditLogs     AuditLog[]
   payments      Payment[]
+  mcpUsage      McpUsage[]
 }
 
 model Account {
@@ -295,4 +296,37 @@ model Advertisement {
 
   @@index([position])
   @@index([isActive])
+}
+
+model McpService {
+  id          String      @id @default(cuid())
+  name        String
+  identifier  String      @unique
+  type        String
+  command     String?
+  endpoint    String?
+  envVars     String?
+  pricing     Int         @default(0)
+  isActive    Boolean     @default(true)
+  callCount   Int         @default(0)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  usageRecords McpUsage[]
+
+  @@index([type])
+  @@index([isActive])
+}
+
+model McpUsage {
+  id          String      @id @default(cuid())
+  userId      String
+  user        User        @relation(fields: [userId], references: [id])
+  mcpId       String
+  mcp         McpService  @relation(fields: [mcpId], references: [id])
+  credits     Int
+  status      String
+  createdAt   DateTime    @default(now())
+
+  @@index([userId])
+  @@index([mcpId])
 }
