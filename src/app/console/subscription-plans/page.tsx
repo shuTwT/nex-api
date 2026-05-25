@@ -79,6 +79,7 @@ export default function SubscriptionPlansPage() {
     setIsLoading(false);
   }, [currentPage, pageSize, appliedSearch, appliedStatus]);
 
+  // eslint-disable-next-line react-hooks/set-state-in-effect -- async callback pattern
   useEffect(() => {
     loadPlans();
   }, [loadPlans]);

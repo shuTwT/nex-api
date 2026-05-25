@@ -55,7 +55,7 @@ export function DeleteAuditLogDialog({
         <DialogHeader>
           <DialogTitle>确认删除</DialogTitle>
           <DialogDescription>
-            确定要删除审计日志 "{auditLogAction}" 吗？此操作无法撤销。
+            确定要删除审计日志 &ldquo;{auditLogAction}&rdquo; 吗？此操作无法撤销。
           </DialogDescription>
         </DialogHeader>
         {error && (

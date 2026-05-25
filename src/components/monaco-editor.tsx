@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import type { editor } from "monaco-editor";
 import Editor from "@monaco-editor/react";
 
 interface MonacoEditorProps {
@@ -20,7 +21,7 @@ export function MonacoEditor({
   placeholder = "",
   disabled = false,
 }: MonacoEditorProps) {
-  const editorRef = useRef<any>(null);
+  const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
 
   useEffect(() => {
     if (editorRef.current && disabled) {

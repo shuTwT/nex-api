@@ -77,16 +77,11 @@ export default function SettingsPage() {
   const [oauthProviders, setOauthProviders] = useState<OAuthProvider[]>([]);
   const [expandedProviders, setExpandedProviders] = useState<Set<string>>(new Set());
 
-  useEffect(() => {
-    loadSettings();
-    loadDefaultSettings();
-  }, []);
-
   async function loadSettings() {
     const result = await api.get("/api/system-settings");
     if (result.success && result.data) {
       const settingsMap: Record<string, string> = {};
-      result.data.forEach((s: any) => {
+      result.data.forEach((s: { key: string; value: string }) => {
         settingsMap[s.key] = s.value;
       });
       setSettings(settingsMap);
@@ -106,6 +101,11 @@ export default function SettingsPage() {
     const defaults = await api.get("/api/system-settings/defaults");
     setDefaultSettings(defaults.data as DefaultSettings);
   }
+
+  useEffect(() => {
+    loadSettings();
+    loadDefaultSettings();
+  }, []);
 
   function handleSettingChange(key: string, value: string) {
     setSettings((prev) => ({ ...prev, [key]: value }));

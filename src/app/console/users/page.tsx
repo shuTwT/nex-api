@@ -102,16 +102,16 @@ export default function UsersPage() {
     loadUsers();
   }, [loadUsers]);
 
-  useEffect(() => {
-    loadStats();
-  }, []);
-
   async function loadStats() {
     const result = await api.get("/api/users/stats");
     if (result.success && result.data) {
       setStats(result.data);
     }
   }
+
+  useEffect(() => {
+    loadStats();
+  }, []);
 
   function handleAddUser() {
     setEditingUser(null);

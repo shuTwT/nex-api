@@ -84,7 +84,7 @@ class AlipayPaymentService implements PaymentService {
     }
   }
 
-  async handleCallback(data: any): Promise<PaymentCallbackData> {
+  async handleCallback(data: unknown): Promise<PaymentCallbackData> {
     await this.ensureInitialized();
     
     if (!this.alipay) {
@@ -98,11 +98,12 @@ class AlipayPaymentService implements PaymentService {
         throw new Error('签名验证失败');
       }
 
-      const outTradeNo = data.out_trade_no;
-      const transactionId = data.trade_no;
-      const amount = parseFloat(data.total_amount);
-      const tradeStatus = data.trade_status;
-      const paidAt = new Date(data.gmt_payment);
+      const payload = data as Record<string, string>;
+      const outTradeNo = payload.out_trade_no;
+      const transactionId = payload.trade_no;
+      const amount = parseFloat(payload.total_amount);
+      const tradeStatus = payload.trade_status;
+      const paidAt = new Date(payload.gmt_payment);
 
       if (tradeStatus === 'TRADE_SUCCESS' || tradeStatus === 'TRADE_FINISHED') {
         await updatePaymentStatus(outTradeNo, 'paid', {

@@ -96,16 +96,16 @@ export default function TokensPage() {
     loadTokens();
   }, [loadTokens]);
 
-  useEffect(() => {
-    loadStats();
-  }, []);
-
   async function loadStats() {
     const result = await api.get("/api/tokens/stats");
     if (result.success && result.data) {
       setStats(result.data);
     }
   }
+
+  useEffect(() => {
+    loadStats();
+  }, []);
 
   function handlePageChange(page: number) {
     setCurrentPage(page);

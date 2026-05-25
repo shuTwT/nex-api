@@ -53,10 +53,6 @@ export default function PersonalPage() {
     credits: number | null;
   }>({ open: false, type: "", planName: null, credits: null });
 
-  useEffect(() => {
-    loadProfile();
-  }, []);
-
   async function loadProfile() {
     setIsLoading(true);
     const result = await api.get("/api/personal/profile");
@@ -71,6 +67,10 @@ export default function PersonalPage() {
     }
     setIsLoading(false);
   }
+
+  useEffect(() => {
+    loadProfile();
+  }, []);
 
   async function handleRedeem() {
     if (!redeemInput.trim()) return;

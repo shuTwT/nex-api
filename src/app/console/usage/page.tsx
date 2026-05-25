@@ -28,6 +28,7 @@ interface UsageStats {
 export default function UsagePage() {
   const [stats, setStats] = useState<UsageStats | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [today] = useState(() => Date.now());
 
   useEffect(() => {
     async function loadStats() {
@@ -67,12 +68,12 @@ export default function UsagePage() {
   }));
 
   const last7DaysData = last7Days.map((day, index) => ({
-    label: new Date(Date.now() - (6 - index) * 24 * 60 * 60 * 1000).toLocaleDateString("zh-CN", { weekday: "short" }),
+    label: new Date(today - (6 - index) * 24 * 60 * 60 * 1000).toLocaleDateString("zh-CN", { weekday: "short" }),
     value: stats.last7DaysDailyUsage[index] || 0,
   }));
 
   const last30DaysData = last30Days.map((day, index) => ({
-    label: new Date(Date.now() - (29 - index) * 24 * 60 * 60 * 1000).toLocaleDateString("zh-CN", { month: "short", day: "numeric" }),
+    label: new Date(today - (29 - index) * 24 * 60 * 60 * 1000).toLocaleDateString("zh-CN", { month: "short", day: "numeric" }),
     value: stats.last30DaysDailyUsage[index] || 0,
   }));
 

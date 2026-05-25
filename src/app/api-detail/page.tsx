@@ -56,12 +56,6 @@ function ApiDetailContent() {
     setBaseUrl(window.location.origin);
   }, []);
 
-  useEffect(() => {
-    if (apiId) {
-      loadApiDetail();
-    }
-  }, [apiId]);
-
   async function loadApiDetail() {
     if (!apiId) return;
     
@@ -72,6 +66,12 @@ function ApiDetailContent() {
     }
     setIsLoading(false);
   }
+
+  useEffect(() => {
+    if (apiId) {
+      loadApiDetail();
+    }
+  }, [apiId]);
 
   useEffect(() => {
     const handleScroll = () => {

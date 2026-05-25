@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { CheckCircle2, XCircle, Loader2 } from "lucide-react";
 import { MainLayout } from "@/components/main-layout";
+import type { PaymentInfo } from "@/lib/payment/types";
 import { api } from "@/lib/api-client";
 
 export default function MockPaymentPage() {
@@ -15,7 +16,7 @@ export default function MockPaymentPage() {
   
   const [loading, setLoading] = useState(true);
   const [processing, setProcessing] = useState(false);
-  const [payment, setPayment] = useState<any>(null);
+  const [payment, setPayment] = useState<PaymentInfo | null>(null);
 
   useEffect(() => {
     if (!outTradeNo) {

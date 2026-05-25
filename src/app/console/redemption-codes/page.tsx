@@ -109,6 +109,7 @@ export default function RedemptionCodesPage() {
     setIsLoading(false);
   }, [currentPage, pageSize, appliedSearch, appliedType, appliedStatus]);
 
+  // eslint-disable-next-line react-hooks/set-state-in-effect -- async callback pattern
   useEffect(() => {
     loadCodes();
   }, [loadCodes]);

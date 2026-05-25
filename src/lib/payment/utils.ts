@@ -17,7 +17,7 @@ export async function createPaymentRecord(params: {
   payUrl?: string;
   notifyUrl?: string;
   expiredAt?: Date;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }): Promise<Payment> {
   return await prisma.payment.create({
     data: {
@@ -42,7 +42,7 @@ export async function updatePaymentStatus(
     transactionId?: string;
     paidAt?: Date;
     cancelledAt?: Date;
-    metadata?: Record<string, any>;
+    metadata?: Record<string, unknown>;
   }
 ): Promise<Payment | null> {
   return await prisma.payment.update({

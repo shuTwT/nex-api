@@ -1,4 +1,5 @@
 import WeChatPay from 'better-wechatpay';
+import type { WebhookParams } from 'better-wechatpay';
 import { getPaymentConfig, isWechatPayConfigured } from './config';
 import type { PaymentService, CreatePaymentParams, CreatePaymentResult, PaymentCallbackData } from './types';
 import { createPaymentRecord, updatePaymentStatus, getPaymentByOutTradeNo } from './utils';
@@ -84,7 +85,7 @@ class WechatPaymentService implements PaymentService {
     }
   }
 
-  async handleCallback(data: any): Promise<PaymentCallbackData> {
+  async handleCallback(data: unknown): Promise<PaymentCallbackData> {
     await this.ensureInitialized();
     
     if (!this.wechat) {
@@ -92,7 +93,7 @@ class WechatPaymentService implements PaymentService {
     }
 
     try {
-      const result = await this.wechat.webhook.verify(data);
+      const result = await this.wechat.webhook.verify(data as WebhookParams);
 
       if (!result.success) {
         throw new Error('签名验证失败');

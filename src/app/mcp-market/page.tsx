@@ -58,10 +58,6 @@ export default function McpMarketPage() {
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [sortBy, setSortBy] = useState("popular");
 
-  useEffect(() => {
-    loadData();
-  }, []);
-
   async function loadData() {
     setIsLoading(true);
     const [servicesResult, statsResult] = await Promise.all([
@@ -79,6 +75,10 @@ export default function McpMarketPage() {
 
     setIsLoading(false);
   }
+
+  useEffect(() => {
+    loadData();
+  }, []);
 
   const types = [{ name: "全部", icon: Grid3x3, count: stats?.totalServices || 0 }];
 

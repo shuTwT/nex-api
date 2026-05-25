@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any -- generic client wrapper defaults */
 type ApiResponse<T = any> = {
   success: boolean;
   data?: T;
@@ -11,7 +12,7 @@ type ApiResponse<T = any> = {
   message?: string;
 };
 
-async function request<T = unknown>(
+async function request<T = any>(
   url: string,
   options: RequestInit = {}
 ): Promise<ApiResponse<T>> {
@@ -49,14 +50,14 @@ export const api = {
     return request<T>(buildUrl(url, params));
   },
 
-  post<T = any>(url: string, body?: unknown): Promise<ApiResponse<T>> {
+  post<T = any>(url: string, body?: any): Promise<ApiResponse<T>> {
     return request<T>(url, {
       method: "POST",
       body: body ? JSON.stringify(body) : undefined,
     });
   },
 
-  put<T = any>(url: string, body?: unknown): Promise<ApiResponse<T>> {
+  put<T = any>(url: string, body?: any): Promise<ApiResponse<T>> {
     return request<T>(url, {
       method: "PUT",
       body: body ? JSON.stringify(body) : undefined,

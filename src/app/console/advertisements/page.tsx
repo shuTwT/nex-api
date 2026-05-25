@@ -119,16 +119,16 @@ export default function AdvertisementsPage() {
     loadAdvertisements();
   }, [loadAdvertisements]);
 
-  useEffect(() => {
-    loadStats();
-  }, []);
-
   async function loadStats() {
     const result = await api.get("/api/advertisements/stats");
     if (result.success && result.data) {
       setStats(result.data);
     }
   }
+
+  useEffect(() => {
+    loadStats();
+  }, []);
 
   function handleAddAdvertisement() {
     setEditingAd(null);

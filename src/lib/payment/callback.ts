@@ -7,7 +7,7 @@ export interface PaymentCallbackData {
   amount: number;
   status: PaymentStatus;
   paidAt?: Date;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }
 
 export interface BusinessCallbackPayload {
@@ -18,7 +18,7 @@ export interface BusinessCallbackPayload {
   status: PaymentStatus;
   paidAt?: Date;
   userId: string;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }
 
 export async function updatePaymentRecord(
@@ -28,9 +28,9 @@ export async function updatePaymentRecord(
     transactionId?: string;
     paidAt?: Date;
     cancelledAt?: Date;
-    metadata?: Record<string, any>;
+    metadata?: Record<string, unknown>;
   }
-): Promise<{ payment: any; notifyUrl: string | null } | null> {
+) {
   const payment = await prisma.payment.update({
     where: { outTradeNo },
     data: {
@@ -93,7 +93,7 @@ export async function processPaymentCallback(
     transactionId?: string;
     paidAt?: Date;
     cancelledAt?: Date;
-    metadata?: Record<string, any>;
+    metadata?: Record<string, unknown>;
   }
 ): Promise<{ success: boolean; error?: string }> {
   try {

@@ -116,11 +116,6 @@ export default function APIManagementPage() {
     loadApis();
   }, [loadApis]);
 
-  useEffect(() => {
-    loadCategories();
-    loadStats();
-  }, []);
-
   async function loadCategories() {
     const result = await api.get("/api/categories");
     if (result.success && result.data) {
@@ -134,6 +129,11 @@ export default function APIManagementPage() {
       setStats(result.data);
     }
   }
+
+  useEffect(() => {
+    loadCategories();
+    loadStats();
+  }, []);
 
   function handlePageChange(page: number) {
     setCurrentPage(page);

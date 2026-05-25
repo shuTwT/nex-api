@@ -9,13 +9,27 @@ import { CheckCircle2, XCircle, Clock, QrCode, ExternalLink, Loader2 } from "luc
 import { MainLayout } from "@/components/main-layout";
 import { api } from "@/lib/api-client";
 
+interface PaymentState {
+  outTradeNo: string;
+  amount: number;
+  transactionId?: string;
+  status: string;
+  method?: string;
+  qrcodeUrl?: string;
+  payUrl?: string;
+  expiredAt?: string | number;
+  paidAt?: string | number;
+  createdAt?: string | number;
+  plan?: { title?: string };
+}
+
 export default function PaymentPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const outTradeNo = searchParams.get("outTradeNo");
   
   const [loading, setLoading] = useState(true);
-  const [payment, setPayment] = useState<any>(null);
+  const [payment, setPayment] = useState<PaymentState | null>(null);
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -164,7 +178,7 @@ export default function PaymentPage() {
               <div className="flex justify-between">
                 <span className="text-slate-600">创建时间</span>
                 <span className="text-sm text-slate-500">
-                  {new Date(payment?.createdAt).toLocaleString("zh-CN")}
+                  {new Date(payment?.createdAt ?? Date.now()).toLocaleString("zh-CN")}
                 </span>
               </div>
             </div>
@@ -178,7 +192,7 @@ export default function PaymentPage() {
                       <QrCode className="h-48 w-48 text-slate-900" />
                     </div>
                     <p className="text-xs text-slate-500">
-                      二维码有效期至 {new Date(payment.expiredAt).toLocaleString("zh-CN")}
+                      二维码有效期至 {new Date(payment.expiredAt!).toLocaleString("zh-CN")}
                     </p>
                   </div>
                 )}
@@ -201,7 +215,7 @@ export default function PaymentPage() {
                   <div className="text-center space-y-4">
                     <p className="text-sm text-slate-600">模拟支付模式</p>
                     <Button
-                      onClick={() => router.push(payment.payUrl)}
+                      onClick={() => router.push(payment.payUrl!)}
                       className="w-full"
                       size="lg"
                     >

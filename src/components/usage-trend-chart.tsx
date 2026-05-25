@@ -13,6 +13,7 @@ import {
   Filler,
 } from "chart.js";
 import { Line } from "react-chartjs-2";
+import type { TooltipItem } from "chart.js";
 import { api } from "@/lib/api-client";
 
 ChartJS.register(
@@ -56,6 +57,7 @@ export function UsageTrendChart({ className }: UsageTrendChartProps) {
   }
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- async data fetch
     loadChartData();
   }, []);
 
@@ -89,7 +91,7 @@ export function UsageTrendChart({ className }: UsageTrendChartProps) {
         mode: "index" as const,
         intersect: false,
         callbacks: {
-          label: function (context: any) {
+          label: function (context: TooltipItem<"line">) {
             const label = context.dataset.label || "";
             const value = context.parsed.y || 0;
             return `${label}: ${value} 积分`;

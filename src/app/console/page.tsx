@@ -40,10 +40,6 @@ export default function ConsoleDashboard() {
   const [topApis, setTopApis] = useState<TopApi[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    loadData();
-  }, []);
-
   async function loadData() {
     setIsLoading(true);
     const [statsResult, activityResult, topApisResult] = await Promise.all([
@@ -66,6 +62,10 @@ export default function ConsoleDashboard() {
 
     setIsLoading(false);
   }
+
+  useEffect(() => {
+    loadData();
+  }, []);
 
   const statsCards = [
     {

@@ -8,7 +8,7 @@ export interface CreatePaymentParams {
   amount: number;
   method: PaymentMethod;
   notifyUrl?: string;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }
 
 export interface CreatePaymentResult {
@@ -26,12 +26,12 @@ export interface PaymentCallbackData {
   amount: number;
   status: PaymentStatus;
   paidAt?: Date;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }
 
 export interface PaymentService {
   createPayment(params: CreatePaymentParams): Promise<CreatePaymentResult>;
-  handleCallback(data: any): Promise<PaymentCallbackData>;
+  handleCallback(data: unknown): Promise<PaymentCallbackData>;
   queryPayment(outTradeNo: string): Promise<PaymentCallbackData | null>;
   closePayment(outTradeNo: string): Promise<boolean>;
 }

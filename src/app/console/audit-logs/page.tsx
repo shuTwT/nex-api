@@ -109,16 +109,16 @@ export default function AuditLogsPage() {
     loadLogs();
   }, [loadLogs]);
 
-  useEffect(() => {
-    loadStats();
-  }, []);
-
   async function loadStats() {
     const result = await api.get("/api/audit-logs/stats");
     if (result.success && result.data) {
       setStats(result.data);
     }
   }
+
+  useEffect(() => {
+    loadStats();
+  }, []);
 
   function handlePageChange(page: number) {
     setCurrentPage(page);

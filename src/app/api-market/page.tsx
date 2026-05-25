@@ -56,10 +56,6 @@ export default function ApiMarketPage() {
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [sortBy, setSortBy] = useState("popular");
 
-  useEffect(() => {
-    loadData();
-  }, []);
-
   async function loadData() {
     setIsLoading(true);
     const [apisResult, statsResult] = await Promise.all([
@@ -77,6 +73,10 @@ export default function ApiMarketPage() {
 
     setIsLoading(false);
   }
+
+  useEffect(() => {
+    loadData();
+  }, []);
 
   const categories = [
     { name: "全部", icon: Grid3x3, count: stats?.totalApis || 0 },

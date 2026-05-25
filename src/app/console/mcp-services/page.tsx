@@ -88,16 +88,16 @@ export default function McpServicesPage() {
     loadServices();
   }, [loadServices]);
 
-  useEffect(() => {
-    loadStats();
-  }, []);
-
   async function loadStats() {
     const result = await api.get("/api/mcp-services/stats");
     if (result.success && result.data) {
       setStats(result.data);
     }
   }
+
+  useEffect(() => {
+    loadStats();
+  }, []);
 
   function handlePageChange(page: number) {
     setCurrentPage(page);

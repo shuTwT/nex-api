@@ -23,7 +23,7 @@ export class PaymentServiceFactory {
     return await service.createPayment(params);
   }
 
-  static async handleCallback(method: PaymentMethod, data: any): Promise<PaymentCallbackData> {
+  static async handleCallback(method: PaymentMethod, data: unknown): Promise<PaymentCallbackData> {
     const service = this.getService(method);
     return await service.handleCallback(data);
   }

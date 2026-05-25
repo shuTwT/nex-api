@@ -46,9 +46,9 @@ class MockPaymentService implements PaymentService {
     }
   }
 
-  async handleCallback(data: any): Promise<PaymentCallbackData> {
+  async handleCallback(data: unknown): Promise<PaymentCallbackData> {
     try {
-      const { outTradeNo, success } = data;
+      const { outTradeNo, success } = data as { outTradeNo: string; success?: boolean };
       
       const payment = await getPaymentByOutTradeNo(outTradeNo);
       if (!payment) {

@@ -15,7 +15,7 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    const planId = payload.metadata?.planId;
+    const planId = payload.metadata?.planId as string | undefined;
     if (!planId) {
       return NextResponse.json({ 
         success: true, 
@@ -53,7 +53,7 @@ export async function POST(request: NextRequest) {
       }
 
       const now = new Date();
-      let endDate = new Date(now);
+      const endDate = new Date(now);
 
       switch (plan.validityUnit) {
         case "day":

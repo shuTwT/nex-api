@@ -70,7 +70,7 @@ export async function getConfigValueAsNumber(
   return isNaN(parsed) ? defaultValue : parsed;
 }
 
-export async function getConfigValueAsJSON<T = any>(
+export async function getConfigValueAsJSON<T = unknown>(
   category: string,
   key: string,
   defaultValue: T | null = null

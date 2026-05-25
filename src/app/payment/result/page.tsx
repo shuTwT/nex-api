@@ -5,6 +5,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { CheckCircle2, XCircle, Loader2 } from "lucide-react";
+import type { PaymentInfo } from "@/lib/payment/types";
 import { MainLayout } from "@/components/main-layout";
 import { api } from "@/lib/api-client";
 
@@ -15,7 +16,7 @@ export default function PaymentResultPage() {
   const status = searchParams.get("status");
   
   const [loading, setLoading] = useState(true);
-  const [payment, setPayment] = useState<any>(null);
+  const [payment, setPayment] = useState<PaymentInfo | null>(null);
 
   useEffect(() => {
     if (!outTradeNo) {
