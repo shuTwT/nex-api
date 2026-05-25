@@ -10,6 +10,7 @@ import {
   User,
   CreditCard,
   Megaphone,
+  Ticket,
   LucideIcon
 } from "lucide-react";
 
@@ -55,6 +56,12 @@ export const consoleMenuItems: MenuItem[] = [
     name: "订阅计划",
     icon: CreditCard,
     href: "/console/subscription-plans",
+    adminOnly: true,
+  },
+  {
+    name: "兑换码管理",
+    icon: Ticket,
+    href: "/console/redemption-codes",
     adminOnly: true,
   },
   {
