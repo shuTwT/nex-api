@@ -4,7 +4,11 @@ import prisma from "@/lib/prisma";
 import { getAdminUser, apiSuccess, apiError, apiPaginated } from "@/lib/api-auth";
 
 export async function GET(request: NextRequest) {
+  const admin = await getAdminUser();
+  if (admin instanceof NextResponse) return admin;
+
   const { searchParams } = new URL(request.url);
+  const search = searchParams.get("search") || undefined;
   const position = searchParams.get("position") || undefined;
   const isActiveParam = searchParams.get("isActive");
   const page = parseInt(searchParams.get("page") || "1");
@@ -12,8 +16,11 @@ export async function GET(request: NextRequest) {
   const skip = (page - 1) * limit;
 
   const where: Record<string, unknown> = {};
+  if (search) {
+    where.title = { contains: search };
+  }
   if (position) where.position = position;
-  if (isActiveParam !== null && isActiveParam !== undefined) where.isActive = isActiveParam === "true";
+  if (isActiveParam !== null && isActiveParam !== undefined && isActiveParam !== "") where.isActive = isActiveParam === "true";
 
   const [advertisements, total] = await Promise.all([
     prisma.advertisement.findMany({ where, orderBy: { createdAt: "desc" }, skip, take: limit }),

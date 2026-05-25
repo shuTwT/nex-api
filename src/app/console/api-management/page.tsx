@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useTransition } from "react";
+import { useEffect, useState, useCallback, useTransition } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -78,9 +78,12 @@ export default function APIManagementPage() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [stats, setStats] = useState<ApiStats | null>(null);
   const [pagination, setPagination] = useState<PaginationInfo | null>(null);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("all");
-  const [selectedStatus, setSelectedStatus] = useState("all");
+  const [searchInput, setSearchInput] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState("all");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [appliedSearch, setAppliedSearch] = useState("");
+  const [appliedCategory, setAppliedCategory] = useState("all");
+  const [appliedStatus, setAppliedStatus] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [isLoading, setIsLoading] = useState(true);
@@ -90,18 +93,12 @@ export default function APIManagementPage() {
   const [showCategoryForm, setShowCategoryForm] = useState(false);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
 
-  useEffect(() => {
-    loadApis();
-    loadCategories();
-    loadStats();
-  }, [searchQuery, selectedCategory, selectedStatus, currentPage, pageSize]);
-
-  async function loadApis() {
+  const loadApis = useCallback(async () => {
     setIsLoading(true);
     const result = await api.paginated("/api/apis", {
-      category: selectedCategory,
-      search: searchQuery,
-      status: selectedStatus,
+      category: appliedCategory,
+      search: appliedSearch,
+      status: appliedStatus,
       page: currentPage,
       limit: pageSize,
     });
@@ -113,7 +110,16 @@ export default function APIManagementPage() {
       }
     }
     setIsLoading(false);
-  }
+  }, [currentPage, pageSize, appliedSearch, appliedCategory, appliedStatus]);
+
+  useEffect(() => {
+    loadApis();
+  }, [loadApis]);
+
+  useEffect(() => {
+    loadCategories();
+    loadStats();
+  }, []);
 
   async function loadCategories() {
     const result = await api.get("/api/categories");
@@ -129,27 +135,29 @@ export default function APIManagementPage() {
     }
   }
 
-  function handleSearchChange(value: string) {
-    setSearchQuery(value);
-    setCurrentPage(1);
-  }
-
-  function handleCategoryChange(category: string) {
-    setSelectedCategory(category);
-    setCurrentPage(1);
-  }
-
-  function handleStatusChange(status: string) {
-    setSelectedStatus(status);
-    setCurrentPage(1);
-  }
-
   function handlePageChange(page: number) {
     setCurrentPage(page);
   }
 
   function handlePageSizeChange(size: number) {
     setPageSize(size);
+    setCurrentPage(1);
+  }
+
+  function handleQuery() {
+    setAppliedSearch(searchInput);
+    setAppliedCategory(categoryFilter);
+    setAppliedStatus(statusFilter);
+    setCurrentPage(1);
+  }
+
+  function handleReset() {
+    setSearchInput("");
+    setCategoryFilter("all");
+    setStatusFilter("all");
+    setAppliedSearch("");
+    setAppliedCategory("all");
+    setAppliedStatus("all");
     setCurrentPage(1);
   }
 
@@ -192,21 +200,7 @@ export default function APIManagementPage() {
   }
 
   async function handleApiFormSuccess() {
-    const result = await api.paginated("/api/apis", {
-      category: selectedCategory,
-      search: searchQuery,
-      status: selectedStatus,
-      page: currentPage,
-      limit: pageSize,
-    });
-
-    if (result.success && result.data) {
-      setApis(result.data);
-      if (result.pagination) {
-        setPagination(result.pagination);
-      }
-    }
-
+    await loadApis();
     await loadCategories();
     await loadStats();
   }
@@ -308,45 +302,58 @@ export default function APIManagementPage() {
       {/* Filters */}
       <Card>
         <CardContent className="p-4">
-          <div className="flex flex-col md:flex-row gap-4">
-            <div className="relative flex-1">
+          <div className="flex flex-wrap items-end gap-3">
+            <div className="relative flex-1 min-w-[200px]">
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
               <Input
                 placeholder="搜索接口名称、描述或端点..."
-                value={searchQuery}
-                onChange={(e) => handleSearchChange(e.target.value)}
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
                 className="pl-10"
               />
             </div>
-            <div className="flex gap-2">
-              <Select value={selectedCategory} onValueChange={handleCategoryChange}>
-                <SelectTrigger className="h-9 w-40 cursor-pointer">
-                  <SelectValue placeholder="全部分类" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    <SelectItem value="all">全部分类</SelectItem>
-                    {categories.map((cat) => (
-                      <SelectItem key={cat.id} value={cat.id}>
-                        {cat.name} ({cat.apiCount})
-                      </SelectItem>
-                    ))}
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-              <Select value={selectedStatus} onValueChange={handleStatusChange}>
-                <SelectTrigger className="h-9 w-32 cursor-pointer">
-                  <SelectValue placeholder="全部状态" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    <SelectItem value="all">全部状态</SelectItem>
-                    <SelectItem value="active">已启用</SelectItem>
-                    <SelectItem value="inactive">已停用</SelectItem>
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-            </div>
+            <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+              <SelectTrigger className="w-[160px]">
+                <SelectValue placeholder="全部分类" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectItem value="all">全部分类</SelectItem>
+                  {categories.map((cat) => (
+                    <SelectItem key={cat.id} value={cat.id}>
+                      {cat.name} ({cat.apiCount})
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+            <Select value={statusFilter} onValueChange={setStatusFilter}>
+              <SelectTrigger className="w-[130px]">
+                <SelectValue placeholder="全部状态" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectItem value="all">全部</SelectItem>
+                  <SelectItem value="active">已启用</SelectItem>
+                  <SelectItem value="inactive">已停用</SelectItem>
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+            <Button
+              size="sm"
+              onClick={handleQuery}
+              className="cursor-pointer"
+            >
+              查询
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleReset}
+              className="cursor-pointer"
+            >
+              重置
+            </Button>
           </div>
         </CardContent>
       </Card>
@@ -501,18 +508,16 @@ export default function APIManagementPage() {
               </div>
 
               {/* Pagination */}
-              {pagination && (
-                <div className="mt-4">
-                  <Pagination
-                    currentPage={pagination.page}
-                    totalPages={pagination.totalPages}
-                    total={pagination.total}
-                    pageSize={pagination.limit}
-                    onPageChange={handlePageChange}
-                    onPageSizeChange={handlePageSizeChange}
-                  />
-                </div>
-              )}
+              <div className="mt-4">
+                <Pagination
+                  currentPage={pagination?.page ?? 1}
+                  totalPages={pagination?.totalPages ?? 1}
+                  total={pagination?.total ?? 0}
+                  pageSize={pagination?.limit ?? pageSize}
+                  onPageChange={handlePageChange}
+                  onPageSizeChange={handlePageSizeChange}
+                />
+              </div>
             </>
           )}
         </CardContent>

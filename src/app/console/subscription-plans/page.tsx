@@ -1,8 +1,17 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import {
   Dialog,
@@ -11,10 +20,11 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Plus, Edit, Trash2, CreditCard, Calendar, DollarSign, ArrowUpDown } from "lucide-react";
+import { Plus, Edit, Trash2, CreditCard, Calendar, DollarSign, ArrowUpDown, Search } from "lucide-react";
 import { api } from "@/lib/api-client";
 import { SubscriptionPlanForm } from "@/components/subscription-plan-form";
 import { DeleteSubscriptionPlanDialog } from "@/components/delete-subscription-plan-dialog";
+import { Pagination } from "@/components/pagination";
 import { toast } from "sonner";
 
 interface SubscriptionPlan {
@@ -31,25 +41,47 @@ interface SubscriptionPlan {
   updatedAt: Date;
 }
 
+interface PaginationInfo {
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+}
+
 export default function SubscriptionPlansPage() {
   const [plans, setPlans] = useState<SubscriptionPlan[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [pagination, setPagination] = useState<PaginationInfo | null>(null);
+  const [searchInput, setSearchInput] = useState("");
+  const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [appliedSearch, setAppliedSearch] = useState("");
+  const [appliedStatus, setAppliedStatus] = useState<string>("all");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
   const [showForm, setShowForm] = useState(false);
   const [editingPlan, setEditingPlan] = useState<SubscriptionPlan | null>(null);
   const [deletingPlan, setDeletingPlan] = useState<SubscriptionPlan | null>(null);
 
-  async function loadPlans() {
+  const loadPlans = useCallback(async () => {
     setIsLoading(true);
-    const result = await api.get("/api/subscription-plans");
+    const result = await api.paginated("/api/subscription-plans", {
+      page: currentPage,
+      limit: pageSize,
+      search: appliedSearch,
+      isActive: appliedStatus !== "all" ? appliedStatus : undefined,
+    });
     if (result.success && result.data) {
       setPlans(result.data);
+      if (result.pagination) {
+        setPagination(result.pagination);
+      }
     }
     setIsLoading(false);
-  }
+  }, [currentPage, pageSize, appliedSearch, appliedStatus]);
 
   useEffect(() => {
     loadPlans();
-  }, []);
+  }, [loadPlans]);
 
   function handleAddPlan() {
     setEditingPlan(null);
@@ -74,6 +106,29 @@ export default function SubscriptionPlansPage() {
 
   function handleDeleteSuccess() {
     loadPlans();
+  }
+
+  function handleQuery() {
+    setAppliedSearch(searchInput);
+    setAppliedStatus(statusFilter);
+    setCurrentPage(1);
+  }
+
+  function handleReset() {
+    setSearchInput("");
+    setStatusFilter("all");
+    setAppliedSearch("");
+    setAppliedStatus("all");
+    setCurrentPage(1);
+  }
+
+  function handlePageChange(page: number) {
+    setCurrentPage(page);
+  }
+
+  function handlePageSizeChange(size: number) {
+    setPageSize(size);
+    setCurrentPage(1);
   }
 
   const validityUnitLabels: Record<string, string> = {
@@ -111,6 +166,50 @@ export default function SubscriptionPlansPage() {
         </Button>
       </div>
 
+      {/* Filters */}
+      <Card>
+        <CardContent className="p-4">
+          <div className="flex flex-wrap items-end gap-3">
+            <div className="relative flex-1 min-w-[200px]">
+              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+              <Input
+                placeholder="搜索计划名称..."
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
+                className="pl-10"
+              />
+            </div>
+            <Select value={statusFilter} onValueChange={setStatusFilter}>
+              <SelectTrigger className="w-[120px]">
+                <SelectValue placeholder="状态" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectItem value="all">全部</SelectItem>
+                  <SelectItem value="true">启用</SelectItem>
+                  <SelectItem value="false">禁用</SelectItem>
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+            <Button
+              size="sm"
+              onClick={handleQuery}
+              className="cursor-pointer"
+            >
+              查询
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleReset}
+              className="cursor-pointer"
+            >
+              重置
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+
       {plans.length === 0 ? (
         <Card>
           <CardContent className="text-center py-12">
@@ -124,70 +223,81 @@ export default function SubscriptionPlansPage() {
           </CardContent>
         </Card>
       ) : (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {plans.map((plan) => (
-            <Card key={plan.id} className="hover:shadow-md transition-shadow">
-              <CardHeader>
-                <div className="flex items-start justify-between">
-                  <CardTitle className="text-lg">{plan.title}</CardTitle>
-                  <Badge variant="outline" className={plan.isActive ? "bg-green-50 text-green-700 border-green-200" : "bg-gray-50 text-gray-700 border-gray-200"}>
-                    {plan.isActive ? "启用" : "禁用"}
-                  </Badge>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-baseline gap-1">
-                  <DollarSign className="h-5 w-5 text-slate-400" />
-                  <span className="text-3xl font-bold text-slate-900">{plan.price}</span>
-                </div>
+        <>
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {plans.map((plan) => (
+              <Card key={plan.id} className="hover:shadow-md transition-shadow">
+                <CardHeader>
+                  <div className="flex items-start justify-between">
+                    <CardTitle className="text-lg">{plan.title}</CardTitle>
+                    <Badge variant="outline" className={plan.isActive ? "bg-green-50 text-green-700 border-green-200" : "bg-gray-50 text-gray-700 border-gray-200"}>
+                      {plan.isActive ? "启用" : "禁用"}
+                    </Badge>
+                  </div>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="flex items-baseline gap-1">
+                    <DollarSign className="h-5 w-5 text-slate-400" />
+                    <span className="text-3xl font-bold text-slate-900">{plan.price}</span>
+                  </div>
 
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2 text-sm">
-                    <CreditCard className="h-4 w-4 text-slate-400" />
-                    <span className="text-slate-600">总额度: </span>
-                    <span className="font-medium text-slate-900">{plan.totalCredits.toLocaleString()}</span>
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2 text-sm">
+                      <CreditCard className="h-4 w-4 text-slate-400" />
+                      <span className="text-slate-600">总额度: </span>
+                      <span className="font-medium text-slate-900">{plan.totalCredits.toLocaleString()}</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm">
+                      <Calendar className="h-4 w-4 text-slate-400" />
+                      <span className="text-slate-600">有效期: </span>
+                      <span className="font-medium text-slate-900">{plan.validityDuration} {validityUnitLabels[plan.validityUnit]}</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm">
+                      <ArrowUpDown className="h-4 w-4 text-slate-400" />
+                      <span className="text-slate-600">重置周期: </span>
+                      <span className="font-medium text-slate-900">{creditResetCycleLabels[plan.creditResetCycle]}</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm">
+                      <span className="h-4 w-4 text-slate-400" />
+                      <span className="text-slate-600">排序: </span>
+                      <span className="font-medium text-slate-900">{plan.sortOrder}</span>
+                    </div>
                   </div>
-                  <div className="flex items-center gap-2 text-sm">
-                    <Calendar className="h-4 w-4 text-slate-400" />
-                    <span className="text-slate-600">有效期: </span>
-                    <span className="font-medium text-slate-900">{plan.validityDuration} {validityUnitLabels[plan.validityUnit]}</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-sm">
-                    <ArrowUpDown className="h-4 w-4 text-slate-400" />
-                    <span className="text-slate-600">重置周期: </span>
-                    <span className="font-medium text-slate-900">{creditResetCycleLabels[plan.creditResetCycle]}</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-sm">
-                    <span className="h-4 w-4 text-slate-400" />
-                    <span className="text-slate-600">排序: </span>
-                    <span className="font-medium text-slate-900">{plan.sortOrder}</span>
-                  </div>
-                </div>
 
-                <div className="flex items-center gap-2 pt-4 border-t border-slate-200">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="h-8 w-8 p-0 cursor-pointer"
-                    onClick={() => handleEditPlan(plan)}
-                    title="编辑"
-                  >
-                    <Edit className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="h-8 w-8 p-0 cursor-pointer text-red-600 hover:text-red-700 hover:bg-red-50"
-                    onClick={() => handleDeletePlan(plan)}
-                    title="删除"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+                  <div className="flex items-center gap-2 pt-4 border-t border-slate-200">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-8 w-8 p-0 cursor-pointer"
+                      onClick={() => handleEditPlan(plan)}
+                      title="编辑"
+                    >
+                      <Edit className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-8 w-8 p-0 cursor-pointer text-red-600 hover:text-red-700 hover:bg-red-50"
+                      onClick={() => handleDeletePlan(plan)}
+                      title="删除"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
+          <Pagination
+            currentPage={pagination?.page ?? 1}
+            totalPages={pagination?.totalPages ?? 1}
+            total={pagination?.total ?? 0}
+            pageSize={pagination?.limit ?? pageSize}
+            onPageChange={handlePageChange}
+            onPageSizeChange={handlePageSizeChange}
+          />
+        </>
       )}
 
       <Dialog open={showForm} onOpenChange={setShowForm}>

@@ -3,6 +3,15 @@
 import { useEffect, useState, useCallback } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import {
   Dialog,
@@ -20,6 +29,7 @@ import {
   Copy,
   Check,
   Download,
+  Search,
 } from "lucide-react";
 import { api } from "@/lib/api-client";
 import { RedemptionCodeForm } from "@/components/redemption-code-form";
@@ -66,7 +76,13 @@ export default function RedemptionCodesPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [pagination, setPagination] = useState<PaginationInfo | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(20);
+  const [pageSize, setPageSize] = useState(10);
+  const [searchInput, setSearchInput] = useState("");
+  const [typeFilter, setTypeFilter] = useState<string>("all");
+  const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [appliedSearch, setAppliedSearch] = useState("");
+  const [appliedType, setAppliedType] = useState<string>("all");
+  const [appliedStatus, setAppliedStatus] = useState<string>("all");
   const [showForm, setShowForm] = useState(false);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [deletingCode, setDeletingCode] = useState<{
@@ -80,6 +96,9 @@ export default function RedemptionCodesPage() {
     const result = await api.paginated("/api/redemption-codes", {
       page: currentPage,
       limit: pageSize,
+      search: appliedSearch,
+      type: appliedType !== "all" ? appliedType : undefined,
+      isUsed: appliedStatus !== "all" ? appliedStatus : undefined,
     });
     if (result.success && result.data) {
       setCodes(result.data);
@@ -88,7 +107,7 @@ export default function RedemptionCodesPage() {
       }
     }
     setIsLoading(false);
-  }, [currentPage, pageSize]);
+  }, [currentPage, pageSize, appliedSearch, appliedType, appliedStatus]);
 
   useEffect(() => {
     loadCodes();
@@ -112,6 +131,37 @@ export default function RedemptionCodesPage() {
 
   function handlePageSizeChange(size: number) {
     setPageSize(size);
+    setCurrentPage(1);
+    setSelectedIds(new Set());
+  }
+
+  function handleSearchChange(value: string) {
+    setSearchInput(value);
+  }
+
+  function handleTypeChange(type: string) {
+    setTypeFilter(type);
+  }
+
+  function handleStatusChange(status: string) {
+    setStatusFilter(status);
+  }
+
+  function handleQuery() {
+    setAppliedSearch(searchInput);
+    setAppliedType(typeFilter);
+    setAppliedStatus(statusFilter);
+    setCurrentPage(1);
+    setSelectedIds(new Set());
+  }
+
+  function handleReset() {
+    setSearchInput("");
+    setTypeFilter("all");
+    setStatusFilter("all");
+    setAppliedSearch("");
+    setAppliedType("all");
+    setAppliedStatus("all");
     setCurrentPage(1);
     setSelectedIds(new Set());
   }
@@ -191,6 +241,62 @@ export default function RedemptionCodesPage() {
           生成兑换码
         </Button>
       </div>
+
+      {/* Filters */}
+      <Card>
+        <CardContent className="p-4">
+          <div className="flex flex-wrap items-end gap-3">
+            <div className="relative flex-1 min-w-[200px]">
+              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+              <Input
+                placeholder="搜索兑换码..."
+                value={searchInput}
+                onChange={(e) => handleSearchChange(e.target.value)}
+                className="pl-10"
+              />
+            </div>
+            <Select value={typeFilter} onValueChange={handleTypeChange}>
+              <SelectTrigger className="w-[120px]">
+                <SelectValue placeholder="类型" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectItem value="all">全部</SelectItem>
+                  <SelectItem value="subscription">订阅</SelectItem>
+                  <SelectItem value="quota">额度</SelectItem>
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+            <Select value={statusFilter} onValueChange={handleStatusChange}>
+              <SelectTrigger className="w-[130px]">
+                <SelectValue placeholder="状态" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectItem value="all">全部</SelectItem>
+                  <SelectItem value="false">未使用</SelectItem>
+                  <SelectItem value="true">已使用</SelectItem>
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+            <Button
+              size="sm"
+              onClick={handleQuery}
+              className="cursor-pointer"
+            >
+              查询
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleReset}
+              className="cursor-pointer"
+            >
+              重置
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
 
       <Card>
         <CardHeader className="pb-3">
@@ -423,16 +529,14 @@ export default function RedemptionCodesPage() {
                 </table>
               </div>
 
-              {pagination && (
-                <Pagination
-                  currentPage={pagination.page}
-                  totalPages={pagination.totalPages}
-                  total={pagination.total}
-                  pageSize={pagination.limit}
-                  onPageChange={handlePageChange}
-                  onPageSizeChange={handlePageSizeChange}
-                />
-              )}
+              <Pagination
+                currentPage={pagination?.page ?? 1}
+                totalPages={pagination?.totalPages ?? 1}
+                total={pagination?.total ?? 0}
+                pageSize={pagination?.limit ?? pageSize}
+                onPageChange={handlePageChange}
+                onPageSizeChange={handlePageSizeChange}
+              />
             </>
           )}
         </CardContent>

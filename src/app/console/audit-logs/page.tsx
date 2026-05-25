@@ -1,14 +1,21 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { 
   FileText, 
   Search, 
-  Filter,
   Download,
   RefreshCw,
   User,
@@ -62,33 +69,33 @@ export default function AuditLogsPage() {
   const [logs, setLogs] = useState<AuditLog[]>([]);
   const [stats, setStats] = useState<AuditLogStats | null>(null);
   const [pagination, setPagination] = useState<PaginationInfo | null>(null);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [selectedLevel, setSelectedLevel] = useState("all");
-  const [selectedStatus, setSelectedStatus] = useState("all");
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
+  const [searchInput, setSearchInput] = useState("");
+  const [levelFilter, setLevelFilter] = useState<string>("all");
+  const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [startDateInput, setStartDateInput] = useState("");
+  const [endDateInput, setEndDateInput] = useState("");
+  const [appliedSearch, setAppliedSearch] = useState("");
+  const [appliedLevel, setAppliedLevel] = useState<string>("all");
+  const [appliedStatus, setAppliedStatus] = useState<string>("all");
+  const [appliedStartDate, setAppliedStartDate] = useState("");
+  const [appliedEndDate, setAppliedEndDate] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [isLoading, setIsLoading] = useState(true);
   const [deletingAuditLog, setDeletingAuditLog] = useState<AuditLog | null>(null);
 
-  useEffect(() => {
-    loadLogs();
-    loadStats();
-  }, [searchQuery, selectedLevel, selectedStatus, startDate, endDate, currentPage, pageSize]);
-
-  async function loadLogs() {
+  const loadLogs = useCallback(async () => {
     setIsLoading(true);
     const result = await api.paginated("/api/audit-logs", {
-      search: searchQuery,
-      level: selectedLevel,
-      status: selectedStatus,
-      startDate,
-      endDate,
+      search: appliedSearch,
+      level: appliedLevel,
+      status: appliedStatus,
+      startDate: appliedStartDate,
+      endDate: appliedEndDate,
       page: currentPage,
       limit: pageSize,
     });
-    
+
     if (result.success && result.data) {
       setLogs(result.data);
       if (result.pagination) {
@@ -96,7 +103,15 @@ export default function AuditLogsPage() {
       }
     }
     setIsLoading(false);
-  }
+  }, [currentPage, pageSize, appliedSearch, appliedLevel, appliedStatus, appliedStartDate, appliedEndDate]);
+
+  useEffect(() => {
+    loadLogs();
+  }, [loadLogs]);
+
+  useEffect(() => {
+    loadStats();
+  }, []);
 
   async function loadStats() {
     const result = await api.get("/api/audit-logs/stats");
@@ -105,27 +120,35 @@ export default function AuditLogsPage() {
     }
   }
 
-  function handleSearchChange(value: string) {
-    setSearchQuery(value);
-    setCurrentPage(1);
-  }
-
-  function handleLevelChange(level: string) {
-    setSelectedLevel(level);
-    setCurrentPage(1);
-  }
-
-  function handleStatusChange(status: string) {
-    setSelectedStatus(status);
-    setCurrentPage(1);
-  }
-
   function handlePageChange(page: number) {
     setCurrentPage(page);
   }
 
   function handlePageSizeChange(size: number) {
     setPageSize(size);
+    setCurrentPage(1);
+  }
+
+  function handleQuery() {
+    setAppliedSearch(searchInput);
+    setAppliedLevel(levelFilter);
+    setAppliedStatus(statusFilter);
+    setAppliedStartDate(startDateInput);
+    setAppliedEndDate(endDateInput);
+    setCurrentPage(1);
+  }
+
+  function handleReset() {
+    setSearchInput("");
+    setLevelFilter("all");
+    setStatusFilter("all");
+    setStartDateInput("");
+    setEndDateInput("");
+    setAppliedSearch("");
+    setAppliedLevel("all");
+    setAppliedStatus("all");
+    setAppliedStartDate("");
+    setAppliedEndDate("");
     setCurrentPage(1);
   }
 
@@ -140,10 +163,10 @@ export default function AuditLogsPage() {
 
   async function handleExport() {
     const result = await api.get("/api/audit-logs/export", {
-      level: selectedLevel,
-      status: selectedStatus,
-      startDate,
-      endDate,
+      level: levelFilter,
+      status: statusFilter,
+      startDate: startDateInput,
+      endDate: endDateInput,
     });
 
     if (result.success && result.data) {
@@ -239,100 +262,70 @@ export default function AuditLogsPage() {
       {/* Filters */}
       <Card>
         <CardContent className="p-4">
-          <div className="flex flex-col md:flex-row gap-4">
-            <div className="relative flex-1">
+          <div className="flex flex-wrap items-end gap-3">
+            <div className="relative flex-1 min-w-[200px]">
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
               <Input
                 placeholder="搜索操作、资源或详情..."
-                value={searchQuery}
-                onChange={(e) => handleSearchChange(e.target.value)}
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
                 className="pl-10"
               />
             </div>
-            <div className="flex gap-2">
-              <Button
-                variant={selectedLevel === "all" ? "default" : "outline"}
-                size="sm"
-                onClick={() => handleLevelChange("all")}
-                className="cursor-pointer"
-              >
-                全部级别
-              </Button>
-              <Button
-                variant={selectedLevel === "info" ? "default" : "outline"}
-                size="sm"
-                onClick={() => handleLevelChange("info")}
-                className="cursor-pointer"
-              >
-                信息
-              </Button>
-              <Button
-                variant={selectedLevel === "warning" ? "default" : "outline"}
-                size="sm"
-                onClick={() => handleLevelChange("warning")}
-                className="cursor-pointer"
-              >
-                警告
-              </Button>
-              <Button
-                variant={selectedLevel === "error" ? "default" : "outline"}
-                size="sm"
-                onClick={() => handleLevelChange("error")}
-                className="cursor-pointer"
-              >
-                错误
-              </Button>
-            </div>
-            <div className="flex gap-2">
-              <Button
-                variant={selectedStatus === "all" ? "default" : "outline"}
-                size="sm"
-                onClick={() => handleStatusChange("all")}
-                className="cursor-pointer"
-              >
-                全部状态
-              </Button>
-              <Button
-                variant={selectedStatus === "success" ? "default" : "outline"}
-                size="sm"
-                onClick={() => handleStatusChange("success")}
-                className="cursor-pointer"
-              >
-                成功
-              </Button>
-              <Button
-                variant={selectedStatus === "error" ? "default" : "outline"}
-                size="sm"
-                onClick={() => handleStatusChange("error")}
-                className="cursor-pointer"
-              >
-                失败
-              </Button>
-            </div>
-          </div>
-          <div className="grid grid-cols-2 gap-4 mt-4">
-            <div className="flex-1">
-              <label className="text-sm font-medium text-slate-700 mb-2 block">开始时间</label>
+            <Select value={levelFilter} onValueChange={setLevelFilter}>
+              <SelectTrigger className="w-[110px]">
+                <SelectValue placeholder="级别" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectItem value="all">全部级别</SelectItem>
+                  <SelectItem value="info">信息</SelectItem>
+                  <SelectItem value="warning">警告</SelectItem>
+                  <SelectItem value="error">错误</SelectItem>
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+            <Select value={statusFilter} onValueChange={setStatusFilter}>
+              <SelectTrigger className="w-[110px]">
+                <SelectValue placeholder="状态" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectItem value="all">全部</SelectItem>
+                  <SelectItem value="success">成功</SelectItem>
+                  <SelectItem value="error">失败</SelectItem>
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+            <div className="flex-1 min-w-[180px]">
               <Input
                 type="datetime-local"
-                value={startDate}
-                onChange={(e) => {
-                  setStartDate(e.target.value);
-                  setCurrentPage(1);
-                }}
+                value={startDateInput}
+                onChange={(e) => setStartDateInput(e.target.value)}
               />
             </div>
-            <div className="flex-1">
-              <label className="text-sm font-medium text-slate-700 mb-2 block">结束时间</label>
+            <div className="flex-1 min-w-[180px]">
               <Input
                 type="datetime-local"
-                value={endDate}
-                onChange={(e) => {
-                  setEndDate(e.target.value);
-                  setCurrentPage(1);
-                }}
+                value={endDateInput}
+                onChange={(e) => setEndDateInput(e.target.value)}
               />
             </div>
+            <Button
+              size="sm"
+              onClick={handleQuery}
+              className="cursor-pointer"
+            >
+              查询
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleReset}
+              className="cursor-pointer"
+            >
+              重置
+            </Button>
           </div>
         </CardContent>
       </Card>
@@ -448,18 +441,16 @@ export default function AuditLogsPage() {
           </Card>
 
           {/* Pagination */}
-          {pagination && (
-            <div className="mt-4">
-              <Pagination
-                currentPage={pagination.page}
-                totalPages={pagination.totalPages}
-                total={pagination.total}
-                pageSize={pagination.limit}
-                onPageChange={handlePageChange}
-                onPageSizeChange={handlePageSizeChange}
-              />
-            </div>
-          )}
+          <div className="mt-4">
+            <Pagination
+              currentPage={pagination?.page ?? 1}
+              totalPages={pagination?.totalPages ?? 1}
+              total={pagination?.total ?? 0}
+              pageSize={pagination?.limit ?? pageSize}
+              onPageChange={handlePageChange}
+              onPageSizeChange={handlePageSizeChange}
+            />
+          </div>
         </>
       )}
 

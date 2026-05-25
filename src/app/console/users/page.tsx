@@ -1,10 +1,18 @@
 "use client";
 
-import { useEffect, useState, useTransition } from "react";
+import { useEffect, useState, useCallback, useTransition } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   Dialog,
   DialogContent,
@@ -60,8 +68,10 @@ export default function UsersPage() {
   const [users, setUsers] = useState<User[]>([]);
   const [stats, setStats] = useState<UserStats | null>(null);
   const [pagination, setPagination] = useState<PaginationInfo | null>(null);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [selectedRole, setSelectedRole] = useState("all");
+  const [searchInput, setSearchInput] = useState("");
+  const [roleFilter, setRoleFilter] = useState<string>("all");
+  const [appliedSearch, setAppliedSearch] = useState("");
+  const [appliedRole, setAppliedRole] = useState<string>("all");
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [isLoading, setIsLoading] = useState(true);
@@ -70,20 +80,15 @@ export default function UsersPage() {
   const [deletingUser, setDeletingUser] = useState<User | null>(null);
   const [isPending, startTransition] = useTransition();
 
-  useEffect(() => {
-    loadUsers();
-    loadStats();
-  }, [searchQuery, selectedRole, currentPage, pageSize]);
-
-  async function loadUsers() {
+  const loadUsers = useCallback(async () => {
     setIsLoading(true);
     const result = await api.paginated("/api/users", {
-      role: selectedRole,
-      search: searchQuery,
+      role: appliedRole,
+      search: appliedSearch,
       page: currentPage,
       limit: pageSize,
     });
-    
+
     if (result.success && result.data) {
       setUsers(result.data);
       if (result.pagination) {
@@ -91,7 +96,15 @@ export default function UsersPage() {
       }
     }
     setIsLoading(false);
-  }
+  }, [currentPage, pageSize, appliedSearch, appliedRole]);
+
+  useEffect(() => {
+    loadUsers();
+  }, [loadUsers]);
+
+  useEffect(() => {
+    loadStats();
+  }, []);
 
   async function loadStats() {
     const result = await api.get("/api/users/stats");
@@ -137,13 +150,17 @@ export default function UsersPage() {
     setCurrentPage(1);
   }
 
-  function handleSearchChange(value: string) {
-    setSearchQuery(value);
+  function handleQuery() {
+    setAppliedSearch(searchInput);
+    setAppliedRole(roleFilter);
     setCurrentPage(1);
   }
 
-  function handleRoleChange(role: string) {
-    setSelectedRole(role);
+  function handleReset() {
+    setSearchInput("");
+    setRoleFilter("all");
+    setAppliedSearch("");
+    setAppliedRole("all");
     setCurrentPage(1);
   }
 
@@ -223,42 +240,43 @@ export default function UsersPage() {
       {/* Filters */}
       <Card>
         <CardContent className="p-4">
-          <div className="flex flex-col md:flex-row gap-4">
-            <div className="relative flex-1">
+          <div className="flex flex-wrap items-end gap-3">
+            <div className="relative flex-1 min-w-[200px]">
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
               <Input
                 placeholder="搜索用户名或邮箱..."
-                value={searchQuery}
-                onChange={(e) => handleSearchChange(e.target.value)}
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
                 className="pl-10"
               />
             </div>
-            <div className="flex gap-2">
-              <Button
-                variant={selectedRole === "all" ? "default" : "outline"}
-                size="sm"
-                onClick={() => handleRoleChange("all")}
-                className="cursor-pointer"
-              >
-                全部
-              </Button>
-              <Button
-                variant={selectedRole === "admin" ? "default" : "outline"}
-                size="sm"
-                onClick={() => handleRoleChange("admin")}
-                className="cursor-pointer"
-              >
-                管理员
-              </Button>
-              <Button
-                variant={selectedRole === "user" ? "default" : "outline"}
-                size="sm"
-                onClick={() => handleRoleChange("user")}
-                className="cursor-pointer"
-              >
-                普通用户
-              </Button>
-            </div>
+            <Select value={roleFilter} onValueChange={setRoleFilter}>
+              <SelectTrigger className="w-[130px]">
+                <SelectValue placeholder="角色" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectItem value="all">全部</SelectItem>
+                  <SelectItem value="admin">管理员</SelectItem>
+                  <SelectItem value="user">普通用户</SelectItem>
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+            <Button
+              size="sm"
+              onClick={handleQuery}
+              className="cursor-pointer"
+            >
+              查询
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleReset}
+              className="cursor-pointer"
+            >
+              重置
+            </Button>
           </div>
         </CardContent>
       </Card>
@@ -373,18 +391,16 @@ export default function UsersPage() {
               </div>
 
               {/* Pagination */}
-              {pagination && (
-                <div className="mt-4">
-                  <Pagination
-                    currentPage={pagination.page}
-                    totalPages={pagination.totalPages}
-                    total={pagination.total}
-                    pageSize={pagination.limit}
-                    onPageChange={handlePageChange}
-                    onPageSizeChange={handlePageSizeChange}
-                  />
-                </div>
-              )}
+              <div className="mt-4">
+                <Pagination
+                  currentPage={pagination?.page ?? 1}
+                  totalPages={pagination?.totalPages ?? 1}
+                  total={pagination?.total ?? 0}
+                  pageSize={pagination?.limit ?? pageSize}
+                  onPageChange={handlePageChange}
+                  onPageSizeChange={handlePageSizeChange}
+                />
+              </div>
             </>
           )}
         </CardContent>

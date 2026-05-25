@@ -1,12 +1,39 @@
 import { NextRequest, NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import prisma from "@/lib/prisma";
-import { getAdminUser, apiSuccess, apiError } from "@/lib/api-auth";
+import { getAdminUser, apiSuccess, apiError, apiPaginated } from "@/lib/api-auth";
 
-export async function GET(_request: NextRequest) {
+export async function GET(request: NextRequest) {
+  const admin = await getAdminUser();
+  if (admin instanceof NextResponse) return admin;
+
   try {
-    const plans = await prisma.subscriptionPlan.findMany({ orderBy: { sortOrder: "asc" } });
-    return apiSuccess(plans);
+    const { searchParams } = new URL(request.url);
+    const search = searchParams.get("search") || undefined;
+    const isActive = searchParams.get("isActive") || undefined;
+    const page = parseInt(searchParams.get("page") || "1");
+    const limit = parseInt(searchParams.get("limit") || "10");
+    const skip = (page - 1) * limit;
+
+    const where: Record<string, unknown> = {};
+    if (search) {
+      where.title = { contains: search };
+    }
+    if (isActive !== undefined && isActive !== "") {
+      where.isActive = isActive === "true";
+    }
+
+    const [plans, total] = await Promise.all([
+      prisma.subscriptionPlan.findMany({
+        where,
+        orderBy: { sortOrder: "asc" },
+        skip,
+        take: limit,
+      }),
+      prisma.subscriptionPlan.count({ where }),
+    ]);
+
+    return apiPaginated(plans, { page, limit, total });
   } catch (error) {
     console.error("Error fetching subscription plans:", error);
     return apiError("获取订阅计划失败");

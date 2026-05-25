@@ -1,10 +1,18 @@
 "use client";
 
-import { useEffect, useState, useTransition } from "react";
+import { useEffect, useState, useCallback, useTransition } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { 
   Key, 
   Plus, 
@@ -52,8 +60,10 @@ export default function TokensPage() {
   const [tokens, setTokens] = useState<Token[]>([]);
   const [stats, setStats] = useState<TokenStats | null>(null);
   const [pagination, setPagination] = useState<PaginationInfo | null>(null);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [selectedStatus, setSelectedStatus] = useState("all");
+  const [searchInput, setSearchInput] = useState("");
+  const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [appliedSearch, setAppliedSearch] = useState("");
+  const [appliedStatus, setAppliedStatus] = useState<string>("all");
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [isLoading, setIsLoading] = useState(true);
@@ -64,20 +74,15 @@ export default function TokensPage() {
   const [copiedToken, setCopiedToken] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
-  useEffect(() => {
-    loadTokens();
-    loadStats();
-  }, [searchQuery, selectedStatus, currentPage, pageSize]);
-
-  async function loadTokens() {
+  const loadTokens = useCallback(async () => {
     setIsLoading(true);
     const result = await api.paginated("/api/tokens", {
-      search: searchQuery,
-      status: selectedStatus,
+      search: appliedSearch,
+      status: appliedStatus,
       page: currentPage,
       limit: pageSize,
     });
-    
+
     if (result.success && result.data) {
       setTokens(result.data);
       if (result.pagination) {
@@ -85,7 +90,15 @@ export default function TokensPage() {
       }
     }
     setIsLoading(false);
-  }
+  }, [currentPage, pageSize, appliedSearch, appliedStatus]);
+
+  useEffect(() => {
+    loadTokens();
+  }, [loadTokens]);
+
+  useEffect(() => {
+    loadStats();
+  }, []);
 
   async function loadStats() {
     const result = await api.get("/api/tokens/stats");
@@ -94,22 +107,26 @@ export default function TokensPage() {
     }
   }
 
-  function handleSearchChange(value: string) {
-    setSearchQuery(value);
-    setCurrentPage(1);
-  }
-
-  function handleStatusChange(status: string) {
-    setSelectedStatus(status);
-    setCurrentPage(1);
-  }
-
   function handlePageChange(page: number) {
     setCurrentPage(page);
   }
 
   function handlePageSizeChange(size: number) {
     setPageSize(size);
+    setCurrentPage(1);
+  }
+
+  function handleQuery() {
+    setAppliedSearch(searchInput);
+    setAppliedStatus(statusFilter);
+    setCurrentPage(1);
+  }
+
+  function handleReset() {
+    setSearchInput("");
+    setStatusFilter("all");
+    setAppliedSearch("");
+    setAppliedStatus("all");
     setCurrentPage(1);
   }
 
@@ -254,42 +271,43 @@ export default function TokensPage() {
       {/* Search & Filter */}
       <Card>
         <CardContent className="p-4">
-          <div className="flex flex-col md:flex-row gap-4">
-            <div className="relative flex-1">
+          <div className="flex flex-wrap items-end gap-3">
+            <div className="relative flex-1 min-w-[200px]">
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
               <Input
                 placeholder="搜索令牌名称..."
-                value={searchQuery}
-                onChange={(e) => handleSearchChange(e.target.value)}
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
                 className="pl-10"
               />
             </div>
-            <div className="flex gap-2">
-              <Button
-                variant={selectedStatus === "all" ? "default" : "outline"}
-                size="sm"
-                onClick={() => handleStatusChange("all")}
-                className="cursor-pointer"
-              >
-                全部
-              </Button>
-              <Button
-                variant={selectedStatus === "active" ? "default" : "outline"}
-                size="sm"
-                onClick={() => handleStatusChange("active")}
-                className="cursor-pointer"
-              >
-                活跃
-              </Button>
-              <Button
-                variant={selectedStatus === "inactive" ? "default" : "outline"}
-                size="sm"
-                onClick={() => handleStatusChange("inactive")}
-                className="cursor-pointer"
-              >
-                已停用
-              </Button>
-            </div>
+            <Select value={statusFilter} onValueChange={setStatusFilter}>
+              <SelectTrigger className="w-[120px]">
+                <SelectValue placeholder="状态" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectItem value="all">全部</SelectItem>
+                  <SelectItem value="active">活跃</SelectItem>
+                  <SelectItem value="inactive">已停用</SelectItem>
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+            <Button
+              size="sm"
+              onClick={handleQuery}
+              className="cursor-pointer"
+            >
+              查询
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleReset}
+              className="cursor-pointer"
+            >
+              重置
+            </Button>
           </div>
         </CardContent>
       </Card>
@@ -437,18 +455,16 @@ export default function TokensPage() {
           </div>
 
           {/* Pagination */}
-          {pagination && (
-            <div className="mt-4">
-              <Pagination
-                currentPage={pagination.page}
-                totalPages={pagination.totalPages}
-                total={pagination.total}
-                pageSize={pagination.limit}
-                onPageChange={handlePageChange}
-                onPageSizeChange={handlePageSizeChange}
-              />
-            </div>
-          )}
+          <div className="mt-4">
+            <Pagination
+              currentPage={pagination?.page ?? 1}
+              totalPages={pagination?.totalPages ?? 1}
+              total={pagination?.total ?? 0}
+              pageSize={pagination?.limit ?? pageSize}
+              onPageChange={handlePageChange}
+              onPageSizeChange={handlePageSizeChange}
+            />
+          </div>
         </>
       )}
 

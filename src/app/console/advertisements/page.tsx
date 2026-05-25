@@ -1,10 +1,18 @@
 "use client";
 
-import { useEffect, useState, useTransition } from "react";
+import { useEffect, useState, useCallback, useTransition } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   Dialog,
   DialogContent,
@@ -27,7 +35,7 @@ import { api } from "@/lib/api-client";
 import { AdvertisementForm } from "@/components/advertisement-form";
 import { DeleteAdvertisementDialog } from "@/components/delete-advertisement-dialog";
 import { Pagination } from "@/components/pagination";
-import { AdPositionLabels, AdPosition } from "@/types/ad-position";
+import { AdPositionLabels, AdPosition, AdPositionOptions } from "@/types/ad-position";
 
 interface Advertisement {
   id: string;
@@ -63,9 +71,12 @@ export default function AdvertisementsPage() {
   const [advertisements, setAdvertisements] = useState<Advertisement[]>([]);
   const [stats, setStats] = useState<AdvertisementStats | null>(null);
   const [pagination, setPagination] = useState<PaginationInfo | null>(null);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [selectedPosition, setSelectedPosition] = useState("all");
-  const [selectedStatus, setSelectedStatus] = useState("all");
+  const [searchInput, setSearchInput] = useState("");
+  const [positionFilter, setPositionFilter] = useState<string>("all");
+  const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [appliedSearch, setAppliedSearch] = useState("");
+  const [appliedPosition, setAppliedPosition] = useState<string>("all");
+  const [appliedStatus, setAppliedStatus] = useState<string>("all");
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [isLoading, setIsLoading] = useState(true);
@@ -74,28 +85,27 @@ export default function AdvertisementsPage() {
   const [deletingAd, setDeletingAd] = useState<Advertisement | null>(null);
   const [isPending, startTransition] = useTransition();
 
-  useEffect(() => {
-    loadAdvertisements();
-    loadStats();
-  }, [searchQuery, selectedPosition, selectedStatus, currentPage, pageSize]);
-
-  async function loadAdvertisements() {
+  const loadAdvertisements = useCallback(async () => {
     setIsLoading(true);
-    const params: any = {
+    const params: Record<string, string | number | boolean | undefined> = {
       page: currentPage,
       limit: pageSize,
     };
 
-    if (selectedPosition !== "all") {
-      params.position = selectedPosition;
+    if (appliedSearch) {
+      params.search = appliedSearch;
     }
 
-    if (selectedStatus !== "all") {
-      params.isActive = selectedStatus === "active";
+    if (appliedPosition !== "all") {
+      params.position = appliedPosition;
+    }
+
+    if (appliedStatus !== "all") {
+      params.isActive = appliedStatus === "active";
     }
 
     const result = await api.paginated("/api/advertisements", params);
-    
+
     if (result.success && result.data) {
       setAdvertisements(result.data);
       if (result.pagination) {
@@ -103,7 +113,15 @@ export default function AdvertisementsPage() {
       }
     }
     setIsLoading(false);
-  }
+  }, [currentPage, pageSize, appliedSearch, appliedPosition, appliedStatus]);
+
+  useEffect(() => {
+    loadAdvertisements();
+  }, [loadAdvertisements]);
+
+  useEffect(() => {
+    loadStats();
+  }, []);
 
   async function loadStats() {
     const result = await api.get("/api/advertisements/stats");
@@ -161,8 +179,20 @@ export default function AdvertisementsPage() {
     setCurrentPage(1);
   }
 
-  function handleSearchChange(value: string) {
-    setSearchQuery(value);
+  function handleQuery() {
+    setAppliedSearch(searchInput);
+    setAppliedPosition(positionFilter);
+    setAppliedStatus(statusFilter);
+    setCurrentPage(1);
+  }
+
+  function handleReset() {
+    setSearchInput("");
+    setPositionFilter("all");
+    setStatusFilter("all");
+    setAppliedSearch("");
+    setAppliedPosition("all");
+    setAppliedStatus("all");
     setCurrentPage(1);
   }
 
@@ -241,44 +271,61 @@ export default function AdvertisementsPage() {
         })}
       </div>
 
+      {/* Filters */}
       <Card>
         <CardContent className="p-4">
-          <div className="flex flex-col md:flex-row gap-4">
-            <div className="relative flex-1">
+          <div className="flex flex-wrap items-end gap-3">
+            <div className="relative flex-1 min-w-[200px]">
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
               <Input
                 placeholder="搜索广告标题..."
-                value={searchQuery}
-                onChange={(e) => handleSearchChange(e.target.value)}
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
                 className="pl-10"
               />
             </div>
-            <div className="flex gap-2 flex-wrap">
-              <Button
-                variant={selectedStatus === "all" ? "default" : "outline"}
-                size="sm"
-                onClick={() => setSelectedStatus("all")}
-                className="cursor-pointer"
-              >
-                全部状态
-              </Button>
-              <Button
-                variant={selectedStatus === "active" ? "default" : "outline"}
-                size="sm"
-                onClick={() => setSelectedStatus("active")}
-                className="cursor-pointer"
-              >
-                已启用
-              </Button>
-              <Button
-                variant={selectedStatus === "inactive" ? "default" : "outline"}
-                size="sm"
-                onClick={() => setSelectedStatus("inactive")}
-                className="cursor-pointer"
-              >
-                已禁用
-              </Button>
-            </div>
+            <Select value={positionFilter} onValueChange={setPositionFilter}>
+              <SelectTrigger className="w-[140px]">
+                <SelectValue placeholder="广告位" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectItem value="all">全部广告位</SelectItem>
+                  {AdPositionOptions.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+            <Select value={statusFilter} onValueChange={setStatusFilter}>
+              <SelectTrigger className="w-[120px]">
+                <SelectValue placeholder="状态" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectItem value="all">全部</SelectItem>
+                  <SelectItem value="active">已启用</SelectItem>
+                  <SelectItem value="inactive">已禁用</SelectItem>
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+            <Button
+              size="sm"
+              onClick={handleQuery}
+              className="cursor-pointer"
+            >
+              查询
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleReset}
+              className="cursor-pointer"
+            >
+              重置
+            </Button>
           </div>
         </CardContent>
       </Card>
@@ -406,18 +453,16 @@ export default function AdvertisementsPage() {
                 </table>
               </div>
 
-              {pagination && (
-                <div className="mt-4">
-                  <Pagination
-                    currentPage={pagination.page}
-                    totalPages={pagination.totalPages}
-                    total={pagination.total}
-                    pageSize={pagination.limit}
-                    onPageChange={handlePageChange}
-                    onPageSizeChange={handlePageSizeChange}
-                  />
-                </div>
-              )}
+              <div className="mt-4">
+                <Pagination
+                  currentPage={pagination?.page ?? 1}
+                  totalPages={pagination?.totalPages ?? 1}
+                  total={pagination?.total ?? 0}
+                  pageSize={pagination?.limit ?? pageSize}
+                  onPageChange={handlePageChange}
+                  onPageSizeChange={handlePageSizeChange}
+                />
+              </div>
             </>
           )}
         </CardContent>
