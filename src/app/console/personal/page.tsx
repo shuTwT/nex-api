@@ -4,17 +4,18 @@ import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { getCurrentUserProfile } from "@/app/actions/personal";
+import { Input } from "@/components/ui/input";
+import { getCurrentUserProfile, redeemCode } from "@/app/actions/personal";
 import {
-  User,
   CreditCard,
   Activity,
-  Calendar,
-  Shield,
   Coins,
   Plus,
+  Wallet,
+  Ticket,
 } from "lucide-react";
 import { RechargeDialog } from "@/components/recharge-dialog";
+import { toast } from "sonner";
 
 interface UserProfile {
   id: string;
@@ -33,6 +34,8 @@ export default function PersonalPage() {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [rechargeDialogOpen, setRechargeDialogOpen] = useState(false);
+  const [redeemInput, setRedeemInput] = useState("");
+  const [isRedeeming, setIsRedeeming] = useState(false);
 
   useEffect(() => {
     loadProfile();
@@ -53,27 +56,37 @@ export default function PersonalPage() {
     setIsLoading(false);
   }
 
+  async function handleRedeem() {
+    if (!redeemInput.trim()) return;
+    setIsRedeeming(true);
+    const result = await redeemCode(redeemInput);
+    if (result.success) {
+      toast.success(result.message || "兑换成功");
+      setRedeemInput("");
+      loadProfile();
+    } else {
+      toast.error(result.error || "兑换失败");
+    }
+    setIsRedeeming(false);
+  }
+
   const displayName = profile?.name || profile?.username;
   const initial = displayName ? displayName.charAt(0).toUpperCase() : "U";
 
+  const balance = profile?.credits.toLocaleString() || "0";
+
   const statsCards = [
     {
-      title: "当前余额",
-      value: profile?.credits.toLocaleString() || 0,
-      icon: Coins,
-      color: "blue",
-    },
-    {
       title: "历史消耗",
-      value: profile?.totalCreditsSpent.toLocaleString() || 0,
+      value: profile?.totalCreditsSpent.toLocaleString() || "0",
       icon: Activity,
-      color: "green",
+      color: "green" as const,
     },
     {
       title: "请求次数",
-      value: profile?.totalRequests.toLocaleString() || 0,
+      value: profile?.totalRequests.toLocaleString() || "0",
       icon: CreditCard,
-      color: "purple",
+      color: "purple" as const,
     },
   ];
 
@@ -151,17 +164,65 @@ export default function PersonalPage() {
           </CardContent>
         </Card>
 
-        <div className="space-y-6">
-          <Card>
+        <div className="flex flex-col md:flex-row gap-6">
+          <Card className="md:w-80 md:shrink-0">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-lg">
+                <Wallet className="h-5 w-5" />
+                钱包
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex items-center justify-between rounded-lg bg-blue-50 p-4">
+                <div className="flex items-center gap-3">
+                  <div className="h-10 w-10 rounded-lg bg-blue-100 flex items-center justify-center">
+                    <Coins className="h-5 w-5 text-blue-600" />
+                  </div>
+                  <div>
+                    <p className="text-sm text-slate-500">当前余额</p>
+                    <p className="text-2xl font-bold text-slate-900">{balance}</p>
+                  </div>
+                </div>
+                <Button
+                  size="sm"
+                  className="gap-1 cursor-pointer"
+                  onClick={() => setRechargeDialogOpen(true)}
+                >
+                  <Plus className="h-4 w-4" />
+                  充值
+                </Button>
+              </div>
+
+              <div className="flex gap-3">
+                <Input
+                  placeholder="请输入兑换码"
+                  value={redeemInput}
+                  onChange={(e) => setRedeemInput(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && handleRedeem()}
+                  className="flex-1 uppercase"
+                  disabled={isRedeeming}
+                />
+                <Button
+                  onClick={handleRedeem}
+                  disabled={isRedeeming || !redeemInput.trim()}
+                  className="cursor-pointer gap-1"
+                >
+                  <Ticket className="h-4 w-4" />
+                  {isRedeeming ? "兑换中..." : "兑换"}
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="md:min-w-0 md:flex-1">
             <CardHeader>
               <CardTitle className="text-lg">统计信息</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="grid gap-4 md:grid-cols-3">
-                {statsCards.map((stat, index) => {
+              <div className="grid gap-4 md:grid-cols-2">
+                {statsCards.map((stat) => {
                   const Icon = stat.icon;
                   const colorClasses = {
-                    blue: "bg-blue-50 text-blue-600",
                     green: "bg-green-50 text-green-600",
                     purple: "bg-purple-50 text-purple-600",
                   };
@@ -182,21 +243,11 @@ export default function PersonalPage() {
                             </p>
                           </div>
                           <div
-                            className={`h-10 w-10 rounded-lg flex items-center justify-center ${colorClasses[stat.color as keyof typeof colorClasses]}`}
+                            className={`h-10 w-10 rounded-lg flex items-center justify-center ${colorClasses[stat.color]}`}
                           >
                             <Icon className="h-5 w-5" />
                           </div>
                         </div>
-                        {index === 0 && (
-                          <Button
-                            size="sm"
-                            className="w-full mt-3"
-                            onClick={() => setRechargeDialogOpen(true)}
-                          >
-                            <Plus className="mr-1 h-4 w-4" />
-                            充值
-                          </Button>
-                        )}
                       </CardContent>
                     </Card>
                   );
