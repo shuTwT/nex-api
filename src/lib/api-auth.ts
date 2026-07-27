@@ -36,14 +36,12 @@ export async function getAdminUser(): Promise<SessionUser | NextResponse> {
 
   const user = session.user as SessionUser;
 
-  // Admin check is currently commented out in the source.
-  // Uncomment if admin enforcement is needed:
-  // if (user.role !== "admin") {
-  //   return NextResponse.json(
-  //     { success: false, error: "Forbidden: Admin access required" },
-  //     { status: 403 }
-  //   );
-  // }
+  if (user.role !== "admin") {
+    return NextResponse.json(
+      { success: false, error: "Forbidden: Admin access required" },
+      { status: 403 }
+    );
+  }
 
   return user;
 }

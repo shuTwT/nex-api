@@ -45,3 +45,5 @@ next-env.d.ts
 /data
 
 /.pnpm-store
+/.omo
+/.playwright-mcp

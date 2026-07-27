@@ -68,12 +68,10 @@ export async function requireAdmin(authOptions: AuthOptions): Promise<SessionUse
     throw new Error("Unauthorized");
   }
   const user = session.user as SessionUser;
-  
-  console.log("requireAdmin",user)
 
-  // if (user.role !== "admin") {
-  //   throw new Error("Forbidden: Admin access required");
-  // }
+  if (user.role !== "admin") {
+    throw new Error("Forbidden: Admin access required");
+  }
   
   return user;
 }

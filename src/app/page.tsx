@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
@@ -40,11 +41,22 @@ interface MarketplaceStats {
 }
 
 export default function Home() {
+  const router = useRouter();
   const [apis, setApis] = useState<MarketplaceApi[]>([]);
   const [stats, setStats] = useState<MarketplaceStats | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [announcement, setAnnouncement] = useState<{ enabled: boolean; content: string } | null>(null);
   const [showAnnouncement, setShowAnnouncement] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  function handleSearch() {
+    const trimmed = searchQuery.trim();
+    if (trimmed) {
+      router.push(`/api-market?q=${encodeURIComponent(trimmed)}`);
+    } else {
+      router.push("/api-market");
+    }
+  }
 
   function checkShouldShowAnnouncement(): boolean {
     const lastDismissDate = localStorage.getItem("announcementDismissDate");
@@ -74,7 +86,6 @@ export default function Home() {
       setStats(statsResult.data);
     }
 
-    console.log(announcementResult);
     if (announcementResult.success && announcementResult.data) {
       setAnnouncement(announcementResult.data);
       if (announcementResult.data.enabled && announcementResult.data.content) {
@@ -141,10 +152,21 @@ export default function Home() {
                   <Input
                     type="text"
                     placeholder="搜索 API，如：天气、短信、支付、OCR..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        handleSearch();
+                      }
+                    }}
                     className="pl-10 h-12 bg-white text-slate-900 placeholder:text-slate-400 border border-slate-200 shadow-md focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
                   />
                 </div>
-                <Button size="lg" className="h-12 px-8 bg-blue-600 hover:bg-blue-700">
+                <Button
+                  size="lg"
+                  className="h-12 px-8 bg-blue-600 hover:bg-blue-700 cursor-pointer"
+                  onClick={handleSearch}
+                >
                   搜索
                 </Button>
               </div>
@@ -180,7 +202,11 @@ export default function Home() {
             <h2 className="text-3xl font-bold tracking-tight mb-2">热门 API 推荐</h2>
             <p className="text-gray-500">开发者最常使用的 API 接口</p>
           </div>
-          <Button variant="outline" className="gap-2 cursor-pointer">
+          <Button
+            variant="outline"
+            className="gap-2 cursor-pointer"
+            onClick={() => router.push("/api-market")}
+          >
             全部 API
             <TrendingUp className="h-4 w-4" />
           </Button>

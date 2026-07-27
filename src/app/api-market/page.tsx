@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
@@ -48,11 +49,22 @@ interface MarketplaceStats {
 }
 
 export default function ApiMarketPage() {
+  return (
+    <Suspense fallback={null}>
+      <ApiMarketContent />
+    </Suspense>
+  );
+}
+
+function ApiMarketContent() {
+  const searchParams = useSearchParams();
+  const initialQuery = searchParams.get("q") || "";
+
   const [apis, setApis] = useState<MarketplaceApi[]>([]);
   const [stats, setStats] = useState<MarketplaceStats | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState("全部");
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState(initialQuery);
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [sortBy, setSortBy] = useState("popular");
 
