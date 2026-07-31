@@ -1,0 +1,2424 @@
+openapi: 3.1.0
+info:
+  title: Nex API
+  version: 1.0.0
+  license: { name: MIT, identifier: MIT }
+  description: |
+    Contract for the typed JSON API and its explicitly recorded raw transports.
+servers:
+  - url: https://api.nex-api.invalid
+    description: Contract placeholder
+tags:
+  - { name: auth, description: Authentication and session operations }
+  - { name: admin, description: Administrator operations }
+  - { name: user, description: Authenticated user operations }
+  - { name: public, description: Public operations }
+  - { name: payment, description: Payment and membership operations }
+  - { name: gateway, description: Raw API gateway operations }
+  - { name: mcp, description: MCP stream operations }
+  - { name: files, description: File transfer operations }
+paths:
+  /api/advertisements/{id}:
+    parameters:
+      - { name: id, in: path, required: true, schema: { type: string } }
+    get:
+      operationId: advertisements_id_route_get
+      summary: "advertisements_id_route_get"
+      tags: [admin]
+      x-source-file: "src/app/api/advertisements/[id]/route.ts"
+      x-auth-role: "admin"
+      x-response-class: "json"
+      security: [{ sessionCookie: [] }]
+      parameters:
+        - { $ref: '#/components/parameters/Page' }
+        - { $ref: '#/components/parameters/Limit' }
+        - { $ref: '#/components/parameters/Search' }
+      responses:
+        '200': { $ref: '#/components/responses/PaginatedSuccess' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/InternalError' }
+    put:
+      operationId: advertisements_id_route_put
+      summary: "advertisements_id_route_put"
+      tags: [admin]
+      x-source-file: "src/app/api/advertisements/[id]/route.ts"
+      x-auth-role: "admin"
+      x-response-class: "json"
+      security: [{ sessionCookie: [] }]
+      requestBody:
+        required: true
+        content:
+          "application/json":
+            schema: { $ref: '#/components/schemas/JsonRequest' }
+      responses:
+        '200': { $ref: '#/components/responses/JsonSuccess' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/InternalError' }
+    delete:
+      operationId: advertisements_id_route_delete
+      summary: "advertisements_id_route_delete"
+      tags: [admin]
+      x-source-file: "src/app/api/advertisements/[id]/route.ts"
+      x-auth-role: "admin"
+      x-response-class: "json"
+      security: [{ sessionCookie: [] }]
+      responses:
+        '200': { $ref: '#/components/responses/JsonSuccess' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/InternalError' }
+  /api/advertisements/{id}/toggle:
+    parameters:
+      - { name: id, in: path, required: true, schema: { type: string } }
+    put:
+      operationId: advertisements_id_toggle_route_put
+      summary: "advertisements_id_toggle_route_put"
+      tags: [admin]
+      x-source-file: "src/app/api/advertisements/[id]/toggle/route.ts"
+      x-auth-role: "admin"
+      x-response-class: "json"
+      security: [{ sessionCookie: [] }]
+      requestBody:
+        required: true
+        content:
+          "application/json":
+            schema: { $ref: '#/components/schemas/JsonRequest' }
+      responses:
+        '200': { $ref: '#/components/responses/JsonSuccess' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/InternalError' }
+  /api/advertisements/by-position/{position}:
+    parameters:
+      - { name: position, in: path, required: true, schema: { type: string } }
+    get:
+      operationId: advertisements_by_position_position_route_get
+      summary: "advertisements_by_position_position_route_get"
+      tags: [public]
+      x-source-file: "src/app/api/advertisements/by-position/[position]/route.ts"
+      x-auth-role: "none"
+      x-response-class: "json"
+      security: []
+      parameters:
+        - { $ref: '#/components/parameters/Page' }
+        - { $ref: '#/components/parameters/Limit' }
+        - { $ref: '#/components/parameters/Search' }
+      responses:
+        '200': { $ref: '#/components/responses/PaginatedSuccess' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/InternalError' }
+  /api/advertisements:
+    get:
+      operationId: advertisements_route_get
+      summary: "advertisements_route_get"
+      tags: [admin]
+      x-source-file: "src/app/api/advertisements/route.ts"
+      x-auth-role: "admin"
+      x-response-class: "json"
+      security: [{ sessionCookie: [] }]
+      parameters:
+        - { $ref: '#/components/parameters/Page' }
+        - { $ref: '#/components/parameters/Limit' }
+        - { $ref: '#/components/parameters/Search' }
+      responses:
+        '200': { $ref: '#/components/responses/PaginatedSuccess' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/InternalError' }
+    post:
+      operationId: advertisements_route_post
+      summary: "advertisements_route_post"
+      tags: [admin]
+      x-source-file: "src/app/api/advertisements/route.ts"
+      x-auth-role: "admin"
+      x-response-class: "json"
+      security: [{ sessionCookie: [] }]
+      requestBody:
+        required: true
+        content:
+          "application/json":
+            schema: { $ref: '#/components/schemas/JsonRequest' }
+      responses:
+        '200': { $ref: '#/components/responses/JsonSuccess' }
+        '201': { $ref: '#/components/responses/JsonSuccess' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/InternalError' }
+  /api/advertisements/stats:
+    get:
+      operationId: advertisements_stats_route_get
+      summary: "advertisements_stats_route_get"
+      tags: [public]
+      x-source-file: "src/app/api/advertisements/stats/route.ts"
+      x-auth-role: "none"
+      x-response-class: "json"
+      security: []
+      parameters:
+        - { $ref: '#/components/parameters/Page' }
+        - { $ref: '#/components/parameters/Limit' }
+        - { $ref: '#/components/parameters/Search' }
+      responses:
+        '200': { $ref: '#/components/responses/PaginatedSuccess' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/InternalError' }
+  /api/apis/{id}:
+    parameters:
+      - { name: id, in: path, required: true, schema: { type: string } }
+    get:
+      operationId: apis_id_route_get
+      summary: "apis_id_route_get"
+      tags: [admin]
+      x-source-file: "src/app/api/apis/[id]/route.ts"
+      x-auth-role: "admin"
+      x-response-class: "json"
+      security: [{ sessionCookie: [] }]
+      parameters:
+        - { $ref: '#/components/parameters/Page' }
+        - { $ref: '#/components/parameters/Limit' }
+        - { $ref: '#/components/parameters/Search' }
+      responses:
+        '200': { $ref: '#/components/responses/PaginatedSuccess' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/InternalError' }
+    put:
+      operationId: apis_id_route_put
+      summary: "apis_id_route_put"
+      tags: [admin]
+      x-source-file: "src/app/api/apis/[id]/route.ts"
+      x-auth-role: "admin"
+      x-response-class: "json"
+      security: [{ sessionCookie: [] }]
+      requestBody:
+        required: true
+        content:
+          "application/json":
+            schema: { $ref: '#/components/schemas/JsonRequest' }
+      responses:
+        '200': { $ref: '#/components/responses/JsonSuccess' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/InternalError' }
+    delete:
+      operationId: apis_id_route_delete
+      summary: "apis_id_route_delete"
+      tags: [admin]
+      x-source-file: "src/app/api/apis/[id]/route.ts"
+      x-auth-role: "admin"
+      x-response-class: "json"
+      security: [{ sessionCookie: [] }]
+      responses:
+        '200': { $ref: '#/components/responses/JsonSuccess' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/InternalError' }
+  /api/apis/{id}/toggle:
+    parameters:
+      - { name: id, in: path, required: true, schema: { type: string } }
+    put:
+      operationId: apis_id_toggle_route_put
+      summary: "apis_id_toggle_route_put"
+      tags: [admin]
+      x-source-file: "src/app/api/apis/[id]/toggle/route.ts"
+      x-auth-role: "admin"
+      x-response-class: "json"
+      security: [{ sessionCookie: [] }]
+      requestBody:
+        required: true
+        content:
+          "application/json":
+            schema: { $ref: '#/components/schemas/JsonRequest' }
+      responses:
+        '200': { $ref: '#/components/responses/JsonSuccess' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/InternalError' }
+  /api/apis:
+    get:
+      operationId: apis_route_get
+      summary: "apis_route_get"
+      tags: [admin]
+      x-source-file: "src/app/api/apis/route.ts"
+      x-auth-role: "admin"
+      x-response-class: "json"
+      security: [{ sessionCookie: [] }]
+      parameters:
+        - { $ref: '#/components/parameters/Page' }
+        - { $ref: '#/components/parameters/Limit' }
+        - { $ref: '#/components/parameters/Search' }
+      responses:
+        '200': { $ref: '#/components/responses/PaginatedSuccess' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/InternalError' }
+    post:
+      operationId: apis_route_post
+      summary: "apis_route_post"
+      tags: [admin]
+      x-source-file: "src/app/api/apis/route.ts"
+      x-auth-role: "admin"
+      x-response-class: "json"
+      security: [{ sessionCookie: [] }]
+      requestBody:
+        required: true
+        content:
+          "application/json":
+            schema: { $ref: '#/components/schemas/JsonRequest' }
+      responses:
+        '200': { $ref: '#/components/responses/JsonSuccess' }
+        '201': { $ref: '#/components/responses/JsonSuccess' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/InternalError' }
+  /api/apis/stats:
+    get:
+      operationId: apis_stats_route_get
+      summary: "apis_stats_route_get"
+      tags: [admin]
+      x-source-file: "src/app/api/apis/stats/route.ts"
+      x-auth-role: "admin"
+      x-response-class: "json"
+      security: [{ sessionCookie: [] }]
+      parameters:
+        - { $ref: '#/components/parameters/Page' }
+        - { $ref: '#/components/parameters/Limit' }
+        - { $ref: '#/components/parameters/Search' }
+      responses:
+        '200': { $ref: '#/components/responses/PaginatedSuccess' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/InternalError' }
+  /api/audit-logs/{id}:
+    parameters:
+      - { name: id, in: path, required: true, schema: { type: string } }
+    put:
+      operationId: audit_logs_id_route_put
+      summary: "audit_logs_id_route_put"
+      tags: [user]
+      x-source-file: "src/app/api/audit-logs/[id]/route.ts"
+      x-auth-role: "user"
+      x-response-class: "json"
+      security: [{ sessionCookie: [] }]
+      requestBody:
+        required: true
+        content:
+          "application/json":
+            schema: { $ref: '#/components/schemas/JsonRequest' }
+      responses:
+        '200': { $ref: '#/components/responses/JsonSuccess' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/InternalError' }
+    delete:
+      operationId: audit_logs_id_route_delete
+      summary: "audit_logs_id_route_delete"
+      tags: [user]
+      x-source-file: "src/app/api/audit-logs/[id]/route.ts"
+      x-auth-role: "user"
+      x-response-class: "json"
+      security: [{ sessionCookie: [] }]
+      responses:
+        '200': { $ref: '#/components/responses/JsonSuccess' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/InternalError' }
+  /api/audit-logs/export:
+    get:
+      operationId: audit_logs_export_route_get
+      summary: "audit_logs_export_route_get"
+      tags: [user]
+      x-source-file: "src/app/api/audit-logs/export/route.ts"
+      x-auth-role: "user"
+      x-response-class: "json"
+      security: [{ sessionCookie: [] }]
+      parameters:
+        - { $ref: '#/components/parameters/Page' }
+        - { $ref: '#/components/parameters/Limit' }
+        - { $ref: '#/components/parameters/Search' }
+      responses:
+        '200': { $ref: '#/components/responses/CsvOrJsonSuccess' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/InternalError' }
+  /api/audit-logs:
+    get:
+      operationId: audit_logs_route_get
+      summary: "audit_logs_route_get"
+      tags: [user]
+      x-source-file: "src/app/api/audit-logs/route.ts"
+      x-auth-role: "user"
+      x-response-class: "json"
+      security: [{ sessionCookie: [] }]
+      parameters:
+        - { $ref: '#/components/parameters/Page' }
+        - { $ref: '#/components/parameters/Limit' }
+        - { $ref: '#/components/parameters/Search' }
+      responses:
+        '200': { $ref: '#/components/responses/PaginatedSuccess' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/InternalError' }
+    post:
+      operationId: audit_logs_route_post
+      summary: "audit_logs_route_post"
+      tags: [user]
+      x-source-file: "src/app/api/audit-logs/route.ts"
+      x-auth-role: "user"
+      x-response-class: "json"
+      security: [{ sessionCookie: [] }]
+      requestBody:
+        required: true
+        content:
+          "application/json":
+            schema: { $ref: '#/components/schemas/JsonRequest' }
+      responses:
+        '200': { $ref: '#/components/responses/JsonSuccess' }
+        '201': { $ref: '#/components/responses/JsonSuccess' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/InternalError' }
+  /api/audit-logs/stats:
+    get:
+      operationId: audit_logs_stats_route_get
+      summary: "audit_logs_stats_route_get"
+      tags: [user]
+      x-source-file: "src/app/api/audit-logs/stats/route.ts"
+      x-auth-role: "user"
+      x-response-class: "json"
+      security: [{ sessionCookie: [] }]
+      parameters:
+        - { $ref: '#/components/parameters/Page' }
+        - { $ref: '#/components/parameters/Limit' }
+        - { $ref: '#/components/parameters/Search' }
+      responses:
+        '200': { $ref: '#/components/responses/PaginatedSuccess' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/InternalError' }
+  /api/auth/{nextauth}:
+    parameters:
+      - { name: nextauth, in: path, required: true, schema: { type: string } }
+    get:
+      operationId: auth_nextauth_route_get
+      summary: "auth_nextauth_route_get"
+      tags: [auth]
+      x-source-file: "src/app/api/auth/[...nextauth]/route.ts"
+      x-auth-role: "none"
+      x-response-class: "raw"
+      x-client-exclude: true
+      security: []
+      parameters:
+        - { $ref: '#/components/parameters/Page' }
+        - { $ref: '#/components/parameters/Limit' }
+        - { $ref: '#/components/parameters/Search' }
+      responses:
+        '200': { $ref: '#/components/responses/RawSuccess' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/InternalError' }
+    post:
+      operationId: auth_nextauth_route_post
+      summary: "auth_nextauth_route_post"
+      tags: [auth]
+      x-source-file: "src/app/api/auth/[...nextauth]/route.ts"
+      x-auth-role: "none"
+      x-response-class: "raw"
+      x-client-exclude: true
+      security: []
+      requestBody:
+        required: true
+        content:
+          "application/json":
+            schema: { $ref: '#/components/schemas/RawPayload' }
+      responses:
+        '200': { $ref: '#/components/responses/RawSuccess' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/InternalError' }
+  /api/auth/logout:
+    post:
+      operationId: auth_logout_route_post
+      summary: "auth_logout_route_post"
+      tags: [auth]
+      x-source-file: "src/app/api/auth/logout/route.ts"
+      x-auth-role: "none"
+      x-response-class: "json"
+      security: []
+      requestBody:
+        required: true
+        content:
+          "application/json":
+            schema: { $ref: '#/components/schemas/JsonRequest' }
+      responses:
+        '200': { $ref: '#/components/responses/JsonSuccess' }
+        '201': { $ref: '#/components/responses/JsonSuccess' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/InternalError' }
+  /api/auth/me:
+    get:
+      operationId: auth_me_route_get
+      summary: "auth_me_route_get"
+      tags: [user]
+      x-source-file: "src/app/api/auth/me/route.ts"
+      x-auth-role: "user"
+      x-response-class: "json"
+      security: [{ sessionCookie: [] }]
+      parameters:
+        - { $ref: '#/components/parameters/Page' }
+        - { $ref: '#/components/parameters/Limit' }
+        - { $ref: '#/components/parameters/Search' }
+      responses:
+        '200': { $ref: '#/components/responses/AuthSuccess' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/InternalError' }
+  /api/categories/{id}:
+    parameters:
+      - { name: id, in: path, required: true, schema: { type: string } }
+    put:
+      operationId: categories_id_route_put
+      summary: "categories_id_route_put"
+      tags: [admin]
+      x-source-file: "src/app/api/categories/[id]/route.ts"
+      x-auth-role: "admin"
+      x-response-class: "json"
+      security: [{ sessionCookie: [] }]
+      requestBody:
+        required: true
+        content:
+          "application/json":
+            schema: { $ref: '#/components/schemas/JsonRequest' }
+      responses:
+        '200': { $ref: '#/components/responses/JsonSuccess' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/InternalError' }
+    delete:
+      operationId: categories_id_route_delete
+      summary: "categories_id_route_delete"
+      tags: [admin]
+      x-source-file: "src/app/api/categories/[id]/route.ts"
+      x-auth-role: "admin"
+      x-response-class: "json"
+      security: [{ sessionCookie: [] }]
+      responses:
+        '200': { $ref: '#/components/responses/JsonSuccess' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/InternalError' }
+  /api/categories:
+    get:
+      operationId: categories_route_get
+      summary: "categories_route_get"
+      tags: [admin]
+      x-source-file: "src/app/api/categories/route.ts"
+      x-auth-role: "admin"
+      x-response-class: "json"
+      security: [{ sessionCookie: [] }]
+      parameters:
+        - { $ref: '#/components/parameters/Page' }
+        - { $ref: '#/components/parameters/Limit' }
+        - { $ref: '#/components/parameters/Search' }
+      responses:
+        '200': { $ref: '#/components/responses/PaginatedSuccess' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/InternalError' }
+    post:
+      operationId: categories_route_post
+      summary: "categories_route_post"
+      tags: [admin]
+      x-source-file: "src/app/api/categories/route.ts"
+      x-auth-role: "admin"
+      x-response-class: "json"
+      security: [{ sessionCookie: [] }]
+      requestBody:
+        required: true
+        content:
+          "application/json":
+            schema: { $ref: '#/components/schemas/JsonRequest' }
+      responses:
+        '200': { $ref: '#/components/responses/JsonSuccess' }
+        '201': { $ref: '#/components/responses/JsonSuccess' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/InternalError' }
+  /api/cron/sync-stats:
+    post:
+      operationId: cron_sync_stats_route_post
+      summary: "cron_sync_stats_route_post"
+      tags: [admin]
+      x-source-file: "src/app/api/cron/sync-stats/route.ts"
+      x-auth-role: "none"
+      x-response-class: "json"
+      x-auth-scheme: "cron-secret"
+      security: [{ cronSecret: [] }]
+      requestBody:
+        required: true
+        content:
+          "application/json":
+            schema: { $ref: '#/components/schemas/JsonRequest' }
+      responses:
+        '200': { $ref: '#/components/responses/JsonSuccess' }
+        '201': { $ref: '#/components/responses/JsonSuccess' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/InternalError' }
+  /api/dashboard/activity:
+    get:
+      operationId: dashboard_activity_route_get
+      summary: "dashboard_activity_route_get"
+      tags: [user]
+      x-source-file: "src/app/api/dashboard/activity/route.ts"
+      x-auth-role: "user"
+      x-response-class: "json"
+      security: [{ sessionCookie: [] }]
+      parameters:
+        - { $ref: '#/components/parameters/Page' }
+        - { $ref: '#/components/parameters/Limit' }
+        - { $ref: '#/components/parameters/Search' }
+      responses:
+        '200': { $ref: '#/components/responses/PaginatedSuccess' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/InternalError' }
+  /api/dashboard/stats:
+    get:
+      operationId: dashboard_stats_route_get
+      summary: "dashboard_stats_route_get"
+      tags: [user]
+      x-source-file: "src/app/api/dashboard/stats/route.ts"
+      x-auth-role: "user"
+      x-response-class: "json"
+      security: [{ sessionCookie: [] }]
+      parameters:
+        - { $ref: '#/components/parameters/Page' }
+        - { $ref: '#/components/parameters/Limit' }
+        - { $ref: '#/components/parameters/Search' }
+      responses:
+        '200': { $ref: '#/components/responses/PaginatedSuccess' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/InternalError' }
+  /api/dashboard/top-apis:
+    get:
+      operationId: dashboard_top_apis_route_get
+      summary: "dashboard_top_apis_route_get"
+      tags: [user]
+      x-source-file: "src/app/api/dashboard/top-apis/route.ts"
+      x-auth-role: "user"
+      x-response-class: "json"
+      security: [{ sessionCookie: [] }]
+      parameters:
+        - { $ref: '#/components/parameters/Page' }
+        - { $ref: '#/components/parameters/Limit' }
+        - { $ref: '#/components/parameters/Search' }
+      responses:
+        '200': { $ref: '#/components/responses/PaginatedSuccess' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/InternalError' }
+  /api/dashboard/usage-trend:
+    get:
+      operationId: dashboard_usage_trend_route_get
+      summary: "dashboard_usage_trend_route_get"
+      tags: [user]
+      x-source-file: "src/app/api/dashboard/usage-trend/route.ts"
+      x-auth-role: "user"
+      x-response-class: "json"
+      security: [{ sessionCookie: [] }]
+      parameters:
+        - { $ref: '#/components/parameters/Page' }
+        - { $ref: '#/components/parameters/Limit' }
+        - { $ref: '#/components/parameters/Search' }
+      responses:
+        '200': { $ref: '#/components/responses/PaginatedSuccess' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/InternalError' }
+  /api/marketplace/apis/{id}:
+    parameters:
+      - { name: id, in: path, required: true, schema: { type: string } }
+    get:
+      operationId: marketplace_apis_id_route_get
+      summary: "marketplace_apis_id_route_get"
+      tags: [public]
+      x-source-file: "src/app/api/marketplace/apis/[id]/route.ts"
+      x-auth-role: "none"
+      x-response-class: "json"
+      security: []
+      parameters:
+        - { $ref: '#/components/parameters/Page' }
+        - { $ref: '#/components/parameters/Limit' }
+        - { $ref: '#/components/parameters/Search' }
+      responses:
+        '200': { $ref: '#/components/responses/PaginatedSuccess' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/InternalError' }
+  /api/marketplace/apis:
+    get:
+      operationId: marketplace_apis_route_get
+      summary: "marketplace_apis_route_get"
+      tags: [public]
+      x-source-file: "src/app/api/marketplace/apis/route.ts"
+      x-auth-role: "none"
+      x-response-class: "json"
+      security: []
+      parameters:
+        - { $ref: '#/components/parameters/Page' }
+        - { $ref: '#/components/parameters/Limit' }
+        - { $ref: '#/components/parameters/Search' }
+      responses:
+        '200': { $ref: '#/components/responses/PaginatedSuccess' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/InternalError' }
+  /api/marketplace/mcp-services:
+    get:
+      operationId: marketplace_mcp_services_route_get
+      summary: "marketplace_mcp_services_route_get"
+      tags: [public]
+      x-source-file: "src/app/api/marketplace/mcp-services/route.ts"
+      x-auth-role: "none"
+      x-response-class: "json"
+      security: []
+      parameters:
+        - { $ref: '#/components/parameters/Page' }
+        - { $ref: '#/components/parameters/Limit' }
+        - { $ref: '#/components/parameters/Search' }
+      responses:
+        '200': { $ref: '#/components/responses/PaginatedSuccess' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/InternalError' }
+  /api/marketplace/mcp-stats:
+    get:
+      operationId: marketplace_mcp_stats_route_get
+      summary: "marketplace_mcp_stats_route_get"
+      tags: [public]
+      x-source-file: "src/app/api/marketplace/mcp-stats/route.ts"
+      x-auth-role: "none"
+      x-response-class: "json"
+      security: []
+      parameters:
+        - { $ref: '#/components/parameters/Page' }
+        - { $ref: '#/components/parameters/Limit' }
+        - { $ref: '#/components/parameters/Search' }
+      responses:
+        '200': { $ref: '#/components/responses/PaginatedSuccess' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/InternalError' }
+  /api/marketplace/stats:
+    get:
+      operationId: marketplace_stats_route_get
+      summary: "marketplace_stats_route_get"
+      tags: [public]
+      x-source-file: "src/app/api/marketplace/stats/route.ts"
+      x-auth-role: "none"
+      x-response-class: "json"
+      security: []
+      parameters:
+        - { $ref: '#/components/parameters/Page' }
+        - { $ref: '#/components/parameters/Limit' }
+        - { $ref: '#/components/parameters/Search' }
+      responses:
+        '200': { $ref: '#/components/responses/PaginatedSuccess' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/InternalError' }
+  /api/mcp-services/{id}:
+    parameters:
+      - { name: id, in: path, required: true, schema: { type: string } }
+    put:
+      operationId: mcp_services_id_route_put
+      summary: "mcp_services_id_route_put"
+      tags: [admin]
+      x-source-file: "src/app/api/mcp-services/[id]/route.ts"
+      x-auth-role: "admin"
+      x-response-class: "json"
+      security: [{ sessionCookie: [] }]
+      requestBody:
+        required: true
+        content:
+          "application/json":
+            schema: { $ref: '#/components/schemas/JsonRequest' }
+      responses:
+        '200': { $ref: '#/components/responses/JsonSuccess' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/InternalError' }
+    delete:
+      operationId: mcp_services_id_route_delete
+      summary: "mcp_services_id_route_delete"
+      tags: [admin]
+      x-source-file: "src/app/api/mcp-services/[id]/route.ts"
+      x-auth-role: "admin"
+      x-response-class: "json"
+      security: [{ sessionCookie: [] }]
+      responses:
+        '200': { $ref: '#/components/responses/JsonSuccess' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/InternalError' }
+  /api/mcp-services/{id}/toggle:
+    parameters:
+      - { name: id, in: path, required: true, schema: { type: string } }
+    put:
+      operationId: mcp_services_id_toggle_route_put
+      summary: "mcp_services_id_toggle_route_put"
+      tags: [admin]
+      x-source-file: "src/app/api/mcp-services/[id]/toggle/route.ts"
+      x-auth-role: "admin"
+      x-response-class: "json"
+      security: [{ sessionCookie: [] }]
+      requestBody:
+        required: true
+        content:
+          "application/json":
+            schema: { $ref: '#/components/schemas/JsonRequest' }
+      responses:
+        '200': { $ref: '#/components/responses/JsonSuccess' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/InternalError' }
+  /api/mcp-services:
+    get:
+      operationId: mcp_services_route_get
+      summary: "mcp_services_route_get"
+      tags: [admin]
+      x-source-file: "src/app/api/mcp-services/route.ts"
+      x-auth-role: "admin"
+      x-response-class: "json"
+      security: [{ sessionCookie: [] }]
+      parameters:
+        - { $ref: '#/components/parameters/Page' }
+        - { $ref: '#/components/parameters/Limit' }
+        - { $ref: '#/components/parameters/Search' }
+      responses:
+        '200': { $ref: '#/components/responses/PaginatedSuccess' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/InternalError' }
+    post:
+      operationId: mcp_services_route_post
+      summary: "mcp_services_route_post"
+      tags: [admin]
+      x-source-file: "src/app/api/mcp-services/route.ts"
+      x-auth-role: "admin"
+      x-response-class: "json"
+      security: [{ sessionCookie: [] }]
+      requestBody:
+        required: true
+        content:
+          "application/json":
+            schema: { $ref: '#/components/schemas/JsonRequest' }
+      responses:
+        '200': { $ref: '#/components/responses/JsonSuccess' }
+        '201': { $ref: '#/components/responses/JsonSuccess' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/InternalError' }
+  /api/mcp-services/stats:
+    get:
+      operationId: mcp_services_stats_route_get
+      summary: "mcp_services_stats_route_get"
+      tags: [admin]
+      x-source-file: "src/app/api/mcp-services/stats/route.ts"
+      x-auth-role: "admin"
+      x-response-class: "json"
+      security: [{ sessionCookie: [] }]
+      parameters:
+        - { $ref: '#/components/parameters/Page' }
+        - { $ref: '#/components/parameters/Limit' }
+        - { $ref: '#/components/parameters/Search' }
+      responses:
+        '200': { $ref: '#/components/responses/PaginatedSuccess' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/InternalError' }
+  /api/membership/current:
+    get:
+      operationId: membership_current_route_get
+      summary: "membership_current_route_get"
+      tags: [user]
+      x-source-file: "src/app/api/membership/current/route.ts"
+      x-auth-role: "user"
+      x-response-class: "json"
+      security: [{ sessionCookie: [] }]
+      parameters:
+        - { $ref: '#/components/parameters/Page' }
+        - { $ref: '#/components/parameters/Limit' }
+        - { $ref: '#/components/parameters/Search' }
+      responses:
+        '200': { $ref: '#/components/responses/PaginatedSuccess' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/InternalError' }
+  /api/membership/plans:
+    get:
+      operationId: membership_plans_route_get
+      summary: "membership_plans_route_get"
+      tags: [public]
+      x-source-file: "src/app/api/membership/plans/route.ts"
+      x-auth-role: "none"
+      x-response-class: "json"
+      security: []
+      parameters:
+        - { $ref: '#/components/parameters/Page' }
+        - { $ref: '#/components/parameters/Limit' }
+        - { $ref: '#/components/parameters/Search' }
+      responses:
+        '200': { $ref: '#/components/responses/PaginatedSuccess' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/InternalError' }
+  /api/membership/subscribe:
+    post:
+      operationId: membership_subscribe_route_post
+      summary: "membership_subscribe_route_post"
+      tags: [user]
+      x-source-file: "src/app/api/membership/subscribe/route.ts"
+      x-auth-role: "user"
+      x-response-class: "json"
+      security: [{ sessionCookie: [] }]
+      requestBody:
+        required: true
+        content:
+          "application/json":
+            schema: { $ref: '#/components/schemas/JsonRequest' }
+      responses:
+        '200': { $ref: '#/components/responses/JsonSuccess' }
+        '201': { $ref: '#/components/responses/JsonSuccess' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/InternalError' }
+  /api/payment/{outTradeNo}/cancel:
+    parameters:
+      - { name: outTradeNo, in: path, required: true, schema: { type: string } }
+    post:
+      operationId: payment_outtradeno_cancel_route_post
+      summary: "payment_outtradeno_cancel_route_post"
+      tags: [payment]
+      x-source-file: "src/app/api/payment/[outTradeNo]/cancel/route.ts"
+      x-auth-role: "user"
+      x-response-class: "json"
+      security: [{ sessionCookie: [] }]
+      requestBody:
+        required: true
+        content:
+          "application/json":
+            schema: { $ref: '#/components/schemas/JsonRequest' }
+      responses:
+        '200': { $ref: '#/components/responses/JsonSuccess' }
+        '201': { $ref: '#/components/responses/JsonSuccess' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/InternalError' }
+  /api/payment/{outTradeNo}:
+    parameters:
+      - { name: outTradeNo, in: path, required: true, schema: { type: string } }
+    get:
+      operationId: payment_outtradeno_route_get
+      summary: "payment_outtradeno_route_get"
+      tags: [payment]
+      x-source-file: "src/app/api/payment/[outTradeNo]/route.ts"
+      x-auth-role: "user"
+      x-response-class: "json"
+      security: [{ sessionCookie: [] }]
+      parameters:
+        - { $ref: '#/components/parameters/Page' }
+        - { $ref: '#/components/parameters/Limit' }
+        - { $ref: '#/components/parameters/Search' }
+      responses:
+        '200': { $ref: '#/components/responses/PaginatedSuccess' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/InternalError' }
+  /api/payment/{outTradeNo}/status:
+    parameters:
+      - { name: outTradeNo, in: path, required: true, schema: { type: string } }
+    get:
+      operationId: payment_outtradeno_status_route_get
+      summary: "payment_outtradeno_status_route_get"
+      tags: [payment]
+      x-source-file: "src/app/api/payment/[outTradeNo]/status/route.ts"
+      x-auth-role: "user"
+      x-response-class: "json"
+      security: [{ sessionCookie: [] }]
+      parameters:
+        - { $ref: '#/components/parameters/Page' }
+        - { $ref: '#/components/parameters/Limit' }
+        - { $ref: '#/components/parameters/Search' }
+      responses:
+        '200': { $ref: '#/components/responses/PaginatedSuccess' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/InternalError' }
+  /api/payment/business/recharge:
+    post:
+      operationId: payment_business_recharge_route_post
+      summary: "payment_business_recharge_route_post"
+      tags: [payment]
+      x-source-file: "src/app/api/payment/business/recharge/route.ts"
+      x-auth-role: "none"
+      x-response-class: "json"
+      security: []
+      requestBody:
+        required: true
+        content:
+          "application/json":
+            schema: { $ref: '#/components/schemas/JsonRequest' }
+      responses:
+        '200': { $ref: '#/components/responses/JsonSuccess' }
+        '201': { $ref: '#/components/responses/JsonSuccess' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/InternalError' }
+      callbacks:
+        paymentStatus: { $ref: '#/components/callbacks/RechargeWebhook' }
+  /api/payment/business/subscription:
+    post:
+      operationId: payment_business_subscription_route_post
+      summary: "payment_business_subscription_route_post"
+      tags: [payment]
+      x-source-file: "src/app/api/payment/business/subscription/route.ts"
+      x-auth-role: "none"
+      x-response-class: "json"
+      security: []
+      requestBody:
+        required: true
+        content:
+          "application/json":
+            schema: { $ref: '#/components/schemas/JsonRequest' }
+      responses:
+        '200': { $ref: '#/components/responses/JsonSuccess' }
+        '201': { $ref: '#/components/responses/JsonSuccess' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/InternalError' }
+      callbacks:
+        paymentStatus: { $ref: '#/components/callbacks/SubscriptionWebhook' }
+  /api/payment/callback/alipay:
+    post:
+      operationId: payment_callback_alipay_route_post
+      summary: "payment_callback_alipay_route_post"
+      tags: [payment]
+      x-source-file: "src/app/api/payment/callback/alipay/route.ts"
+      x-auth-role: "none"
+      x-response-class: "raw"
+      x-client-exclude: true
+      security: []
+      requestBody:
+        required: true
+        content:
+          "application/x-www-form-urlencoded":
+            schema: { $ref: '#/components/schemas/AlipayWebhook' }
+      responses:
+        '200': { $ref: '#/components/responses/RawSuccess' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/InternalError' }
+  /api/payment/callback/mock:
+    post:
+      operationId: payment_callback_mock_route_post
+      summary: "payment_callback_mock_route_post"
+      tags: [payment]
+      x-source-file: "src/app/api/payment/callback/mock/route.ts"
+      x-auth-role: "none"
+      x-response-class: "json"
+      x-client-exclude: true
+      security: []
+      requestBody:
+        required: true
+        content:
+          "application/json":
+            schema: { $ref: '#/components/schemas/MockPaymentWebhook' }
+      responses:
+        '200': { $ref: '#/components/responses/JsonSuccess' }
+        '201': { $ref: '#/components/responses/JsonSuccess' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/InternalError' }
+  /api/payment/callback/wechat:
+    post:
+      operationId: payment_callback_wechat_route_post
+      summary: "payment_callback_wechat_route_post"
+      tags: [payment]
+      x-source-file: "src/app/api/payment/callback/wechat/route.ts"
+      x-auth-role: "none"
+      x-response-class: "raw"
+      x-client-exclude: true
+      security: []
+      requestBody:
+        required: true
+        content:
+          "application/json":
+            schema: { $ref: '#/components/schemas/WechatWebhook' }
+      responses:
+        '200': { $ref: '#/components/responses/RawSuccess' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/InternalError' }
+  /api/payment/methods:
+    get:
+      operationId: payment_methods_route_get
+      summary: "payment_methods_route_get"
+      tags: [payment]
+      x-source-file: "src/app/api/payment/methods/route.ts"
+      x-auth-role: "user"
+      x-response-class: "json"
+      security: [{ sessionCookie: [] }]
+      parameters:
+        - { $ref: '#/components/parameters/Page' }
+        - { $ref: '#/components/parameters/Limit' }
+        - { $ref: '#/components/parameters/Search' }
+      responses:
+        '200': { $ref: '#/components/responses/PaginatedSuccess' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/InternalError' }
+    post:
+      operationId: payment_methods_route_post
+      summary: "payment_methods_route_post"
+      tags: [payment]
+      x-source-file: "src/app/api/payment/methods/route.ts"
+      x-auth-role: "user"
+      x-response-class: "json"
+      security: [{ sessionCookie: [] }]
+      requestBody:
+        required: true
+        content:
+          "application/json":
+            schema: { $ref: '#/components/schemas/JsonRequest' }
+      responses:
+        '200': { $ref: '#/components/responses/JsonSuccess' }
+        '201': { $ref: '#/components/responses/JsonSuccess' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/InternalError' }
+  /api/payment/settings:
+    get:
+      operationId: payment_settings_route_get
+      summary: "payment_settings_route_get"
+      tags: [payment]
+      x-source-file: "src/app/api/payment/settings/route.ts"
+      x-auth-role: "user"
+      x-response-class: "json"
+      security: [{ sessionCookie: [] }]
+      parameters:
+        - { $ref: '#/components/parameters/Page' }
+        - { $ref: '#/components/parameters/Limit' }
+        - { $ref: '#/components/parameters/Search' }
+      responses:
+        '200': { $ref: '#/components/responses/PaginatedSuccess' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/InternalError' }
+  /api/payment/user:
+    get:
+      operationId: payment_user_route_get
+      summary: "payment_user_route_get"
+      tags: [payment]
+      x-source-file: "src/app/api/payment/user/route.ts"
+      x-auth-role: "user"
+      x-response-class: "json"
+      security: [{ sessionCookie: [] }]
+      parameters:
+        - { $ref: '#/components/parameters/Page' }
+        - { $ref: '#/components/parameters/Limit' }
+        - { $ref: '#/components/parameters/Search' }
+      responses:
+        '200': { $ref: '#/components/responses/PaginatedSuccess' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/InternalError' }
+  /api/personal/profile:
+    get:
+      operationId: personal_profile_route_get
+      summary: "personal_profile_route_get"
+      tags: [user]
+      x-source-file: "src/app/api/personal/profile/route.ts"
+      x-auth-role: "user"
+      x-response-class: "json"
+      security: [{ sessionCookie: [] }]
+      parameters:
+        - { $ref: '#/components/parameters/Page' }
+        - { $ref: '#/components/parameters/Limit' }
+        - { $ref: '#/components/parameters/Search' }
+      responses:
+        '200': { $ref: '#/components/responses/PaginatedSuccess' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/InternalError' }
+  /api/personal/redeem/lookup:
+    post:
+      operationId: personal_redeem_lookup_route_post
+      summary: "personal_redeem_lookup_route_post"
+      tags: [user]
+      x-source-file: "src/app/api/personal/redeem/lookup/route.ts"
+      x-auth-role: "user"
+      x-response-class: "json"
+      security: [{ sessionCookie: [] }]
+      requestBody:
+        required: true
+        content:
+          "application/json":
+            schema: { $ref: '#/components/schemas/JsonRequest' }
+      responses:
+        '200': { $ref: '#/components/responses/JsonSuccess' }
+        '201': { $ref: '#/components/responses/JsonSuccess' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/InternalError' }
+  /api/personal/redeem:
+    post:
+      operationId: personal_redeem_route_post
+      summary: "personal_redeem_route_post"
+      tags: [user]
+      x-source-file: "src/app/api/personal/redeem/route.ts"
+      x-auth-role: "user"
+      x-response-class: "json"
+      security: [{ sessionCookie: [] }]
+      requestBody:
+        required: true
+        content:
+          "application/json":
+            schema: { $ref: '#/components/schemas/JsonRequest' }
+      responses:
+        '200': { $ref: '#/components/responses/JsonSuccess' }
+        '201': { $ref: '#/components/responses/JsonSuccess' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/InternalError' }
+  /api/recharge:
+    post:
+      operationId: recharge_route_post
+      summary: "recharge_route_post"
+      tags: [user]
+      x-source-file: "src/app/api/recharge/route.ts"
+      x-auth-role: "user"
+      x-response-class: "json"
+      security: [{ sessionCookie: [] }]
+      requestBody:
+        required: true
+        content:
+          "application/json":
+            schema: { $ref: '#/components/schemas/JsonRequest' }
+      responses:
+        '200': { $ref: '#/components/responses/JsonSuccess' }
+        '201': { $ref: '#/components/responses/JsonSuccess' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/InternalError' }
+  /api/redemption-codes/{id}:
+    parameters:
+      - { name: id, in: path, required: true, schema: { type: string } }
+    delete:
+      operationId: redemption_codes_id_route_delete
+      summary: "redemption_codes_id_route_delete"
+      tags: [admin]
+      x-source-file: "src/app/api/redemption-codes/[id]/route.ts"
+      x-auth-role: "admin"
+      x-response-class: "json"
+      security: [{ sessionCookie: [] }]
+      responses:
+        '200': { $ref: '#/components/responses/JsonSuccess' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/InternalError' }
+  /api/redemption-codes/batch:
+    delete:
+      operationId: redemption_codes_batch_route_delete
+      summary: "redemption_codes_batch_route_delete"
+      tags: [admin]
+      x-source-file: "src/app/api/redemption-codes/batch/route.ts"
+      x-auth-role: "admin"
+      x-response-class: "json"
+      security: [{ sessionCookie: [] }]
+      responses:
+        '200': { $ref: '#/components/responses/JsonSuccess' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/InternalError' }
+    post:
+      operationId: redemption_codes_batch_route_post
+      summary: "redemption_codes_batch_route_post"
+      tags: [admin]
+      x-source-file: "src/app/api/redemption-codes/batch/route.ts"
+      x-auth-role: "admin"
+      x-response-class: "json"
+      security: [{ sessionCookie: [] }]
+      requestBody:
+        required: true
+        content:
+          "application/json":
+            schema: { $ref: '#/components/schemas/JsonRequest' }
+      responses:
+        '200': { $ref: '#/components/responses/JsonSuccess' }
+        '201': { $ref: '#/components/responses/JsonSuccess' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/InternalError' }
+  /api/redemption-codes/export:
+    get:
+      operationId: redemption_codes_export_route_get
+      summary: "redemption_codes_export_route_get"
+      tags: [admin]
+      x-source-file: "src/app/api/redemption-codes/export/route.ts"
+      x-auth-role: "admin"
+      x-response-class: "json"
+      security: [{ sessionCookie: [] }]
+      parameters:
+        - { $ref: '#/components/parameters/Page' }
+        - { $ref: '#/components/parameters/Limit' }
+        - { $ref: '#/components/parameters/Search' }
+      responses:
+        '200': { $ref: '#/components/responses/CsvOrJsonSuccess' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/InternalError' }
+  /api/redemption-codes/plans:
+    get:
+      operationId: redemption_codes_plans_route_get
+      summary: "redemption_codes_plans_route_get"
+      tags: [public]
+      x-source-file: "src/app/api/redemption-codes/plans/route.ts"
+      x-auth-role: "none"
+      x-response-class: "json"
+      security: []
+      parameters:
+        - { $ref: '#/components/parameters/Page' }
+        - { $ref: '#/components/parameters/Limit' }
+        - { $ref: '#/components/parameters/Search' }
+      responses:
+        '200': { $ref: '#/components/responses/PaginatedSuccess' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/InternalError' }
+  /api/redemption-codes:
+    get:
+      operationId: redemption_codes_route_get
+      summary: "redemption_codes_route_get"
+      tags: [admin]
+      x-source-file: "src/app/api/redemption-codes/route.ts"
+      x-auth-role: "admin"
+      x-response-class: "json"
+      security: [{ sessionCookie: [] }]
+      parameters:
+        - { $ref: '#/components/parameters/Page' }
+        - { $ref: '#/components/parameters/Limit' }
+        - { $ref: '#/components/parameters/Search' }
+      responses:
+        '200': { $ref: '#/components/responses/PaginatedSuccess' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/InternalError' }
+    post:
+      operationId: redemption_codes_route_post
+      summary: "redemption_codes_route_post"
+      tags: [admin]
+      x-source-file: "src/app/api/redemption-codes/route.ts"
+      x-auth-role: "admin"
+      x-response-class: "json"
+      security: [{ sessionCookie: [] }]
+      requestBody:
+        required: true
+        content:
+          "application/json":
+            schema: { $ref: '#/components/schemas/JsonRequest' }
+      responses:
+        '200': { $ref: '#/components/responses/JsonSuccess' }
+        '201': { $ref: '#/components/responses/JsonSuccess' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/InternalError' }
+  /api/stats/{alias}:
+    parameters:
+      - { name: alias, in: path, required: true, schema: { type: string } }
+    get:
+      operationId: stats_alias_route_get
+      summary: "stats_alias_route_get"
+      tags: [user]
+      x-source-file: "src/app/api/stats/[alias]/route.ts"
+      x-auth-role: "user"
+      x-response-class: "json"
+      security: [{ sessionCookie: [] }]
+      parameters:
+        - { $ref: '#/components/parameters/Page' }
+        - { $ref: '#/components/parameters/Limit' }
+        - { $ref: '#/components/parameters/Search' }
+      responses:
+        '200': { $ref: '#/components/responses/PaginatedSuccess' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/InternalError' }
+  /api/stats:
+    get:
+      operationId: stats_route_get
+      summary: "stats_route_get"
+      tags: [user]
+      x-source-file: "src/app/api/stats/route.ts"
+      x-auth-role: "user"
+      x-response-class: "json"
+      security: [{ sessionCookie: [] }]
+      parameters:
+        - { $ref: '#/components/parameters/Page' }
+        - { $ref: '#/components/parameters/Limit' }
+        - { $ref: '#/components/parameters/Search' }
+      responses:
+        '200': { $ref: '#/components/responses/PaginatedSuccess' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/InternalError' }
+  /api/subscription-plans/{id}:
+    parameters:
+      - { name: id, in: path, required: true, schema: { type: string } }
+    get:
+      operationId: subscription_plans_id_route_get
+      summary: "subscription_plans_id_route_get"
+      tags: [admin]
+      x-source-file: "src/app/api/subscription-plans/[id]/route.ts"
+      x-auth-role: "admin"
+      x-response-class: "json"
+      security: [{ sessionCookie: [] }]
+      parameters:
+        - { $ref: '#/components/parameters/Page' }
+        - { $ref: '#/components/parameters/Limit' }
+        - { $ref: '#/components/parameters/Search' }
+      responses:
+        '200': { $ref: '#/components/responses/PaginatedSuccess' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/InternalError' }
+    put:
+      operationId: subscription_plans_id_route_put
+      summary: "subscription_plans_id_route_put"
+      tags: [admin]
+      x-source-file: "src/app/api/subscription-plans/[id]/route.ts"
+      x-auth-role: "admin"
+      x-response-class: "json"
+      security: [{ sessionCookie: [] }]
+      requestBody:
+        required: true
+        content:
+          "application/json":
+            schema: { $ref: '#/components/schemas/JsonRequest' }
+      responses:
+        '200': { $ref: '#/components/responses/JsonSuccess' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/InternalError' }
+    delete:
+      operationId: subscription_plans_id_route_delete
+      summary: "subscription_plans_id_route_delete"
+      tags: [admin]
+      x-source-file: "src/app/api/subscription-plans/[id]/route.ts"
+      x-auth-role: "admin"
+      x-response-class: "json"
+      security: [{ sessionCookie: [] }]
+      responses:
+        '200': { $ref: '#/components/responses/JsonSuccess' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/InternalError' }
+  /api/subscription-plans:
+    get:
+      operationId: subscription_plans_route_get
+      summary: "subscription_plans_route_get"
+      tags: [admin]
+      x-source-file: "src/app/api/subscription-plans/route.ts"
+      x-auth-role: "admin"
+      x-response-class: "json"
+      security: [{ sessionCookie: [] }]
+      parameters:
+        - { $ref: '#/components/parameters/Page' }
+        - { $ref: '#/components/parameters/Limit' }
+        - { $ref: '#/components/parameters/Search' }
+      responses:
+        '200': { $ref: '#/components/responses/PaginatedSuccess' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/InternalError' }
+    post:
+      operationId: subscription_plans_route_post
+      summary: "subscription_plans_route_post"
+      tags: [admin]
+      x-source-file: "src/app/api/subscription-plans/route.ts"
+      x-auth-role: "admin"
+      x-response-class: "json"
+      security: [{ sessionCookie: [] }]
+      requestBody:
+        required: true
+        content:
+          "application/json":
+            schema: { $ref: '#/components/schemas/JsonRequest' }
+      responses:
+        '200': { $ref: '#/components/responses/JsonSuccess' }
+        '201': { $ref: '#/components/responses/JsonSuccess' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/InternalError' }
+  /api/system/initialize:
+    post:
+      operationId: system_initialize_route_post
+      summary: "system_initialize_route_post"
+      tags: [public]
+      x-source-file: "src/app/api/system/initialize/route.ts"
+      x-auth-role: "none"
+      x-response-class: "json"
+      security: []
+      requestBody:
+        required: true
+        content:
+          "application/json":
+            schema: { $ref: '#/components/schemas/JsonRequest' }
+      responses:
+        '200': { $ref: '#/components/responses/JsonSuccess' }
+        '201': { $ref: '#/components/responses/JsonSuccess' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/InternalError' }
+  /api/system/initialized:
+    get:
+      operationId: system_initialized_route_get
+      summary: "system_initialized_route_get"
+      tags: [public]
+      x-source-file: "src/app/api/system/initialized/route.ts"
+      x-auth-role: "none"
+      x-response-class: "json"
+      security: []
+      parameters:
+        - { $ref: '#/components/parameters/Page' }
+        - { $ref: '#/components/parameters/Limit' }
+        - { $ref: '#/components/parameters/Search' }
+      responses:
+        '200': { $ref: '#/components/responses/PaginatedSuccess' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/InternalError' }
+  /api/system-settings/announcement:
+    get:
+      operationId: system_settings_announcement_route_get
+      summary: "system_settings_announcement_route_get"
+      tags: [public]
+      x-source-file: "src/app/api/system-settings/announcement/route.ts"
+      x-auth-role: "none"
+      x-response-class: "json"
+      security: []
+      parameters:
+        - { $ref: '#/components/parameters/Page' }
+        - { $ref: '#/components/parameters/Limit' }
+        - { $ref: '#/components/parameters/Search' }
+      responses:
+        '200': { $ref: '#/components/responses/PaginatedSuccess' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/InternalError' }
+  /api/system-settings/defaults:
+    get:
+      operationId: system_settings_defaults_route_get
+      summary: "system_settings_defaults_route_get"
+      tags: [public]
+      x-source-file: "src/app/api/system-settings/defaults/route.ts"
+      x-auth-role: "none"
+      x-response-class: "json"
+      security: []
+      parameters:
+        - { $ref: '#/components/parameters/Page' }
+        - { $ref: '#/components/parameters/Limit' }
+        - { $ref: '#/components/parameters/Search' }
+      responses:
+        '200': { $ref: '#/components/responses/PaginatedSuccess' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/InternalError' }
+  /api/system-settings:
+    get:
+      operationId: system_settings_route_get
+      summary: "system_settings_route_get"
+      tags: [admin]
+      x-source-file: "src/app/api/system-settings/route.ts"
+      x-auth-role: "admin"
+      x-response-class: "json"
+      security: [{ sessionCookie: [] }]
+      parameters:
+        - { $ref: '#/components/parameters/Page' }
+        - { $ref: '#/components/parameters/Limit' }
+        - { $ref: '#/components/parameters/Search' }
+      responses:
+        '200': { $ref: '#/components/responses/PaginatedSuccess' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/InternalError' }
+    put:
+      operationId: system_settings_route_put
+      summary: "system_settings_route_put"
+      tags: [admin]
+      x-source-file: "src/app/api/system-settings/route.ts"
+      x-auth-role: "admin"
+      x-response-class: "json"
+      security: [{ sessionCookie: [] }]
+      requestBody:
+        required: true
+        content:
+          "application/json":
+            schema: { $ref: '#/components/schemas/JsonRequest' }
+      responses:
+        '200': { $ref: '#/components/responses/JsonSuccess' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/InternalError' }
+  /api/tokens/{id}:
+    parameters:
+      - { name: id, in: path, required: true, schema: { type: string } }
+    put:
+      operationId: tokens_id_route_put
+      summary: "tokens_id_route_put"
+      tags: [user]
+      x-source-file: "src/app/api/tokens/[id]/route.ts"
+      x-auth-role: "user"
+      x-response-class: "json"
+      security: [{ sessionCookie: [] }]
+      requestBody:
+        required: true
+        content:
+          "application/json":
+            schema: { $ref: '#/components/schemas/JsonRequest' }
+      responses:
+        '200': { $ref: '#/components/responses/JsonSuccess' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/InternalError' }
+    delete:
+      operationId: tokens_id_route_delete
+      summary: "tokens_id_route_delete"
+      tags: [user]
+      x-source-file: "src/app/api/tokens/[id]/route.ts"
+      x-auth-role: "user"
+      x-response-class: "json"
+      security: [{ sessionCookie: [] }]
+      responses:
+        '200': { $ref: '#/components/responses/JsonSuccess' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/InternalError' }
+  /api/tokens/{id}/toggle:
+    parameters:
+      - { name: id, in: path, required: true, schema: { type: string } }
+    put:
+      operationId: tokens_id_toggle_route_put
+      summary: "tokens_id_toggle_route_put"
+      tags: [user]
+      x-source-file: "src/app/api/tokens/[id]/toggle/route.ts"
+      x-auth-role: "user"
+      x-response-class: "json"
+      security: [{ sessionCookie: [] }]
+      requestBody:
+        required: true
+        content:
+          "application/json":
+            schema: { $ref: '#/components/schemas/JsonRequest' }
+      responses:
+        '200': { $ref: '#/components/responses/JsonSuccess' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/InternalError' }
+  /api/tokens:
+    get:
+      operationId: tokens_route_get
+      summary: "tokens_route_get"
+      tags: [user]
+      x-source-file: "src/app/api/tokens/route.ts"
+      x-auth-role: "user"
+      x-response-class: "json"
+      security: [{ sessionCookie: [] }]
+      parameters:
+        - { $ref: '#/components/parameters/Page' }
+        - { $ref: '#/components/parameters/Limit' }
+        - { $ref: '#/components/parameters/Search' }
+      responses:
+        '200': { $ref: '#/components/responses/PaginatedSuccess' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/InternalError' }
+    post:
+      operationId: tokens_route_post
+      summary: "tokens_route_post"
+      tags: [user]
+      x-source-file: "src/app/api/tokens/route.ts"
+      x-auth-role: "user"
+      x-response-class: "json"
+      security: [{ sessionCookie: [] }]
+      requestBody:
+        required: true
+        content:
+          "application/json":
+            schema: { $ref: '#/components/schemas/JsonRequest' }
+      responses:
+        '200': { $ref: '#/components/responses/JsonSuccess' }
+        '201': { $ref: '#/components/responses/JsonSuccess' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/InternalError' }
+  /api/tokens/stats:
+    get:
+      operationId: tokens_stats_route_get
+      summary: "tokens_stats_route_get"
+      tags: [user]
+      x-source-file: "src/app/api/tokens/stats/route.ts"
+      x-auth-role: "user"
+      x-response-class: "json"
+      security: [{ sessionCookie: [] }]
+      parameters:
+        - { $ref: '#/components/parameters/Page' }
+        - { $ref: '#/components/parameters/Limit' }
+        - { $ref: '#/components/parameters/Search' }
+      responses:
+        '200': { $ref: '#/components/responses/PaginatedSuccess' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/InternalError' }
+  /api/upload/{filename}:
+    parameters:
+      - { name: filename, in: path, required: true, schema: { type: string } }
+    get:
+      operationId: upload_filename_route_get
+      summary: "upload_filename_route_get"
+      tags: [files]
+      x-source-file: "src/app/api/upload/[filename]/route.ts"
+      x-auth-role: "none"
+      x-response-class: "file"
+      x-client-exclude: true
+      security: []
+      parameters:
+        - { $ref: '#/components/parameters/Page' }
+        - { $ref: '#/components/parameters/Limit' }
+        - { $ref: '#/components/parameters/Search' }
+      responses:
+        '200': { $ref: '#/components/responses/FileSuccess' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/InternalError' }
+  /api/upload:
+    post:
+      operationId: upload_route_post
+      summary: "upload_route_post"
+      tags: [user]
+      x-source-file: "src/app/api/upload/route.ts"
+      x-auth-role: "user"
+      x-response-class: "json"
+      security: [{ sessionCookie: [] }]
+      requestBody:
+        required: true
+        content:
+          "multipart/form-data":
+            schema: { $ref: '#/components/schemas/UploadRequest' }
+      responses:
+        '200': { $ref: '#/components/responses/UploadSuccess' }
+        '201': { $ref: '#/components/responses/JsonSuccess' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/InternalError' }
+  /api/usage:
+    get:
+      operationId: usage_route_get
+      summary: "usage_route_get"
+      tags: [user]
+      x-source-file: "src/app/api/usage/route.ts"
+      x-auth-role: "user"
+      x-response-class: "json"
+      security: [{ sessionCookie: [] }]
+      parameters:
+        - { $ref: '#/components/parameters/Page' }
+        - { $ref: '#/components/parameters/Limit' }
+        - { $ref: '#/components/parameters/Search' }
+      responses:
+        '200': { $ref: '#/components/responses/PaginatedSuccess' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/InternalError' }
+  /api/users/{id}:
+    parameters:
+      - { name: id, in: path, required: true, schema: { type: string } }
+    get:
+      operationId: users_id_route_get
+      summary: "users_id_route_get"
+      tags: [admin]
+      x-source-file: "src/app/api/users/[id]/route.ts"
+      x-auth-role: "admin"
+      x-response-class: "json"
+      security: [{ sessionCookie: [] }]
+      parameters:
+        - { $ref: '#/components/parameters/Page' }
+        - { $ref: '#/components/parameters/Limit' }
+        - { $ref: '#/components/parameters/Search' }
+      responses:
+        '200': { $ref: '#/components/responses/PaginatedSuccess' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/InternalError' }
+    put:
+      operationId: users_id_route_put
+      summary: "users_id_route_put"
+      tags: [admin]
+      x-source-file: "src/app/api/users/[id]/route.ts"
+      x-auth-role: "admin"
+      x-response-class: "json"
+      security: [{ sessionCookie: [] }]
+      requestBody:
+        required: true
+        content:
+          "application/json":
+            schema: { $ref: '#/components/schemas/JsonRequest' }
+      responses:
+        '200': { $ref: '#/components/responses/JsonSuccess' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/InternalError' }
+    delete:
+      operationId: users_id_route_delete
+      summary: "users_id_route_delete"
+      tags: [admin]
+      x-source-file: "src/app/api/users/[id]/route.ts"
+      x-auth-role: "admin"
+      x-response-class: "json"
+      security: [{ sessionCookie: [] }]
+      responses:
+        '200': { $ref: '#/components/responses/JsonSuccess' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/InternalError' }
+  /api/users:
+    get:
+      operationId: users_route_get
+      summary: "users_route_get"
+      tags: [admin]
+      x-source-file: "src/app/api/users/route.ts"
+      x-auth-role: "admin"
+      x-response-class: "json"
+      security: [{ sessionCookie: [] }]
+      parameters:
+        - { $ref: '#/components/parameters/Page' }
+        - { $ref: '#/components/parameters/Limit' }
+        - { $ref: '#/components/parameters/Search' }
+      responses:
+        '200': { $ref: '#/components/responses/PaginatedSuccess' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/InternalError' }
+    post:
+      operationId: users_route_post
+      summary: "users_route_post"
+      tags: [admin]
+      x-source-file: "src/app/api/users/route.ts"
+      x-auth-role: "admin"
+      x-response-class: "json"
+      security: [{ sessionCookie: [] }]
+      requestBody:
+        required: true
+        content:
+          "application/json":
+            schema: { $ref: '#/components/schemas/JsonRequest' }
+      responses:
+        '200': { $ref: '#/components/responses/JsonSuccess' }
+        '201': { $ref: '#/components/responses/JsonSuccess' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/InternalError' }
+  /api/users/stats:
+    get:
+      operationId: users_stats_route_get
+      summary: "users_stats_route_get"
+      tags: [admin]
+      x-source-file: "src/app/api/users/stats/route.ts"
+      x-auth-role: "admin"
+      x-response-class: "json"
+      security: [{ sessionCookie: [] }]
+      parameters:
+        - { $ref: '#/components/parameters/Page' }
+        - { $ref: '#/components/parameters/Limit' }
+        - { $ref: '#/components/parameters/Search' }
+      responses:
+        '200': { $ref: '#/components/responses/PaginatedSuccess' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/InternalError' }
+  /api/v1/{alias}:
+    parameters:
+      - { name: alias, in: path, required: true, schema: { type: string } }
+    get:
+      operationId: v1_alias_route_get
+      summary: "v1_alias_route_get"
+      tags: [gateway]
+      x-source-file: "src/app/api/v1/[alias]/route.ts"
+      x-auth-role: "user"
+      x-response-class: "raw"
+      x-auth-scheme: "api-token"
+      x-client-exclude: true
+      security: [{ apiToken: [] }]
+      parameters:
+        - { $ref: '#/components/parameters/Page' }
+        - { $ref: '#/components/parameters/Limit' }
+        - { $ref: '#/components/parameters/Search' }
+      responses:
+        '200': { $ref: '#/components/responses/RawSuccess' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/InternalError' }
+    post:
+      operationId: v1_alias_route_post
+      summary: "v1_alias_route_post"
+      tags: [gateway]
+      x-source-file: "src/app/api/v1/[alias]/route.ts"
+      x-auth-role: "user"
+      x-response-class: "raw"
+      x-auth-scheme: "api-token"
+      x-client-exclude: true
+      security: [{ apiToken: [] }]
+      requestBody:
+        required: true
+        content:
+          "*/*":
+            schema: { $ref: '#/components/schemas/RawPayload' }
+      responses:
+        '200': { $ref: '#/components/responses/RawSuccess' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/InternalError' }
+    put:
+      operationId: v1_alias_route_put
+      summary: "v1_alias_route_put"
+      tags: [gateway]
+      x-source-file: "src/app/api/v1/[alias]/route.ts"
+      x-auth-role: "user"
+      x-response-class: "raw"
+      x-auth-scheme: "api-token"
+      x-client-exclude: true
+      security: [{ apiToken: [] }]
+      requestBody:
+        required: true
+        content:
+          "*/*":
+            schema: { $ref: '#/components/schemas/RawPayload' }
+      responses:
+        '200': { $ref: '#/components/responses/RawSuccess' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/InternalError' }
+    delete:
+      operationId: v1_alias_route_delete
+      summary: "v1_alias_route_delete"
+      tags: [gateway]
+      x-source-file: "src/app/api/v1/[alias]/route.ts"
+      x-auth-role: "user"
+      x-response-class: "raw"
+      x-auth-scheme: "api-token"
+      x-client-exclude: true
+      security: [{ apiToken: [] }]
+      responses:
+        '200': { $ref: '#/components/responses/RawSuccess' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/InternalError' }
+    patch:
+      operationId: v1_alias_route_patch
+      summary: "v1_alias_route_patch"
+      tags: [gateway]
+      x-source-file: "src/app/api/v1/[alias]/route.ts"
+      x-auth-role: "user"
+      x-response-class: "raw"
+      x-auth-scheme: "api-token"
+      x-client-exclude: true
+      security: [{ apiToken: [] }]
+      requestBody:
+        required: true
+        content:
+          "*/*":
+            schema: { $ref: '#/components/schemas/RawPayload' }
+      responses:
+        '200': { $ref: '#/components/responses/RawSuccess' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/InternalError' }
+  /api/v1/mcp/{identifier}:
+    parameters:
+      - { name: identifier, in: path, required: true, schema: { type: string } }
+    options:
+      operationId: v1_mcp_identifier_route_options
+      summary: "v1_mcp_identifier_route_options"
+      tags: [mcp]
+      x-source-file: "src/app/api/v1/mcp/[identifier]/route.ts"
+      x-auth-role: "none"
+      x-response-class: "raw"
+      x-auth-scheme: "api-token"
+      x-client-exclude: true
+      security: [{ apiToken: [] }]
+      responses:
+        '200': { $ref: '#/components/responses/RawSuccess' }
+        '204': { $ref: '#/components/responses/NoContent' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/InternalError' }
+    post:
+      operationId: v1_mcp_identifier_route_post
+      summary: "v1_mcp_identifier_route_post"
+      tags: [mcp]
+      x-source-file: "src/app/api/v1/mcp/[identifier]/route.ts"
+      x-auth-role: "user"
+      x-response-class: "stream"
+      x-auth-scheme: "api-token"
+      x-client-exclude: true
+      security: [{ apiToken: [] }]
+      requestBody:
+        required: true
+        content:
+          "application/json":
+            schema: { $ref: '#/components/schemas/JsonRequest' }
+      responses:
+        '200': { $ref: '#/components/responses/StreamSuccess' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/InternalError' }
+components:
+  securitySchemes:
+    sessionCookie:
+      type: apiKey
+      in: cookie
+      name: next-auth.session-token
+    apiToken:
+      type: http
+      scheme: bearer
+      bearerFormat: API token
+    cronSecret:
+      type: apiKey
+      in: header
+      name: x-cron-secret
+  parameters:
+    Page: { name: page, in: query, required: false, schema: { type: integer, minimum: 1, default: 1 } }
+    Limit: { name: limit, in: query, required: false, schema: { type: integer, minimum: 1, maximum: 100, default: 10 } }
+    Search: { name: search, in: query, required: false, schema: { type: string } }
+  schemas:
+    JsonValue:
+      oneOf:
+        - { type: string }
+        - { type: number }
+        - { type: boolean }
+        - type: array
+          items: { $ref: '#/components/schemas/JsonValue' }
+        - { $ref: '#/components/schemas/JsonObject' }
+    JsonObject:
+      type: object
+      additionalProperties: { $ref: '#/components/schemas/JsonValue' }
+    JsonRequest:
+      $ref: '#/components/schemas/JsonObject'
+    Pagination:
+      type: object
+      required: [page, limit, total, totalPages]
+      properties:
+        page: { type: integer, minimum: 1 }
+        limit: { type: integer, minimum: 1 }
+        total: { type: integer, minimum: 0 }
+        totalPages: { type: integer, minimum: 0 }
+    JsonResponse:
+      type: object
+      required: [success]
+      properties:
+        success: { type: boolean, const: true }
+        data: { $ref: '#/components/schemas/JsonValue' }
+        error: { type: string }
+        pagination: { $ref: '#/components/schemas/Pagination' }
+    PaginatedResponse:
+      type: object
+      required: [success, data, pagination]
+      properties:
+        success: { type: boolean, const: true }
+        data: { type: array, items: { $ref: '#/components/schemas/JsonValue' } }
+        error: { type: string }
+        pagination: { $ref: '#/components/schemas/Pagination' }
+    ErrorResponse:
+      type: object
+      required: [success, error]
+      properties:
+        success: { type: boolean, const: false }
+        error: { type: string }
+    AuthUser:
+      type: object
+      required: [id, role]
+      properties:
+        id: { type: string }
+        email: { type: string, format: email }
+        username: { type: string }
+        role: { type: string, enum: [user, admin] }
+        credits: { type: number }
+    AuthResponse:
+      allOf:
+        - $ref: '#/components/schemas/JsonResponse'
+        - type: object
+          properties:
+            data: { $ref: '#/components/schemas/AuthUser' }
+    UploadRequest:
+      type: object
+      required: [file]
+      properties:
+        file: { type: string, format: binary }
+      additionalProperties: false
+    UploadMetadata:
+      type: object
+      required: [url, filename, size, type]
+      properties:
+        url: { type: string, format: uri-reference }
+        filename: { type: string }
+        size: { type: integer, minimum: 0 }
+        type: { type: string }
+    UploadResponse:
+      allOf:
+        - $ref: '#/components/schemas/JsonResponse'
+        - type: object
+          properties:
+            data: { $ref: '#/components/schemas/UploadMetadata' }
+    RawPayload:
+      type: string
+      format: binary
+    CsvFile:
+      type: string
+      format: binary
+      contentMediaType: text/csv
+    JsonStream:
+      type: object
+      description: JSON records are emitted as a UTF-8 stream; clients must consume incrementally.
+      additionalProperties: true
+    AlipayWebhook:
+      type: object
+      additionalProperties: { type: string }
+    WechatWebhook:
+      type: object
+      required: [outTradeNo, status]
+      properties:
+        outTradeNo: { type: string }
+        transactionId: { type: string }
+        status: { type: string }
+        paidAt: { type: string, format: date-time }
+      additionalProperties: true
+    MockPaymentWebhook:
+      type: object
+      required: [outTradeNo]
+      properties:
+        outTradeNo: { type: string }
+        success: { type: boolean, default: true }
+      additionalProperties: false
+    PaymentWebhook:
+      type: object
+      required: [event, outTradeNo, status]
+      properties:
+        event: { type: string }
+        outTradeNo: { type: string }
+        status: { type: string }
+        transactionId: { type: string }
+        paidAt: { type: string, format: date-time }
+        callbackUrl: { type: string, format: uri-reference }
+      additionalProperties: true
+  callbacks:
+    RechargeWebhook:
+      '{$request.body#/callbackUrl}':
+        post:
+          operationId: payment_recharge_webhook
+          summary: Receive recharge payment status
+          security: []
+          requestBody:
+            required: true
+            content:
+              application/json: { schema: { $ref: '#/components/schemas/PaymentWebhook' } }
+          responses:
+            '200': { $ref: '#/components/responses/JsonSuccess' }
+            '400': { $ref: '#/components/responses/BadRequest' }
+    SubscriptionWebhook:
+      '{$request.body#/callbackUrl}':
+        post:
+          operationId: payment_subscription_webhook
+          summary: Receive subscription payment status
+          security: []
+          requestBody:
+            required: true
+            content:
+              application/json: { schema: { $ref: '#/components/schemas/PaymentWebhook' } }
+          responses:
+            '200': { $ref: '#/components/responses/JsonSuccess' }
+            '400': { $ref: '#/components/responses/BadRequest' }
+  responses:
+    JsonSuccess:
+      description: Successful JSON envelope.
+      content:
+        application/json: { schema: { $ref: '#/components/schemas/JsonResponse' } }
+    PaginatedSuccess:
+      description: Successful paginated JSON envelope.
+      content:
+        application/json: { schema: { $ref: '#/components/schemas/PaginatedResponse' } }
+    AuthSuccess:
+      description: Authenticated user response.
+      content:
+        application/json: { schema: { $ref: '#/components/schemas/AuthResponse' } }
+    UploadSuccess:
+      description: Uploaded file metadata.
+      content:
+        application/json: { schema: { $ref: '#/components/schemas/UploadResponse' } }
+    CsvOrJsonSuccess:
+      description: Export response. Legacy handlers wrap CSV text in the JSON data field.
+      content:
+        application/json: { schema: { $ref: '#/components/schemas/JsonResponse' } }
+        text/csv: { schema: { $ref: '#/components/schemas/CsvFile' } }
+    RawSuccess:
+      description: Raw upstream or webhook response; not part of the typed client.
+      content:
+        '*/*': { schema: { $ref: '#/components/schemas/RawPayload' } }
+        application/json: { schema: { $ref: '#/components/schemas/RawPayload' } }
+        text/plain: { schema: { type: string } }
+    StreamSuccess:
+      description: Incremental JSON stream; not part of the typed client.
+      content:
+        application/json: { schema: { $ref: '#/components/schemas/JsonStream' } }
+        text/event-stream: { schema: { type: string } }
+    FileSuccess:
+      description: Binary file download; not part of the typed client.
+      content:
+        '*/*': { schema: { $ref: '#/components/schemas/RawPayload' } }
+    NoContent:
+      description: No content.
+    BadRequest:
+      description: Invalid request.
+      content:
+        application/json: { schema: { $ref: '#/components/schemas/ErrorResponse' } }
+    Unauthorized:
+      description: Authentication required.
+      content:
+        application/json: { schema: { $ref: '#/components/schemas/ErrorResponse' } }
+    Forbidden:
+      description: Access denied.
+      content:
+        application/json: { schema: { $ref: '#/components/schemas/ErrorResponse' } }
+    NotFound:
+      description: Resource not found.
+      content:
+        application/json: { schema: { $ref: '#/components/schemas/ErrorResponse' } }
+    InternalError:
+      description: Internal server error.
+      content:
+        application/json: { schema: { $ref: '#/components/schemas/ErrorResponse' } }

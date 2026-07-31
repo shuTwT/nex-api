@@ -1,0 +1,14 @@
+bin/
+coverage.out
+coverage.html
+*.test
+*.prof
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+.env
+.env.*
+!.env.example
+.DS_Store

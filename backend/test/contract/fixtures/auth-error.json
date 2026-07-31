@@ -1,0 +1,32 @@
+{
+  "name": "auth-error",
+  "route": "/api/usage",
+  "method": "GET",
+  "auth": "user",
+  "request": {
+    "headers": {}
+  },
+  "responses": {
+    "happy": {
+      "status": 200,
+      "mediaType": "application/json",
+      "body": {
+        "success": true,
+        "data": {
+          "today": 3,
+          "last7Days": 12,
+          "last30Days": 40
+        }
+      }
+    },
+    "failure": {
+      "status": 401,
+      "mediaType": "application/json",
+      "body": { "success": false, "error": "Unauthorized" }
+    }
+  },
+  "normalization": {
+    "ids": "not present",
+    "timestamps": "not present"
+  }
+}

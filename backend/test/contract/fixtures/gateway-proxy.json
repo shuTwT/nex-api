@@ -1,0 +1,29 @@
+{
+  "name": "gateway-proxy",
+  "route": "/api/v1/:alias",
+  "method": "POST",
+  "auth": "user",
+  "request": {
+    "path": { "alias": "weather" },
+    "headers": { "authorization": "Bearer <normalized-api-token>" },
+    "body": { "city": "Shanghai" }
+  },
+  "responses": {
+    "happy": {
+      "status": 200,
+      "mediaType": "upstream",
+      "body": { "temperature": 23, "unit": "C" }
+    },
+    "failure": {
+      "status": 401,
+      "mediaType": "application/json",
+      "body": { "success": false, "error": "无效的 API Token" }
+    }
+  },
+  "normalization": {
+    "ids": "not present",
+    "timestamps": "not present",
+    "secrets": "<normalized-api-token>",
+    "upstream": "direct response body and status are preserved"
+  }
+}

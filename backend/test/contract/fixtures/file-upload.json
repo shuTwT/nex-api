@@ -1,0 +1,42 @@
+{
+  "name": "file-upload",
+  "route": "/api/upload",
+  "method": "POST",
+  "auth": "user",
+  "request": {
+    "mediaType": "multipart/form-data",
+    "headers": { "authorization": "Bearer <normalized-session-token>" },
+    "body": {
+      "file": {
+        "filename": "asset-1.png",
+        "contentType": "image/png",
+        "size": 4,
+        "bytes": "<normalized-binary>"
+      }
+    }
+  },
+  "responses": {
+    "happy": {
+      "status": 200,
+      "mediaType": "application/json",
+      "body": {
+        "success": true,
+        "data": {
+          "filename": "asset-1.png",
+          "url": "/api/upload/asset-1.png"
+        }
+      }
+    },
+    "failure": {
+      "status": 400,
+      "mediaType": "application/json",
+      "body": { "success": false, "error": "未找到文件" }
+    }
+  },
+  "normalization": {
+    "ids": "not present",
+    "timestamps": "not present",
+    "secrets": "<normalized-session-token>",
+    "binary": "<normalized-binary>"
+  }
+}

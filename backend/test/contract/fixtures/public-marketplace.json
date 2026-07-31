@@ -1,0 +1,43 @@
+{
+  "name": "public-marketplace",
+  "route": "/api/marketplace/apis",
+  "method": "GET",
+  "auth": "none",
+  "request": {
+    "query": { "page": "1", "limit": "20" }
+  },
+  "responses": {
+    "happy": {
+      "status": 200,
+      "mediaType": "application/json",
+      "body": {
+        "success": true,
+        "data": [
+          {
+            "id": "api-1",
+            "name": "Weather",
+            "alias": "weather",
+            "method": "GET",
+            "pricing": 0,
+            "isFree": true
+          }
+        ],
+        "pagination": {
+          "page": 1,
+          "limit": 20,
+          "total": 1,
+          "totalPages": 1
+        }
+      }
+    },
+    "failure": {
+      "status": 500,
+      "mediaType": "application/json",
+      "body": { "success": false, "error": "获取 API 市场数据失败" }
+    }
+  },
+  "normalization": {
+    "ids": "api-1",
+    "timestamps": "omitted"
+  }
+}
