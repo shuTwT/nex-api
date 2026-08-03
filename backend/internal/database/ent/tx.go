@@ -38,6 +38,8 @@ type Tx struct {
 	Payment *PaymentClient
 	// RedemptionCode is the client for interacting with the RedemptionCode builders.
 	RedemptionCode *RedemptionCodeClient
+	// ScheduledJob is the client for interacting with the ScheduledJob builders.
+	ScheduledJob *ScheduledJobClient
 	// Session is the client for interacting with the Session builders.
 	Session *SessionClient
 	// Subscription is the client for interacting with the Subscription builders.
@@ -194,6 +196,7 @@ func (tx *Tx) init() {
 	tx.McpUsage = NewMcpUsageClient(tx.config)
 	tx.Payment = NewPaymentClient(tx.config)
 	tx.RedemptionCode = NewRedemptionCodeClient(tx.config)
+	tx.ScheduledJob = NewScheduledJobClient(tx.config)
 	tx.Session = NewSessionClient(tx.config)
 	tx.Subscription = NewSubscriptionClient(tx.config)
 	tx.SubscriptionPlan = NewSubscriptionPlanClient(tx.config)

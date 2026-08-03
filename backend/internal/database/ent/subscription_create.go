@@ -115,6 +115,14 @@ func (_c *SubscriptionCreate) SetUpdatedAt(v time.Time) *SubscriptionCreate {
 	return _c
 }
 
+// SetNillableUpdatedAt sets the "updatedAt" field if the given value is not nil.
+func (_c *SubscriptionCreate) SetNillableUpdatedAt(v *time.Time) *SubscriptionCreate {
+	if v != nil {
+		_c.SetUpdatedAt(*v)
+	}
+	return _c
+}
+
 // SetPaymentId sets the "paymentId" field.
 func (_c *SubscriptionCreate) SetPaymentId(v string) *SubscriptionCreate {
 	_c.mutation.SetPaymentId(v)
@@ -238,6 +246,10 @@ func (_c *SubscriptionCreate) defaults() {
 	if _, ok := _c.mutation.CreatedAt(); !ok {
 		v := subscription.DefaultCreatedAt()
 		_c.mutation.SetCreatedAt(v)
+	}
+	if _, ok := _c.mutation.UpdatedAt(); !ok {
+		v := subscription.DefaultUpdatedAt()
+		_c.mutation.SetUpdatedAt(v)
 	}
 	if _, ok := _c.mutation.ID(); !ok {
 		v := subscription.DefaultID()

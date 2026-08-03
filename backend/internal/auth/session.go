@@ -63,6 +63,7 @@ type Service struct {
 	sessionTTL        time.Duration
 	clock             Clock
 	tokenGenerator    func(int) ([]byte, error)
+	secureCookies     bool
 	rateLimiter       *loginRateLimiter
 }
 
@@ -74,6 +75,7 @@ type serviceOptions struct {
 	tokenGenerator func(int) ([]byte, error)
 	loginLimit     int
 	loginWindow    time.Duration
+	secureCookies  bool
 }
 
 func WithClock(clock Clock) Option {
@@ -103,6 +105,15 @@ func WithLoginRateLimit(maxAttempts int, window time.Duration) Option {
 	}
 }
 
+// WithSecureCookies 控制会话/CSRF cookie 是否带 Secure 标志。
+// 默认 true(生产安全默认);开发环境(HTTP)应传 false,
+// 否则浏览器会拒绝保存 Secure cookie 导致登录静默失败。
+func WithSecureCookies(secure bool) Option {
+	return func(options *serviceOptions) {
+		options.secureCookies = secure
+	}
+}
+
 func NewService(client *ent.Client, authConfig config.Auth, options ...Option) (*Service, error) {
 	if client == nil {
 		return nil, errors.New("auth: ent client is nil")
@@ -113,6 +124,7 @@ func NewService(client *ent.Client, authConfig config.Auth, options ...Option) (
 		tokenGenerator: randomBytes,
 		loginLimit:     5,
 		loginWindow:    15 * time.Minute,
+		secureCookies:  true,
 	}
 	for _, option := range options {
 		if option != nil {
@@ -131,6 +143,7 @@ func NewService(client *ent.Client, authConfig config.Auth, options ...Option) (
 		sessionTTL:        serviceOptions.sessionTTL,
 		clock:             serviceOptions.clock,
 		tokenGenerator:    serviceOptions.tokenGenerator,
+		secureCookies:     serviceOptions.secureCookies,
 		rateLimiter:       newLoginRateLimiter(serviceOptions.loginLimit, serviceOptions.loginWindow, serviceOptions.clock),
 	}, nil
 }

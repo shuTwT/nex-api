@@ -71,7 +71,7 @@ func (s *Service) ClearCSRFCookie(w http.ResponseWriter) {
 		Expires:  time.Unix(1, 0).UTC(),
 		MaxAge:   -1,
 		HttpOnly: false,
-		Secure:   true,
+		Secure:   s.secureCookies,
 		SameSite: http.SameSiteStrictMode,
 	})
 }
@@ -98,7 +98,7 @@ func (s *Service) SetSessionCookie(w http.ResponseWriter, session AuthContext, t
 		Expires:  session.ExpiresAt,
 		MaxAge:   maxAge,
 		HttpOnly: true,
-		Secure:   true,
+		Secure:   s.secureCookies,
 		SameSite: http.SameSiteStrictMode,
 	})
 }
@@ -115,7 +115,7 @@ func (s *Service) ClearSessionCookie(w http.ResponseWriter) {
 		Expires:  time.Unix(1, 0).UTC(),
 		MaxAge:   -1,
 		HttpOnly: true,
-		Secure:   true,
+		Secure:   s.secureCookies,
 		SameSite: http.SameSiteStrictMode,
 	})
 }
@@ -176,7 +176,7 @@ func (s *Service) setCSRFCookie(w http.ResponseWriter, token string) {
 		Expires:  expiresAt,
 		MaxAge:   maxAgeSeconds(expiresAt.Sub(s.clock.Now())),
 		HttpOnly: false,
-		Secure:   true,
+		Secure:   s.secureCookies,
 		SameSite: http.SameSiteStrictMode,
 	})
 }

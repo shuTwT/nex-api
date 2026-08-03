@@ -8,15 +8,13 @@ import (
 	"net/url"
 	"strings"
 	"time"
-
-	"github.com/shuTwT/nex-api/backend/internal/config"
 )
 
 type MockProvider struct {
-	config config.MockPayment
+	config mockPaymentConfiguration
 }
 
-func NewMockProvider(paymentConfig config.MockPayment) *MockProvider {
+func NewMockProvider(paymentConfig mockPaymentConfiguration) *MockProvider {
 	return &MockProvider{config: paymentConfig}
 }
 
@@ -26,7 +24,7 @@ func (p *MockProvider) Create(_ context.Context, request ProviderCreateRequest) 
 	if !p.config.Enabled {
 		return ProviderCreateResult{}, ErrProviderUnavailable
 	}
-	return ProviderCreateResult{PayURL: "mock://payment/" + url.PathEscape(request.OutTradeNo)}, nil
+	return ProviderCreateResult{PayURL: "/payment/mock?outTradeNo=" + url.QueryEscape(request.OutTradeNo)}, nil
 }
 
 func (p *MockProvider) VerifyCallback(_ context.Context, request ProviderCallbackRequest) (ProviderCallback, error) {
@@ -47,7 +45,7 @@ func (p *MockProvider) VerifyCallback(_ context.Context, request ProviderCallbac
 	if payload.Success != nil {
 		success = *payload.Success
 	}
-	status := PaymentStateCancelled
+	status := PaymentStateFailed
 	if success {
 		status = PaymentStatePaid
 	}

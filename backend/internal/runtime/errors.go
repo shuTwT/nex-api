@@ -68,18 +68,22 @@ type ErrorBody struct {
 	Fields    []FieldError `json:"fields,omitempty"`
 }
 
+func (e ErrorBody) MarshalJSON() ([]byte, error) {
+	return json.Marshal(e.Message)
+}
+
 type Pagination struct {
 	Page       int `json:"page"`
-	PageSize   int `json:"page_size"`
+	PageSize   int `json:"limit"`
 	Total      int `json:"total"`
-	TotalPages int `json:"total_pages"`
+	TotalPages int `json:"totalPages"`
 }
 
 type Envelope[T any] struct {
 	Success    bool        `json:"success"`
-	Data       *T          `json:"data"`
-	Error      *ErrorBody  `json:"error"`
-	Pagination *Pagination `json:"pagination"`
+	Data       *T          `json:"data,omitempty"`
+	Error      *ErrorBody  `json:"error,omitempty"`
+	Pagination *Pagination `json:"pagination,omitempty"`
 }
 
 func NewSuccessEnvelope[T any](data T) Envelope[T] {
@@ -87,6 +91,9 @@ func NewSuccessEnvelope[T any](data T) Envelope[T] {
 }
 
 func NewErrorEnvelope(apiError *APIError) Envelope[struct{}] {
+	if apiError == nil {
+		return Envelope[struct{}]{Success: false, Error: &ErrorBody{}}
+	}
 	return Envelope[struct{}]{
 		Success: false,
 		Error:   &ErrorBody{Code: apiError.Code, Message: apiError.Message},
@@ -136,6 +143,9 @@ func WriteError(w http.ResponseWriter, r *http.Request, err error) error {
 		apiError = NewAPIError(http.StatusInternalServerError, "internal_error", "internal server error", nil)
 	}
 	envelope := NewErrorEnvelope(apiError)
+	if requestID := RequestID(r.Context()); requestID != "" {
+		w.Header().Set(RequestIDHeader, requestID)
+	}
 	envelope.Error.RequestID = RequestID(r.Context())
 	if validationError := asValidationError(err); validationError != nil {
 		envelope.Error.Fields = append([]FieldError(nil), validationError.Fields...)

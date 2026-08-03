@@ -34,7 +34,7 @@ func (RedemptionCode) Fields() []ent.Field {
 		field.String("createdBy").StorageKey("createdBy"),
 		field.String("batchId").StorageKey("batchId").Optional(),
 		field.Time("createdAt").StorageKey("createdAt").Default(time.Now).Annotations(entsql.Default("CURRENT_TIMESTAMP")),
-		field.Time("updatedAt").StorageKey("updatedAt").UpdateDefault(time.Now),
+		field.Time("updatedAt").StorageKey("updatedAt").Default(time.Now).UpdateDefault(time.Now),
 	}
 }
 

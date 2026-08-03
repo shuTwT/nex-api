@@ -16,6 +16,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/shuTwT/nex-api/backend/internal/auth"
 	"github.com/shuTwT/nex-api/backend/internal/config"
 )
 
@@ -77,6 +78,58 @@ func TestUploadAcceptsExactly10MiB(t *testing.T) {
 	// Then
 	if recorder.Code != http.StatusOK {
 		t.Fatalf("exact-limit status = %d, want %d: %s", recorder.Code, http.StatusOK, recorder.Body.String())
+	}
+}
+
+func TestUploadRoutesRequireUserForPostAndKeepFileGetPublic(t *testing.T) {
+	// Given
+	storage := newTestStorage(t)
+	mux := http.NewServeMux()
+	if err := RegisterRoutes(mux, storage); err != nil {
+		t.Fatal(err)
+	}
+
+	// When: an unauthenticated upload is rejected before parsing the body
+	unauthenticated := httptest.NewRecorder()
+	mux.ServeHTTP(unauthenticated, multipartRequest(t, "asset.png", "image/png", minimalPNG()))
+
+	// Then
+	if unauthenticated.Code != http.StatusUnauthorized {
+		t.Fatalf("unauthenticated upload status = %d, want %d: %s", unauthenticated.Code, http.StatusUnauthorized, unauthenticated.Body.String())
+	}
+
+	// A POST to a file path must not fall through to the public file handler.
+	pathUpload := httptest.NewRecorder()
+	pathRequest := multipartRequest(t, "asset.png", "image/png", minimalPNG())
+	pathRequest.URL.Path = "/api/upload/extra.png"
+	mux.ServeHTTP(pathUpload, pathRequest)
+	if pathUpload.Code != http.StatusMethodNotAllowed {
+		t.Fatalf("file-path upload status = %d, want %d: %s", pathUpload.Code, http.StatusMethodNotAllowed, pathUpload.Body.String())
+	}
+
+	request := multipartRequest(t, "asset.png", "image/png", minimalPNG())
+	request = request.WithContext(auth.WithAuthContext(request.Context(), auth.AuthContext{
+		User: auth.User{ID: "user-1", Role: "user"},
+	}))
+	uploaded := httptest.NewRecorder()
+	mux.ServeHTTP(uploaded, request)
+	if uploaded.Code != http.StatusOK {
+		t.Fatalf("authenticated upload status = %d, want %d: %s", uploaded.Code, http.StatusOK, uploaded.Body.String())
+	}
+
+	var response responseEnvelope
+	if err := json.Unmarshal(uploaded.Body.Bytes(), &response); err != nil {
+		t.Fatalf("decode upload response: %v", err)
+	}
+
+	// The generated file URL remains public and does not need auth context.
+	served := httptest.NewRecorder()
+	mux.ServeHTTP(served, httptest.NewRequest(http.MethodGet, response.Data.URL, nil))
+	if served.Code != http.StatusOK {
+		t.Fatalf("public file status = %d, want %d: %s", served.Code, http.StatusOK, served.Body.String())
+	}
+	if !bytes.Equal(served.Body.Bytes(), minimalPNG()) {
+		t.Fatal("public file bytes differ from uploaded bytes")
 	}
 }
 

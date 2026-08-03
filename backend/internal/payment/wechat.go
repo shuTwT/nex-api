@@ -19,16 +19,14 @@ import (
 	"strconv"
 	"strings"
 	"time"
-
-	"github.com/shuTwT/nex-api/backend/internal/config"
 )
 
 type WeChatProvider struct {
-	config config.WeChatPayment
+	config weChatConfiguration
 	client *http.Client
 }
 
-func NewWeChatProvider(paymentConfig config.WeChatPayment, client *http.Client) *WeChatProvider {
+func NewWeChatProvider(paymentConfig weChatConfiguration, client *http.Client) *WeChatProvider {
 	if client == nil {
 		client = &http.Client{Timeout: 10 * time.Second}
 	}
@@ -53,7 +51,11 @@ func VerifyWeChatSignature(body []byte, headers http.Header, publicKeyPEM string
 }
 
 func (p *WeChatProvider) VerifyCallback(_ context.Context, request ProviderCallbackRequest) (ProviderCallback, error) {
-	if err := VerifyWeChatSignature(request.Body, request.Headers, p.config.PublicKey); err != nil {
+	verificationKey, err := p.callbackVerificationKey(request.Headers)
+	if err != nil {
+		return ProviderCallback{}, err
+	}
+	if err := VerifyWeChatSignature(request.Body, request.Headers, verificationKey); err != nil {
 		return ProviderCallback{}, err
 	}
 	var envelope wechatCallbackEnvelope
@@ -78,6 +80,17 @@ func (p *WeChatProvider) VerifyCallback(_ context.Context, request ProviderCallb
 		PaidAt:        paidAt,
 		CallbackKey:   "wechat:" + resource.TransactionID,
 	}, nil
+}
+
+func (p *WeChatProvider) callbackVerificationKey(headers http.Header) (string, error) {
+	serial := strings.TrimSpace(headers.Get("Wechatpay-Serial"))
+	if p.config.PaymentPublicKey != "" && p.config.PublicKeyID != "" && serial == p.config.PublicKeyID {
+		return p.config.PaymentPublicKey, nil
+	}
+	if p.config.PublicKey != "" {
+		return p.config.PublicKey, nil
+	}
+	return "", fmt.Errorf("wechat callback serial %q has no matching verification key: %w", serial, ErrInvalidSignature)
 }
 
 func (p *WeChatProvider) Create(ctx context.Context, request ProviderCreateRequest) (ProviderCreateResult, error) {

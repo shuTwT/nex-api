@@ -80,6 +80,14 @@ func (_c *SystemSettingCreate) SetUpdatedAt(v time.Time) *SystemSettingCreate {
 	return _c
 }
 
+// SetNillableUpdatedAt sets the "updatedAt" field if the given value is not nil.
+func (_c *SystemSettingCreate) SetNillableUpdatedAt(v *time.Time) *SystemSettingCreate {
+	if v != nil {
+		_c.SetUpdatedAt(*v)
+	}
+	return _c
+}
+
 // SetID sets the "id" field.
 func (_c *SystemSettingCreate) SetID(v string) *SystemSettingCreate {
 	_c.mutation.SetID(v)
@@ -136,6 +144,10 @@ func (_c *SystemSettingCreate) defaults() {
 	if _, ok := _c.mutation.CreatedAt(); !ok {
 		v := systemsetting.DefaultCreatedAt()
 		_c.mutation.SetCreatedAt(v)
+	}
+	if _, ok := _c.mutation.UpdatedAt(); !ok {
+		v := systemsetting.DefaultUpdatedAt()
+		_c.mutation.SetUpdatedAt(v)
 	}
 	if _, ok := _c.mutation.ID(); !ok {
 		v := systemsetting.DefaultID()

@@ -1,6 +1,7 @@
 package marketplace
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"net/http"
@@ -24,6 +25,16 @@ func NewHandler(db *ent.Client, statStore *stats.Store) (*Handler, error) {
 		return nil, errors.New("marketplace: database and stats store are required")
 	}
 	return &Handler{db: db, stats: statStore}, nil
+}
+
+// snapshot 读取全局统计快照。统计服务(Redis)不可用时降级为空快照,
+// 展示层会回退到数据库中的调用计数,保证公开市场始终可用。
+func (h *Handler) snapshot(ctx context.Context) stats.Snapshot {
+	snapshot, err := h.stats.Snapshot(ctx)
+	if err != nil {
+		return stats.Snapshot{}
+	}
+	return snapshot
 }
 
 func RegisterRoutes(mux *http.ServeMux, handler *Handler) error {
@@ -62,11 +73,7 @@ func (h *Handler) listAPIs(w http.ResponseWriter, r *http.Request) {
 		writeError(w, r, fmt.Errorf("list marketplace APIs: %w", err))
 		return
 	}
-	snapshot, err := h.stats.Snapshot(r.Context())
-	if err != nil {
-		writeError(w, r, fmt.Errorf("read marketplace API stats: %w", err))
-		return
-	}
+	snapshot := h.snapshot(r.Context())
 	views := make([]apiView, 0, len(items))
 	for _, item := range items {
 		views = append(views, h.toAPIView(r.Context(), item, snapshot, false))
@@ -80,11 +87,7 @@ func (h *Handler) getAPI(w http.ResponseWriter, r *http.Request) {
 		writeError(w, r, runtime.NewAPIError(http.StatusNotFound, "not_found", "API 不存在", runtime.ErrNotFound))
 		return
 	}
-	snapshot, err := h.stats.Snapshot(r.Context())
-	if err != nil {
-		writeError(w, r, fmt.Errorf("read API stats: %w", err))
-		return
-	}
+	snapshot := h.snapshot(r.Context())
 	view := h.toAPIView(r.Context(), item, snapshot, true)
 	writeData(w, http.StatusOK, view)
 }
@@ -106,11 +109,7 @@ func (h *Handler) apiStats(w http.ResponseWriter, r *http.Request) {
 		writeError(w, r, fmt.Errorf("sum marketplace API calls: %w", err))
 		return
 	}
-	snapshot, err := h.stats.Snapshot(r.Context())
-	if err != nil {
-		writeError(w, r, fmt.Errorf("read marketplace API stats: %w", err))
-		return
-	}
+	snapshot := h.snapshot(r.Context())
 	var calls int64
 	for _, item := range items {
 		calls += canonicalOrDatabase(snapshot.APIs, item.Alias, int64(item.CallCount))
@@ -141,11 +140,7 @@ func (h *Handler) listMCP(w http.ResponseWriter, r *http.Request) {
 		writeError(w, r, fmt.Errorf("list marketplace MCP services: %w", err))
 		return
 	}
-	snapshot, err := h.stats.Snapshot(r.Context())
-	if err != nil {
-		writeError(w, r, fmt.Errorf("read marketplace MCP stats: %w", err))
-		return
-	}
+	snapshot := h.snapshot(r.Context())
 	views := make([]mcpView, 0, len(items))
 	for _, item := range items {
 		views = append(views, h.toMCPView(r.Context(), item, snapshot, false))
@@ -159,11 +154,7 @@ func (h *Handler) getMCP(w http.ResponseWriter, r *http.Request) {
 		writeError(w, r, runtime.NewAPIError(http.StatusNotFound, "not_found", "MCP 服务不存在", runtime.ErrNotFound))
 		return
 	}
-	snapshot, err := h.stats.Snapshot(r.Context())
-	if err != nil {
-		writeError(w, r, fmt.Errorf("read MCP stats: %w", err))
-		return
-	}
+	snapshot := h.snapshot(r.Context())
 	writeData(w, http.StatusOK, h.toMCPView(r.Context(), item, snapshot, true))
 }
 
@@ -179,11 +170,7 @@ func (h *Handler) mcpStats(w http.ResponseWriter, r *http.Request) {
 			free++
 		}
 	}
-	snapshot, err := h.stats.Snapshot(r.Context())
-	if err != nil {
-		writeError(w, r, fmt.Errorf("read marketplace MCP stats: %w", err))
-		return
-	}
+	snapshot := h.snapshot(r.Context())
 	var calls int64
 	for _, item := range items {
 		calls += canonicalOrDatabase(snapshot.MCPs, item.Identifier, int64(item.CallCount))

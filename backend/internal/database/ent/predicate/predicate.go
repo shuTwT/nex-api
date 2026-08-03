@@ -45,6 +45,9 @@ type Payment func(*sql.Selector)
 // RedemptionCode is the predicate function for redemptioncode builders.
 type RedemptionCode func(*sql.Selector)
 
+// ScheduledJob is the predicate function for scheduledjob builders.
+type ScheduledJob func(*sql.Selector)
+
 // Session is the predicate function for session builders.
 type Session func(*sql.Selector)
 

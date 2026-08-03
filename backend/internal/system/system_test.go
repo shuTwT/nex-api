@@ -3,6 +3,9 @@ package system
 import (
 	"context"
 	"database/sql"
+	"encoding/json"
+	"net/http"
+	"net/http/httptest"
 	"path/filepath"
 	"sync"
 	"testing"
@@ -13,6 +16,37 @@ import (
 )
 
 const systemUserSchema = `CREATE TABLE "User" ("id" TEXT PRIMARY KEY NOT NULL, "name" TEXT NOT NULL DEFAULT '', "email" TEXT NOT NULL UNIQUE, "emailVerified" DATETIME, "image" TEXT NOT NULL DEFAULT '', "username" TEXT NOT NULL UNIQUE, "password" TEXT NOT NULL, "role" TEXT NOT NULL, "credits" INTEGER NOT NULL, "createdAt" DATETIME NOT NULL, "updatedAt" DATETIME NOT NULL);`
+
+func TestHandler_Initialized_returnsAPIEnvelope(t *testing.T) {
+	client := newSystemTestClient(t)
+	service, err := NewService(client)
+	if err != nil {
+		t.Fatalf("NewService returned an error: %v", err)
+	}
+
+	request := httptest.NewRequest(http.MethodGet, "/api/system/initialized", nil)
+	response := httptest.NewRecorder()
+	NewHandler(service).ServeHTTP(response, request)
+
+	if response.Code != http.StatusOK {
+		t.Fatalf("status = %d, want %d", response.Code, http.StatusOK)
+	}
+	var body struct {
+		Success bool `json:"success"`
+		Data    struct {
+			Initialized bool `json:"initialized"`
+		} `json:"data"`
+	}
+	if err := json.NewDecoder(response.Body).Decode(&body); err != nil {
+		t.Fatalf("decode response: %v", err)
+	}
+	if !body.Success {
+		t.Fatal("success = false, want true")
+	}
+	if body.Data.Initialized {
+		t.Fatal("initialized = true, want false")
+	}
+}
 
 func TestService_Initialize_createsExactlyOneAdmin_whenRequestsRace(t *testing.T) {
 	// Given

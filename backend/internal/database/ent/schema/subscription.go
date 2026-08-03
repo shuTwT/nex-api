@@ -32,7 +32,7 @@ func (Subscription) Fields() []ent.Field {
 		field.Time("endDate").StorageKey("endDate"),
 		field.Bool("isActive").StorageKey("isActive").Default(true),
 		field.Time("createdAt").StorageKey("createdAt").Default(time.Now).Annotations(entsql.Default("CURRENT_TIMESTAMP")),
-		field.Time("updatedAt").StorageKey("updatedAt").UpdateDefault(time.Now),
+		field.Time("updatedAt").StorageKey("updatedAt").Default(time.Now).UpdateDefault(time.Now),
 		field.String("paymentId").StorageKey("paymentId").Optional(),
 	}
 }
@@ -57,7 +57,10 @@ func (Subscription) Edges() []ent.Edge {
 
 func (Subscription) Indexes() []ent.Index {
 	return []ent.Index{
-		index.Fields("paymentId").Unique().StorageKey("Subscription_paymentId_key"),
+		// 注意:payment edge 为 Unique(),ent 会给 paymentId 列打上
+		// Unique:true 标记,并由迁移器生成 Subscription_paymentId_key
+		// 唯一索引。这里不再显式声明同名索引,否则全新库建表时
+		// 会因重复 DDL 报 "index already exists"。
 		index.Fields("userId").StorageKey("Subscription_userId_idx"),
 		index.Fields("planId").StorageKey("Subscription_planId_idx"),
 		index.Fields("isActive").StorageKey("Subscription_isActive_idx"),

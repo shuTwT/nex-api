@@ -11,7 +11,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Github, MessageCircle, Shield, Mail, Loader2 } from "lucide-react";
+import { Github, Shield, Mail, Loader2 } from "lucide-react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/stores/auth-store";
@@ -157,26 +157,6 @@ export function AuthModal({ open, onOpenChange }: AuthModalProps) {
               <>
                 <Github className="mr-2 h-5 w-5" />
                 使用 GitHub 登录
-              </>
-            )}
-          </Button>
-
-          <Button
-            variant="outline"
-            size="lg"
-            className="w-full h-11 text-base font-medium cursor-pointer transition-all duration-200 hover:bg-indigo-50 hover:border-indigo-400 hover:text-indigo-600"
-            onClick={() => handleOAuthLogin("discord")}
-            disabled={isLoading !== null}
-          >
-            {isLoading === "discord" ? (
-              <div className="flex items-center gap-2">
-                <Loader2 className="h-4 w-4 animate-spin" />
-                <span>正在跳转...</span>
-              </div>
-            ) : (
-              <>
-                <MessageCircle className="mr-2 h-5 w-5" />
-                使用 Discord 登录
               </>
             )}
           </Button>

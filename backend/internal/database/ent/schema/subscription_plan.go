@@ -32,7 +32,7 @@ func (SubscriptionPlan) Fields() []ent.Field {
 		field.String("creditResetCycle").StorageKey("creditResetCycle").Default("month"),
 		field.Bool("isActive").StorageKey("isActive").Default(true),
 		field.Time("createdAt").StorageKey("createdAt").Default(time.Now).Annotations(entsql.Default("CURRENT_TIMESTAMP")),
-		field.Time("updatedAt").StorageKey("updatedAt").UpdateDefault(time.Now),
+		field.Time("updatedAt").StorageKey("updatedAt").Default(time.Now).UpdateDefault(time.Now),
 	}
 }
 

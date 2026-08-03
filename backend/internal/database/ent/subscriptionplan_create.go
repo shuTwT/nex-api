@@ -121,6 +121,14 @@ func (_c *SubscriptionPlanCreate) SetUpdatedAt(v time.Time) *SubscriptionPlanCre
 	return _c
 }
 
+// SetNillableUpdatedAt sets the "updatedAt" field if the given value is not nil.
+func (_c *SubscriptionPlanCreate) SetNillableUpdatedAt(v *time.Time) *SubscriptionPlanCreate {
+	if v != nil {
+		_c.SetUpdatedAt(*v)
+	}
+	return _c
+}
+
 // SetID sets the "id" field.
 func (_c *SubscriptionPlanCreate) SetID(v string) *SubscriptionPlanCreate {
 	_c.mutation.SetID(v)
@@ -204,6 +212,10 @@ func (_c *SubscriptionPlanCreate) defaults() {
 	if _, ok := _c.mutation.CreatedAt(); !ok {
 		v := subscriptionplan.DefaultCreatedAt()
 		_c.mutation.SetCreatedAt(v)
+	}
+	if _, ok := _c.mutation.UpdatedAt(); !ok {
+		v := subscriptionplan.DefaultUpdatedAt()
+		_c.mutation.SetUpdatedAt(v)
 	}
 	if _, ok := _c.mutation.ID(); !ok {
 		v := subscriptionplan.DefaultID()

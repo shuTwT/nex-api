@@ -107,6 +107,14 @@ func (_c *ApiTokenCreate) SetUpdatedAt(v time.Time) *ApiTokenCreate {
 	return _c
 }
 
+// SetNillableUpdatedAt sets the "updatedAt" field if the given value is not nil.
+func (_c *ApiTokenCreate) SetNillableUpdatedAt(v *time.Time) *ApiTokenCreate {
+	if v != nil {
+		_c.SetUpdatedAt(*v)
+	}
+	return _c
+}
+
 // SetID sets the "id" field.
 func (_c *ApiTokenCreate) SetID(v string) *ApiTokenCreate {
 	_c.mutation.SetID(v)
@@ -174,6 +182,10 @@ func (_c *ApiTokenCreate) defaults() {
 	if _, ok := _c.mutation.CreatedAt(); !ok {
 		v := apitoken.DefaultCreatedAt()
 		_c.mutation.SetCreatedAt(v)
+	}
+	if _, ok := _c.mutation.UpdatedAt(); !ok {
+		v := apitoken.DefaultUpdatedAt()
+		_c.mutation.SetUpdatedAt(v)
 	}
 	if _, ok := _c.mutation.ID(); !ok {
 		v := apitoken.DefaultID()

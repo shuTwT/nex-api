@@ -59,6 +59,14 @@ func (_c *SessionCreate) SetUpdatedAt(v time.Time) *SessionCreate {
 	return _c
 }
 
+// SetNillableUpdatedAt sets the "updatedAt" field if the given value is not nil.
+func (_c *SessionCreate) SetNillableUpdatedAt(v *time.Time) *SessionCreate {
+	if v != nil {
+		_c.SetUpdatedAt(*v)
+	}
+	return _c
+}
+
 // SetID sets the "id" field.
 func (_c *SessionCreate) SetID(v string) *SessionCreate {
 	_c.mutation.SetID(v)
@@ -122,6 +130,10 @@ func (_c *SessionCreate) defaults() {
 	if _, ok := _c.mutation.CreatedAt(); !ok {
 		v := session.DefaultCreatedAt()
 		_c.mutation.SetCreatedAt(v)
+	}
+	if _, ok := _c.mutation.UpdatedAt(); !ok {
+		v := session.DefaultUpdatedAt()
+		_c.mutation.SetUpdatedAt(v)
 	}
 	if _, ok := _c.mutation.ID(); !ok {
 		v := session.DefaultID()

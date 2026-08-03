@@ -16,16 +16,14 @@ import (
 	"strconv"
 	"strings"
 	"time"
-
-	"github.com/shuTwT/nex-api/backend/internal/config"
 )
 
 type AlipayProvider struct {
-	config config.AlipayPayment
+	config alipayConfiguration
 	client *http.Client
 }
 
-func NewAlipayProvider(paymentConfig config.AlipayPayment, client *http.Client) *AlipayProvider {
+func NewAlipayProvider(paymentConfig alipayConfiguration, client *http.Client) *AlipayProvider {
 	if client == nil {
 		client = &http.Client{Timeout: 10 * time.Second}
 	}

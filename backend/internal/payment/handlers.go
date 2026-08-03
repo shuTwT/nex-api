@@ -30,7 +30,6 @@ func RegisterRoutes(mux *http.ServeMux, handler *Handler) error {
 	user := func(next http.Handler) http.Handler { return authz.RequireUser(next) }
 	mux.HandleFunc("GET /api/payment/methods", handler.methods)
 	mux.Handle("POST /api/payment/methods", user(http.HandlerFunc(handler.createSubscription)))
-	mux.Handle("POST /api/payment", user(http.HandlerFunc(handler.createPayment)))
 	mux.Handle("GET /api/payment/user", user(http.HandlerFunc(handler.history)))
 	mux.Handle("GET /api/payment/settings", user(http.HandlerFunc(handler.settings)))
 	mux.Handle("GET /api/payment/{outTradeNo}/status", user(http.HandlerFunc(handler.status)))
@@ -56,13 +55,6 @@ type subscriptionPaymentRequest struct {
 	Method PaymentMethod `json:"method"`
 }
 
-type paymentRequest struct {
-	Amount   float64                    `json:"amount"`
-	Currency string                     `json:"currency"`
-	Method   PaymentMethod              `json:"method"`
-	Metadata map[string]json.RawMessage `json:"metadata"`
-}
-
 type rechargeRequest struct {
 	Amount  float64       `json:"amount"`
 	Credits int           `json:"credits"`
@@ -70,7 +62,12 @@ type rechargeRequest struct {
 }
 
 func (h *Handler) methods(w http.ResponseWriter, r *http.Request) {
-	writeData(w, http.StatusOK, h.service.AvailableMethods())
+	methods, err := h.service.AvailableMethods(r.Context())
+	if err != nil {
+		writePaymentError(w, r, err)
+		return
+	}
+	writeData(w, http.StatusOK, methods)
 }
 
 func (h *Handler) createSubscription(w http.ResponseWriter, r *http.Request) {
@@ -85,25 +82,6 @@ func (h *Handler) createSubscription(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	result, err := h.service.CreateSubscriptionPayment(r.Context(), principal.UserID, request.PlanID, request.Method)
-	if err != nil {
-		writePaymentError(w, r, err)
-		return
-	}
-	writeData(w, http.StatusCreated, result)
-}
-
-func (h *Handler) createPayment(w http.ResponseWriter, r *http.Request) {
-	request, err := decodeJSON[paymentRequest](r)
-	if err != nil {
-		writePaymentError(w, r, err)
-		return
-	}
-	principal, err := authz.RequestPrincipal(r.Context())
-	if err != nil {
-		writePaymentError(w, r, err)
-		return
-	}
-	result, err := h.service.CreatePayment(r.Context(), CreatePaymentInput{UserID: principal.UserID, Amount: request.Amount, Currency: request.Currency, Method: request.Method, Metadata: request.Metadata})
 	if err != nil {
 		writePaymentError(w, r, err)
 		return
@@ -137,7 +115,7 @@ func (h *Handler) recharge(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	metadata := map[string]json.RawMessage{"type": json.RawMessage(`"recharge"`), "credits": json.RawMessage(strconv.Itoa(request.Credits)), "creditPrice": json.RawMessage(strconv.FormatFloat(settings.CreditPrice, 'f', 2, 64))}
-	result, err := h.service.CreatePayment(r.Context(), CreatePaymentInput{UserID: principal.UserID, Amount: request.Amount, Currency: "CNY", Method: request.Method, Metadata: metadata})
+	result, err := h.service.createPayment(r.Context(), createPaymentInput{UserID: principal.UserID, Amount: request.Amount, Currency: "CNY", Method: request.Method, Metadata: metadata})
 	if err != nil {
 		writePaymentError(w, r, err)
 		return

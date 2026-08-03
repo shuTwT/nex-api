@@ -8,11 +8,13 @@ require (
 	github.com/alexedwards/scs/v2 v2.9.0
 	github.com/dop251/goja v0.0.0-20260723142020-b4aef50fa347
 	github.com/go-chi/chi/v5 v5.3.1
+	github.com/go-co-op/gocron/v2 v2.22.0
 	github.com/go-viper/mapstructure/v2 v2.4.0
 	github.com/google/uuid v1.6.0
 	github.com/mattn/go-sqlite3 v1.14.28
 	github.com/oapi-codegen/runtime v1.6.0
 	github.com/redis/go-redis/v9 v9.21.0
+	github.com/robfig/cron/v3 v3.0.1
 	github.com/spf13/viper v1.21.0
 	go.yaml.in/yaml/v3 v3.0.4
 	golang.org/x/crypto v0.46.0
@@ -33,6 +35,7 @@ require (
 	github.com/google/go-cmp v0.7.0 // indirect
 	github.com/google/pprof v0.0.0-20250317173921-a4b03ec1a45e // indirect
 	github.com/hashicorp/hcl/v2 v2.18.1 // indirect
+	github.com/jonboulle/clockwork v0.5.0 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/mitchellh/go-wordwrap v1.0.1 // indirect
 	github.com/ncruces/go-strftime v1.0.0 // indirect

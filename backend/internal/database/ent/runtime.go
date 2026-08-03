@@ -18,6 +18,7 @@ import (
 	"github.com/shuTwT/nex-api/backend/internal/database/ent/mcpusage"
 	"github.com/shuTwT/nex-api/backend/internal/database/ent/payment"
 	"github.com/shuTwT/nex-api/backend/internal/database/ent/redemptioncode"
+	"github.com/shuTwT/nex-api/backend/internal/database/ent/scheduledjob"
 	"github.com/shuTwT/nex-api/backend/internal/database/ent/schema"
 	"github.com/shuTwT/nex-api/backend/internal/database/ent/session"
 	"github.com/shuTwT/nex-api/backend/internal/database/ent/subscription"
@@ -38,6 +39,8 @@ func init() {
 	account.DefaultCreatedAt = accountDescCreatedAt.Default.(func() time.Time)
 	// accountDescUpdatedAt is the schema descriptor for updatedAt field.
 	accountDescUpdatedAt := accountFields[12].Descriptor()
+	// account.DefaultUpdatedAt holds the default value on creation for the updatedAt field.
+	account.DefaultUpdatedAt = accountDescUpdatedAt.Default.(func() time.Time)
 	// account.UpdateDefaultUpdatedAt holds the default value on update for the updatedAt field.
 	account.UpdateDefaultUpdatedAt = accountDescUpdatedAt.UpdateDefault.(func() time.Time)
 	// accountDescID is the schema descriptor for id field.
@@ -56,6 +59,8 @@ func init() {
 	advertisement.DefaultCreatedAt = advertisementDescCreatedAt.Default.(func() time.Time)
 	// advertisementDescUpdatedAt is the schema descriptor for updatedAt field.
 	advertisementDescUpdatedAt := advertisementFields[9].Descriptor()
+	// advertisement.DefaultUpdatedAt holds the default value on creation for the updatedAt field.
+	advertisement.DefaultUpdatedAt = advertisementDescUpdatedAt.Default.(func() time.Time)
 	// advertisement.UpdateDefaultUpdatedAt holds the default value on update for the updatedAt field.
 	advertisement.UpdateDefaultUpdatedAt = advertisementDescUpdatedAt.UpdateDefault.(func() time.Time)
 	// advertisementDescID is the schema descriptor for id field.
@@ -82,6 +87,8 @@ func init() {
 	api.DefaultCreatedAt = apiDescCreatedAt.Default.(func() time.Time)
 	// apiDescUpdatedAt is the schema descriptor for updatedAt field.
 	apiDescUpdatedAt := apiFields[14].Descriptor()
+	// api.DefaultUpdatedAt holds the default value on creation for the updatedAt field.
+	api.DefaultUpdatedAt = apiDescUpdatedAt.Default.(func() time.Time)
 	// api.UpdateDefaultUpdatedAt holds the default value on update for the updatedAt field.
 	api.UpdateDefaultUpdatedAt = apiDescUpdatedAt.UpdateDefault.(func() time.Time)
 	// apiDescID is the schema descriptor for id field.
@@ -118,6 +125,8 @@ func init() {
 	apitoken.DefaultCreatedAt = apitokenDescCreatedAt.Default.(func() time.Time)
 	// apitokenDescUpdatedAt is the schema descriptor for updatedAt field.
 	apitokenDescUpdatedAt := apitokenFields[9].Descriptor()
+	// apitoken.DefaultUpdatedAt holds the default value on creation for the updatedAt field.
+	apitoken.DefaultUpdatedAt = apitokenDescUpdatedAt.Default.(func() time.Time)
 	// apitoken.UpdateDefaultUpdatedAt holds the default value on update for the updatedAt field.
 	apitoken.UpdateDefaultUpdatedAt = apitokenDescUpdatedAt.UpdateDefault.(func() time.Time)
 	// apitokenDescID is the schema descriptor for id field.
@@ -172,6 +181,8 @@ func init() {
 	mcpservice.DefaultCreatedAt = mcpserviceDescCreatedAt.Default.(func() time.Time)
 	// mcpserviceDescUpdatedAt is the schema descriptor for updatedAt field.
 	mcpserviceDescUpdatedAt := mcpserviceFields[11].Descriptor()
+	// mcpservice.DefaultUpdatedAt holds the default value on creation for the updatedAt field.
+	mcpservice.DefaultUpdatedAt = mcpserviceDescUpdatedAt.Default.(func() time.Time)
 	// mcpservice.UpdateDefaultUpdatedAt holds the default value on update for the updatedAt field.
 	mcpservice.UpdateDefaultUpdatedAt = mcpserviceDescUpdatedAt.UpdateDefault.(func() time.Time)
 	// mcpserviceDescID is the schema descriptor for id field.
@@ -208,6 +219,8 @@ func init() {
 	payment.DefaultCreatedAt = paymentDescCreatedAt.Default.(func() time.Time)
 	// paymentDescUpdatedAt is the schema descriptor for updatedAt field.
 	paymentDescUpdatedAt := paymentFields[19].Descriptor()
+	// payment.DefaultUpdatedAt holds the default value on creation for the updatedAt field.
+	payment.DefaultUpdatedAt = paymentDescUpdatedAt.Default.(func() time.Time)
 	// payment.UpdateDefaultUpdatedAt holds the default value on update for the updatedAt field.
 	payment.UpdateDefaultUpdatedAt = paymentDescUpdatedAt.UpdateDefault.(func() time.Time)
 	// paymentDescID is the schema descriptor for id field.
@@ -226,12 +239,38 @@ func init() {
 	redemptioncode.DefaultCreatedAt = redemptioncodeDescCreatedAt.Default.(func() time.Time)
 	// redemptioncodeDescUpdatedAt is the schema descriptor for updatedAt field.
 	redemptioncodeDescUpdatedAt := redemptioncodeFields[13].Descriptor()
+	// redemptioncode.DefaultUpdatedAt holds the default value on creation for the updatedAt field.
+	redemptioncode.DefaultUpdatedAt = redemptioncodeDescUpdatedAt.Default.(func() time.Time)
 	// redemptioncode.UpdateDefaultUpdatedAt holds the default value on update for the updatedAt field.
 	redemptioncode.UpdateDefaultUpdatedAt = redemptioncodeDescUpdatedAt.UpdateDefault.(func() time.Time)
 	// redemptioncodeDescID is the schema descriptor for id field.
 	redemptioncodeDescID := redemptioncodeFields[0].Descriptor()
 	// redemptioncode.DefaultID holds the default value on creation for the id field.
 	redemptioncode.DefaultID = redemptioncodeDescID.Default.(func() string)
+	scheduledjobFields := schema.ScheduledJob{}.Fields()
+	_ = scheduledjobFields
+	// scheduledjobDescEnabled is the schema descriptor for enabled field.
+	scheduledjobDescEnabled := scheduledjobFields[5].Descriptor()
+	// scheduledjob.DefaultEnabled holds the default value on creation for the enabled field.
+	scheduledjob.DefaultEnabled = scheduledjobDescEnabled.Default.(bool)
+	// scheduledjobDescLastStatus is the schema descriptor for lastStatus field.
+	scheduledjobDescLastStatus := scheduledjobFields[8].Descriptor()
+	// scheduledjob.DefaultLastStatus holds the default value on creation for the lastStatus field.
+	scheduledjob.DefaultLastStatus = scheduledjobDescLastStatus.Default.(string)
+	// scheduledjobDescCreatedAt is the schema descriptor for createdAt field.
+	scheduledjobDescCreatedAt := scheduledjobFields[10].Descriptor()
+	// scheduledjob.DefaultCreatedAt holds the default value on creation for the createdAt field.
+	scheduledjob.DefaultCreatedAt = scheduledjobDescCreatedAt.Default.(func() time.Time)
+	// scheduledjobDescUpdatedAt is the schema descriptor for updatedAt field.
+	scheduledjobDescUpdatedAt := scheduledjobFields[11].Descriptor()
+	// scheduledjob.DefaultUpdatedAt holds the default value on creation for the updatedAt field.
+	scheduledjob.DefaultUpdatedAt = scheduledjobDescUpdatedAt.Default.(func() time.Time)
+	// scheduledjob.UpdateDefaultUpdatedAt holds the default value on update for the updatedAt field.
+	scheduledjob.UpdateDefaultUpdatedAt = scheduledjobDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// scheduledjobDescID is the schema descriptor for id field.
+	scheduledjobDescID := scheduledjobFields[0].Descriptor()
+	// scheduledjob.DefaultID holds the default value on creation for the id field.
+	scheduledjob.DefaultID = scheduledjobDescID.Default.(func() string)
 	sessionFields := schema.Session{}.Fields()
 	_ = sessionFields
 	// sessionDescCreatedAt is the schema descriptor for createdAt field.
@@ -240,6 +279,8 @@ func init() {
 	session.DefaultCreatedAt = sessionDescCreatedAt.Default.(func() time.Time)
 	// sessionDescUpdatedAt is the schema descriptor for updatedAt field.
 	sessionDescUpdatedAt := sessionFields[5].Descriptor()
+	// session.DefaultUpdatedAt holds the default value on creation for the updatedAt field.
+	session.DefaultUpdatedAt = sessionDescUpdatedAt.Default.(func() time.Time)
 	// session.UpdateDefaultUpdatedAt holds the default value on update for the updatedAt field.
 	session.UpdateDefaultUpdatedAt = sessionDescUpdatedAt.UpdateDefault.(func() time.Time)
 	// sessionDescID is the schema descriptor for id field.
@@ -262,6 +303,8 @@ func init() {
 	subscription.DefaultCreatedAt = subscriptionDescCreatedAt.Default.(func() time.Time)
 	// subscriptionDescUpdatedAt is the schema descriptor for updatedAt field.
 	subscriptionDescUpdatedAt := subscriptionFields[10].Descriptor()
+	// subscription.DefaultUpdatedAt holds the default value on creation for the updatedAt field.
+	subscription.DefaultUpdatedAt = subscriptionDescUpdatedAt.Default.(func() time.Time)
 	// subscription.UpdateDefaultUpdatedAt holds the default value on update for the updatedAt field.
 	subscription.UpdateDefaultUpdatedAt = subscriptionDescUpdatedAt.UpdateDefault.(func() time.Time)
 	// subscriptionDescID is the schema descriptor for id field.
@@ -292,6 +335,8 @@ func init() {
 	subscriptionplan.DefaultCreatedAt = subscriptionplanDescCreatedAt.Default.(func() time.Time)
 	// subscriptionplanDescUpdatedAt is the schema descriptor for updatedAt field.
 	subscriptionplanDescUpdatedAt := subscriptionplanFields[10].Descriptor()
+	// subscriptionplan.DefaultUpdatedAt holds the default value on creation for the updatedAt field.
+	subscriptionplan.DefaultUpdatedAt = subscriptionplanDescUpdatedAt.Default.(func() time.Time)
 	// subscriptionplan.UpdateDefaultUpdatedAt holds the default value on update for the updatedAt field.
 	subscriptionplan.UpdateDefaultUpdatedAt = subscriptionplanDescUpdatedAt.UpdateDefault.(func() time.Time)
 	// subscriptionplanDescID is the schema descriptor for id field.
@@ -310,6 +355,8 @@ func init() {
 	systemsetting.DefaultCreatedAt = systemsettingDescCreatedAt.Default.(func() time.Time)
 	// systemsettingDescUpdatedAt is the schema descriptor for updatedAt field.
 	systemsettingDescUpdatedAt := systemsettingFields[6].Descriptor()
+	// systemsetting.DefaultUpdatedAt holds the default value on creation for the updatedAt field.
+	systemsetting.DefaultUpdatedAt = systemsettingDescUpdatedAt.Default.(func() time.Time)
 	// systemsetting.UpdateDefaultUpdatedAt holds the default value on update for the updatedAt field.
 	systemsetting.UpdateDefaultUpdatedAt = systemsettingDescUpdatedAt.UpdateDefault.(func() time.Time)
 	// systemsettingDescID is the schema descriptor for id field.
@@ -332,6 +379,8 @@ func init() {
 	user.DefaultCreatedAt = userDescCreatedAt.Default.(func() time.Time)
 	// userDescUpdatedAt is the schema descriptor for updatedAt field.
 	userDescUpdatedAt := userFields[10].Descriptor()
+	// user.DefaultUpdatedAt holds the default value on creation for the updatedAt field.
+	user.DefaultUpdatedAt = userDescUpdatedAt.Default.(func() time.Time)
 	// user.UpdateDefaultUpdatedAt holds the default value on update for the updatedAt field.
 	user.UpdateDefaultUpdatedAt = userDescUpdatedAt.UpdateDefault.(func() time.Time)
 	// userDescID is the schema descriptor for id field.

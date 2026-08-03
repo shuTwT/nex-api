@@ -25,6 +25,7 @@ import (
 	"github.com/shuTwT/nex-api/backend/internal/database/ent/mcpusage"
 	"github.com/shuTwT/nex-api/backend/internal/database/ent/payment"
 	"github.com/shuTwT/nex-api/backend/internal/database/ent/redemptioncode"
+	"github.com/shuTwT/nex-api/backend/internal/database/ent/scheduledjob"
 	"github.com/shuTwT/nex-api/backend/internal/database/ent/session"
 	"github.com/shuTwT/nex-api/backend/internal/database/ent/subscription"
 	"github.com/shuTwT/nex-api/backend/internal/database/ent/subscriptionplan"
@@ -104,6 +105,7 @@ func checkColumn(t, c string) error {
 			mcpusage.Table:          mcpusage.ValidColumn,
 			payment.Table:           payment.ValidColumn,
 			redemptioncode.Table:    redemptioncode.ValidColumn,
+			scheduledjob.Table:      scheduledjob.ValidColumn,
 			session.Table:           session.ValidColumn,
 			subscription.Table:      subscription.ValidColumn,
 			subscriptionplan.Table:  subscriptionplan.ValidColumn,

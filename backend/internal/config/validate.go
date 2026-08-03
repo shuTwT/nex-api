@@ -138,7 +138,6 @@ func validate(cfg Config, requireExternal bool, externalValue func(string) bool)
 		add("log.format", "must be json or text")
 	}
 	validateOAuth(cfg, add)
-	validatePayments(cfg, add)
 	if len(violations) == 0 {
 		return nil
 	}
@@ -163,35 +162,6 @@ func validateOAuth(cfg Config, add func(string, string)) {
 	} {
 		if !validHTTPURL(value) {
 			add(field, "must be a valid http:// or https:// URL when SSO is configured")
-		}
-	}
-}
-
-func validatePayments(cfg Config, add func(string, string)) {
-	wechat := cfg.Payment.WeChat
-	if strings.TrimSpace(wechat.AppID) != "" || strings.TrimSpace(wechat.MchID) != "" || strings.TrimSpace(wechat.APIKey) != "" {
-		for field, value := range map[string]string{
-			"payment.wechat.app_id":      wechat.AppID,
-			"payment.wechat.mch_id":      wechat.MchID,
-			"payment.wechat.api_key":     wechat.APIKey,
-			"payment.wechat.private_key": wechat.PrivateKey,
-			"payment.wechat.public_key":  wechat.PublicKey,
-		} {
-			if strings.TrimSpace(value) == "" {
-				add(field, "is required when WeChat Pay is configured")
-			}
-		}
-	}
-	alipay := cfg.Payment.Alipay
-	if strings.TrimSpace(alipay.AppID) != "" || strings.TrimSpace(alipay.PrivateKey) != "" || strings.TrimSpace(alipay.AlipayPublicKey) != "" {
-		for field, value := range map[string]string{
-			"payment.alipay.app_id":      alipay.AppID,
-			"payment.alipay.private_key": alipay.PrivateKey,
-			"payment.alipay.public_key":  alipay.AlipayPublicKey,
-		} {
-			if strings.TrimSpace(value) == "" {
-				add(field, "is required when Alipay is configured")
-			}
 		}
 	}
 }

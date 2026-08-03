@@ -60,10 +60,13 @@ func (h *Handler) registerRoutes() {
 func (h *Handler) initialized(w http.ResponseWriter, r *http.Request) {
 	initialized, err := h.service.Initialized(r.Context())
 	if err != nil {
-		writeJSON(w, http.StatusOK, map[string]bool{"initialized": false})
+		writeJSON(w, http.StatusInternalServerError, responseEnvelope{Success: false, Error: "initialization_status_failed"})
 		return
 	}
-	writeJSON(w, http.StatusOK, map[string]bool{"initialized": initialized})
+	writeJSON(w, http.StatusOK, responseEnvelope{
+		Success: true,
+		Data:    map[string]bool{"initialized": initialized},
+	})
 }
 
 func (h *Handler) initialize(w http.ResponseWriter, r *http.Request) {

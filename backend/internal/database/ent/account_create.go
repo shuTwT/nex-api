@@ -157,6 +157,14 @@ func (_c *AccountCreate) SetUpdatedAt(v time.Time) *AccountCreate {
 	return _c
 }
 
+// SetNillableUpdatedAt sets the "updatedAt" field if the given value is not nil.
+func (_c *AccountCreate) SetNillableUpdatedAt(v *time.Time) *AccountCreate {
+	if v != nil {
+		_c.SetUpdatedAt(*v)
+	}
+	return _c
+}
+
 // SetID sets the "id" field.
 func (_c *AccountCreate) SetID(v string) *AccountCreate {
 	_c.mutation.SetID(v)
@@ -220,6 +228,10 @@ func (_c *AccountCreate) defaults() {
 	if _, ok := _c.mutation.CreatedAt(); !ok {
 		v := account.DefaultCreatedAt()
 		_c.mutation.SetCreatedAt(v)
+	}
+	if _, ok := _c.mutation.UpdatedAt(); !ok {
+		v := account.DefaultUpdatedAt()
+		_c.mutation.SetUpdatedAt(v)
 	}
 	if _, ok := _c.mutation.ID(); !ok {
 		v := account.DefaultID()

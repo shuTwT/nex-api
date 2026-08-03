@@ -40,10 +40,13 @@ func (s *Service) applyCallback(ctx context.Context, method PaymentMethod, callb
 			return err
 		}
 		builder := tx.Payment.UpdateOneID(current.ID).Where(payment.CallbackVersionEQ(current.CallbackVersion)).SetStatus(string(transition.Status)).SetCallbackVersion(current.CallbackVersion + 1).SetCallbackProcessedAt(now).SetUpdatedAt(now)
-		if transition.Status == PaymentStatePaid {
+		switch transition.Status {
+		case PaymentStatePaid:
 			builder.SetTransactionId(callback.TransactionID).SetPaidAt(callback.PaidAt).SetCallbackKey(callback.CallbackKey)
-		} else {
+		case PaymentStateCancelled:
 			builder.SetCancelledAt(now).SetCallbackKey(callback.CallbackKey)
+		default:
+			builder.SetCallbackKey(callback.CallbackKey)
 		}
 		updated, err = builder.Save(ctx)
 		if err != nil {

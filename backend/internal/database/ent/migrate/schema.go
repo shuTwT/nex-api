@@ -533,6 +533,39 @@ var (
 			},
 		},
 	}
+	// ScheduledJobColumns holds the columns for the "ScheduledJob" table.
+	ScheduledJobColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString},
+		{Name: "name", Type: field.TypeString},
+		{Name: "taskKey", Type: field.TypeString},
+		{Name: "scheduleType", Type: field.TypeString},
+		{Name: "expression", Type: field.TypeString},
+		{Name: "enabled", Type: field.TypeBool, Default: true},
+		{Name: "description", Type: field.TypeString, Nullable: true},
+		{Name: "lastRunAt", Type: field.TypeTime, Nullable: true},
+		{Name: "lastStatus", Type: field.TypeString, Default: "never"},
+		{Name: "lastError", Type: field.TypeString, Nullable: true},
+		{Name: "createdAt", Type: field.TypeTime, Default: "CURRENT_TIMESTAMP"},
+		{Name: "updatedAt", Type: field.TypeTime},
+	}
+	// ScheduledJobTable holds the schema information for the "ScheduledJob" table.
+	ScheduledJobTable = &schema.Table{
+		Name:       "ScheduledJob",
+		Columns:    ScheduledJobColumns,
+		PrimaryKey: []*schema.Column{ScheduledJobColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "ScheduledJob_taskKey_key",
+				Unique:  true,
+				Columns: []*schema.Column{ScheduledJobColumns[2]},
+			},
+			{
+				Name:    "ScheduledJob_enabled_idx",
+				Unique:  false,
+				Columns: []*schema.Column{ScheduledJobColumns[5]},
+			},
+		},
+	}
 	// SessionColumns holds the columns for the "Session" table.
 	SessionColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString},
@@ -604,11 +637,6 @@ var (
 			},
 		},
 		Indexes: []*schema.Index{
-			{
-				Name:    "Subscription_paymentId_key",
-				Unique:  true,
-				Columns: []*schema.Column{SubscriptionColumns[9]},
-			},
 			{
 				Name:    "Subscription_userId_idx",
 				Unique:  false,
@@ -767,6 +795,7 @@ var (
 		McpUsageTable,
 		PaymentTable,
 		RedemptionCodeTable,
+		ScheduledJobTable,
 		SessionTable,
 		SubscriptionTable,
 		SubscriptionPlanTable,
@@ -826,6 +855,9 @@ func init() {
 	}
 	RedemptionCodeTable.Annotation = &entsql.Annotation{
 		Table: "RedemptionCode",
+	}
+	ScheduledJobTable.Annotation = &entsql.Annotation{
+		Table: "ScheduledJob",
 	}
 	SessionTable.ForeignKeys[0].RefTable = UserTable
 	SessionTable.Annotation = &entsql.Annotation{

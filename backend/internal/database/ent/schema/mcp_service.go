@@ -33,7 +33,7 @@ func (McpService) Fields() []ent.Field {
 		field.Bool("isActive").StorageKey("isActive").Default(true),
 		field.Int("callCount").StorageKey("callCount").Default(0),
 		field.Time("createdAt").StorageKey("createdAt").Default(time.Now).Annotations(entsql.Default("CURRENT_TIMESTAMP")),
-		field.Time("updatedAt").StorageKey("updatedAt").UpdateDefault(time.Now),
+		field.Time("updatedAt").StorageKey("updatedAt").Default(time.Now).UpdateDefault(time.Now),
 	}
 }
 

@@ -53,7 +53,7 @@ type realClock struct{}
 
 func (realClock) Now() time.Time { return time.Now().UTC() }
 
-type CreatePaymentInput struct {
+type createPaymentInput struct {
 	UserID    string
 	Amount    float64
 	Currency  string
@@ -173,6 +173,8 @@ func transitionPayment(current, target PaymentState, now time.Time) (transitione
 		return transitionedPayment{Status: target, PaidAt: now}, nil
 	case PaymentStateCancelled:
 		return transitionedPayment{Status: target, CancelledAt: now}, nil
+	case PaymentStateFailed, PaymentStateExpired:
+		return transitionedPayment{Status: target}, nil
 	default:
 		return transitionedPayment{}, fmt.Errorf("pending to %s: %w", target, ErrInvalidTransition)
 	}
@@ -185,6 +187,11 @@ func parseRSAPublicKey(value string) (*rsa.PublicKey, error) {
 	}
 	if key, err := x509.ParsePKIXPublicKey(block.Bytes); err == nil {
 		if publicKey, ok := key.(*rsa.PublicKey); ok {
+			return publicKey, nil
+		}
+	}
+	if certificate, err := x509.ParseCertificate(block.Bytes); err == nil {
+		if publicKey, ok := certificate.PublicKey.(*rsa.PublicKey); ok {
 			return publicKey, nil
 		}
 	}

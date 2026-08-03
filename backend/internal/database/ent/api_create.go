@@ -164,6 +164,14 @@ func (_c *APICreate) SetUpdatedAt(v time.Time) *APICreate {
 	return _c
 }
 
+// SetNillableUpdatedAt sets the "updatedAt" field if the given value is not nil.
+func (_c *APICreate) SetNillableUpdatedAt(v *time.Time) *APICreate {
+	if v != nil {
+		_c.SetUpdatedAt(*v)
+	}
+	return _c
+}
+
 // SetID sets the "id" field.
 func (_c *APICreate) SetID(v string) *APICreate {
 	_c.mutation.SetID(v)
@@ -284,6 +292,10 @@ func (_c *APICreate) defaults() {
 	if _, ok := _c.mutation.CreatedAt(); !ok {
 		v := api.DefaultCreatedAt()
 		_c.mutation.SetCreatedAt(v)
+	}
+	if _, ok := _c.mutation.UpdatedAt(); !ok {
+		v := api.DefaultUpdatedAt()
+		_c.mutation.SetUpdatedAt(v)
 	}
 	if _, ok := _c.mutation.ID(); !ok {
 		v := api.DefaultID()

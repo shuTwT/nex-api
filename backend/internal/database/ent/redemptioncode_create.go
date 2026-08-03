@@ -170,6 +170,14 @@ func (_c *RedemptionCodeCreate) SetUpdatedAt(v time.Time) *RedemptionCodeCreate 
 	return _c
 }
 
+// SetNillableUpdatedAt sets the "updatedAt" field if the given value is not nil.
+func (_c *RedemptionCodeCreate) SetNillableUpdatedAt(v *time.Time) *RedemptionCodeCreate {
+	if v != nil {
+		_c.SetUpdatedAt(*v)
+	}
+	return _c
+}
+
 // SetID sets the "id" field.
 func (_c *RedemptionCodeCreate) SetID(v string) *RedemptionCodeCreate {
 	_c.mutation.SetID(v)
@@ -226,6 +234,10 @@ func (_c *RedemptionCodeCreate) defaults() {
 	if _, ok := _c.mutation.CreatedAt(); !ok {
 		v := redemptioncode.DefaultCreatedAt()
 		_c.mutation.SetCreatedAt(v)
+	}
+	if _, ok := _c.mutation.UpdatedAt(); !ok {
+		v := redemptioncode.DefaultUpdatedAt()
+		_c.mutation.SetUpdatedAt(v)
 	}
 	if _, ok := _c.mutation.ID(); !ok {
 		v := redemptioncode.DefaultID()

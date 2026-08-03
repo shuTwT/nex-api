@@ -143,6 +143,14 @@ func (_c *McpServiceCreate) SetUpdatedAt(v time.Time) *McpServiceCreate {
 	return _c
 }
 
+// SetNillableUpdatedAt sets the "updatedAt" field if the given value is not nil.
+func (_c *McpServiceCreate) SetNillableUpdatedAt(v *time.Time) *McpServiceCreate {
+	if v != nil {
+		_c.SetUpdatedAt(*v)
+	}
+	return _c
+}
+
 // SetID sets the "id" field.
 func (_c *McpServiceCreate) SetID(v string) *McpServiceCreate {
 	_c.mutation.SetID(v)
@@ -222,6 +230,10 @@ func (_c *McpServiceCreate) defaults() {
 	if _, ok := _c.mutation.CreatedAt(); !ok {
 		v := mcpservice.DefaultCreatedAt()
 		_c.mutation.SetCreatedAt(v)
+	}
+	if _, ok := _c.mutation.UpdatedAt(); !ok {
+		v := mcpservice.DefaultUpdatedAt()
+		_c.mutation.SetUpdatedAt(v)
 	}
 	if _, ok := _c.mutation.ID(); !ok {
 		v := mcpservice.DefaultID()

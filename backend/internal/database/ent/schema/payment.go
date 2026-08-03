@@ -41,7 +41,7 @@ func (Payment) Fields() []ent.Field {
 		field.String("callbackKey").StorageKey("callbackKey").Optional().Unique(),
 		field.Time("callbackProcessedAt").StorageKey("callbackProcessedAt").Optional(),
 		field.Time("createdAt").StorageKey("createdAt").Default(time.Now).Annotations(entsql.Default("CURRENT_TIMESTAMP")),
-		field.Time("updatedAt").StorageKey("updatedAt").UpdateDefault(time.Now),
+		field.Time("updatedAt").StorageKey("updatedAt").Default(time.Now).UpdateDefault(time.Now),
 	}
 }
 

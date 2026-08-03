@@ -11,33 +11,32 @@ import (
 
 	entSQL "entgo.io/ent/dialect/sql"
 	"github.com/google/uuid"
-	"github.com/shuTwT/nex-api/backend/internal/config"
 	"github.com/shuTwT/nex-api/backend/internal/database/ent"
 	"github.com/shuTwT/nex-api/backend/internal/database/ent/payment"
-	"github.com/shuTwT/nex-api/backend/internal/database/ent/systemsetting"
 	appRuntime "github.com/shuTwT/nex-api/backend/internal/runtime"
 )
 
 type Service struct {
-	client    *ent.Client
-	clock     Clock
-	providers map[PaymentMethod]Provider
-	config    config.Payment
+	client          *ent.Client
+	clock           Clock
+	providers       map[PaymentMethod]Provider
+	providerFactory func(PaymentMethod, paymentConfiguration) Provider
+	schedule        func(time.Duration, func())
+	appURL          string
 }
 
-func NewService(client *ent.Client, paymentConfig config.Payment, clocks ...Clock) (*Service, error) {
-	return NewServiceWithProviders(client, paymentConfig, []Provider{
-		NewWeChatProvider(paymentConfig.WeChat, nil),
-		NewAlipayProvider(paymentConfig.Alipay, nil),
-		NewMockProvider(paymentConfig.Mock),
-	}, clocks...)
+func NewService(client *ent.Client, appURL string, clocks ...Clock) (*Service, error) {
+	if client == nil {
+		return nil, errors.New("payment: ent client is nil")
+	}
+	return &Service{client: client, clock: selectClock(clocks), schedule: scheduleAfter, appURL: strings.TrimSpace(appURL)}, nil
 }
 
-func NewPaymentService(client *ent.Client, paymentConfig config.Payment, clocks ...Clock) (*Service, error) {
-	return NewService(client, paymentConfig, clocks...)
+func NewPaymentService(client *ent.Client, appURL string, clocks ...Clock) (*Service, error) {
+	return NewService(client, appURL, clocks...)
 }
 
-func NewServiceWithProviders(client *ent.Client, paymentConfig config.Payment, providers []Provider, clocks ...Clock) (*Service, error) {
+func NewServiceWithProviders(client *ent.Client, providers []Provider, clocks ...Clock) (*Service, error) {
 	if client == nil {
 		return nil, errors.New("payment: ent client is nil")
 	}
@@ -51,14 +50,24 @@ func NewServiceWithProviders(client *ent.Client, paymentConfig config.Payment, p
 		}
 		providerMap[provider.Method()] = provider
 	}
-	clock := Clock(realClock{})
-	if len(clocks) > 0 && clocks[0] != nil {
-		clock = clocks[0]
-	}
-	return &Service{client: client, clock: clock, providers: providerMap, config: paymentConfig}, nil
+	return &Service{client: client, clock: selectClock(clocks), providers: providerMap, schedule: scheduleAfter}, nil
 }
 
-func (s *Service) CreatePayment(ctx context.Context, input CreatePaymentInput) (CreatePaymentResult, error) {
+func scheduleAfter(delay time.Duration, callback func()) {
+	time.AfterFunc(delay, callback)
+}
+
+func selectClock(clocks []Clock) Clock {
+	if len(clocks) > 0 && clocks[0] != nil {
+		return clocks[0]
+	}
+	return realClock{}
+}
+
+// createPayment is an internal provider primitive. HTTP callers must enter
+// through a business-specific flow that validates pricing and builds metadata
+// on the server.
+func (s *Service) createPayment(ctx context.Context, input createPaymentInput) (CreatePaymentResult, error) {
 	if err := validateContext(ctx); err != nil {
 		return CreatePaymentResult{}, err
 	}
@@ -74,9 +83,12 @@ func (s *Service) CreatePayment(ctx context.Context, input CreatePaymentInput) (
 	if strings.ToUpper(input.Currency) != "CNY" {
 		return CreatePaymentResult{}, appRuntime.NewValidationError(appRuntime.FieldError{Field: "currency", Reason: "only CNY is supported"})
 	}
-	provider, ok := s.providers[input.Method]
-	if !ok {
-		return CreatePaymentResult{}, fmt.Errorf("unsupported payment method %q", input.Method)
+	provider, notifyURL, err := s.resolveProvider(ctx, input.Method)
+	if err != nil {
+		return CreatePaymentResult{}, err
+	}
+	if strings.TrimSpace(input.NotifyURL) == "" {
+		input.NotifyURL = notifyURL
 	}
 	outTradeNo := "PAY-" + strings.ToUpper(uuid.NewString())
 	createdAt := s.clock.Now().UTC()
@@ -97,6 +109,7 @@ func (s *Service) CreatePayment(ctx context.Context, input CreatePaymentInput) (
 	if err != nil {
 		return CreatePaymentResult{}, fmt.Errorf("store payment order: %w", err)
 	}
+	s.scheduleMockSuccess(provider, created)
 	return CreatePaymentResult{Success: true, PaymentID: created.ID, OutTradeNo: created.OutTradeNo, QRCodeURL: created.QrcodeUrl, PayURL: created.PayUrl}, nil
 }
 
@@ -111,7 +124,7 @@ func (s *Service) CreateSubscriptionPayment(ctx context.Context, userID, planID 
 	if !plan.IsActive {
 		return CreatePaymentResult{}, appRuntime.NewAPIError(http.StatusBadRequest, "plan_inactive", "subscription plan is inactive", appRuntime.ErrConflict)
 	}
-	return s.CreatePayment(ctx, CreatePaymentInput{UserID: userID, Amount: plan.Price, Currency: "CNY", Method: method, PlanID: plan.ID, Metadata: map[string]json.RawMessage{"type": json.RawMessage(`"subscription"`), "planId": json.RawMessage(fmt.Sprintf("%q", plan.ID))}})
+	return s.createPayment(ctx, createPaymentInput{UserID: userID, Amount: plan.Price, Currency: "CNY", Method: method, PlanID: plan.ID, Metadata: map[string]json.RawMessage{"type": json.RawMessage(`"subscription"`), "planId": json.RawMessage(fmt.Sprintf("%q", plan.ID))}})
 }
 
 func (s *Service) GetPayment(ctx context.Context, outTradeNo string) (PaymentView, error) {
@@ -145,9 +158,12 @@ func (s *Service) QueryPayment(ctx context.Context, outTradeNo string) (PaymentV
 	if err != nil {
 		return PaymentView{}, fmt.Errorf("get payment before query: %w", err)
 	}
-	provider, ok := s.providers[PaymentMethod(current.Method)]
-	if !ok {
-		return PaymentView{}, fmt.Errorf("unsupported payment method %q", current.Method)
+	if current.Method == string(PaymentMethodMock) {
+		return paymentView(current), nil
+	}
+	provider, _, err := s.resolveProvider(ctx, PaymentMethod(current.Method))
+	if err != nil {
+		return PaymentView{}, err
 	}
 	status, err := provider.Query(ctx, outTradeNo)
 	if err != nil {
@@ -166,6 +182,21 @@ func (s *Service) QueryPayment(ctx context.Context, outTradeNo string) (PaymentV
 	return paymentView(updated), nil
 }
 
+func (s *Service) scheduleMockSuccess(provider Provider, record *ent.Payment) {
+	mock, ok := provider.(*MockProvider)
+	if !ok || !mock.config.AutoSuccess || s.schedule == nil {
+		return
+	}
+	s.schedule(mock.config.Delay, func() {
+		_, _ = s.applyCallback(context.Background(), PaymentMethodMock, ProviderCallback{
+			OutTradeNo: record.OutTradeNo, TransactionID: "MOCK-" + record.OutTradeNo,
+			Amount: record.Amount, HasAmount: true, Currency: record.Currency,
+			Status: PaymentStatePaid, PaidAt: s.clock.Now().UTC(),
+			CallbackKey: "mock:" + record.OutTradeNo + ":auto-success",
+		})
+	})
+}
+
 func (s *Service) CancelPayment(ctx context.Context, outTradeNo string) error {
 	current, err := s.client.Payment.Query().Where(payment.OutTradeNo(outTradeNo)).Only(ctx)
 	if ent.IsNotFound(err) {
@@ -177,9 +208,9 @@ func (s *Service) CancelPayment(ctx context.Context, outTradeNo string) error {
 	if current.Status == string(PaymentStatePaid) {
 		return fmt.Errorf("cancel paid payment: %w", ErrInvalidTransition)
 	}
-	provider, ok := s.providers[PaymentMethod(current.Method)]
-	if !ok {
-		return fmt.Errorf("unsupported payment method %q", current.Method)
+	provider, _, err := s.resolveProvider(ctx, PaymentMethod(current.Method))
+	if err != nil {
+		return err
 	}
 	if err := provider.Cancel(ctx, outTradeNo); err != nil {
 		return fmt.Errorf("cancel payment provider: %w", err)
@@ -189,9 +220,9 @@ func (s *Service) CancelPayment(ctx context.Context, outTradeNo string) error {
 }
 
 func (s *Service) HandleCallback(ctx context.Context, method PaymentMethod, request ProviderCallbackRequest) (PaymentView, error) {
-	provider, ok := s.providers[method]
-	if !ok {
-		return PaymentView{}, fmt.Errorf("unsupported payment method %q", method)
+	provider, _, err := s.resolveProvider(ctx, method)
+	if err != nil {
+		return PaymentView{}, err
 	}
 	callback, err := provider.VerifyCallback(ctx, request)
 	if err != nil {
@@ -204,26 +235,37 @@ func (s *Service) HandleCallback(ctx context.Context, method PaymentMethod, requ
 	return paymentView(updated), nil
 }
 
-func (s *Service) AvailableMethods() []PaymentMethod {
-	methods := make([]PaymentMethod, 0, len(s.providers))
+func (s *Service) AvailableMethods(ctx context.Context) ([]PaymentMethod, error) {
+	if s.providers != nil {
+		methods := make([]PaymentMethod, 0, len(s.providers))
+		for _, method := range []PaymentMethod{PaymentMethodWeChat, PaymentMethodAlipay, PaymentMethodMock} {
+			if _, ok := s.providers[method]; ok {
+				methods = append(methods, method)
+			}
+		}
+		return methods, nil
+	}
+	configuration, err := s.loadConfiguration(ctx)
+	if err != nil {
+		return nil, err
+	}
+	methods := make([]PaymentMethod, 0, 3)
 	for _, method := range []PaymentMethod{PaymentMethodWeChat, PaymentMethodAlipay, PaymentMethodMock} {
-		if _, ok := s.providers[method]; ok {
+		if method == PaymentMethodWeChat && wechatConfigured(configuration.WeChat) ||
+			method == PaymentMethodAlipay && alipayConfigured(configuration.Alipay) ||
+			method == PaymentMethodMock && configuration.Mock.Enabled {
 			methods = append(methods, method)
 		}
 	}
-	return methods
+	return methods, nil
 }
 
 func (s *Service) Settings(ctx context.Context) (PaymentSettings, error) {
-	settings, err := s.client.SystemSetting.Query().Where(systemsetting.Category("payment")).All(ctx)
+	configuration, err := s.loadConfiguration(ctx)
 	if err != nil {
-		return PaymentSettings{}, fmt.Errorf("get payment settings: %w", err)
+		return PaymentSettings{}, err
 	}
-	values := make(map[string]string, len(settings))
-	for _, setting := range settings {
-		values[setting.Key] = setting.Value
-	}
-	return PaymentSettings{CreditPrice: parseSettingFloat(values, "creditPrice", 1), MinRecharge: parseSettingFloat(values, "minRecharge", 10), AlipayEnabled: values["alipayEnabled"] == "true", WeChatEnabled: values["wechatEnabled"] == "true", MockEnabled: s.config.Mock.Enabled}, nil
+	return PaymentSettings{CreditPrice: configuration.CreditPrice, MinRecharge: configuration.MinRecharge, AlipayEnabled: configuration.AlipayEnabled, WeChatEnabled: configuration.WeChatEnabled, MockEnabled: configuration.Mock.Enabled}, nil
 }
 
 func paymentView(record *ent.Payment) PaymentView {

@@ -245,6 +245,10 @@ model Payment {
   cancelledAt     DateTime?
   
   metadata        String?
+
+  callbackVersion     Int      @default(0)
+  callbackKey         String?  @unique
+  callbackProcessedAt DateTime?
   
   subscription    Subscription?
   
@@ -256,6 +260,7 @@ model Payment {
   @@index([method])
   @@index([outTradeNo])
   @@index([transactionId])
+  @@index([callbackVersion])
   @@index([createdAt])
 }
 

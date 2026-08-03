@@ -28,6 +28,7 @@ import (
 	"github.com/shuTwT/nex-api/backend/internal/database/ent/mcpusage"
 	"github.com/shuTwT/nex-api/backend/internal/database/ent/payment"
 	"github.com/shuTwT/nex-api/backend/internal/database/ent/redemptioncode"
+	"github.com/shuTwT/nex-api/backend/internal/database/ent/scheduledjob"
 	"github.com/shuTwT/nex-api/backend/internal/database/ent/session"
 	"github.com/shuTwT/nex-api/backend/internal/database/ent/subscription"
 	"github.com/shuTwT/nex-api/backend/internal/database/ent/subscriptionplan"
@@ -67,6 +68,8 @@ type Client struct {
 	Payment *PaymentClient
 	// RedemptionCode is the client for interacting with the RedemptionCode builders.
 	RedemptionCode *RedemptionCodeClient
+	// ScheduledJob is the client for interacting with the ScheduledJob builders.
+	ScheduledJob *ScheduledJobClient
 	// Session is the client for interacting with the Session builders.
 	Session *SessionClient
 	// Subscription is the client for interacting with the Subscription builders.
@@ -103,6 +106,7 @@ func (c *Client) init() {
 	c.McpUsage = NewMcpUsageClient(c.config)
 	c.Payment = NewPaymentClient(c.config)
 	c.RedemptionCode = NewRedemptionCodeClient(c.config)
+	c.ScheduledJob = NewScheduledJobClient(c.config)
 	c.Session = NewSessionClient(c.config)
 	c.Subscription = NewSubscriptionClient(c.config)
 	c.SubscriptionPlan = NewSubscriptionPlanClient(c.config)
@@ -214,6 +218,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		McpUsage:          NewMcpUsageClient(cfg),
 		Payment:           NewPaymentClient(cfg),
 		RedemptionCode:    NewRedemptionCodeClient(cfg),
+		ScheduledJob:      NewScheduledJobClient(cfg),
 		Session:           NewSessionClient(cfg),
 		Subscription:      NewSubscriptionClient(cfg),
 		SubscriptionPlan:  NewSubscriptionPlanClient(cfg),
@@ -252,6 +257,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		McpUsage:          NewMcpUsageClient(cfg),
 		Payment:           NewPaymentClient(cfg),
 		RedemptionCode:    NewRedemptionCodeClient(cfg),
+		ScheduledJob:      NewScheduledJobClient(cfg),
 		Session:           NewSessionClient(cfg),
 		Subscription:      NewSubscriptionClient(cfg),
 		SubscriptionPlan:  NewSubscriptionPlanClient(cfg),
@@ -289,8 +295,8 @@ func (c *Client) Use(hooks ...Hook) {
 	for _, n := range []interface{ Use(...Hook) }{
 		c.Account, c.Advertisement, c.Api, c.ApiCategory, c.ApiParameter, c.ApiResponse,
 		c.ApiToken, c.ApiUsage, c.AuditLog, c.McpService, c.McpUsage, c.Payment,
-		c.RedemptionCode, c.Session, c.Subscription, c.SubscriptionPlan,
-		c.SystemSetting, c.User, c.VerificationToken,
+		c.RedemptionCode, c.ScheduledJob, c.Session, c.Subscription,
+		c.SubscriptionPlan, c.SystemSetting, c.User, c.VerificationToken,
 	} {
 		n.Use(hooks...)
 	}
@@ -302,8 +308,8 @@ func (c *Client) Intercept(interceptors ...Interceptor) {
 	for _, n := range []interface{ Intercept(...Interceptor) }{
 		c.Account, c.Advertisement, c.Api, c.ApiCategory, c.ApiParameter, c.ApiResponse,
 		c.ApiToken, c.ApiUsage, c.AuditLog, c.McpService, c.McpUsage, c.Payment,
-		c.RedemptionCode, c.Session, c.Subscription, c.SubscriptionPlan,
-		c.SystemSetting, c.User, c.VerificationToken,
+		c.RedemptionCode, c.ScheduledJob, c.Session, c.Subscription,
+		c.SubscriptionPlan, c.SystemSetting, c.User, c.VerificationToken,
 	} {
 		n.Intercept(interceptors...)
 	}
@@ -338,6 +344,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.Payment.mutate(ctx, m)
 	case *RedemptionCodeMutation:
 		return c.RedemptionCode.mutate(ctx, m)
+	case *ScheduledJobMutation:
+		return c.ScheduledJob.mutate(ctx, m)
 	case *SessionMutation:
 		return c.Session.mutate(ctx, m)
 	case *SubscriptionMutation:
@@ -2356,6 +2364,139 @@ func (c *RedemptionCodeClient) mutate(ctx context.Context, m *RedemptionCodeMuta
 	}
 }
 
+// ScheduledJobClient is a client for the ScheduledJob schema.
+type ScheduledJobClient struct {
+	config
+}
+
+// NewScheduledJobClient returns a client for the ScheduledJob from the given config.
+func NewScheduledJobClient(c config) *ScheduledJobClient {
+	return &ScheduledJobClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `scheduledjob.Hooks(f(g(h())))`.
+func (c *ScheduledJobClient) Use(hooks ...Hook) {
+	c.hooks.ScheduledJob = append(c.hooks.ScheduledJob, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `scheduledjob.Intercept(f(g(h())))`.
+func (c *ScheduledJobClient) Intercept(interceptors ...Interceptor) {
+	c.inters.ScheduledJob = append(c.inters.ScheduledJob, interceptors...)
+}
+
+// Create returns a builder for creating a ScheduledJob entity.
+func (c *ScheduledJobClient) Create() *ScheduledJobCreate {
+	mutation := newScheduledJobMutation(c.config, OpCreate)
+	return &ScheduledJobCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of ScheduledJob entities.
+func (c *ScheduledJobClient) CreateBulk(builders ...*ScheduledJobCreate) *ScheduledJobCreateBulk {
+	return &ScheduledJobCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *ScheduledJobClient) MapCreateBulk(slice any, setFunc func(*ScheduledJobCreate, int)) *ScheduledJobCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &ScheduledJobCreateBulk{err: fmt.Errorf("calling to ScheduledJobClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*ScheduledJobCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &ScheduledJobCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for ScheduledJob.
+func (c *ScheduledJobClient) Update() *ScheduledJobUpdate {
+	mutation := newScheduledJobMutation(c.config, OpUpdate)
+	return &ScheduledJobUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *ScheduledJobClient) UpdateOne(_m *ScheduledJob) *ScheduledJobUpdateOne {
+	mutation := newScheduledJobMutation(c.config, OpUpdateOne, withScheduledJob(_m))
+	return &ScheduledJobUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *ScheduledJobClient) UpdateOneID(id string) *ScheduledJobUpdateOne {
+	mutation := newScheduledJobMutation(c.config, OpUpdateOne, withScheduledJobID(id))
+	return &ScheduledJobUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for ScheduledJob.
+func (c *ScheduledJobClient) Delete() *ScheduledJobDelete {
+	mutation := newScheduledJobMutation(c.config, OpDelete)
+	return &ScheduledJobDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *ScheduledJobClient) DeleteOne(_m *ScheduledJob) *ScheduledJobDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *ScheduledJobClient) DeleteOneID(id string) *ScheduledJobDeleteOne {
+	builder := c.Delete().Where(scheduledjob.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &ScheduledJobDeleteOne{builder}
+}
+
+// Query returns a query builder for ScheduledJob.
+func (c *ScheduledJobClient) Query() *ScheduledJobQuery {
+	return &ScheduledJobQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeScheduledJob},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a ScheduledJob entity by its id.
+func (c *ScheduledJobClient) Get(ctx context.Context, id string) (*ScheduledJob, error) {
+	return c.Query().Where(scheduledjob.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *ScheduledJobClient) GetX(ctx context.Context, id string) *ScheduledJob {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *ScheduledJobClient) Hooks() []Hook {
+	return c.hooks.ScheduledJob
+}
+
+// Interceptors returns the client interceptors.
+func (c *ScheduledJobClient) Interceptors() []Interceptor {
+	return c.inters.ScheduledJob
+}
+
+func (c *ScheduledJobClient) mutate(ctx context.Context, m *ScheduledJobMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&ScheduledJobCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&ScheduledJobUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&ScheduledJobUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&ScheduledJobDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown ScheduledJob mutation op: %q", m.Op())
+	}
+}
+
 // SessionClient is a client for the Session schema.
 type SessionClient struct {
 	config
@@ -3366,14 +3507,14 @@ func (c *VerificationTokenClient) mutate(ctx context.Context, m *VerificationTok
 type (
 	hooks struct {
 		Account, Advertisement, Api, ApiCategory, ApiParameter, ApiResponse, ApiToken,
-		ApiUsage, AuditLog, McpService, McpUsage, Payment, RedemptionCode, Session,
-		Subscription, SubscriptionPlan, SystemSetting, User,
+		ApiUsage, AuditLog, McpService, McpUsage, Payment, RedemptionCode,
+		ScheduledJob, Session, Subscription, SubscriptionPlan, SystemSetting, User,
 		VerificationToken []ent.Hook
 	}
 	inters struct {
 		Account, Advertisement, Api, ApiCategory, ApiParameter, ApiResponse, ApiToken,
-		ApiUsage, AuditLog, McpService, McpUsage, Payment, RedemptionCode, Session,
-		Subscription, SubscriptionPlan, SystemSetting, User,
+		ApiUsage, AuditLog, McpService, McpUsage, Payment, RedemptionCode,
+		ScheduledJob, Session, Subscription, SubscriptionPlan, SystemSetting, User,
 		VerificationToken []ent.Interceptor
 	}
 )

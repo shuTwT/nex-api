@@ -7,6 +7,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/shuTwT/nex-api/backend/internal/authz"
 	"github.com/shuTwT/nex-api/backend/internal/runtime"
 )
 
@@ -26,8 +27,10 @@ func RegisterRoutes(mux *http.ServeMux, storage *Storage) error {
 		return errors.New("upload: storage is nil")
 	}
 	handler := NewHandler(storage)
-	mux.Handle("/api/upload", http.HandlerFunc(handler.UploadRoutePost))
-	mux.Handle("/api/upload/", handler)
+	mux.Handle("POST /api/upload", authz.RequireUser(http.HandlerFunc(handler.UploadRoutePost)))
+	mux.Handle("GET /api/upload/{filename}", http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
+		handler.UploadFilenameRouteGet(writer, request, filenameFromRequest(request))
+	}))
 	return nil
 }
 

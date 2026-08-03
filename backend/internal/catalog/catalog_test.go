@@ -13,6 +13,7 @@ import (
 
 	"entgo.io/ent/dialect"
 	_ "github.com/mattn/go-sqlite3"
+	"github.com/shuTwT/nex-api/backend/internal/auth"
 	"github.com/shuTwT/nex-api/backend/internal/database/ent"
 	"github.com/shuTwT/nex-api/backend/internal/runtime"
 )
@@ -78,12 +79,79 @@ func TestHandler_rejectsUnknownJSONFields(t *testing.T) {
 	// When
 	request := httptest.NewRequest(http.MethodPost, "/api/categories", strings.NewReader(`{"name":"tools","unexpected":true}`))
 	request.Header.Set("Content-Type", "application/json")
+	request = request.WithContext(auth.WithAuthContext(request.Context(), auth.AuthContext{
+		User: auth.User{ID: "admin-1", Role: "admin"},
+	}))
 	response := httptest.NewRecorder()
 	mux.ServeHTTP(response, request)
 
 	// Then
 	if response.Code != http.StatusBadRequest {
 		t.Fatalf("status = %d, body = %s", response.Code, response.Body.String())
+	}
+}
+
+func TestCatalogRoutesRequireAdmin(t *testing.T) {
+	// Given
+	client := newCatalogClient(t)
+	apis, err := NewAPIService(client)
+	if err != nil {
+		t.Fatal(err)
+	}
+	categories, err := NewCategoryService(client)
+	if err != nil {
+		t.Fatal(err)
+	}
+	mcp, err := NewMCPService(client)
+	if err != nil {
+		t.Fatal(err)
+	}
+	handler, err := NewHandler(apis, categories, mcp)
+	if err != nil {
+		t.Fatal(err)
+	}
+	mux := http.NewServeMux()
+	if err := RegisterRoutes(mux, handler); err != nil {
+		t.Fatal(err)
+	}
+
+	for _, test := range []struct {
+		name string
+		path string
+	}{
+		{name: "apis", path: "/api/apis"},
+		{name: "categories", path: "/api/categories"},
+		{name: "mcp services", path: "/api/mcp-services"},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			for _, requestCase := range []struct {
+				name   string
+				role   string
+				status int
+			}{
+				{name: "unauthenticated", status: http.StatusUnauthorized},
+				{name: "user", role: "user", status: http.StatusForbidden},
+				{name: "admin", role: "admin", status: http.StatusOK},
+			} {
+				t.Run(requestCase.name, func(t *testing.T) {
+					request := httptest.NewRequest(http.MethodGet, test.path, nil)
+					if requestCase.role != "" {
+						request = request.WithContext(auth.WithAuthContext(request.Context(), auth.AuthContext{
+							User: auth.User{ID: requestCase.role + "-1", Role: requestCase.role},
+						}))
+					}
+					response := httptest.NewRecorder()
+
+					// When
+					mux.ServeHTTP(response, request)
+
+					// Then
+					if response.Code != requestCase.status {
+						t.Fatalf("status = %d, body = %s", response.Code, response.Body.String())
+					}
+				})
+			}
+		})
 	}
 }
 
@@ -228,7 +296,11 @@ func TestCatalogResponseShape_includesEnvelope(t *testing.T) {
 
 	// When
 	response := httptest.NewRecorder()
-	mux.ServeHTTP(response, httptest.NewRequest(http.MethodGet, "/api/categories", nil))
+	request := httptest.NewRequest(http.MethodGet, "/api/categories", nil)
+	request = request.WithContext(auth.WithAuthContext(request.Context(), auth.AuthContext{
+		User: auth.User{ID: "admin-1", Role: "admin"},
+	}))
+	mux.ServeHTTP(response, request)
 
 	// Then
 	var body struct {

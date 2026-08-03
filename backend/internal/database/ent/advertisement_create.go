@@ -90,6 +90,14 @@ func (_c *AdvertisementCreate) SetUpdatedAt(v time.Time) *AdvertisementCreate {
 	return _c
 }
 
+// SetNillableUpdatedAt sets the "updatedAt" field if the given value is not nil.
+func (_c *AdvertisementCreate) SetNillableUpdatedAt(v *time.Time) *AdvertisementCreate {
+	if v != nil {
+		_c.SetUpdatedAt(*v)
+	}
+	return _c
+}
+
 // SetID sets the "id" field.
 func (_c *AdvertisementCreate) SetID(v string) *AdvertisementCreate {
 	_c.mutation.SetID(v)
@@ -146,6 +154,10 @@ func (_c *AdvertisementCreate) defaults() {
 	if _, ok := _c.mutation.CreatedAt(); !ok {
 		v := advertisement.DefaultCreatedAt()
 		_c.mutation.SetCreatedAt(v)
+	}
+	if _, ok := _c.mutation.UpdatedAt(); !ok {
+		v := advertisement.DefaultUpdatedAt()
+		_c.mutation.SetUpdatedAt(v)
 	}
 	if _, ok := _c.mutation.ID(); !ok {
 		v := advertisement.DefaultID()
