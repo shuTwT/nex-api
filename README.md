@@ -39,12 +39,12 @@ Vite 在 `http://localhost:3000` 运行，并将 `/api` 请求代理到 Go 后�
 ## 构建与验证
 
 ```bash
-make generate  # 从独立 HTTP 契约重新生成 OpenAPI 与 Vite 客户端
+make generate  # 从 Swaggo 注释生成 OpenAPI 与前端 TypeScript 类型
 make test      # Go 测试和 Vite 类型检查
 make build     # 构建 Go 二进制与 Vite 静态资源
 ```
 
-HTTP 契约位于 `backend/test/contract/manifest.json`。它是独立于实现文件的 API 清单，用于生成 `backend/openapi/openapi.yaml`、Go 路由类型和 `frontend/src/api/generated/` 客户端。
+HTTP 文档源位于 `backend/cmd/server/swagger.go` 的 Swaggo 注释。`make generate` 使用 Swaggo 生成 Swagger 2 文档，通过 `swagger2openapi` 转换为 `backend/openapi/openapi.yaml`，再由 `openapi-typescript` 生成 `frontend/src/api/generated/schema.ts`；运行时使用 `openapi-fetch`。`backend/test/contract/manifest.json` 仅用于回归校验已记录的接口覆盖范围。
 
 ## 配置
 

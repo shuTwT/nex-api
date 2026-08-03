@@ -11,6 +11,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/go-chi/chi/v5"
 	appRuntime "github.com/shuTwT/nex-api/backend/internal/handler/httpkit"
 	serviceaccounts "github.com/shuTwT/nex-api/backend/internal/service/accounts"
 	"github.com/shuTwT/nex-api/backend/internal/service/authz"
@@ -25,52 +26,50 @@ type Services struct {
 
 type Handler struct {
 	services Services
-	mux      *http.ServeMux
+	mux      chi.Router
 }
 
 func NewHandler(services Services) http.Handler {
-	handler := &Handler{services: services, mux: http.NewServeMux()}
-	handler.registerRoutes()
+	handler := &Handler{services: services, mux: chi.NewRouter()}
+	handler.registerRoutes(handler.mux)
 	return handler
 }
 
-func RegisterRoutes(mux *http.ServeMux, services Services) error {
-	if mux == nil {
+func RegisterRoutes(r chi.Router, services Services) error {
+	if r == nil {
 		return errors.New("accounts: route mux is nil")
 	}
 	if services.Users == nil || services.Tokens == nil || services.Profiles == nil || services.Audits == nil {
 		return errors.New("accounts: services are incomplete")
 	}
-	for _, path := range []string{"/api/users", "/api/users/", "/api/tokens", "/api/tokens/", "/api/personal/profile", "/api/personal/profile/", "/api/audit-logs", "/api/audit-logs/"} {
-		mux.Handle(path, NewHandler(services))
-	}
+	(&Handler{services: services}).registerRoutes(r)
 	return nil
 }
 
-func (h *Handler) registerRoutes() {
-	h.mux.HandleFunc("GET /api/users", h.listUsers)
-	h.mux.HandleFunc("POST /api/users", h.createUser)
-	h.mux.HandleFunc("GET /api/users/stats", h.userStats)
-	h.mux.HandleFunc("GET /api/users/{id}", h.getUser)
-	h.mux.HandleFunc("PUT /api/users/{id}", h.updateUser)
-	h.mux.HandleFunc("DELETE /api/users/{id}", h.deleteUser)
-	h.mux.HandleFunc("GET /api/tokens", h.listTokens)
-	h.mux.HandleFunc("POST /api/tokens", h.createToken)
-	h.mux.HandleFunc("GET /api/tokens/stats", h.tokenStats)
-	h.mux.HandleFunc("GET /api/tokens/{id}", h.getToken)
-	h.mux.HandleFunc("PUT /api/tokens/{id}", h.updateToken)
-	h.mux.HandleFunc("DELETE /api/tokens/{id}", h.deleteToken)
-	h.mux.HandleFunc("PUT /api/tokens/{id}/toggle", h.toggleToken)
-	h.mux.HandleFunc("GET /api/personal/profile", h.getProfile)
-	h.mux.HandleFunc("PUT /api/personal/profile", h.updateProfile)
-	h.mux.HandleFunc("PUT /api/personal/profile/password", h.updatePassword)
-	h.mux.HandleFunc("GET /api/audit-logs", h.listAudits)
-	h.mux.HandleFunc("POST /api/audit-logs", h.createAudit)
-	h.mux.HandleFunc("GET /api/audit-logs/stats", h.auditStats)
-	h.mux.HandleFunc("GET /api/audit-logs/export", h.exportAudits)
-	h.mux.HandleFunc("GET /api/audit-logs/{id}", h.getAudit)
-	h.mux.HandleFunc("PUT /api/audit-logs/{id}", h.updateAudit)
-	h.mux.HandleFunc("DELETE /api/audit-logs/{id}", h.deleteAudit)
+func (h *Handler) registerRoutes(r chi.Router) {
+	r.Get("/api/users", h.listUsers)
+	r.Post("/api/users", h.createUser)
+	r.Get("/api/users/stats", h.userStats)
+	r.Get("/api/users/{id}", h.getUser)
+	r.Put("/api/users/{id}", h.updateUser)
+	r.Delete("/api/users/{id}", h.deleteUser)
+	r.Get("/api/tokens", h.listTokens)
+	r.Post("/api/tokens", h.createToken)
+	r.Get("/api/tokens/stats", h.tokenStats)
+	r.Get("/api/tokens/{id}", h.getToken)
+	r.Put("/api/tokens/{id}", h.updateToken)
+	r.Delete("/api/tokens/{id}", h.deleteToken)
+	r.Put("/api/tokens/{id}/toggle", h.toggleToken)
+	r.Get("/api/personal/profile", h.getProfile)
+	r.Put("/api/personal/profile", h.updateProfile)
+	r.Put("/api/personal/profile/password", h.updatePassword)
+	r.Get("/api/audit-logs", h.listAudits)
+	r.Post("/api/audit-logs", h.createAudit)
+	r.Get("/api/audit-logs/stats", h.auditStats)
+	r.Get("/api/audit-logs/export", h.exportAudits)
+	r.Get("/api/audit-logs/{id}", h.getAudit)
+	r.Put("/api/audit-logs/{id}", h.updateAudit)
+	r.Delete("/api/audit-logs/{id}", h.deleteAudit)
 }
 
 func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) { h.mux.ServeHTTP(w, r) }

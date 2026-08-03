@@ -1,4 +1,4 @@
-import type { ApiResponse } from "@/api/generated";
+import type { ApiResponse } from "@/lib/api";
 
 type Envelope = ApiResponse;
 

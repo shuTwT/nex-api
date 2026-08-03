@@ -1,4 +1,0 @@
-package: generated
-generate:
-  models: true
-output: generated/types.gen.go

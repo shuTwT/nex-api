@@ -14,6 +14,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/go-chi/chi/v5"
 	serviceauth "github.com/shuTwT/nex-api/backend/internal/service/auth"
 	serviceoauth "github.com/shuTwT/nex-api/backend/internal/service/oauth"
 )
@@ -35,10 +36,23 @@ type Handler struct {
 	sessions SessionIssuer
 	baseURL  *url.URL
 	state    *serviceoauth.StateManager
-	mux      *http.ServeMux
+	mux      chi.Router
 }
 
 func New(service *serviceoauth.Service, sessions SessionIssuer, value any) (*Handler, error) {
+	return newHandler(chi.NewRouter(), service, sessions, value)
+}
+
+// RegisterRoutes installs OAuth endpoints directly onto the application's router.
+func RegisterRoutes(mux chi.Router, service *serviceoauth.Service, sessions SessionIssuer, value any) error {
+	if mux == nil {
+		return errors.New("oauth: mux is nil")
+	}
+	_, err := newHandler(mux, service, sessions, value)
+	return err
+}
+
+func newHandler(mux chi.Router, service *serviceoauth.Service, sessions SessionIssuer, value any) (*Handler, error) {
 	cfg, err := normalizeConfig(value)
 	if err != nil {
 		return nil, err
@@ -69,7 +83,7 @@ func New(service *serviceoauth.Service, sessions SessionIssuer, value any) (*Han
 		sessions: sessions,
 		baseURL:  baseURL,
 		state:    state,
-		mux:      http.NewServeMux(),
+		mux:      mux,
 	}
 	handler.registerRoutes()
 	return handler, nil
@@ -126,29 +140,29 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) registerRoutes() {
-	h.mux.HandleFunc("GET /api/auth/providers", h.providers)
-	h.mux.HandleFunc("GET /api/auth/signin/{provider}", h.authorize)
-	h.mux.HandleFunc("GET /api/auth/callback/{provider}", h.callback)
+	h.mux.Get("/api/auth/providers", h.providers)
+	h.mux.Get("/api/auth/signin/{provider}", h.authorize)
+	h.mux.Get("/api/auth/callback/{provider}", h.callback)
 
 	// Keep the legacy endpoint aliases while provider definitions move to system
 	// settings. New callers should use /signin/{provider} and /callback/{provider}.
 	for _, providerID := range []string{"github", "easy1", "easy1auth"} {
 		providerID := providerID
-		h.mux.HandleFunc("GET /api/auth/"+providerID, func(w http.ResponseWriter, r *http.Request) {
+		h.mux.Get("/api/auth/"+providerID, func(w http.ResponseWriter, r *http.Request) {
 			h.authorizeProvider(w, r, providerID)
 		})
-		h.mux.HandleFunc("GET /api/auth/"+providerID+"/callback", func(w http.ResponseWriter, r *http.Request) {
+		h.mux.Get("/api/auth/"+providerID+"/callback", func(w http.ResponseWriter, r *http.Request) {
 			h.callbackProvider(w, r, providerID)
 		})
 	}
 }
 
 func (h *Handler) authorize(w http.ResponseWriter, r *http.Request) {
-	h.authorizeProvider(w, r, r.PathValue("provider"))
+	h.authorizeProvider(w, r, chi.URLParam(r, "provider"))
 }
 
 func (h *Handler) callback(w http.ResponseWriter, r *http.Request) {
-	h.callbackProvider(w, r, r.PathValue("provider"))
+	h.callbackProvider(w, r, chi.URLParam(r, "provider"))
 }
 
 func (h *Handler) authorizeProvider(w http.ResponseWriter, r *http.Request, providerID string) {

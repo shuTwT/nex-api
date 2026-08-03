@@ -10,7 +10,6 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/shuTwT/nex-api/backend/internal/handler/httpapi/generated"
 	"github.com/shuTwT/nex-api/backend/internal/infra/worker"
 	serviceaccounts "github.com/shuTwT/nex-api/backend/internal/service/accounts"
 	serviceauthz "github.com/shuTwT/nex-api/backend/internal/service/authz"
@@ -130,10 +129,7 @@ func TestGateway_forwardsAllMethodsAndPreservesCompletedResponse(t *testing.T) {
 	handler, accountant, usage, _ := newTestHandler(t, upstream.URL, "ALL", nil)
 	for _, test := range []struct {
 		name, method string
-		call         func(http.ResponseWriter, *http.Request)
-	}{{"get", http.MethodGet, func(w http.ResponseWriter, r *http.Request) {
-		handler.V1AliasRouteGet(w, r, "weather", generated.V1AliasRouteGetParams{})
-	}}, {"post", http.MethodPost, func(w http.ResponseWriter, r *http.Request) { handler.V1AliasRoutePost(w, r, "weather") }}, {"put", http.MethodPut, func(w http.ResponseWriter, r *http.Request) { handler.V1AliasRoutePut(w, r, "weather") }}, {"patch", http.MethodPatch, func(w http.ResponseWriter, r *http.Request) { handler.V1AliasRoutePatch(w, r, "weather") }}, {"delete", http.MethodDelete, func(w http.ResponseWriter, r *http.Request) { handler.V1AliasRouteDelete(w, r, "weather") }}} {
+	}{{"get", http.MethodGet}, {"post", http.MethodPost}, {"put", http.MethodPut}, {"patch", http.MethodPatch}, {"delete", http.MethodDelete}} {
 		t.Run(test.name, func(t *testing.T) {
 			body := ""
 			if test.method != http.MethodGet && test.method != http.MethodDelete {
@@ -144,7 +140,7 @@ func TestGateway_forwardsAllMethodsAndPreservesCompletedResponse(t *testing.T) {
 			req.Header.Set("Connection", "close")
 			req.Header.Set("X-Forwarded-Test", "yes")
 			rec := httptest.NewRecorder()
-			test.call(rec, req)
+			handler.serve(rec, req, "weather")
 			if rec.Code != http.StatusTeapot || rec.Body.String() != "upstream-body" || rec.Header().Get("X-Upstream") != "kept" {
 				t.Fatalf("unexpected response: %d %q", rec.Code, rec.Body.String())
 			}
@@ -173,7 +169,7 @@ func TestGateway_transformsRequestAndResponse(t *testing.T) {
 	req := httptest.NewRequest(http.MethodPost, "/api/v1/weather", strings.NewReader("original"))
 	req.Header.Set("Authorization", "Bearer secret")
 	rec := httptest.NewRecorder()
-	handler.V1AliasRoutePost(rec, req, "weather")
+	handler.serve(rec, req, "weather")
 	if rec.Code != http.StatusAccepted || rec.Body.String() != "post" || rec.Header().Get("X-Post") != "yes" {
 		t.Fatalf("unexpected transformed response: %d %q", rec.Code, rec.Body.String())
 	}
@@ -189,20 +185,20 @@ func TestGateway_refundsNetworkFailureAndRejectsAuthAndMethod(t *testing.T) {
 	req := httptest.NewRequest(http.MethodPost, "/api/v1/weather", strings.NewReader("body"))
 	req.Header.Set("Authorization", "Bearer secret")
 	rec := httptest.NewRecorder()
-	handler.V1AliasRoutePost(rec, req, "weather")
+	handler.serve(rec, req, "weather")
 	if rec.Code != http.StatusBadGateway || len(accountant.finalized) != 0 || len(accountant.refunded) != 1 {
 		t.Fatalf("network failure")
 	}
 	unauthorized := httptest.NewRecorder()
 	handler.tokens = fakeTokenAuthenticator{err: serviceauthz.ErrInvalidToken}
-	handler.V1AliasRoutePost(unauthorized, req, "weather")
+	handler.serve(unauthorized, req, "weather")
 	if unauthorized.Code != http.StatusUnauthorized || len(accountant.reserved) != 1 {
 		t.Fatalf("auth failure")
 	}
 	method := httptest.NewRecorder()
 	handler.tokens = fakeTokenAuthenticator{principal: serviceauthz.Principal{UserID: "user-1"}}
 	handler.apis = fakeAPIResolver{servicecatalog.GatewayAPI{ID: "api-1", Name: "Weather", Endpoint: endpoint, Method: "GET", Pricing: 7, IsActive: true}}
-	handler.V1AliasRoutePost(method, req, "weather")
+	handler.serve(method, req, "weather")
 	if method.Code != http.StatusMethodNotAllowed || len(accountant.reserved) != 1 {
 		t.Fatalf("method failure")
 	}

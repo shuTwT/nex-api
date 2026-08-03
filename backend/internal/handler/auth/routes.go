@@ -14,6 +14,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/go-chi/chi/v5"
 	"github.com/shuTwT/nex-api/backend/internal/middleware"
 	serviceauth "github.com/shuTwT/nex-api/backend/internal/service/auth"
 )
@@ -21,7 +22,7 @@ import (
 type Handler struct {
 	service *serviceauth.Service
 	csrf    *middleware.CSRFProtector
-	mux     *http.ServeMux
+	mux     chi.Router
 }
 
 type loginRequest struct {
@@ -36,6 +37,10 @@ type responseEnvelope struct {
 }
 
 func NewHandler(service *serviceauth.Service) http.Handler {
+	return newHandler(service)
+}
+
+func newHandler(service *serviceauth.Service) *Handler {
 	handler := &Handler{
 		service: service,
 		csrf: middleware.NewCSRFProtector(
@@ -43,25 +48,29 @@ func NewHandler(service *serviceauth.Service) http.Handler {
 			service.SecureCookies(),
 			service.SessionTTL(),
 		),
-		mux: http.NewServeMux(),
+		mux: chi.NewRouter(),
 	}
-	handler.registerRoutes()
+	handler.registerRoutes(handler.mux)
 	return handler
 }
 
-func RegisterRoutes(mux *http.ServeMux, service *serviceauth.Service) error {
-	if mux == nil {
+func RegisterRoutes(r chi.Router, service *serviceauth.Service) error {
+	if r == nil {
 		return errors.New("auth: route mux is nil")
 	}
-	mux.Handle("/api/auth/", NewHandler(service))
+	handler := newHandler(service)
+	r.Group(func(r chi.Router) {
+		r.Use(handler.csrf.Middleware)
+		handler.registerRoutes(r)
+	})
 	return nil
 }
 
-func (h *Handler) registerRoutes() {
-	h.mux.HandleFunc("GET /api/auth/csrf", h.csrfToken)
-	h.mux.HandleFunc("POST /api/auth/login", h.login)
-	h.mux.HandleFunc("GET /api/auth/me", h.me)
-	h.mux.HandleFunc("POST /api/auth/logout", h.logout)
+func (h *Handler) registerRoutes(r chi.Router) {
+	r.Get("/api/auth/csrf", h.csrfToken)
+	r.Post("/api/auth/login", h.login)
+	r.Get("/api/auth/me", h.me)
+	r.Post("/api/auth/logout", h.logout)
 }
 
 func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {

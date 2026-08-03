@@ -7,6 +7,7 @@ import (
 	"io"
 	"net/http"
 
+	"github.com/go-chi/chi/v5"
 	appRuntime "github.com/shuTwT/nex-api/backend/internal/handler/httpkit"
 	"github.com/shuTwT/nex-api/backend/internal/middleware"
 	serviceauthz "github.com/shuTwT/nex-api/backend/internal/service/authz"
@@ -24,31 +25,31 @@ func NewHandler(service *servicepayment.Service) (*Handler, error) {
 	return &Handler{service: service}, nil
 }
 
-func RegisterRoutes(mux *http.ServeMux, handler *Handler) error {
-	if mux == nil || handler == nil {
+func RegisterRoutes(r chi.Router, handler *Handler) error {
+	if r == nil || handler == nil {
 		return errors.New("payment: mux and handler are required")
 	}
 	user := func(next http.Handler) http.Handler { return middleware.RequireUser(next) }
-	mux.HandleFunc("GET /api/payment/methods", handler.methods)
-	mux.Handle("POST /api/payment/methods", user(http.HandlerFunc(handler.createSubscription)))
-	mux.Handle("GET /api/payment/user", user(http.HandlerFunc(handler.history)))
-	mux.Handle("GET /api/payment/settings", user(http.HandlerFunc(handler.settings)))
-	mux.Handle("GET /api/payment/{outTradeNo}/status", user(http.HandlerFunc(handler.status)))
-	mux.Handle("GET /api/payment/{outTradeNo}", user(http.HandlerFunc(handler.get)))
-	mux.Handle("POST /api/payment/{outTradeNo}/cancel", user(http.HandlerFunc(handler.cancel)))
-	mux.Handle("POST /api/recharge", user(http.HandlerFunc(handler.recharge)))
-	mux.HandleFunc("POST /api/payment/callback/wechat", handler.wechatCallback)
-	mux.HandleFunc("POST /api/payment/callback/alipay", handler.alipayCallback)
-	mux.HandleFunc("POST /api/payment/callback/mock", handler.mockCallback)
+	r.Get("/api/payment/methods", handler.methods)
+	r.Method(http.MethodPost, "/api/payment/methods", user(http.HandlerFunc(handler.createSubscription)))
+	r.Method(http.MethodGet, "/api/payment/user", user(http.HandlerFunc(handler.history)))
+	r.Method(http.MethodGet, "/api/payment/settings", user(http.HandlerFunc(handler.settings)))
+	r.Method(http.MethodGet, "/api/payment/{outTradeNo}/status", user(http.HandlerFunc(handler.status)))
+	r.Method(http.MethodGet, "/api/payment/{outTradeNo}", user(http.HandlerFunc(handler.get)))
+	r.Method(http.MethodPost, "/api/payment/{outTradeNo}/cancel", user(http.HandlerFunc(handler.cancel)))
+	r.Method(http.MethodPost, "/api/recharge", user(http.HandlerFunc(handler.recharge)))
+	r.Post("/api/payment/callback/wechat", handler.wechatCallback)
+	r.Post("/api/payment/callback/alipay", handler.alipayCallback)
+	r.Post("/api/payment/callback/mock", handler.mockCallback)
 	return nil
 }
 
-func RegisterServiceRoutes(mux *http.ServeMux, service *servicepayment.Service) error {
+func RegisterServiceRoutes(r chi.Router, service *servicepayment.Service) error {
 	handler, err := NewHandler(service)
 	if err != nil {
 		return err
 	}
-	return RegisterRoutes(mux, handler)
+	return RegisterRoutes(r, handler)
 }
 
 type subscriptionPaymentRequest struct {

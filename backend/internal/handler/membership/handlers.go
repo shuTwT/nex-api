@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/go-chi/chi/v5"
 	appRuntime "github.com/shuTwT/nex-api/backend/internal/handler/httpkit"
 	"github.com/shuTwT/nex-api/backend/internal/middleware"
 	serviceauthz "github.com/shuTwT/nex-api/backend/internal/service/authz"
@@ -27,8 +28,8 @@ func NewHandler(plans *servicemembership.PlanService, membership *servicemembers
 	return &Handler{plans: plans, membership: membership, redemption: redemption}, nil
 }
 
-func RegisterRoutes(mux *http.ServeMux, handler *Handler) error {
-	if mux == nil {
+func RegisterRoutes(r chi.Router, handler *Handler) error {
+	if r == nil {
 		return errors.New("membership: route mux is nil")
 	}
 	if handler == nil {
@@ -37,32 +38,32 @@ func RegisterRoutes(mux *http.ServeMux, handler *Handler) error {
 	h := handler
 	admin := func(next http.Handler) http.Handler { return middleware.RequireAdmin(next) }
 	user := func(next http.Handler) http.Handler { return middleware.RequireUser(next) }
-	mux.Handle("GET /api/subscription-plans", admin(http.HandlerFunc(h.listPlans)))
-	mux.Handle("POST /api/subscription-plans", admin(http.HandlerFunc(h.createPlan)))
-	mux.Handle("GET /api/subscription-plans/{id}", admin(http.HandlerFunc(h.getPlan)))
-	mux.Handle("PUT /api/subscription-plans/{id}", admin(http.HandlerFunc(h.updatePlan)))
-	mux.Handle("DELETE /api/subscription-plans/{id}", admin(http.HandlerFunc(h.deletePlan)))
-	mux.HandleFunc("GET /api/membership/plans", h.membershipPlans)
-	mux.Handle("GET /api/membership/current", user(http.HandlerFunc(h.currentMembership)))
-	mux.Handle("POST /api/membership/subscribe", user(http.HandlerFunc(h.subscribe)))
-	mux.Handle("GET /api/redemption-codes", admin(http.HandlerFunc(h.listCodes)))
-	mux.Handle("POST /api/redemption-codes", admin(http.HandlerFunc(h.createCodes)))
-	mux.Handle("DELETE /api/redemption-codes/{id}", admin(http.HandlerFunc(h.deleteCode)))
-	mux.Handle("DELETE /api/redemption-codes/batch", admin(http.HandlerFunc(h.deleteBatch)))
-	mux.Handle("POST /api/redemption-codes/batch", admin(http.HandlerFunc(h.deleteSelected)))
-	mux.Handle("GET /api/redemption-codes/export", admin(http.HandlerFunc(h.exportCodes)))
-	mux.HandleFunc("GET /api/redemption-codes/plans", h.redemptionPlans)
-	mux.Handle("POST /api/personal/redeem/lookup", user(http.HandlerFunc(h.lookupCode)))
-	mux.Handle("POST /api/personal/redeem", user(http.HandlerFunc(h.redeemCode)))
+	r.Method(http.MethodGet, "/api/subscription-plans", admin(http.HandlerFunc(h.listPlans)))
+	r.Method(http.MethodPost, "/api/subscription-plans", admin(http.HandlerFunc(h.createPlan)))
+	r.Method(http.MethodGet, "/api/subscription-plans/{id}", admin(http.HandlerFunc(h.getPlan)))
+	r.Method(http.MethodPut, "/api/subscription-plans/{id}", admin(http.HandlerFunc(h.updatePlan)))
+	r.Method(http.MethodDelete, "/api/subscription-plans/{id}", admin(http.HandlerFunc(h.deletePlan)))
+	r.Get("/api/membership/plans", h.membershipPlans)
+	r.Method(http.MethodGet, "/api/membership/current", user(http.HandlerFunc(h.currentMembership)))
+	r.Method(http.MethodPost, "/api/membership/subscribe", user(http.HandlerFunc(h.subscribe)))
+	r.Method(http.MethodGet, "/api/redemption-codes", admin(http.HandlerFunc(h.listCodes)))
+	r.Method(http.MethodPost, "/api/redemption-codes", admin(http.HandlerFunc(h.createCodes)))
+	r.Method(http.MethodDelete, "/api/redemption-codes/{id}", admin(http.HandlerFunc(h.deleteCode)))
+	r.Method(http.MethodDelete, "/api/redemption-codes/batch", admin(http.HandlerFunc(h.deleteBatch)))
+	r.Method(http.MethodPost, "/api/redemption-codes/batch", admin(http.HandlerFunc(h.deleteSelected)))
+	r.Method(http.MethodGet, "/api/redemption-codes/export", admin(http.HandlerFunc(h.exportCodes)))
+	r.Get("/api/redemption-codes/plans", h.redemptionPlans)
+	r.Method(http.MethodPost, "/api/personal/redeem/lookup", user(http.HandlerFunc(h.lookupCode)))
+	r.Method(http.MethodPost, "/api/personal/redeem", user(http.HandlerFunc(h.redeemCode)))
 	return nil
 }
 
-func RegisterServiceRoutes(mux *http.ServeMux, plans *servicemembership.PlanService, membership *servicemembership.MembershipService, redemption *servicemembership.RedemptionService) error {
+func RegisterServiceRoutes(r chi.Router, plans *servicemembership.PlanService, membership *servicemembership.MembershipService, redemption *servicemembership.RedemptionService) error {
 	handler, err := NewHandler(plans, membership, redemption)
 	if err != nil {
 		return err
 	}
-	return RegisterRoutes(mux, handler)
+	return RegisterRoutes(r, handler)
 }
 
 func (h *Handler) membershipPlans(w http.ResponseWriter, r *http.Request) {

@@ -6,6 +6,7 @@ import (
 	"io"
 	"net/http"
 
+	"github.com/go-chi/chi/v5"
 	appRuntime "github.com/shuTwT/nex-api/backend/internal/handler/httpkit"
 	serviceauthz "github.com/shuTwT/nex-api/backend/internal/service/authz"
 	servicesettings "github.com/shuTwT/nex-api/backend/internal/service/settings"
@@ -20,14 +21,14 @@ func NewHandler(service *servicesettings.Service) (*Handler, error) {
 	return &Handler{service: service}, nil
 }
 
-func RegisterRoutes(mux *http.ServeMux, handler *Handler) error {
+func RegisterRoutes(mux chi.Router, handler *Handler) error {
 	if mux == nil || handler == nil {
 		return errors.New("settings: mux and handler are required")
 	}
-	mux.HandleFunc("GET /api/system-settings", handler.list)
-	mux.HandleFunc("PUT /api/system-settings", handler.update)
-	mux.HandleFunc("GET /api/system-settings/defaults", handler.defaults)
-	mux.HandleFunc("GET /api/system-settings/announcement", handler.announcement)
+	mux.Get("/api/system-settings", handler.list)
+	mux.Put("/api/system-settings", handler.update)
+	mux.Get("/api/system-settings/defaults", handler.defaults)
+	mux.Get("/api/system-settings/announcement", handler.announcement)
 	return nil
 }
 

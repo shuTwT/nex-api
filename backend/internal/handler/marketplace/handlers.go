@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/go-chi/chi/v5"
 	appRuntime "github.com/shuTwT/nex-api/backend/internal/handler/httpkit"
 	servicemarketplace "github.com/shuTwT/nex-api/backend/internal/service/marketplace"
 )
@@ -18,16 +19,16 @@ func NewHandler(service *servicemarketplace.Service) (*Handler, error) {
 	return &Handler{service: service}, nil
 }
 
-func RegisterRoutes(mux *http.ServeMux, handler *Handler) error {
+func RegisterRoutes(mux chi.Router, handler *Handler) error {
 	if mux == nil || handler == nil {
 		return errors.New("marketplace: mux and handler are required")
 	}
-	mux.HandleFunc("GET /api/marketplace/apis", handler.listAPIs)
-	mux.HandleFunc("GET /api/marketplace/apis/{id}", handler.getAPI)
-	mux.HandleFunc("GET /api/marketplace/stats", handler.apiStats)
-	mux.HandleFunc("GET /api/marketplace/mcp-services", handler.listMCP)
-	mux.HandleFunc("GET /api/marketplace/mcp-services/{id}", handler.getMCP)
-	mux.HandleFunc("GET /api/marketplace/mcp-stats", handler.mcpStats)
+	mux.Get("/api/marketplace/apis", handler.listAPIs)
+	mux.Get("/api/marketplace/apis/{id}", handler.getAPI)
+	mux.Get("/api/marketplace/stats", handler.apiStats)
+	mux.Get("/api/marketplace/mcp-services", handler.listMCP)
+	mux.Get("/api/marketplace/mcp-services/{id}", handler.getMCP)
+	mux.Get("/api/marketplace/mcp-stats", handler.mcpStats)
 	return nil
 }
 
@@ -49,7 +50,7 @@ func (h *Handler) listAPIs(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) getAPI(w http.ResponseWriter, r *http.Request) {
-	view, err := h.service.GetAPI(r.Context(), r.PathValue("id"))
+	view, err := h.service.GetAPI(r.Context(), chi.URLParam(r, "id"))
 	if err != nil {
 		writeError(w, r, appRuntime.NewAPIError(http.StatusNotFound, "not_found", "API 不存在", appRuntime.ErrNotFound))
 		return
@@ -84,7 +85,7 @@ func (h *Handler) listMCP(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) getMCP(w http.ResponseWriter, r *http.Request) {
-	view, err := h.service.GetMCP(r.Context(), r.PathValue("id"))
+	view, err := h.service.GetMCP(r.Context(), chi.URLParam(r, "id"))
 	if err != nil {
 		writeError(w, r, appRuntime.NewAPIError(http.StatusNotFound, "not_found", "MCP 服务不存在", appRuntime.ErrNotFound))
 		return

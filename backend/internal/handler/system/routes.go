@@ -3,6 +3,7 @@ package system
 import (
 	"encoding/json"
 	"errors"
+	"github.com/go-chi/chi/v5"
 	servicesystem "github.com/shuTwT/nex-api/backend/internal/service/system"
 	"io"
 	"net/http"
@@ -10,7 +11,7 @@ import (
 
 type Handler struct {
 	service *servicesystem.Service
-	mux     *http.ServeMux
+	mux     chi.Router
 }
 
 type responseEnvelope struct {
@@ -29,19 +30,19 @@ type initializeData struct {
 }
 
 func NewHandler(service *servicesystem.Service) http.Handler {
-	handler := &Handler{service: service, mux: http.NewServeMux()}
-	handler.registerRoutes()
+	handler := &Handler{service: service, mux: chi.NewRouter()}
+	handler.registerRoutes(handler.mux)
 	return handler
 }
 
-func RegisterRoutes(mux *http.ServeMux, service *servicesystem.Service) error {
-	if mux == nil {
+func RegisterRoutes(r chi.Router, service *servicesystem.Service) error {
+	if r == nil {
 		return errors.New("system: route mux is nil")
 	}
 	if service == nil {
 		return errors.New("system: service is nil")
 	}
-	mux.Handle("/api/system/", NewHandler(service))
+	(&Handler{service: service}).registerRoutes(r)
 	return nil
 }
 
@@ -53,9 +54,9 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	h.mux.ServeHTTP(w, r)
 }
 
-func (h *Handler) registerRoutes() {
-	h.mux.HandleFunc("GET /api/system/initialized", h.initialized)
-	h.mux.HandleFunc("POST /api/system/initialize", h.initialize)
+func (h *Handler) registerRoutes(r chi.Router) {
+	r.Get("/api/system/initialized", h.initialized)
+	r.Post("/api/system/initialize", h.initialize)
 }
 
 func (h *Handler) initialized(w http.ResponseWriter, r *http.Request) {

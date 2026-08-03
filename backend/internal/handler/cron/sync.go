@@ -8,6 +8,8 @@ import (
 	"net/http"
 	"reflect"
 	"strings"
+
+	"github.com/go-chi/chi/v5"
 )
 
 type SyncFunc func(context.Context) error
@@ -72,8 +74,13 @@ func (h *SyncStatsHandler) ServeHTTP(writer http.ResponseWriter, request *http.R
 	h.writeJSON(writer, http.StatusOK, true, "数据同步成功")
 }
 
-func (h *SyncStatsHandler) CronSyncStatsRoutePost(writer http.ResponseWriter, request *http.Request) {
-	h.ServeHTTP(writer, request)
+// RegisterRoutes exposes the cron endpoint on the application's Chi router.
+func (h *SyncStatsHandler) RegisterRoutes(router chi.Router) error {
+	if router == nil {
+		return errors.New("cron: route router is nil")
+	}
+	router.Post("/api/cron/sync-stats", h.ServeHTTP)
+	return nil
 }
 
 func authorized(header, secret string) bool {

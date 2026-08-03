@@ -12,6 +12,7 @@ import (
 	"net/textproto"
 	"testing"
 
+	"github.com/go-chi/chi/v5"
 	"github.com/shuTwT/nex-api/backend/internal/infra/config"
 	appstorage "github.com/shuTwT/nex-api/backend/internal/infra/storage"
 	serviceauth "github.com/shuTwT/nex-api/backend/internal/service/auth"
@@ -59,7 +60,7 @@ func TestUploadAcceptsExactly10MiB(t *testing.T) {
 }
 func TestUploadRoutesRequireUserForPostAndKeepFileGetPublic(t *testing.T) {
 	storage := newTestStorage(t)
-	mux := http.NewServeMux()
+	mux := chi.NewRouter()
 	if err := RegisterRoutes(mux, storage); err != nil {
 		t.Fatal(err)
 	}

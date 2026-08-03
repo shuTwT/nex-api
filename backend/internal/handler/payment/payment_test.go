@@ -6,6 +6,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/go-chi/chi/v5"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/shuTwT/nex-api/backend/ent/enttest"
 	pay "github.com/shuTwT/nex-api/backend/internal/infra/pay"
@@ -32,7 +33,7 @@ func TestRegisterRoutesKeepsBusinessPaymentCreationEndpoints(t *testing.T) {
 		})
 	}
 }
-func newPaymentMux(t *testing.T) *http.ServeMux {
+func newPaymentMux(t *testing.T) chi.Router {
 	t.Helper()
 	client := enttest.Open(t, "sqlite3", "file:"+t.TempDir()+"/payment.db?_fk=1")
 	t.Cleanup(func() { _ = client.Close() })
@@ -44,7 +45,7 @@ func newPaymentMux(t *testing.T) *http.ServeMux {
 	if err != nil {
 		t.Fatal(err)
 	}
-	mux := http.NewServeMux()
+	mux := chi.NewRouter()
 	if err := RegisterRoutes(mux, handler); err != nil {
 		t.Fatal(err)
 	}

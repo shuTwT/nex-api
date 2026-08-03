@@ -8,6 +8,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/go-chi/chi/v5"
 	appRuntime "github.com/shuTwT/nex-api/backend/internal/handler/httpkit"
 	serviceads "github.com/shuTwT/nex-api/backend/internal/service/ads"
 	serviceauthz "github.com/shuTwT/nex-api/backend/internal/service/authz"
@@ -22,18 +23,18 @@ func NewHandler(service *serviceads.Service) (*Handler, error) {
 	return &Handler{service: service}, nil
 }
 
-func RegisterRoutes(mux *http.ServeMux, handler *Handler) error {
+func RegisterRoutes(mux chi.Router, handler *Handler) error {
 	if mux == nil || handler == nil {
 		return errors.New("ads: mux and handler are required")
 	}
-	mux.HandleFunc("GET /api/advertisements", handler.list)
-	mux.HandleFunc("POST /api/advertisements", handler.create)
-	mux.HandleFunc("GET /api/advertisements/stats", handler.stats)
-	mux.HandleFunc("GET /api/advertisements/by-position/{position}", handler.byPosition)
-	mux.HandleFunc("GET /api/advertisements/{id}", handler.get)
-	mux.HandleFunc("PUT /api/advertisements/{id}", handler.update)
-	mux.HandleFunc("DELETE /api/advertisements/{id}", handler.delete)
-	mux.HandleFunc("PUT /api/advertisements/{id}/toggle", handler.toggle)
+	mux.Get("/api/advertisements", handler.list)
+	mux.Post("/api/advertisements", handler.create)
+	mux.Get("/api/advertisements/stats", handler.stats)
+	mux.Get("/api/advertisements/by-position/{position}", handler.byPosition)
+	mux.Get("/api/advertisements/{id}", handler.get)
+	mux.Put("/api/advertisements/{id}", handler.update)
+	mux.Delete("/api/advertisements/{id}", handler.delete)
+	mux.Put("/api/advertisements/{id}/toggle", handler.toggle)
 	return nil
 }
 
@@ -113,7 +114,7 @@ func (h *Handler) get(w http.ResponseWriter, r *http.Request) {
 	if !h.requireAdmin(w, r) {
 		return
 	}
-	item, err := h.service.Get(r.Context(), r.PathValue("id"))
+	item, err := h.service.Get(r.Context(), chi.URLParam(r, "id"))
 	if err != nil {
 		writeError(w, r, err)
 		return
@@ -130,7 +131,7 @@ func (h *Handler) update(w http.ResponseWriter, r *http.Request) {
 		writeError(w, r, err)
 		return
 	}
-	item, err := h.service.Update(r.Context(), r.PathValue("id"), serviceads.UpdateInput{Image: request.Image, ImageWidth: request.ImageWidth, ImageHeight: request.ImageHeight, Link: request.Link, Title: request.Title, Position: request.Position, IsActive: request.IsActive})
+	item, err := h.service.Update(r.Context(), chi.URLParam(r, "id"), serviceads.UpdateInput{Image: request.Image, ImageWidth: request.ImageWidth, ImageHeight: request.ImageHeight, Link: request.Link, Title: request.Title, Position: request.Position, IsActive: request.IsActive})
 	if err != nil {
 		writeError(w, r, err)
 		return
@@ -142,7 +143,7 @@ func (h *Handler) delete(w http.ResponseWriter, r *http.Request) {
 	if !h.requireAdmin(w, r) {
 		return
 	}
-	if err := h.service.Delete(r.Context(), r.PathValue("id")); err != nil {
+	if err := h.service.Delete(r.Context(), chi.URLParam(r, "id")); err != nil {
 		writeError(w, r, err)
 		return
 	}
@@ -153,7 +154,7 @@ func (h *Handler) toggle(w http.ResponseWriter, r *http.Request) {
 	if !h.requireAdmin(w, r) {
 		return
 	}
-	item, err := h.service.Toggle(r.Context(), r.PathValue("id"))
+	item, err := h.service.Toggle(r.Context(), chi.URLParam(r, "id"))
 	if err != nil {
 		writeError(w, r, err)
 		return
@@ -162,7 +163,7 @@ func (h *Handler) toggle(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) byPosition(w http.ResponseWriter, r *http.Request) {
-	item, err := h.service.ByPosition(r.Context(), r.PathValue("position"))
+	item, err := h.service.ByPosition(r.Context(), chi.URLParam(r, "position"))
 	if err != nil {
 		writeError(w, r, err)
 		return

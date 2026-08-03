@@ -11,6 +11,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/go-chi/chi/v5"
 	serviceaccounts "github.com/shuTwT/nex-api/backend/internal/service/accounts"
 	serviceauthz "github.com/shuTwT/nex-api/backend/internal/service/authz"
 	servicecatalog "github.com/shuTwT/nex-api/backend/internal/service/catalog"
@@ -66,6 +67,24 @@ func (f *fakeAudit) Record(_ context.Context, entry serviceaccounts.AuditEntry) 
 type fakeExecutor struct {
 	response servicemcp.StreamResponse
 	err      error
+}
+
+type recordingCatalog struct {
+	service    servicecatalog.GatewayMCPService
+	identifier string
+}
+
+func (f *recordingCatalog) GatewayMCPService(_ context.Context, identifier string) (servicecatalog.GatewayMCPService, error) {
+	f.identifier = identifier
+	return f.service, nil
+}
+
+type cancellationExecutor struct{ canceled bool }
+
+func (f *cancellationExecutor) Validate(servicecatalog.GatewayMCPService) error { return nil }
+func (f *cancellationExecutor) Invoke(ctx context.Context, _ servicecatalog.GatewayMCPService, _ servicemcp.Invocation) (servicemcp.StreamResponse, error) {
+	f.canceled = errors.Is(ctx.Err(), context.Canceled)
+	return servicemcp.StreamResponse{}, ctx.Err()
 }
 
 func (f fakeExecutor) Validate(servicecatalog.GatewayMCPService) error { return nil }
@@ -136,4 +155,58 @@ func Test_Handler_rejects_insufficient_credits_without_calling_upstream(t *testi
 	}
 }
 
-var _ = errors.Is
+func Test_Handler_ChiRouter_preserves_path_value_and_route_statuses(t *testing.T) {
+	service := servicecatalog.GatewayMCPService{ID: "mcp-1", Identifier: "demo", Type: "streamableHttp", IsActive: true}
+	catalog := &recordingCatalog{service: service}
+	handler, err := New(Services{Authenticator: fakeAuth{}, Catalog: catalog, Credits: &fakeCredits{}}, HandlerOptions{Executor: fakeExecutor{response: servicemcp.StreamResponse{StatusCode: http.StatusNoContent, Body: io.NopCloser(strings.NewReader(""))}}})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	post := httptest.NewRequest(http.MethodPost, "/api/v1/mcp/demo", nil)
+	post.Header.Set("Authorization", "Bearer token")
+	postResponse := httptest.NewRecorder()
+	handler.ServeHTTP(postResponse, post)
+	if postResponse.Code != http.StatusNoContent || catalog.identifier != "demo" {
+		t.Fatalf("post = %d identifier = %q", postResponse.Code, catalog.identifier)
+	}
+
+	pathValueRequest := httptest.NewRequest(http.MethodPost, "/api/v1/mcp/demo", nil)
+	pathValueRequest.SetPathValue("identifier", "from-path-value")
+	pathValueRequest.Header.Set("Authorization", "Bearer token")
+	handler.postRoute(httptest.NewRecorder(), pathValueRequest)
+	if catalog.identifier != "from-path-value" {
+		t.Fatalf("path value identifier = %q", catalog.identifier)
+	}
+
+	methodResponse := httptest.NewRecorder()
+	handler.ServeHTTP(methodResponse, httptest.NewRequest(http.MethodGet, "/api/v1/mcp/demo", nil))
+	if methodResponse.Code != http.StatusMethodNotAllowed {
+		t.Fatalf("method status = %d", methodResponse.Code)
+	}
+
+	notFoundResponse := httptest.NewRecorder()
+	handler.ServeHTTP(notFoundResponse, httptest.NewRequest(http.MethodPost, "/api/v1/mcp", nil))
+	if notFoundResponse.Code != http.StatusNotFound {
+		t.Fatalf("not found status = %d", notFoundResponse.Code)
+	}
+}
+
+func TestRegisterRoutes_uses_chi_router_and_propagates_cancellation(t *testing.T) {
+	executor := &cancellationExecutor{}
+	router := chi.NewRouter()
+	service := servicecatalog.GatewayMCPService{ID: "mcp-1", Identifier: "demo", Type: "streamableHttp", IsActive: true}
+	if err := RegisterRoutes(router, Services{Authenticator: fakeAuth{}, Catalog: fakeCatalog{service}, Credits: &fakeCredits{}}, HandlerOptions{Executor: executor}); err != nil {
+		t.Fatal(err)
+	}
+
+	ctx, cancel := context.WithCancel(context.Background())
+	cancel()
+	request := httptest.NewRequest(http.MethodPost, "/api/v1/mcp/demo", nil).WithContext(ctx)
+	request.Header.Set("Authorization", "Bearer token")
+	response := httptest.NewRecorder()
+	router.ServeHTTP(response, request)
+	if response.Code != http.StatusBadGateway || !executor.canceled {
+		t.Fatalf("response = %d canceled = %v", response.Code, executor.canceled)
+	}
+}

@@ -7,8 +7,9 @@ import (
 	"net/http"
 	"time"
 
-	serviceauthz "github.com/shuTwT/nex-api/backend/internal/service/authz"
+	"github.com/go-chi/chi/v5"
 	serviceerror "github.com/shuTwT/nex-api/backend/internal/service/apierror"
+	serviceauthz "github.com/shuTwT/nex-api/backend/internal/service/authz"
 	servicecatalog "github.com/shuTwT/nex-api/backend/internal/service/catalog"
 	servicemcpgateway "github.com/shuTwT/nex-api/backend/internal/service/mcpgateway"
 )
@@ -48,7 +49,7 @@ type Handler struct {
 	options  HandlerOptions
 	executor servicemcpgateway.Executor
 	logger   *slog.Logger
-	mux      *http.ServeMux
+	router   chi.Router
 }
 
 func New(services Services, options HandlerOptions) (*Handler, error) {
@@ -73,9 +74,9 @@ func New(services Services, options HandlerOptions) (*Handler, error) {
 	if options.Logger == nil {
 		options.Logger = slog.Default()
 	}
-	handler := &Handler{services: services, options: options, executor: executor, logger: options.Logger, mux: http.NewServeMux()}
-	handler.mux.HandleFunc("OPTIONS /api/v1/mcp/{identifier}", handler.optionsRoute)
-	handler.mux.HandleFunc("POST /api/v1/mcp/{identifier}", handler.postRoute)
+	handler := &Handler{services: services, options: options, executor: executor, logger: options.Logger, router: chi.NewRouter()}
+	handler.router.Options("/api/v1/mcp/{identifier}", handler.optionsRoute)
+	handler.router.Post("/api/v1/mcp/{identifier}", handler.postRoute)
 	return handler, nil
 }
 
@@ -93,9 +94,9 @@ func NewHandler(services Services, options ...HandlerOptions) http.Handler {
 	return handler
 }
 
-func RegisterRoutes(mux *http.ServeMux, services Services, options ...HandlerOptions) error {
-	if mux == nil {
-		return errors.New("mcp gateway: route mux is nil")
+func RegisterRoutes(router chi.Router, services Services, options ...HandlerOptions) error {
+	if router == nil {
+		return errors.New("mcp gateway: route router is nil")
 	}
 	var handlerOptions HandlerOptions
 	if len(options) > 0 {
@@ -105,12 +106,13 @@ func RegisterRoutes(mux *http.ServeMux, services Services, options ...HandlerOpt
 	if err != nil {
 		return err
 	}
-	mux.Handle("/api/v1/mcp/", handler)
+	router.Options("/api/v1/mcp/{identifier}", handler.optionsRoute)
+	router.Post("/api/v1/mcp/{identifier}", handler.postRoute)
 	return nil
 }
 
 func (h *Handler) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
-	h.mux.ServeHTTP(writer, request)
+	h.router.ServeHTTP(writer, request)
 }
 
 func (h *Handler) V1McpIdentifierRouteOptions(writer http.ResponseWriter, request *http.Request, _ string) {
@@ -127,7 +129,12 @@ func (h *Handler) optionsRoute(writer http.ResponseWriter, _ *http.Request) {
 }
 
 func (h *Handler) postRoute(writer http.ResponseWriter, request *http.Request) {
-	h.postIdentifier(writer, request, request.PathValue("identifier"))
+	identifier := request.PathValue("identifier")
+	if identifier == "" {
+		identifier = chi.URLParam(request, "identifier")
+		request.SetPathValue("identifier", identifier)
+	}
+	h.postIdentifier(writer, request, identifier)
 }
 
 func (h *Handler) postIdentifier(writer http.ResponseWriter, request *http.Request, identifier string) {

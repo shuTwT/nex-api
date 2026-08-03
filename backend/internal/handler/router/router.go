@@ -7,7 +7,6 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
-	"net/http"
 
 	"github.com/go-chi/chi/v5"
 
@@ -18,7 +17,6 @@ import (
 	"github.com/shuTwT/nex-api/backend/internal/handler/cron"
 	"github.com/shuTwT/nex-api/backend/internal/handler/dashboard"
 	"github.com/shuTwT/nex-api/backend/internal/handler/gateway"
-	"github.com/shuTwT/nex-api/backend/internal/handler/httpapi/generated"
 	"github.com/shuTwT/nex-api/backend/internal/handler/marketplace"
 	"github.com/shuTwT/nex-api/backend/internal/handler/mcpgateway"
 	"github.com/shuTwT/nex-api/backend/internal/handler/membership"
@@ -83,15 +81,10 @@ type Config struct {
 	OAuth oauth.Config
 }
 
-// BuildRouter registers all business routes and returns the root handler.
-//
-// Routing uses two systems:
-//   - handwritten ServeMux for accounts/auth/catalog/dashboard/marketplace/
-//     membership/oauth/payment/settings/system/ads/upload endpoints;
-//   - OpenAPI generated routes (chi) under /api/v1/* and /api/cron/*,
-//     implemented by gateway/mcpgateway/cron and stubbed by Unimplemented.
-func BuildRouter(ctx context.Context, cfg Config, deps Dependencies) (http.Handler, error) {
-	mux := http.NewServeMux()
+// BuildRouter registers all handwritten and OpenAPI routes on Chi and returns
+// the business HTTP router. cmd/server owns the outer middleware and lifecycle.
+func BuildRouter(ctx context.Context, cfg Config, deps Dependencies) (chi.Router, error) {
+	mux := chi.NewRouter()
 
 	// --- accounts:users / tokens / personal / audit-logs ---
 	if err := accounts.RegisterRoutes(mux, *deps.Accounts); err != nil {
@@ -161,21 +154,12 @@ func BuildRouter(ctx context.Context, cfg Config, deps Dependencies) (http.Handl
 		return nil, fmt.Errorf("router: membership: %w", err)
 	}
 
-	// --- oauth(具体前缀先于 auth 的 /api/auth/ 注册,ServeMux 按最具体模式选择) ---
-	oauthHandler, err := oauth.New(deps.OAuthService, deps.SessionIssuer, cfg.OAuth)
-	if err != nil {
+	// --- oauth ---
+	if err := oauth.RegisterRoutes(mux, deps.OAuthService, deps.SessionIssuer, cfg.OAuth); err != nil {
 		return nil, fmt.Errorf("router: oauth: %w", err)
 	}
-	for _, pattern := range []string{
-		"/api/auth/providers", "/api/auth/signin/", "/api/auth/callback/",
-		"/api/auth/github", "/api/auth/github/",
-		"/api/auth/easy1", "/api/auth/easy1/",
-		"/api/auth/easy1auth", "/api/auth/easy1auth/",
-	} {
-		mux.Handle(pattern, oauthHandler)
-	}
 
-	// --- API 网关 / MCP 网关 / cron(OpenAPI 生成路由) ---
+	// --- API 网关 / MCP 网关 / cron ---
 	gatewayHandler, err := gateway.New(gateway.Options{
 		APIs:       deps.APIService,
 		Tokens:     deps.APITokens,
@@ -188,77 +172,26 @@ func BuildRouter(ctx context.Context, cfg Config, deps Dependencies) (http.Handl
 	if err != nil {
 		return nil, fmt.Errorf("router: gateway: %w", err)
 	}
-	mcpGatewayHandler, err := mcpgateway.New(mcpgateway.Services{
+	if err := gatewayHandler.RegisterRoutes(mux); err != nil {
+		return nil, fmt.Errorf("router: gateway routes: %w", err)
+	}
+	if err := mcpgateway.RegisterRoutes(mux, mcpgateway.Services{
 		Authenticator: deps.APITokens,
 		Catalog:       deps.MCPService,
 		Credits:       deps.McpLedger,
 		Audits:        deps.Audit,
 		Stats:         deps.StatsStore,
-	}, mcpgateway.HandlerOptions{Logger: deps.Logger})
-	if err != nil {
-		return nil, fmt.Errorf("router: mcp gateway: %w", err)
+	}, mcpgateway.HandlerOptions{Logger: deps.Logger}); err != nil {
+		return nil, fmt.Errorf("router: mcp gateway routes: %w", err)
 	}
 	cronHandler, err := cron.NewSyncStatsHandler(cfg.Cron, deps.StatsSync.Sync)
 	if err != nil {
 		return nil, fmt.Errorf("router: cron: %w", err)
 	}
 
-	// 生成路由只通过 /api/v1/ 与 /api/cron/ 两个前缀对外暴露(其余生成
-	// 端点由手写 mux 在规范路径提供,不会到达该 chi router)。
-	openAPIRouter := chi.NewRouter()
-	generated.HandlerFromMux(&openAPIServer{
-		Unimplemented: generated.Unimplemented{},
-		gateway:       gatewayHandler,
-		mcpGateway:    mcpGatewayHandler,
-		cron:          cronHandler,
-	}, openAPIRouter)
-	mux.Handle("/api/v1/", openAPIRouter)
-	mux.Handle("/api/cron/", openAPIRouter)
+	if err := cronHandler.RegisterRoutes(mux); err != nil {
+		return nil, fmt.Errorf("router: cron routes: %w", err)
+	}
 
 	return mux, nil
-}
-
-// openAPIServer 把 OpenAPI 生成路由中已实现的端点组合到生成的
-// ServerInterface 上,其余端点由 generated.Unimplemented 兜底(501)。
-//
-// 注意:不能直接匿名嵌入 generated.Unimplemented 与各 Handler —— Go 的
-// 方法提升规则会让深度更浅的 Unimplemented 遮蔽各 Handler 的实现,
-// 因此这里显式定义 8 个已实现端点的转发方法。
-type openAPIServer struct {
-	generated.Unimplemented
-	gateway    *gateway.Handler
-	mcpGateway *mcpgateway.Handler
-	cron       *cron.SyncStatsHandler
-}
-
-func (s *openAPIServer) V1AliasRouteGet(w http.ResponseWriter, r *http.Request, alias string, params generated.V1AliasRouteGetParams) {
-	s.gateway.V1AliasRouteGet(w, r, alias, params)
-}
-
-func (s *openAPIServer) V1AliasRoutePost(w http.ResponseWriter, r *http.Request, alias string) {
-	s.gateway.V1AliasRoutePost(w, r, alias)
-}
-
-func (s *openAPIServer) V1AliasRoutePut(w http.ResponseWriter, r *http.Request, alias string) {
-	s.gateway.V1AliasRoutePut(w, r, alias)
-}
-
-func (s *openAPIServer) V1AliasRoutePatch(w http.ResponseWriter, r *http.Request, alias string) {
-	s.gateway.V1AliasRoutePatch(w, r, alias)
-}
-
-func (s *openAPIServer) V1AliasRouteDelete(w http.ResponseWriter, r *http.Request, alias string) {
-	s.gateway.V1AliasRouteDelete(w, r, alias)
-}
-
-func (s *openAPIServer) V1McpIdentifierRouteOptions(w http.ResponseWriter, r *http.Request, identifier string) {
-	s.mcpGateway.V1McpIdentifierRouteOptions(w, r, identifier)
-}
-
-func (s *openAPIServer) V1McpIdentifierRoutePost(w http.ResponseWriter, r *http.Request, identifier string) {
-	s.mcpGateway.V1McpIdentifierRoutePost(w, r, identifier)
-}
-
-func (s *openAPIServer) CronSyncStatsRoutePost(w http.ResponseWriter, r *http.Request) {
-	s.cron.CronSyncStatsRoutePost(w, r)
 }

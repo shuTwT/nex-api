@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/go-chi/chi/v5"
 	appRuntime "github.com/shuTwT/nex-api/backend/internal/handler/httpkit"
 	"github.com/shuTwT/nex-api/backend/internal/middleware"
 	servicecatalog "github.com/shuTwT/nex-api/backend/internal/service/catalog"
@@ -25,33 +26,33 @@ func NewHandler(apis *servicecatalog.APIService, categories *servicecatalog.Cate
 	return &Handler{apis: apis, categories: categories, mcp: mcp}, nil
 }
 
-func RegisterRoutes(mux *http.ServeMux, handler *Handler) error {
-	if mux == nil {
+func RegisterRoutes(r chi.Router, handler *Handler) error {
+	if r == nil {
 		return errors.New("catalog: route mux is nil")
 	}
 	if handler == nil {
 		return errors.New("catalog: handler is nil")
 	}
 	admin := func(next http.Handler) http.Handler { return middleware.RequireAdmin(next) }
-	mux.Handle("GET /api/apis", admin(http.HandlerFunc(handler.listAPIs)))
-	mux.Handle("POST /api/apis", admin(http.HandlerFunc(handler.createAPI)))
-	mux.Handle("GET /api/apis/stats", admin(http.HandlerFunc(handler.apiStats)))
-	mux.Handle("GET /api/apis/{id}", admin(http.HandlerFunc(handler.getAPI)))
-	mux.Handle("PUT /api/apis/{id}", admin(http.HandlerFunc(handler.updateAPI)))
-	mux.Handle("DELETE /api/apis/{id}", admin(http.HandlerFunc(handler.deleteAPI)))
-	mux.Handle("PUT /api/apis/{id}/toggle", admin(http.HandlerFunc(handler.toggleAPI)))
-	mux.Handle("GET /api/categories", admin(http.HandlerFunc(handler.listCategories)))
-	mux.Handle("POST /api/categories", admin(http.HandlerFunc(handler.createCategory)))
-	mux.Handle("GET /api/categories/{id}", admin(http.HandlerFunc(handler.getCategory)))
-	mux.Handle("PUT /api/categories/{id}", admin(http.HandlerFunc(handler.updateCategory)))
-	mux.Handle("DELETE /api/categories/{id}", admin(http.HandlerFunc(handler.deleteCategory)))
-	mux.Handle("GET /api/mcp-services", admin(http.HandlerFunc(handler.listMCP)))
-	mux.Handle("POST /api/mcp-services", admin(http.HandlerFunc(handler.createMCP)))
-	mux.Handle("GET /api/mcp-services/stats", admin(http.HandlerFunc(handler.mcpStats)))
-	mux.Handle("GET /api/mcp-services/{id}", admin(http.HandlerFunc(handler.getMCP)))
-	mux.Handle("PUT /api/mcp-services/{id}", admin(http.HandlerFunc(handler.updateMCP)))
-	mux.Handle("DELETE /api/mcp-services/{id}", admin(http.HandlerFunc(handler.deleteMCP)))
-	mux.Handle("PUT /api/mcp-services/{id}/toggle", admin(http.HandlerFunc(handler.toggleMCP)))
+	r.Method(http.MethodGet, "/api/apis", admin(http.HandlerFunc(handler.listAPIs)))
+	r.Method(http.MethodPost, "/api/apis", admin(http.HandlerFunc(handler.createAPI)))
+	r.Method(http.MethodGet, "/api/apis/stats", admin(http.HandlerFunc(handler.apiStats)))
+	r.Method(http.MethodGet, "/api/apis/{id}", admin(http.HandlerFunc(handler.getAPI)))
+	r.Method(http.MethodPut, "/api/apis/{id}", admin(http.HandlerFunc(handler.updateAPI)))
+	r.Method(http.MethodDelete, "/api/apis/{id}", admin(http.HandlerFunc(handler.deleteAPI)))
+	r.Method(http.MethodPut, "/api/apis/{id}/toggle", admin(http.HandlerFunc(handler.toggleAPI)))
+	r.Method(http.MethodGet, "/api/categories", admin(http.HandlerFunc(handler.listCategories)))
+	r.Method(http.MethodPost, "/api/categories", admin(http.HandlerFunc(handler.createCategory)))
+	r.Method(http.MethodGet, "/api/categories/{id}", admin(http.HandlerFunc(handler.getCategory)))
+	r.Method(http.MethodPut, "/api/categories/{id}", admin(http.HandlerFunc(handler.updateCategory)))
+	r.Method(http.MethodDelete, "/api/categories/{id}", admin(http.HandlerFunc(handler.deleteCategory)))
+	r.Method(http.MethodGet, "/api/mcp-services", admin(http.HandlerFunc(handler.listMCP)))
+	r.Method(http.MethodPost, "/api/mcp-services", admin(http.HandlerFunc(handler.createMCP)))
+	r.Method(http.MethodGet, "/api/mcp-services/stats", admin(http.HandlerFunc(handler.mcpStats)))
+	r.Method(http.MethodGet, "/api/mcp-services/{id}", admin(http.HandlerFunc(handler.getMCP)))
+	r.Method(http.MethodPut, "/api/mcp-services/{id}", admin(http.HandlerFunc(handler.updateMCP)))
+	r.Method(http.MethodDelete, "/api/mcp-services/{id}", admin(http.HandlerFunc(handler.deleteMCP)))
+	r.Method(http.MethodPut, "/api/mcp-services/{id}/toggle", admin(http.HandlerFunc(handler.toggleMCP)))
 	return nil
 }
 

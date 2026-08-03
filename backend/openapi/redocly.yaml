@@ -2,3 +2,5 @@ extends:
   - recommended
 rules:
   no-ambiguous-paths: off
+  # Public operations intentionally have no security requirement.
+  security-defined: off

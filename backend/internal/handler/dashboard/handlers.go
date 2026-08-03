@@ -4,6 +4,7 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/go-chi/chi/v5"
 	appRuntime "github.com/shuTwT/nex-api/backend/internal/handler/httpkit"
 	serviceauthz "github.com/shuTwT/nex-api/backend/internal/service/authz"
 	servicedashboard "github.com/shuTwT/nex-api/backend/internal/service/dashboard"
@@ -18,17 +19,17 @@ func NewHandler(service *servicedashboard.Service) (*Handler, error) {
 	return &Handler{service: service}, nil
 }
 
-func RegisterRoutes(mux *http.ServeMux, handler *Handler) error {
+func RegisterRoutes(mux chi.Router, handler *Handler) error {
 	if mux == nil || handler == nil {
 		return errors.New("dashboard: mux and handler are required")
 	}
-	mux.HandleFunc("GET /api/dashboard/stats", handler.dashboardStats)
-	mux.HandleFunc("GET /api/dashboard/activity", handler.activity)
-	mux.HandleFunc("GET /api/dashboard/top-apis", handler.topAPIs)
-	mux.HandleFunc("GET /api/dashboard/usage-trend", handler.usageTrend)
-	mux.HandleFunc("GET /api/usage", handler.usage)
-	mux.HandleFunc("GET /api/stats", handler.globalStats)
-	mux.HandleFunc("GET /api/stats/{alias}", handler.apiStats)
+	mux.Get("/api/dashboard/stats", handler.dashboardStats)
+	mux.Get("/api/dashboard/activity", handler.activity)
+	mux.Get("/api/dashboard/top-apis", handler.topAPIs)
+	mux.Get("/api/dashboard/usage-trend", handler.usageTrend)
+	mux.Get("/api/usage", handler.usage)
+	mux.Get("/api/stats", handler.globalStats)
+	mux.Get("/api/stats/{alias}", handler.apiStats)
 	return nil
 }
 
@@ -114,7 +115,7 @@ func (h *Handler) apiStats(w http.ResponseWriter, r *http.Request) {
 	if !ok {
 		return
 	}
-	stats, err := h.service.APIStats(r.Context(), principal.UserID, r.PathValue("alias"), r.URL.Query().Get("user") == "true")
+	stats, err := h.service.APIStats(r.Context(), principal.UserID, chi.URLParam(r, "alias"), r.URL.Query().Get("user") == "true")
 	if err != nil {
 		writeError(w, r, err)
 		return

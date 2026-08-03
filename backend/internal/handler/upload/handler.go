@@ -9,6 +9,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/go-chi/chi/v5"
 	appRuntime "github.com/shuTwT/nex-api/backend/internal/handler/httpkit"
 	"github.com/shuTwT/nex-api/backend/internal/middleware"
 	serviceupload "github.com/shuTwT/nex-api/backend/internal/service/upload"
@@ -22,7 +23,7 @@ type Handler struct {
 
 func NewHandler(storage *serviceupload.Service) *Handler { return &Handler{storage: storage} }
 
-func RegisterRoutes(mux *http.ServeMux, storage *serviceupload.Service) error {
+func RegisterRoutes(mux chi.Router, storage *serviceupload.Service) error {
 	if mux == nil {
 		return errors.New("upload: route mux is nil")
 	}
@@ -30,8 +31,8 @@ func RegisterRoutes(mux *http.ServeMux, storage *serviceupload.Service) error {
 		return errors.New("upload: storage is nil")
 	}
 	handler := NewHandler(storage)
-	mux.Handle("POST /api/upload", middleware.RequireUser(http.HandlerFunc(handler.UploadRoutePost)))
-	mux.Handle("GET /api/upload/{filename}", http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
+	mux.Method(http.MethodPost, "/api/upload", middleware.RequireUser(http.HandlerFunc(handler.UploadRoutePost)))
+	mux.Method(http.MethodGet, "/api/upload/{filename}", http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		handler.UploadFilenameRouteGet(writer, request, filenameFromRequest(request))
 	}))
 	return nil
@@ -115,7 +116,7 @@ func (h *Handler) serve(writer http.ResponseWriter, request *http.Request, filen
 }
 
 func filenameFromRequest(request *http.Request) string {
-	if filename := request.PathValue("filename"); filename != "" {
+	if filename := chi.URLParam(request, "filename"); filename != "" {
 		return filename
 	}
 	const prefix = "/api/upload/"

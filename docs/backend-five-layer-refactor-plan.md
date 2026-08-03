@@ -55,7 +55,7 @@ infra/
 - `infra/pay` 维护支付客户端所需的基础类型，`service/payment` 直接依赖该包，避免反向依赖和循环引用。
 - `infra/schedule` 不包含具体业务任务，只负责注册、启停、触发和关闭。
 - 将原 `runtime` 拆分：Server/health 进入 `infra/httpserver`，logger 进入 `infra/logger`，HTTP 错误输出进入 `handler/httpkit`，HTTP 中间件进入 `middleware`。
-- 将 OpenAPI 生成工具和生成服务接口迁入 `handler/httpapi`，同步修改 Makefile、生成配置相对路径及生成文件注释。
+- OpenAPI 文档由 `cmd/server/swagger.go` 中的 Swaggo 注释生成；再通过标准 `swagger2openapi` 转为 OpenAPI 3，前端使用 `openapi-typescript` 消费该文档。
 
 ### 2. Service 层
 
@@ -84,15 +84,15 @@ settings,stats,system,upload}
 - 请求参数、Path、Query、Header 和 JSON 解码；
 - 调用对应 Service；
 - 将业务错误映射为兼容的 HTTP 状态和响应；
-- OpenAPI `ServerInterface` 适配。
 
 增加：
 
 ```text
 handler/httpkit/     # 统一 JSON、分页、错误响应、请求元数据
-handler/httpapi/     # OpenAPI 生成器和 generated
 handler/router/      # 根路由装配，不创建 Service
 ```
+
+所有运行时 HTTP 路由统一使用 Chi 注册；不混用 `http.ServeMux`。
 
 `middleware` 集中存放：
 
@@ -126,7 +126,7 @@ handler/router/      # 根路由装配，不创建 Service
 ## 接口与兼容性
 
 - 外部 HTTP 路由、请求/响应 JSON、Cookie、Header、状态码保持不变。
-- OpenAPI 文件、`operationId` 和生成的前端客户端行为保持不变。
+- OpenAPI 文档由可执行的 Swaggo 注释生成；`operationId` 和前端客户端兼容调用保持稳定。
 - 数据库 Schema、Atlas migration、Ent 字段和已有数据不变，不新增迁移。
 - `.env` 键、配置文件格式、默认值和覆盖顺序不变。
 - `go run ./cmd/server`、`go run ./cmd/script-worker`、Makefile 入口不变。

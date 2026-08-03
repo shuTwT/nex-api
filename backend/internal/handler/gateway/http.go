@@ -8,7 +8,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/shuTwT/nex-api/backend/internal/handler/httpapi/generated"
+	"github.com/go-chi/chi/v5"
+
 	appRuntime "github.com/shuTwT/nex-api/backend/internal/handler/httpkit"
 	serviceaccounts "github.com/shuTwT/nex-api/backend/internal/service/accounts"
 	serviceauthz "github.com/shuTwT/nex-api/backend/internal/service/authz"
@@ -93,24 +94,19 @@ func New(options Options) (*Handler, error) {
 	}, nil
 }
 
-func (h *Handler) V1AliasRouteGet(w http.ResponseWriter, r *http.Request, alias string, _ generated.V1AliasRouteGetParams) {
-	h.serve(w, r, alias)
+// RegisterRoutes exposes the API gateway's method-agnostic proxy route.
+func (h *Handler) RegisterRoutes(router chi.Router) error {
+	if router == nil {
+		return errors.New("gateway: route router is nil")
+	}
+	for _, method := range []string{http.MethodGet, http.MethodPost, http.MethodPut, http.MethodPatch, http.MethodDelete} {
+		router.Method(method, "/api/v1/{alias}", http.HandlerFunc(h.aliasRoute))
+	}
+	return nil
 }
 
-func (h *Handler) V1AliasRoutePost(w http.ResponseWriter, r *http.Request, alias string) {
-	h.serve(w, r, alias)
-}
-
-func (h *Handler) V1AliasRoutePut(w http.ResponseWriter, r *http.Request, alias string) {
-	h.serve(w, r, alias)
-}
-
-func (h *Handler) V1AliasRoutePatch(w http.ResponseWriter, r *http.Request, alias string) {
-	h.serve(w, r, alias)
-}
-
-func (h *Handler) V1AliasRouteDelete(w http.ResponseWriter, r *http.Request, alias string) {
-	h.serve(w, r, alias)
+func (h *Handler) aliasRoute(w http.ResponseWriter, r *http.Request) {
+	h.serve(w, r, chi.URLParam(r, "alias"))
 }
 
 func (h *Handler) serve(w http.ResponseWriter, r *http.Request, alias string) {

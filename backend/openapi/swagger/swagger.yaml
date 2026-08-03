@@ -1,0 +1,3341 @@
+basePath: /
+definitions:
+  main.SwaggerEnvelope:
+    properties:
+      data: {}
+      error:
+        type: string
+      pagination:
+        $ref: '#/definitions/main.SwaggerPagination'
+      success:
+        type: boolean
+    type: object
+  main.SwaggerPagination:
+    properties:
+      limit:
+        type: integer
+      page:
+        type: integer
+      total:
+        type: integer
+      totalPages:
+        type: integer
+    type: object
+  main.SwaggerRequest:
+    additionalProperties: {}
+    type: object
+info:
+  contact: {}
+  description: Contract for the Nex HTTP API.
+  license:
+    name: MIT
+    url: https://opensource.org/license/mit
+  title: Nex API
+  version: 1.0.0
+paths:
+  /api/advertisements:
+    get:
+      operationId: advertisements_route_get
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+      security:
+      - SessionCookie: []
+      summary: GET /api/advertisements
+      tags:
+      - advertisements
+    post:
+      consumes:
+      - application/json
+      operationId: advertisements_route_post
+      parameters:
+      - description: JSON request payload
+        in: body
+        name: body
+        schema:
+          $ref: '#/definitions/main.SwaggerRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+      security:
+      - SessionCookie: []
+      summary: POST /api/advertisements
+      tags:
+      - advertisements
+  /api/advertisements/{id}:
+    delete:
+      operationId: advertisements_id_route_delete
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+      security:
+      - SessionCookie: []
+      summary: DELETE /api/advertisements/{id}
+      tags:
+      - advertisements
+    get:
+      operationId: advertisements_id_route_get
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+      security:
+      - SessionCookie: []
+      summary: GET /api/advertisements/{id}
+      tags:
+      - advertisements
+    put:
+      consumes:
+      - application/json
+      operationId: advertisements_id_route_put
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: JSON request payload
+        in: body
+        name: body
+        schema:
+          $ref: '#/definitions/main.SwaggerRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+      security:
+      - SessionCookie: []
+      summary: PUT /api/advertisements/{id}
+      tags:
+      - advertisements
+  /api/advertisements/{id}/toggle:
+    put:
+      consumes:
+      - application/json
+      operationId: advertisements_id_toggle_route_put
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: JSON request payload
+        in: body
+        name: body
+        schema:
+          $ref: '#/definitions/main.SwaggerRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+      security:
+      - SessionCookie: []
+      summary: PUT /api/advertisements/{id}/toggle
+      tags:
+      - advertisements
+  /api/advertisements/by-position/{position}:
+    get:
+      operationId: advertisements_by_position_position_route_get
+      parameters:
+      - description: position
+        in: path
+        name: position
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+      summary: GET /api/advertisements/by-position/{position}
+      tags:
+      - advertisements
+  /api/advertisements/stats:
+    get:
+      operationId: advertisements_stats_route_get
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+      summary: GET /api/advertisements/stats
+      tags:
+      - advertisements
+  /api/apis:
+    get:
+      operationId: apis_route_get
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+      security:
+      - SessionCookie: []
+      summary: GET /api/apis
+      tags:
+      - apis
+    post:
+      consumes:
+      - application/json
+      operationId: apis_route_post
+      parameters:
+      - description: JSON request payload
+        in: body
+        name: body
+        schema:
+          $ref: '#/definitions/main.SwaggerRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+      security:
+      - SessionCookie: []
+      summary: POST /api/apis
+      tags:
+      - apis
+  /api/apis/{id}:
+    delete:
+      operationId: apis_id_route_delete
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+      security:
+      - SessionCookie: []
+      summary: DELETE /api/apis/{id}
+      tags:
+      - apis
+    get:
+      operationId: apis_id_route_get
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+      security:
+      - SessionCookie: []
+      summary: GET /api/apis/{id}
+      tags:
+      - apis
+    put:
+      consumes:
+      - application/json
+      operationId: apis_id_route_put
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: JSON request payload
+        in: body
+        name: body
+        schema:
+          $ref: '#/definitions/main.SwaggerRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+      security:
+      - SessionCookie: []
+      summary: PUT /api/apis/{id}
+      tags:
+      - apis
+  /api/apis/{id}/toggle:
+    put:
+      consumes:
+      - application/json
+      operationId: apis_id_toggle_route_put
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: JSON request payload
+        in: body
+        name: body
+        schema:
+          $ref: '#/definitions/main.SwaggerRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+      security:
+      - SessionCookie: []
+      summary: PUT /api/apis/{id}/toggle
+      tags:
+      - apis
+  /api/apis/stats:
+    get:
+      operationId: apis_stats_route_get
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+      security:
+      - SessionCookie: []
+      summary: GET /api/apis/stats
+      tags:
+      - apis
+  /api/audit-logs:
+    get:
+      operationId: audit_logs_route_get
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+      security:
+      - SessionCookie: []
+      summary: GET /api/audit-logs
+      tags:
+      - audit-logs
+    post:
+      consumes:
+      - application/json
+      operationId: audit_logs_route_post
+      parameters:
+      - description: JSON request payload
+        in: body
+        name: body
+        schema:
+          $ref: '#/definitions/main.SwaggerRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+      security:
+      - SessionCookie: []
+      summary: POST /api/audit-logs
+      tags:
+      - audit-logs
+  /api/audit-logs/{id}:
+    delete:
+      operationId: audit_logs_id_route_delete
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+      security:
+      - SessionCookie: []
+      summary: DELETE /api/audit-logs/{id}
+      tags:
+      - audit-logs
+    put:
+      consumes:
+      - application/json
+      operationId: audit_logs_id_route_put
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: JSON request payload
+        in: body
+        name: body
+        schema:
+          $ref: '#/definitions/main.SwaggerRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+      security:
+      - SessionCookie: []
+      summary: PUT /api/audit-logs/{id}
+      tags:
+      - audit-logs
+  /api/audit-logs/export:
+    get:
+      operationId: audit_logs_export_route_get
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+      security:
+      - SessionCookie: []
+      summary: GET /api/audit-logs/export
+      tags:
+      - audit-logs
+  /api/audit-logs/stats:
+    get:
+      operationId: audit_logs_stats_route_get
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+      security:
+      - SessionCookie: []
+      summary: GET /api/audit-logs/stats
+      tags:
+      - audit-logs
+  /api/auth/logout:
+    post:
+      consumes:
+      - application/json
+      operationId: auth_logout_route_post
+      parameters:
+      - description: JSON request payload
+        in: body
+        name: body
+        schema:
+          $ref: '#/definitions/main.SwaggerRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+      summary: POST /api/auth/logout
+      tags:
+      - auth
+  /api/auth/me:
+    get:
+      operationId: auth_me_route_get
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+      security:
+      - SessionCookie: []
+      summary: GET /api/auth/me
+      tags:
+      - auth
+  /api/categories:
+    get:
+      operationId: categories_route_get
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+      security:
+      - SessionCookie: []
+      summary: GET /api/categories
+      tags:
+      - categories
+    post:
+      consumes:
+      - application/json
+      operationId: categories_route_post
+      parameters:
+      - description: JSON request payload
+        in: body
+        name: body
+        schema:
+          $ref: '#/definitions/main.SwaggerRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+      security:
+      - SessionCookie: []
+      summary: POST /api/categories
+      tags:
+      - categories
+  /api/categories/{id}:
+    delete:
+      operationId: categories_id_route_delete
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+      security:
+      - SessionCookie: []
+      summary: DELETE /api/categories/{id}
+      tags:
+      - categories
+    put:
+      consumes:
+      - application/json
+      operationId: categories_id_route_put
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: JSON request payload
+        in: body
+        name: body
+        schema:
+          $ref: '#/definitions/main.SwaggerRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+      security:
+      - SessionCookie: []
+      summary: PUT /api/categories/{id}
+      tags:
+      - categories
+  /api/cron/sync-stats:
+    post:
+      consumes:
+      - application/json
+      operationId: cron_sync_stats_route_post
+      parameters:
+      - description: JSON request payload
+        in: body
+        name: body
+        schema:
+          $ref: '#/definitions/main.SwaggerRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+      security:
+      - CronSecretAuth: []
+      summary: POST /api/cron/sync-stats
+      tags:
+      - cron
+  /api/dashboard/activity:
+    get:
+      operationId: dashboard_activity_route_get
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+      security:
+      - SessionCookie: []
+      summary: GET /api/dashboard/activity
+      tags:
+      - dashboard
+  /api/dashboard/stats:
+    get:
+      operationId: dashboard_stats_route_get
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+      security:
+      - SessionCookie: []
+      summary: GET /api/dashboard/stats
+      tags:
+      - dashboard
+  /api/dashboard/top-apis:
+    get:
+      operationId: dashboard_top_apis_route_get
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+      security:
+      - SessionCookie: []
+      summary: GET /api/dashboard/top-apis
+      tags:
+      - dashboard
+  /api/dashboard/usage-trend:
+    get:
+      operationId: dashboard_usage_trend_route_get
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+      security:
+      - SessionCookie: []
+      summary: GET /api/dashboard/usage-trend
+      tags:
+      - dashboard
+  /api/marketplace/apis:
+    get:
+      operationId: marketplace_apis_route_get
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+      summary: GET /api/marketplace/apis
+      tags:
+      - marketplace
+  /api/marketplace/apis/{id}:
+    get:
+      operationId: marketplace_apis_id_route_get
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+      summary: GET /api/marketplace/apis/{id}
+      tags:
+      - marketplace
+  /api/marketplace/mcp-services:
+    get:
+      operationId: marketplace_mcp_services_route_get
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+      summary: GET /api/marketplace/mcp-services
+      tags:
+      - marketplace
+  /api/marketplace/mcp-stats:
+    get:
+      operationId: marketplace_mcp_stats_route_get
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+      summary: GET /api/marketplace/mcp-stats
+      tags:
+      - marketplace
+  /api/marketplace/stats:
+    get:
+      operationId: marketplace_stats_route_get
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+      summary: GET /api/marketplace/stats
+      tags:
+      - marketplace
+  /api/mcp-services:
+    get:
+      operationId: mcp_services_route_get
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+      security:
+      - SessionCookie: []
+      summary: GET /api/mcp-services
+      tags:
+      - mcp-services
+    post:
+      consumes:
+      - application/json
+      operationId: mcp_services_route_post
+      parameters:
+      - description: JSON request payload
+        in: body
+        name: body
+        schema:
+          $ref: '#/definitions/main.SwaggerRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+      security:
+      - SessionCookie: []
+      summary: POST /api/mcp-services
+      tags:
+      - mcp-services
+  /api/mcp-services/{id}:
+    delete:
+      operationId: mcp_services_id_route_delete
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+      security:
+      - SessionCookie: []
+      summary: DELETE /api/mcp-services/{id}
+      tags:
+      - mcp-services
+    put:
+      consumes:
+      - application/json
+      operationId: mcp_services_id_route_put
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: JSON request payload
+        in: body
+        name: body
+        schema:
+          $ref: '#/definitions/main.SwaggerRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+      security:
+      - SessionCookie: []
+      summary: PUT /api/mcp-services/{id}
+      tags:
+      - mcp-services
+  /api/mcp-services/{id}/toggle:
+    put:
+      consumes:
+      - application/json
+      operationId: mcp_services_id_toggle_route_put
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: JSON request payload
+        in: body
+        name: body
+        schema:
+          $ref: '#/definitions/main.SwaggerRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+      security:
+      - SessionCookie: []
+      summary: PUT /api/mcp-services/{id}/toggle
+      tags:
+      - mcp-services
+  /api/mcp-services/stats:
+    get:
+      operationId: mcp_services_stats_route_get
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+      security:
+      - SessionCookie: []
+      summary: GET /api/mcp-services/stats
+      tags:
+      - mcp-services
+  /api/membership/current:
+    get:
+      operationId: membership_current_route_get
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+      security:
+      - SessionCookie: []
+      summary: GET /api/membership/current
+      tags:
+      - membership
+  /api/membership/plans:
+    get:
+      operationId: membership_plans_route_get
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+      summary: GET /api/membership/plans
+      tags:
+      - membership
+  /api/membership/subscribe:
+    post:
+      consumes:
+      - application/json
+      operationId: membership_subscribe_route_post
+      parameters:
+      - description: JSON request payload
+        in: body
+        name: body
+        schema:
+          $ref: '#/definitions/main.SwaggerRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+      security:
+      - SessionCookie: []
+      summary: POST /api/membership/subscribe
+      tags:
+      - membership
+  /api/payment/{outTradeNo}:
+    get:
+      operationId: payment_outtradeno_route_get
+      parameters:
+      - description: outTradeNo
+        in: path
+        name: outTradeNo
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+      security:
+      - SessionCookie: []
+      summary: GET /api/payment/{outTradeNo}
+      tags:
+      - payment
+  /api/payment/{outTradeNo}/cancel:
+    post:
+      consumes:
+      - application/json
+      operationId: payment_outtradeno_cancel_route_post
+      parameters:
+      - description: outTradeNo
+        in: path
+        name: outTradeNo
+        required: true
+        type: string
+      - description: JSON request payload
+        in: body
+        name: body
+        schema:
+          $ref: '#/definitions/main.SwaggerRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+      security:
+      - SessionCookie: []
+      summary: POST /api/payment/{outTradeNo}/cancel
+      tags:
+      - payment
+  /api/payment/{outTradeNo}/status:
+    get:
+      operationId: payment_outtradeno_status_route_get
+      parameters:
+      - description: outTradeNo
+        in: path
+        name: outTradeNo
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+      security:
+      - SessionCookie: []
+      summary: GET /api/payment/{outTradeNo}/status
+      tags:
+      - payment
+  /api/payment/business/recharge:
+    post:
+      consumes:
+      - application/json
+      operationId: payment_business_recharge_route_post
+      parameters:
+      - description: JSON request payload
+        in: body
+        name: body
+        schema:
+          $ref: '#/definitions/main.SwaggerRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+      summary: POST /api/payment/business/recharge
+      tags:
+      - payment
+  /api/payment/business/subscription:
+    post:
+      consumes:
+      - application/json
+      operationId: payment_business_subscription_route_post
+      parameters:
+      - description: JSON request payload
+        in: body
+        name: body
+        schema:
+          $ref: '#/definitions/main.SwaggerRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+      summary: POST /api/payment/business/subscription
+      tags:
+      - payment
+  /api/payment/callback/alipay:
+    post:
+      consumes:
+      - application/json
+      operationId: payment_callback_alipay_route_post
+      parameters:
+      - description: JSON request payload
+        in: body
+        name: body
+        schema:
+          $ref: '#/definitions/main.SwaggerRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+      summary: POST /api/payment/callback/alipay
+      tags:
+      - payment
+  /api/payment/callback/mock:
+    post:
+      consumes:
+      - application/json
+      operationId: payment_callback_mock_route_post
+      parameters:
+      - description: JSON request payload
+        in: body
+        name: body
+        schema:
+          $ref: '#/definitions/main.SwaggerRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+      summary: POST /api/payment/callback/mock
+      tags:
+      - payment
+  /api/payment/callback/wechat:
+    post:
+      consumes:
+      - application/json
+      operationId: payment_callback_wechat_route_post
+      parameters:
+      - description: JSON request payload
+        in: body
+        name: body
+        schema:
+          $ref: '#/definitions/main.SwaggerRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+      summary: POST /api/payment/callback/wechat
+      tags:
+      - payment
+  /api/payment/methods:
+    get:
+      operationId: payment_methods_route_get
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+      security:
+      - SessionCookie: []
+      summary: GET /api/payment/methods
+      tags:
+      - payment
+    post:
+      consumes:
+      - application/json
+      operationId: payment_methods_route_post
+      parameters:
+      - description: JSON request payload
+        in: body
+        name: body
+        schema:
+          $ref: '#/definitions/main.SwaggerRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+      security:
+      - SessionCookie: []
+      summary: POST /api/payment/methods
+      tags:
+      - payment
+  /api/payment/settings:
+    get:
+      operationId: payment_settings_route_get
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+      security:
+      - SessionCookie: []
+      summary: GET /api/payment/settings
+      tags:
+      - payment
+  /api/payment/user:
+    get:
+      operationId: payment_user_route_get
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+      security:
+      - SessionCookie: []
+      summary: GET /api/payment/user
+      tags:
+      - payment
+  /api/personal/profile:
+    get:
+      operationId: personal_profile_route_get
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+      security:
+      - SessionCookie: []
+      summary: GET /api/personal/profile
+      tags:
+      - personal
+  /api/personal/redeem:
+    post:
+      consumes:
+      - application/json
+      operationId: personal_redeem_route_post
+      parameters:
+      - description: JSON request payload
+        in: body
+        name: body
+        schema:
+          $ref: '#/definitions/main.SwaggerRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+      security:
+      - SessionCookie: []
+      summary: POST /api/personal/redeem
+      tags:
+      - personal
+  /api/personal/redeem/lookup:
+    post:
+      consumes:
+      - application/json
+      operationId: personal_redeem_lookup_route_post
+      parameters:
+      - description: JSON request payload
+        in: body
+        name: body
+        schema:
+          $ref: '#/definitions/main.SwaggerRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+      security:
+      - SessionCookie: []
+      summary: POST /api/personal/redeem/lookup
+      tags:
+      - personal
+  /api/recharge:
+    post:
+      consumes:
+      - application/json
+      operationId: recharge_route_post
+      parameters:
+      - description: JSON request payload
+        in: body
+        name: body
+        schema:
+          $ref: '#/definitions/main.SwaggerRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+      security:
+      - SessionCookie: []
+      summary: POST /api/recharge
+      tags:
+      - recharge
+  /api/redemption-codes:
+    get:
+      operationId: redemption_codes_route_get
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+      security:
+      - SessionCookie: []
+      summary: GET /api/redemption-codes
+      tags:
+      - redemption-codes
+    post:
+      consumes:
+      - application/json
+      operationId: redemption_codes_route_post
+      parameters:
+      - description: JSON request payload
+        in: body
+        name: body
+        schema:
+          $ref: '#/definitions/main.SwaggerRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+      security:
+      - SessionCookie: []
+      summary: POST /api/redemption-codes
+      tags:
+      - redemption-codes
+  /api/redemption-codes/{id}:
+    delete:
+      operationId: redemption_codes_id_route_delete
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+      security:
+      - SessionCookie: []
+      summary: DELETE /api/redemption-codes/{id}
+      tags:
+      - redemption-codes
+  /api/redemption-codes/batch:
+    delete:
+      operationId: redemption_codes_batch_route_delete
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+      security:
+      - SessionCookie: []
+      summary: DELETE /api/redemption-codes/batch
+      tags:
+      - redemption-codes
+    post:
+      consumes:
+      - application/json
+      operationId: redemption_codes_batch_route_post
+      parameters:
+      - description: JSON request payload
+        in: body
+        name: body
+        schema:
+          $ref: '#/definitions/main.SwaggerRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+      security:
+      - SessionCookie: []
+      summary: POST /api/redemption-codes/batch
+      tags:
+      - redemption-codes
+  /api/redemption-codes/export:
+    get:
+      operationId: redemption_codes_export_route_get
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+      security:
+      - SessionCookie: []
+      summary: GET /api/redemption-codes/export
+      tags:
+      - redemption-codes
+  /api/redemption-codes/plans:
+    get:
+      operationId: redemption_codes_plans_route_get
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+      summary: GET /api/redemption-codes/plans
+      tags:
+      - redemption-codes
+  /api/stats:
+    get:
+      operationId: stats_route_get
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+      security:
+      - SessionCookie: []
+      summary: GET /api/stats
+      tags:
+      - stats
+  /api/stats/{alias}:
+    get:
+      operationId: stats_alias_route_get
+      parameters:
+      - description: alias
+        in: path
+        name: alias
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+      security:
+      - SessionCookie: []
+      summary: GET /api/stats/{alias}
+      tags:
+      - stats
+  /api/subscription-plans:
+    get:
+      operationId: subscription_plans_route_get
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+      security:
+      - SessionCookie: []
+      summary: GET /api/subscription-plans
+      tags:
+      - subscription-plans
+    post:
+      consumes:
+      - application/json
+      operationId: subscription_plans_route_post
+      parameters:
+      - description: JSON request payload
+        in: body
+        name: body
+        schema:
+          $ref: '#/definitions/main.SwaggerRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+      security:
+      - SessionCookie: []
+      summary: POST /api/subscription-plans
+      tags:
+      - subscription-plans
+  /api/subscription-plans/{id}:
+    delete:
+      operationId: subscription_plans_id_route_delete
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+      security:
+      - SessionCookie: []
+      summary: DELETE /api/subscription-plans/{id}
+      tags:
+      - subscription-plans
+    get:
+      operationId: subscription_plans_id_route_get
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+      security:
+      - SessionCookie: []
+      summary: GET /api/subscription-plans/{id}
+      tags:
+      - subscription-plans
+    put:
+      consumes:
+      - application/json
+      operationId: subscription_plans_id_route_put
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: JSON request payload
+        in: body
+        name: body
+        schema:
+          $ref: '#/definitions/main.SwaggerRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+      security:
+      - SessionCookie: []
+      summary: PUT /api/subscription-plans/{id}
+      tags:
+      - subscription-plans
+  /api/system-settings:
+    get:
+      operationId: system_settings_route_get
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+      security:
+      - SessionCookie: []
+      summary: GET /api/system-settings
+      tags:
+      - system-settings
+    put:
+      consumes:
+      - application/json
+      operationId: system_settings_route_put
+      parameters:
+      - description: JSON request payload
+        in: body
+        name: body
+        schema:
+          $ref: '#/definitions/main.SwaggerRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+      security:
+      - SessionCookie: []
+      summary: PUT /api/system-settings
+      tags:
+      - system-settings
+  /api/system-settings/announcement:
+    get:
+      operationId: system_settings_announcement_route_get
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+      summary: GET /api/system-settings/announcement
+      tags:
+      - system-settings
+  /api/system-settings/defaults:
+    get:
+      operationId: system_settings_defaults_route_get
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+      summary: GET /api/system-settings/defaults
+      tags:
+      - system-settings
+  /api/system/initialize:
+    post:
+      consumes:
+      - application/json
+      operationId: system_initialize_route_post
+      parameters:
+      - description: JSON request payload
+        in: body
+        name: body
+        schema:
+          $ref: '#/definitions/main.SwaggerRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+      summary: POST /api/system/initialize
+      tags:
+      - system
+  /api/system/initialized:
+    get:
+      operationId: system_initialized_route_get
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+      summary: GET /api/system/initialized
+      tags:
+      - system
+  /api/tokens:
+    get:
+      operationId: tokens_route_get
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+      security:
+      - SessionCookie: []
+      summary: GET /api/tokens
+      tags:
+      - tokens
+    post:
+      consumes:
+      - application/json
+      operationId: tokens_route_post
+      parameters:
+      - description: JSON request payload
+        in: body
+        name: body
+        schema:
+          $ref: '#/definitions/main.SwaggerRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+      security:
+      - SessionCookie: []
+      summary: POST /api/tokens
+      tags:
+      - tokens
+  /api/tokens/{id}:
+    delete:
+      operationId: tokens_id_route_delete
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+      security:
+      - SessionCookie: []
+      summary: DELETE /api/tokens/{id}
+      tags:
+      - tokens
+    put:
+      consumes:
+      - application/json
+      operationId: tokens_id_route_put
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: JSON request payload
+        in: body
+        name: body
+        schema:
+          $ref: '#/definitions/main.SwaggerRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+      security:
+      - SessionCookie: []
+      summary: PUT /api/tokens/{id}
+      tags:
+      - tokens
+  /api/tokens/{id}/toggle:
+    put:
+      consumes:
+      - application/json
+      operationId: tokens_id_toggle_route_put
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: JSON request payload
+        in: body
+        name: body
+        schema:
+          $ref: '#/definitions/main.SwaggerRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+      security:
+      - SessionCookie: []
+      summary: PUT /api/tokens/{id}/toggle
+      tags:
+      - tokens
+  /api/tokens/stats:
+    get:
+      operationId: tokens_stats_route_get
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+      security:
+      - SessionCookie: []
+      summary: GET /api/tokens/stats
+      tags:
+      - tokens
+  /api/upload:
+    post:
+      consumes:
+      - application/json
+      operationId: upload_route_post
+      parameters:
+      - description: JSON request payload
+        in: body
+        name: body
+        schema:
+          $ref: '#/definitions/main.SwaggerRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+      security:
+      - SessionCookie: []
+      summary: POST /api/upload
+      tags:
+      - upload
+  /api/upload/{filename}:
+    get:
+      operationId: upload_filename_route_get
+      parameters:
+      - description: filename
+        in: path
+        name: filename
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+      summary: GET /api/upload/{filename}
+      tags:
+      - upload
+  /api/usage:
+    get:
+      operationId: usage_route_get
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+      security:
+      - SessionCookie: []
+      summary: GET /api/usage
+      tags:
+      - usage
+  /api/users:
+    get:
+      operationId: users_route_get
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+      security:
+      - SessionCookie: []
+      summary: GET /api/users
+      tags:
+      - users
+    post:
+      consumes:
+      - application/json
+      operationId: users_route_post
+      parameters:
+      - description: JSON request payload
+        in: body
+        name: body
+        schema:
+          $ref: '#/definitions/main.SwaggerRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+      security:
+      - SessionCookie: []
+      summary: POST /api/users
+      tags:
+      - users
+  /api/users/{id}:
+    delete:
+      operationId: users_id_route_delete
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+      security:
+      - SessionCookie: []
+      summary: DELETE /api/users/{id}
+      tags:
+      - users
+    get:
+      operationId: users_id_route_get
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+      security:
+      - SessionCookie: []
+      summary: GET /api/users/{id}
+      tags:
+      - users
+    put:
+      consumes:
+      - application/json
+      operationId: users_id_route_put
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: JSON request payload
+        in: body
+        name: body
+        schema:
+          $ref: '#/definitions/main.SwaggerRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+      security:
+      - SessionCookie: []
+      summary: PUT /api/users/{id}
+      tags:
+      - users
+  /api/users/stats:
+    get:
+      operationId: users_stats_route_get
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+      security:
+      - SessionCookie: []
+      summary: GET /api/users/stats
+      tags:
+      - users
+  /api/v1/{alias}:
+    delete:
+      operationId: v1_alias_route_delete
+      parameters:
+      - description: alias
+        in: path
+        name: alias
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+      security:
+      - ApiTokenAuth: []
+      summary: DELETE /api/v1/{alias}
+      tags:
+      - gateway
+    get:
+      operationId: v1_alias_route_get
+      parameters:
+      - description: alias
+        in: path
+        name: alias
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+      security:
+      - ApiTokenAuth: []
+      summary: GET /api/v1/{alias}
+      tags:
+      - gateway
+    patch:
+      consumes:
+      - application/json
+      operationId: v1_alias_route_patch
+      parameters:
+      - description: alias
+        in: path
+        name: alias
+        required: true
+        type: string
+      - description: JSON request payload
+        in: body
+        name: body
+        schema:
+          $ref: '#/definitions/main.SwaggerRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+      security:
+      - ApiTokenAuth: []
+      summary: PATCH /api/v1/{alias}
+      tags:
+      - gateway
+    post:
+      consumes:
+      - application/json
+      operationId: v1_alias_route_post
+      parameters:
+      - description: alias
+        in: path
+        name: alias
+        required: true
+        type: string
+      - description: JSON request payload
+        in: body
+        name: body
+        schema:
+          $ref: '#/definitions/main.SwaggerRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+      security:
+      - ApiTokenAuth: []
+      summary: POST /api/v1/{alias}
+      tags:
+      - gateway
+    put:
+      consumes:
+      - application/json
+      operationId: v1_alias_route_put
+      parameters:
+      - description: alias
+        in: path
+        name: alias
+        required: true
+        type: string
+      - description: JSON request payload
+        in: body
+        name: body
+        schema:
+          $ref: '#/definitions/main.SwaggerRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+      security:
+      - ApiTokenAuth: []
+      summary: PUT /api/v1/{alias}
+      tags:
+      - gateway
+  /api/v1/mcp/{identifier}:
+    options:
+      operationId: v1_mcp_identifier_route_options
+      parameters:
+      - description: identifier
+        in: path
+        name: identifier
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+      security:
+      - ApiTokenAuth: []
+      summary: OPTIONS /api/v1/mcp/{identifier}
+      tags:
+      - gateway
+    post:
+      consumes:
+      - application/json
+      operationId: v1_mcp_identifier_route_post
+      parameters:
+      - description: identifier
+        in: path
+        name: identifier
+        required: true
+        type: string
+      - description: JSON request payload
+        in: body
+        name: body
+        schema:
+          $ref: '#/definitions/main.SwaggerRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+      security:
+      - ApiTokenAuth: []
+      summary: POST /api/v1/mcp/{identifier}
+      tags:
+      - gateway
+securityDefinitions:
+  ApiTokenAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+  CronSecretAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+  SessionCookie:
+    in: cookie
+    name: session
+    type: apiKey
+swagger: "2.0"

@@ -8,6 +8,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/go-chi/chi/v5"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/shuTwT/nex-api/backend/ent/enttest"
 	serviceauth "github.com/shuTwT/nex-api/backend/internal/service/auth"
@@ -39,7 +40,7 @@ func TestRegisterRoutes_subscribeReturnsSuccessEnvelope(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	mux := http.NewServeMux()
+	mux := chi.NewRouter()
 	if err := RegisterRoutes(mux, handler); err != nil {
 		t.Fatal(err)
 	}
