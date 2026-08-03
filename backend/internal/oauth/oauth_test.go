@@ -3,8 +3,15 @@ package oauth
 import (
 	"encoding/base64"
 	"encoding/json"
+	"net/http"
 	"net/http/httptest"
+	"net/url"
+	"strings"
 	"testing"
+
+	_ "github.com/mattn/go-sqlite3"
+	"github.com/shuTwT/nex-api/backend/internal/config"
+	"github.com/shuTwT/nex-api/backend/internal/database/ent/enttest"
 )
 
 func TestResolveReturnURL_rejectsExternalTargets(t *testing.T) {
@@ -82,4 +89,74 @@ func TestValidateOIDCNonce_rejectsMismatchedNonce(t *testing.T) {
 	if err == nil {
 		t.Fatal("ValidateOIDCNonce accepted a mismatched nonce")
 	}
+}
+
+func TestHandlerReadsOAuthProvidersFromSystemSettings(t *testing.T) {
+	client := enttest.Open(t, "sqlite3", "file:"+t.TempDir()+"/oauth.db?_fk=1")
+	t.Cleanup(func() { _ = client.Close() })
+
+	providers := []providerConfig{{
+		ID:               "github",
+		Name:             "数据库 GitHub",
+		ClientID:         "database-client-id",
+		ClientSecret:     "database-client-secret",
+		AuthorizationURL: "https://oauth.example.test/authorize",
+		TokenURL:         "https://oauth.example.test/token",
+		UserInfoURL:      "https://oauth.example.test/userinfo",
+		Scopes:           "read:user,user:email",
+		UserIDField:      "id",
+		EmailField:       "email",
+		UsernameField:    "login",
+	}}
+	payload, err := json.Marshal(providers)
+	if err != nil {
+		t.Fatalf("marshal providers: %v", err)
+	}
+	if _, err := client.SystemSetting.Create().SetKey(oauthProvidersSettingKey).SetValue(string(payload)).SetCategory("oauth").Save(t.Context()); err != nil {
+		t.Fatalf("create OAuth system setting: %v", err)
+	}
+
+	handler, err := New(client, nil, config.Config{
+		AppURL: "https://nex.example.test",
+		Auth:   config.Auth{SessionSecret: "test-session-secret"},
+	})
+	if err != nil {
+		t.Fatalf("create OAuth handler: %v", err)
+	}
+
+	request := httptest.NewRequest(http.MethodGet, "/api/auth/signin/github?callbackUrl=/console", nil)
+	response := httptest.NewRecorder()
+	handler.ServeHTTP(response, request)
+	if response.Code != http.StatusFound {
+		t.Fatalf("authorize status = %d, want %d; body=%s", response.Code, http.StatusFound, response.Body.String())
+	}
+	redirect, err := url.Parse(response.Header().Get("Location"))
+	if err != nil {
+		t.Fatalf("parse authorization redirect: %v", err)
+	}
+	if got := redirect.Query().Get("client_id"); got != "database-client-id" {
+		t.Fatalf("authorization client_id = %q, want database setting", got)
+	}
+	if got := redirect.Query().Get("scope"); got != "read:user user:email" {
+		t.Fatalf("authorization scope = %q, want normalized database setting", got)
+	}
+
+	providersRequest := httptest.NewRequest(http.MethodGet, "/api/auth/providers", nil)
+	providersResponse := httptest.NewRecorder()
+	handler.ServeHTTP(providersResponse, providersRequest)
+	if providersResponse.Code != http.StatusOK {
+		t.Fatalf("providers status = %d, want %d", providersResponse.Code, http.StatusOK)
+	}
+	if body := providersResponse.Body.String(); body == "" || !containsAll(body, "数据库 GitHub", "github") || containsAll(body, "database-client-secret") {
+		t.Fatalf("providers response leaked or omitted expected fields: %s", body)
+	}
+}
+
+func containsAll(value string, expected ...string) bool {
+	for _, item := range expected {
+		if !strings.Contains(value, item) {
+			return false
+		}
+	}
+	return true
 }

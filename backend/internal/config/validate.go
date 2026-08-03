@@ -137,33 +137,11 @@ func validate(cfg Config, requireExternal bool, externalValue func(string) bool)
 	if !validLogFormat(cfg.Log.Format) {
 		add("log.format", "must be json or text")
 	}
-	validateOAuth(cfg, add)
 	if len(violations) == 0 {
 		return nil
 	}
 	sort.Slice(violations, func(i, j int) bool { return violations[i].Field < violations[j].Field })
 	return &ValidationErrors{violations: violations}
-}
-
-func validateOAuth(cfg Config, add func(string, string)) {
-	if strings.TrimSpace(cfg.Auth.SSOClientID) == "" && strings.TrimSpace(cfg.Auth.SSOClientSecret) == "" {
-		return
-	}
-	if strings.TrimSpace(cfg.Auth.SSOClientID) == "" {
-		add("auth.sso_client_id", "is required when SSO is configured")
-	}
-	if strings.TrimSpace(cfg.Auth.SSOClientSecret) == "" {
-		add("auth.sso_client_secret", "is required when SSO is configured")
-	}
-	for field, value := range map[string]string{
-		"auth.sso_authorization_url": cfg.Auth.SSOAuthorizationURL,
-		"auth.sso_token_url":         cfg.Auth.SSOTokenURL,
-		"auth.sso_user_info_url":     cfg.Auth.SSOUserInfoURL,
-	} {
-		if !validHTTPURL(value) {
-			add(field, "must be a valid http:// or https:// URL when SSO is configured")
-		}
-	}
 }
 
 func hasExternalValue(v *viper.Viper, key string) bool {

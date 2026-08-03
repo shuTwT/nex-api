@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Github, Mail, Shield, Loader2, ArrowLeft } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
+import { useOAuthProviders } from "@/hooks/use-oauth-providers";
 import { useNavigate, useSearchParams, Link } from "react-router";
 
 export default function AuthSigninPage() {
@@ -13,6 +14,7 @@ export default function AuthSigninPage() {
   const [searchParams] = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl") || "/";
   const { login } = useAuth();
+  const { providers, isLoading: isLoadingProviders } = useOAuthProviders();
 
   const [isLoading, setIsLoading] = useState<string | null>(null);
   const [email, setEmail] = useState("");
@@ -113,56 +115,47 @@ export default function AuthSigninPage() {
               </Button>
             </form>
 
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <Separator />
-              </div>
-              <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-card px-2 text-muted-foreground">
-                  或使用第三方账号
-                </span>
-              </div>
-            </div>
-
-            <div className="flex flex-col gap-3">
-              <Button
-                variant="outline"
-                className="w-full h-11 cursor-pointer transition-all duration-200 hover:bg-accent"
-                onClick={() => handleOAuthLogin("github")}
-                disabled={isLoading !== null}
-              >
-                {isLoading === "github" ? (
-                  <div className="flex items-center gap-2">
-                    <Loader2 className="size-4 animate-spin" />
-                    <span>正在跳转...</span>
+            {!isLoadingProviders && providers.length > 0 && (
+              <>
+                <div className="relative">
+                  <div className="absolute inset-0 flex items-center">
+                    <Separator />
                   </div>
-                ) : (
-                  <>
-                    <Github className="size-4" data-icon="inline-start" />
-                    使用 GitHub 登录
-                  </>
-                )}
-              </Button>
-
-              <Button
-                variant="outline"
-                className="w-full h-11 cursor-pointer transition-all duration-200 hover:bg-purple-50 hover:text-purple-600 dark:hover:bg-purple-950 dark:hover:text-purple-400"
-                onClick={() => handleOAuthLogin("easy1")}
-                disabled={isLoading !== null}
-              >
-                {isLoading === "easy1" ? (
-                  <div className="flex items-center gap-2">
-                    <Loader2 className="size-4 animate-spin" />
-                    <span>正在跳转...</span>
+                  <div className="relative flex justify-center text-xs uppercase">
+                    <span className="bg-card px-2 text-muted-foreground">
+                      或使用第三方账号
+                    </span>
                   </div>
-                ) : (
-                  <>
-                    <Shield className="size-4" data-icon="inline-start" />
-                    使用统一身份认证
-                  </>
-                )}
-              </Button>
-            </div>
+                </div>
+
+                <div className="flex flex-col gap-3">
+                  {providers.map((provider) => {
+                    const Icon = provider.id === "github" ? Github : Shield;
+                    return (
+                      <Button
+                        key={provider.id}
+                        variant="outline"
+                        className="w-full h-11 cursor-pointer transition-all duration-200 hover:bg-accent"
+                        onClick={() => handleOAuthLogin(provider.id)}
+                        disabled={isLoading !== null}
+                      >
+                        {isLoading === provider.id ? (
+                          <div className="flex items-center gap-2">
+                            <Loader2 className="size-4 animate-spin" />
+                            <span>正在跳转...</span>
+                          </div>
+                        ) : (
+                          <>
+                            <Icon className="size-4" data-icon="inline-start" />
+                            使用 {provider.name} 登录
+                          </>
+                        )}
+                      </Button>
+                    );
+                  })}
+                </div>
+              </>
+            )}
 
             <div className="pt-4 border-t">
               <p className="text-xs text-center text-muted-foreground leading-relaxed">

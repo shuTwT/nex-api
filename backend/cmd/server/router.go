@@ -181,8 +181,9 @@ func buildRouter(ctx context.Context, cfg config.Config, deps dependencies) (htt
 		return nil, fmt.Errorf("router: oauth: %w", err)
 	}
 	for _, pattern := range []string{
-		"/api/auth/signin/", "/api/auth/callback/",
+		"/api/auth/providers", "/api/auth/signin/", "/api/auth/callback/",
 		"/api/auth/github", "/api/auth/github/",
+		"/api/auth/easy1", "/api/auth/easy1/",
 		"/api/auth/easy1auth", "/api/auth/easy1auth/",
 	} {
 		mux.Handle(pattern, oauthHandler)

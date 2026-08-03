@@ -51,18 +51,10 @@ type Redis struct {
 }
 
 type Auth struct {
-	SessionSecret       string `mapstructure:"session_secret"`
-	JWTSecret           string `mapstructure:"jwt_secret"`
-	NextAuthSecret      string `mapstructure:"nextauth_secret"`
-	SessionCookieName   string `mapstructure:"session_cookie_name"`
-	GitHubClientID      string `mapstructure:"github_client_id"`
-	GitHubClientSecret  string `mapstructure:"github_client_secret"`
-	SSOClientID         string `mapstructure:"sso_client_id"`
-	SSOClientSecret     string `mapstructure:"sso_client_secret"`
-	SSOAuthorizationURL string `mapstructure:"sso_authorization_url"`
-	SSOTokenURL         string `mapstructure:"sso_token_url"`
-	SSOUserInfoURL      string `mapstructure:"sso_user_info_url"`
-	SSOScope            string `mapstructure:"sso_scope"`
+	SessionSecret     string `mapstructure:"session_secret"`
+	JWTSecret         string `mapstructure:"jwt_secret"`
+	NextAuthSecret    string `mapstructure:"nextauth_secret"`
+	SessionCookieName string `mapstructure:"session_cookie_name"`
 }
 
 type Upload struct {
@@ -86,21 +78,17 @@ type Log struct {
 
 func (c Config) Redacted() map[string]string {
 	return map[string]string{
-		"environment":               c.Environment,
-		"app_url":                   c.AppURL,
-		"server.host":               c.Server.Host,
-		"server.port":               formatInt(c.Server.Port),
-		"database.url":              RedactURL(c.Database.URL),
-		"redis.url":                 RedactURL(c.Redis.URL),
-		"redis.password":            RedactSecret(c.Redis.Password),
-		"auth.session_secret":       RedactSecret(c.Auth.SessionSecret),
-		"auth.jwt_secret":           RedactSecret(c.Auth.JWTSecret),
-		"auth.nextauth_secret":      RedactSecret(c.Auth.NextAuthSecret),
-		"auth.github_client_id":     c.Auth.GitHubClientID,
-		"auth.github_client_secret": RedactSecret(c.Auth.GitHubClientSecret),
-		"auth.sso_client_id":        c.Auth.SSOClientID,
-		"auth.sso_client_secret":    RedactSecret(c.Auth.SSOClientSecret),
-		"cron.secret":               RedactSecret(c.Cron.Secret),
+		"environment":          c.Environment,
+		"app_url":              c.AppURL,
+		"server.host":          c.Server.Host,
+		"server.port":          formatInt(c.Server.Port),
+		"database.url":         RedactURL(c.Database.URL),
+		"redis.url":            RedactURL(c.Redis.URL),
+		"redis.password":       RedactSecret(c.Redis.Password),
+		"auth.session_secret":  RedactSecret(c.Auth.SessionSecret),
+		"auth.jwt_secret":      RedactSecret(c.Auth.JWTSecret),
+		"auth.nextauth_secret": RedactSecret(c.Auth.NextAuthSecret),
+		"cron.secret":          RedactSecret(c.Cron.Secret),
 	}
 }
 

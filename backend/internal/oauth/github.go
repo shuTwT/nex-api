@@ -28,6 +28,7 @@ type githubClient struct {
 	tokenURL     string
 	profileURL   string
 	emailsURL    string
+	scope        string
 	client       *http.Client
 }
 
@@ -85,6 +86,7 @@ func newGitHubClient(clientID, clientSecret string, client *http.Client) *github
 		tokenURL:     githubToken,
 		profileURL:   githubProfileURL,
 		emailsURL:    githubEmailList,
+		scope:        "read:user user:email",
 		client:       client,
 	}
 }
@@ -100,7 +102,7 @@ func (p *githubClient) authorizationURL(state OAuthState, redirectURI string) (s
 	query := endpoint.Query()
 	query.Set("client_id", p.clientID)
 	query.Set("redirect_uri", redirectURI)
-	query.Set("scope", "read:user user:email")
+	query.Set("scope", p.scope)
 	query.Set("state", state.Value)
 	endpoint.RawQuery = query.Encode()
 	return endpoint.String(), nil
