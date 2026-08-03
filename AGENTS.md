@@ -61,4 +61,4 @@ Never claim a model ran unless the agent activity or tool result identifies it. 
 ## 注意事项
 
 - 前端路径:`frontend/`
-- 后端路径:`backend/`
+- 后端路径: 项目根目录

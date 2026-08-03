@@ -2,7 +2,7 @@
 
 ## 概要
 
-将 `backend/internal` 一次性重构为仅包含以下五个顶层目录：
+将项目根目录的 `internal` 一次性重构为仅包含以下五个顶层目录：
 
 ```text
 internal/
