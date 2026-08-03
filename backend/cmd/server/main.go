@@ -37,7 +37,7 @@ func main() {
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
 
-	var options []config.Option
+	options := []config.Option{config.WithDotEnvFile(defaultDotEnvFile())}
 	if configFile != "" {
 		options = append(options, config.WithConfigFile(configFile))
 	}
@@ -56,6 +56,16 @@ func main() {
 		logger.Error("server exited with error", slog.Any("err", err))
 		os.Exit(1)
 	}
+}
+
+// defaultDotEnvFile selects only the dotenv file in the process working
+// directory; it never searches parent or child directories.
+func defaultDotEnvFile() string {
+	workingDirectory, err := os.Getwd()
+	if err != nil {
+		return ".env"
+	}
+	return filepath.Join(workingDirectory, ".env")
 }
 
 func run(ctx context.Context, cfg config.Config, logger *slog.Logger) error {
@@ -221,6 +231,10 @@ func newRedisClient(cfg config.Redis) (*redis.Client, error) {
 	opt, err := redis.ParseURL(cfg.URL)
 	if err != nil {
 		return nil, fmt.Errorf("parse redis url: %w", err)
+	}
+	// REDIS_URL 中的凭据优先；未携带时允许使用单独的 REDIS_PASSWORD。
+	if opt.Password == "" {
+		opt.Password = cfg.Password
 	}
 	if cfg.TLS {
 		opt.TLSConfig = &tls.Config{MinVersion: tls.VersionTLS12}

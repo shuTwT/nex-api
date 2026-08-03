@@ -66,6 +66,15 @@ const PEM_FILE_FIELDS = [
   "wechatPayPaymentPublicKey",
 ];
 
+function createOAuthProviderID() {
+  const browserCrypto = globalThis.crypto;
+  if (typeof browserCrypto?.randomUUID === "function") {
+    return `oauth-${browserCrypto.randomUUID()}`;
+  }
+  // This ID only identifies a saved provider; it is not used for cryptography.
+  return `oauth-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
+}
+
 export default function SettingsPage() {
   const [settings, setSettings] = useState<Record<string, string>>({});
   const [defaultSettings, setDefaultSettings] = useState<DefaultSettings | null>(null);
@@ -133,7 +142,7 @@ export default function SettingsPage() {
 
   function addOAuthProvider() {
     const newProvider: OAuthProvider = {
-      id: crypto.randomUUID(),
+      id: createOAuthProviderID(),
       name: "",
       clientId: "",
       clientSecret: "",

@@ -155,6 +155,39 @@ func TestCatalogRoutesRequireAdmin(t *testing.T) {
 	}
 }
 
+func TestCatalogRoutes_acceptAllFiltersAndEmptyStats(t *testing.T) {
+	// Given
+	client := newCatalogClient(t)
+	apis, _ := NewAPIService(client)
+	categories, _ := NewCategoryService(client)
+	mcp, _ := NewMCPService(client)
+	handler, _ := NewHandler(apis, categories, mcp)
+	mux := http.NewServeMux()
+	_ = RegisterRoutes(mux, handler)
+	adminContext := auth.WithAuthContext(context.Background(), auth.AuthContext{
+		User: auth.User{ID: "admin-1", Role: "admin"},
+	})
+
+	for _, path := range []string{
+		"/api/apis/stats",
+		"/api/apis?category=all&search=&status=all&page=1&limit=10",
+		"/api/mcp-services?type=all&search=&status=all&page=1&limit=10",
+	} {
+		t.Run(path, func(t *testing.T) {
+			request := httptest.NewRequest(http.MethodGet, path, nil).WithContext(adminContext)
+			response := httptest.NewRecorder()
+
+			// When
+			mux.ServeHTTP(response, request)
+
+			// Then
+			if response.Code != http.StatusOK {
+				t.Fatalf("status = %d, body = %s", response.Code, response.Body.String())
+			}
+		})
+	}
+}
+
 func TestCatalogServices_CRUDStatsToggleAndAudit(t *testing.T) {
 	// Given
 	client := newCatalogClient(t)

@@ -60,4 +60,5 @@ Never claim a model ran unless the agent activity or tool result identifies it. 
 
 ## 注意事项
 
-nextjs是旧版，而backend中的go后端是新版，frontend中的vite前端是新版。
+- 前端路径:`frontend/`
+- 后端路径:`backend/`

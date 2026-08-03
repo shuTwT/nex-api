@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/shuTwT/nex-api/backend/internal/database/ent"
+	"entgo.io/ent/dialect/sql"
 	"github.com/shuTwT/nex-api/backend/internal/database/ent/mcpservice"
 )
 
@@ -21,7 +21,9 @@ func (s *MCPService) Stats(ctx context.Context) (MCPStats, error) {
 	if err != nil {
 		return MCPStats{}, fmt.Errorf("count inactive MCP services: %w", err)
 	}
-	calls, err := s.db.McpService.Query().Aggregate(ent.Sum(mcpservice.FieldCallCount)).Int(ctx)
+	calls, err := s.db.McpService.Query().Aggregate(func(selector *sql.Selector) string {
+		return "COALESCE(" + sql.Sum(selector.C(mcpservice.FieldCallCount)) + ", 0)"
+	}).Int(ctx)
 	if err != nil {
 		return MCPStats{}, fmt.Errorf("sum MCP calls: %w", err)
 	}

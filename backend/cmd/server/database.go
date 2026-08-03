@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"log/slog"
 	"os"
+	"path/filepath"
 	"strings"
 
 	"entgo.io/ent/dialect"
@@ -51,6 +52,9 @@ func splitDatabaseDSN(raw string) (scheme, dsn string) {
 func openSQLite(ctx context.Context, cfg config.Database, dsn string, logger *slog.Logger) (*ent.Client, error) {
 	// 必须在打开连接之前判断:SQLite 首次打开/Ping 会创建文件。
 	newDatabase := isNewSQLiteFile(dsn)
+	if err := ensureSQLiteParentDirectory(dsn); err != nil {
+		return nil, err
+	}
 
 	db, err := sql.Open("sqlite", withSQLiteFK(dsn))
 	if err != nil {
@@ -77,6 +81,23 @@ func openSQLite(ctx context.Context, cfg config.Database, dsn string, logger *sl
 		logger.Info("database already exists; schema is managed by atlas migrations")
 	}
 	return client, nil
+}
+
+// ensureSQLiteParentDirectory 创建 SQLite 文件数据库的父目录。
+// SQLite 驱动会创建不存在的数据库文件，但不会创建其父目录。
+func ensureSQLiteParentDirectory(dsn string) error {
+	path := sqliteFilePath(dsn)
+	if path == "" {
+		return nil
+	}
+	parent := filepath.Dir(path)
+	if parent == "." {
+		return nil
+	}
+	if err := os.MkdirAll(parent, 0o750); err != nil {
+		return fmt.Errorf("create sqlite database directory %q: %w", parent, err)
+	}
+	return nil
 }
 
 // withSQLiteFK 确保 DSN 启用了外键 pragma(ent 的 schema 创建/查询依赖)。

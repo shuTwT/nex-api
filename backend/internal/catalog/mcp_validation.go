@@ -59,6 +59,15 @@ func validateMCPType(value string) error {
 }
 
 func normalizeMCPListOptions(options MCPListOptions) MCPListOptions {
+	options.Type = strings.TrimSpace(options.Type)
+	options.Search = strings.TrimSpace(options.Search)
+	options.Status = strings.ToLower(strings.TrimSpace(options.Status))
+	if strings.EqualFold(options.Type, "all") {
+		options.Type = ""
+	}
+	if options.Status == "all" {
+		options.Status = ""
+	}
 	if options.Page < 1 {
 		options.Page = 1
 	}

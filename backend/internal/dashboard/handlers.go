@@ -1,6 +1,7 @@
 package dashboard
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"net/http"
@@ -65,7 +66,7 @@ func (h *Handler) dashboardStats(w http.ResponseWriter, r *http.Request) {
 	}
 	now := time.Now()
 	firstDay := time.Date(now.Year(), now.Month(), 1, 0, 0, 0, 0, now.Location())
-	monthly, err := h.db.ApiUsage.Query().Where(apiusage.UserId(principal.UserID), apiusage.CreatedAtGTE(firstDay)).Aggregate(ent.Sum(apiusage.FieldCredits)).Int(r.Context())
+	monthly, err := monthlyCreditsUsed(r.Context(), h.db, principal.UserID, firstDay)
 	if err != nil {
 		writeError(w, r, fmt.Errorf("sum monthly credits: %w", err))
 		return
@@ -96,6 +97,15 @@ func (h *Handler) dashboardStats(w http.ResponseWriter, r *http.Request) {
 		balance = account.Credits
 	}
 	writeData(w, http.StatusOK, map[string]int64{"monthlyCreditsUsed": int64(monthly), "apiCalls": apiCalls, "accountBalance": int64(balance), "activeApis": int64(active)})
+}
+
+func monthlyCreditsUsed(ctx context.Context, db *ent.Client, userID string, firstDay time.Time) (int, error) {
+	return db.ApiUsage.Query().
+		Where(apiusage.UserId(userID), apiusage.CreatedAtGTE(firstDay)).
+		Aggregate(func(selector *sql.Selector) string {
+			return "COALESCE(" + sql.Sum(selector.C(apiusage.FieldCredits)) + ", 0)"
+		}).
+		Int(ctx)
 }
 
 func (h *Handler) activity(w http.ResponseWriter, r *http.Request) {

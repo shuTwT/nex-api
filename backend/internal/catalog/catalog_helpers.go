@@ -96,6 +96,15 @@ func writeAudit(ctx context.Context, tx *ent.Tx, action, resource, details, leve
 }
 
 func normalizeListOptions(options APIListOptions) APIListOptions {
+	options.CategoryID = strings.TrimSpace(options.CategoryID)
+	options.Search = strings.TrimSpace(options.Search)
+	options.Status = strings.ToLower(strings.TrimSpace(options.Status))
+	if options.CategoryID == "all" {
+		options.CategoryID = ""
+	}
+	if options.Status == "all" {
+		options.Status = ""
+	}
 	if options.Page < 1 {
 		options.Page = 1
 	}

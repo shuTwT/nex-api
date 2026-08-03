@@ -63,6 +63,36 @@ func TestLoad_production_requires_external_secrets_and_urls(t *testing.T) {
 	}
 }
 
+func TestLoad_readsDotEnvWithoutOverridingProcessEnvironment(t *testing.T) {
+	workspace := t.TempDir()
+	if err := os.WriteFile(filepath.Join(workspace, ".env"), []byte("REDIS_URL=redis://localhost:6379/7\nREDIS_PASSWORD=from-file\n"), 0o600); err != nil {
+		t.Fatalf("write .env fixture: %v", err)
+	}
+	previousURL, hadURL := os.LookupEnv("REDIS_URL")
+	if err := os.Unsetenv("REDIS_URL"); err != nil {
+		t.Fatalf("unset Redis URL: %v", err)
+	}
+	t.Cleanup(func() {
+		if hadURL {
+			_ = os.Setenv("REDIS_URL", previousURL)
+			return
+		}
+		_ = os.Unsetenv("REDIS_URL")
+	})
+	t.Setenv("REDIS_PASSWORD", "from-process")
+
+	cfg, err := Load(WithDotEnvFile(filepath.Join(workspace, ".env")))
+	if err != nil {
+		t.Fatalf("load configuration: %v", err)
+	}
+	if cfg.Redis.URL != "redis://localhost:6379/7" {
+		t.Fatalf("Redis URL = %q, want value from .env", cfg.Redis.URL)
+	}
+	if cfg.Redis.Password != "from-process" {
+		t.Fatalf("Redis password = %q, want process value", cfg.Redis.Password)
+	}
+}
+
 func TestConfig_Redacted_hides_credentials(t *testing.T) {
 	// Given
 	cfg := Config{

@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/shuTwT/nex-api/backend/internal/database/ent"
+	"entgo.io/ent/dialect/sql"
 	"github.com/shuTwT/nex-api/backend/internal/database/ent/api"
 )
 
@@ -21,7 +21,9 @@ func (s *APIService) Stats(ctx context.Context) (APIStats, error) {
 	if err != nil {
 		return APIStats{}, fmt.Errorf("count inactive APIs: %w", err)
 	}
-	totalCalls, err := s.db.Api.Query().Aggregate(ent.Sum(api.FieldCallCount)).Int(ctx)
+	totalCalls, err := s.db.Api.Query().Aggregate(func(selector *sql.Selector) string {
+		return "COALESCE(" + sql.Sum(selector.C(api.FieldCallCount)) + ", 0)"
+	}).Int(ctx)
 	if err != nil {
 		return APIStats{}, fmt.Errorf("sum API calls: %w", err)
 	}

@@ -1,8 +1,10 @@
 package config
 
 import (
+	"errors"
 	"fmt"
 	"net"
+	"os"
 	"path/filepath"
 	"strconv"
 	"strings"
@@ -10,12 +12,14 @@ import (
 
 	"github.com/go-viper/mapstructure/v2"
 	"github.com/spf13/viper"
+	"github.com/subosito/gotenv"
 )
 
 type Option func(*loadOptions) error
 
 type loadOptions struct {
 	configFile string
+	dotEnvFile string
 }
 
 type envBinding struct {
@@ -83,6 +87,19 @@ func WithConfigFile(path string) Option {
 	}
 }
 
+// WithDotEnvFile loads an optional dotenv file before reading configuration.
+// Existing process environment variables are never overwritten.
+func WithDotEnvFile(path string) Option {
+	return func(options *loadOptions) error {
+		path = strings.TrimSpace(path)
+		if path == "" {
+			return fmt.Errorf("dotenv file path is empty")
+		}
+		options.dotEnvFile = filepath.Clean(path)
+		return nil
+	}
+}
+
 func LoadFromFile(path string) (Config, error) {
 	return Load(WithConfigFile(path))
 }
@@ -95,6 +112,11 @@ func Load(options ...Option) (Config, error) {
 		}
 		if err := option(&loadOptions); err != nil {
 			return Config{}, fmt.Errorf("configure config loader: %w", err)
+		}
+	}
+	if loadOptions.dotEnvFile != "" {
+		if err := loadDotEnv(loadOptions.dotEnvFile); err != nil {
+			return Config{}, err
 		}
 	}
 
@@ -125,6 +147,21 @@ func Load(options ...Option) (Config, error) {
 		return Config{}, err
 	}
 	return cfg, nil
+}
+
+// loadDotEnv loads an optional dotenv file without replacing environment
+// variables supplied by the process.
+func loadDotEnv(path string) error {
+	if _, err := os.Stat(path); err != nil {
+		if errors.Is(err, os.ErrNotExist) {
+			return nil
+		}
+		return fmt.Errorf("stat dotenv file %q: %w", path, err)
+	}
+	if err := gotenv.Load(path); err != nil {
+		return fmt.Errorf("load dotenv file %q: %w", path, err)
+	}
+	return nil
 }
 
 func newViper() (*viper.Viper, error) {

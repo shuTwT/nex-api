@@ -23,7 +23,6 @@ npm --prefix frontend ci
 
 ```bash
 cd backend
-set -a; . ./.env; set +a
 go run ./cmd/server
 ```
 

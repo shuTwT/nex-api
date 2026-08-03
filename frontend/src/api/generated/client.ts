@@ -112,7 +112,10 @@ export class NexApiClient {
   private readonly signal: AbortSignal | undefined
   private readonly fetcher: Fetcher
 
-  constructor(options: RequestOptions = {}, fetcher: Fetcher = globalThis.fetch) {
+  constructor(
+    options: RequestOptions = {},
+    fetcher: Fetcher = (input, init) => globalThis.fetch(input, init),
+  ) {
     this.baseUrl = options.baseUrl ?? ""
     this.headers = options.headers ?? {}
     this.credentials = options.credentials ?? "include"
