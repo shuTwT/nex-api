@@ -14,7 +14,7 @@ test-bootstrap:
 	$(GO) build ./cmd/script-worker
 
 generate:
-	$(GO) generate ./internal/httpapi
+	$(GO) generate ./ent ./internal/handler/httpapi
 
 openapi-lint:
 	pnpm --package=@redocly/cli@1.34.2 dlx redocly lint --config=openapi/redocly.yaml openapi/openapi.yaml

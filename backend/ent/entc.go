@@ -12,7 +12,7 @@ import (
 func main() {
 	if err := entc.Generate("./schema", &gen.Config{
 		Target:  ".",
-		Package: "github.com/shuTwT/nex-api/backend/internal/database/ent",
+		Package: "github.com/shuTwT/nex-api/backend/ent",
 	}); err != nil {
 		log.Fatal("running ent codegen: ", err)
 	}

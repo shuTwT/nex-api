@@ -9,6 +9,8 @@ backend/   Go HTTP 服务、Ent 数据模型、迁移和 OpenAPI 生成器
 frontend/  React + Vite 单页应用
 ```
 
+后端 `backend/internal` 采用五层目录（handler / infra / job / middleware / service），分层规则见 [docs/backend-architecture.md](docs/backend-architecture.md)。
+
 ## 本地开发
 
 需要 Go 1.26+、Node.js 22+ 和 npm。

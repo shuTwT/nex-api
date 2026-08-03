@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"crypto/tls"
 	"errors"
 	"flag"
 	"fmt"
@@ -14,28 +13,20 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/redis/go-redis/v9"
-	_ "modernc.org/sqlite"
-
-	"github.com/shuTwT/nex-api/backend/internal/accounts"
-	"github.com/shuTwT/nex-api/backend/internal/auth"
-	"github.com/shuTwT/nex-api/backend/internal/authz"
-	"github.com/shuTwT/nex-api/backend/internal/catalog"
-	"github.com/shuTwT/nex-api/backend/internal/config"
-	"github.com/shuTwT/nex-api/backend/internal/payment"
-	"github.com/shuTwT/nex-api/backend/internal/runtime"
-	"github.com/shuTwT/nex-api/backend/internal/schedule"
-	"github.com/shuTwT/nex-api/backend/internal/stats"
-	"github.com/shuTwT/nex-api/backend/internal/worker"
+	"github.com/shuTwT/nex-api/backend/internal/handler/cron"
+	"github.com/shuTwT/nex-api/backend/internal/handler/oauth"
+	"github.com/shuTwT/nex-api/backend/internal/handler/router"
+	"github.com/shuTwT/nex-api/backend/internal/infra/config"
+	"github.com/shuTwT/nex-api/backend/internal/infra/logger"
+	"github.com/shuTwT/nex-api/backend/internal/infra/schedule"
+	"github.com/shuTwT/nex-api/backend/internal/infra/worker"
+	servicegateway "github.com/shuTwT/nex-api/backend/internal/service/gateway"
 )
 
 func main() {
 	var configFile string
 	flag.StringVar(&configFile, "config", "", "path to a config file (optional; environment variables take precedence per key)")
 	flag.Parse()
-
-	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
-	defer stop()
 
 	options := []config.Option{config.WithDotEnvFile(defaultDotEnvFile())}
 	if configFile != "" {
@@ -46,14 +37,15 @@ func main() {
 		fmt.Fprintf(os.Stderr, "nex-api: load configuration: %v\n", err)
 		os.Exit(1)
 	}
-	logger, err := runtime.NewLogger(cfg.Log)
+	loggerInstance, err := logger.NewLogger(cfg.Log)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "nex-api: create logger: %v\n", err)
 		os.Exit(1)
 	}
 
-	if err := run(ctx, cfg, logger); err != nil {
-		logger.Error("server exited with error", slog.Any("err", err))
+	ctx := context.Background()
+	if err := run(ctx, cfg, loggerInstance); err != nil {
+		loggerInstance.Error("server exited with error", slog.Any("err", err))
 		os.Exit(1)
 	}
 }
@@ -68,186 +60,108 @@ func defaultDotEnvFile() string {
 	return filepath.Join(workingDirectory, ".env")
 }
 
-func run(ctx context.Context, cfg config.Config, logger *slog.Logger) error {
-	client, err := openDatabase(ctx, cfg.Database, logger)
-	if err != nil {
-		return fmt.Errorf("open database: %w", err)
-	}
-	defer client.Close()
-
-	redisClient, err := newRedisClient(cfg.Redis)
-	if err != nil {
-		return fmt.Errorf("create redis client: %w", err)
-	}
-	defer redisClient.Close()
-	// Redis 未就绪时只告警、不阻止启动;readyz 会持续暴露该状态。
-	if err := redisClient.Ping(ctx).Err(); err != nil {
-		logger.Warn("redis is unreachable; usage statistics and rate limiting will be unavailable", slog.Any("err", err))
+func run(ctx context.Context, cfg config.Config, loggerInstance *slog.Logger) error {
+	if ctx == nil {
+		return errors.New("server context is nil")
 	}
 
-	statsStore, err := stats.NewStore(redisClient)
-	if err != nil {
-		return fmt.Errorf("create stats store: %w", err)
-	}
+	// The run context owns every long-lived resource, including script-worker
+	// subprocesses.  This makes caller cancellation and SIGINT/SIGTERM follow
+	// the same graceful shutdown path.
+	runCtx, stop := signal.NotifyContext(ctx, os.Interrupt, syscall.SIGTERM)
+	defer stop()
 
-	authService, err := auth.NewService(client, cfg.Auth,
-		auth.WithSecureCookies(isProduction(cfg.Environment)),
-	)
+	deps, scheduleManager, err := buildServices(runCtx, cfg, loggerInstance)
 	if err != nil {
-		return fmt.Errorf("create auth service: %w", err)
-	}
-	apiTokenStore, err := authz.NewEntTokenStore(client)
-	if err != nil {
-		return fmt.Errorf("create api token store: %w", err)
-	}
-	apiTokens, err := authz.NewTokenService(apiTokenStore)
-	if err != nil {
-		return fmt.Errorf("create api token service: %w", err)
-	}
-	audit, err := accounts.NewAuditService(client)
-	if err != nil {
-		return fmt.Errorf("create audit service: %w", err)
-	}
-	apiService, err := catalog.NewAPIService(client)
-	if err != nil {
-		return fmt.Errorf("create api service: %w", err)
-	}
-	mcpService, err := catalog.NewMCPService(client)
-	if err != nil {
-		return fmt.Errorf("create mcp service: %w", err)
-	}
-	paymentService, err := payment.NewService(client, cfg.AppURL)
-	if err != nil {
-		return fmt.Errorf("create payment service: %w", err)
-	}
-	statsSync, err := stats.NewSyncService(statsStore, client)
-	if err != nil {
-		return fmt.Errorf("create stats sync service: %w", err)
-	}
-	scheduleManager, err := schedule.NewScheduleManager(logger)
-	if err != nil {
-		return fmt.Errorf("create schedule manager: %w", err)
+		return err
 	}
 	defer func() {
-		shutdownCtx, cancel := context.WithTimeout(context.Background(), cfg.Server.ShutdownTimeout)
-		defer cancel()
-		if shutdownErr := scheduleManager.Shutdown(shutdownCtx); shutdownErr != nil {
-			logger.Error("schedule manager shutdown failed", slog.Any("err", shutdownErr))
-		}
+		shutdownServerResources(runCtx, cfg.Server.ShutdownTimeout, deps, scheduleManager, loggerInstance)
 	}()
-	if err := scheduleManager.RegisterTask(schedule.TaskKeyStatsSync, "将 Redis 中的 API/MCP 调用统计同步到数据库", statsSync.Sync); err != nil {
-		return fmt.Errorf("register stats sync job: %w", err)
-	}
-	if err := scheduleManager.RegisterTask(schedule.TaskKeyExpirePayments, "关闭并过期超过支付时限的 pending 订单", func(ctx context.Context) error {
-		count, expireErr := paymentService.ExpirePendingPayments(ctx)
-		if count > 0 {
-			logger.Info("expired pending payment orders", slog.Int("count", count))
-		}
-		return expireErr
-	}); err != nil {
-		return fmt.Errorf("register payment expiration job: %w", err)
-	}
-	scheduleService, err := schedule.NewService(client, scheduleManager)
-	if err != nil {
-		return fmt.Errorf("create schedule service: %w", err)
-	}
-	if err := scheduleService.EnsureDefaults(ctx,
-		schedule.DefaultJob{
-			Name: "统计数据同步", TaskKey: schedule.TaskKeyStatsSync, ScheduleType: "duration",
-			Expression: cfg.Cron.Interval.String(), Enabled: cfg.Cron.Enabled,
-			Description: "周期性将 Redis 调用计数同步到数据库",
-		},
-		schedule.DefaultJob{
-			Name: "支付订单过期", TaskKey: schedule.TaskKeyExpirePayments, ScheduleType: "duration",
-			Expression: "1m", Enabled: true,
-			Description: "关闭 Provider 订单并将超过 expiredAt 的 pending 订单置为 expired",
-		},
-	); err != nil {
-		return fmt.Errorf("bootstrap scheduled jobs: %w", err)
-	}
-	if err := scheduleService.LoadEnabled(ctx); err != nil {
-		return fmt.Errorf("load scheduled jobs: %w", err)
+
+	// Redis 未就绪时只告警、不阻止启动;readyz 会持续暴露该状态。
+	if err := deps.Redis.Ping(runCtx).Err(); err != nil {
+		loggerInstance.Warn("redis is unreachable; usage statistics and rate limiting will be unavailable", slog.Any("err", err))
 	}
 
-	pool, err := newWorkerPool(ctx, logger)
+	pool, err := newWorkerPool(runCtx, loggerInstance)
 	if err != nil {
-		logger.Warn("script worker unavailable; API script transforms will be disabled", slog.Any("err", err))
+		loggerInstance.Warn("script worker unavailable; API script transforms will be disabled", slog.Any("err", err))
 	} else {
-		logger.Info("script worker pool started", slog.Int("workers", 2))
+		loggerInstance.Info("script worker pool started", slog.Int("workers", 2))
 	}
+	deps.WorkerPool = pool
+	deps.Transforms = pool
+	deps.Accountant = servicegateway.NewEntAccountant(deps.Client)
 
-	deps := dependencies{
-		client:      client,
-		redis:       redisClient,
-		logger:      logger,
-		statsStore:  statsStore,
-		authService: authService,
-		apiTokens:   apiTokens,
-		audit:       audit,
-		apiService:  apiService,
-		mcpService:  mcpService,
-		payment:     paymentService,
-		statsSync:   statsSync,
-		schedule:    scheduleService,
-		workerPool:  pool,
+	routerConfig := router.Config{
+		Cron: cron.Config{Enabled: cfg.Cron.Enabled, Secret: cfg.Cron.Secret},
+		OAuth: oauth.Config{
+			AppURL:        cfg.AppURL,
+			SessionSecret: []byte(cfg.Auth.SessionSecret),
+		},
 	}
-
-	handler, err := buildRouter(ctx, cfg, deps)
+	handler, err := router.BuildRouter(runCtx, routerConfig, deps.Dependencies)
 	if err != nil {
 		return fmt.Errorf("build router: %w", err)
 	}
 
-	server, err := runtime.NewServer(cfg, runtime.Dependencies{
-		Handler: sessionMiddleware(authService, handler),
-		Logger:  logger,
-		Readiness: []runtime.DependencyCheck{
-			{
-				Name: "database",
-				Check: func(ctx context.Context) error {
-					_, err := client.User.Query().Count(ctx)
-					return err
-				},
-			},
-			{
-				Name:  "redis",
-				Check: func(ctx context.Context) error { return redisClient.Ping(ctx).Err() },
-			},
-		},
-	})
+	server, err := buildHTTPServer(runCtx, cfg, deps, loggerInstance, handler)
 	if err != nil {
-		return fmt.Errorf("create server: %w", err)
+		return err
 	}
 	scheduleManager.Start()
 
-	logger.Info("server starting",
+	loggerInstance.Info("server starting",
 		slog.String("addr", server.Addr()),
 		slog.String("environment", cfg.Environment),
 	)
-	return server.RunWithSignals(ctx)
+	return server.Run(runCtx)
 }
 
-// newRedisClient 根据配置创建 Redis 客户端。
-func newRedisClient(cfg config.Redis) (*redis.Client, error) {
-	opt, err := redis.ParseURL(cfg.URL)
-	if err != nil {
-		return nil, fmt.Errorf("parse redis url: %w", err)
+// shutdownServerResources releases resources in dependency order after the
+// HTTP server has stopped accepting work. Pool.Close is deliberately explicit:
+// worker.Pool also observes runCtx, but this covers startup failures before a
+// server is running and keeps ownership clear at the composition root.
+func shutdownServerResources(ctx context.Context, timeout time.Duration, deps serverDependencies, scheduleManager *schedule.ScheduleManager, loggerInstance *slog.Logger) {
+	shutdownCtx, cancel := gracefulShutdownContext(ctx, timeout)
+	defer cancel()
+
+	if deps.WorkerPool != nil {
+		if err := deps.WorkerPool.Close(); err != nil && loggerInstance != nil {
+			loggerInstance.Error("script worker pool shutdown failed", slog.Any("err", err))
+		}
 	}
-	// REDIS_URL 中的凭据优先；未携带时允许使用单独的 REDIS_PASSWORD。
-	if opt.Password == "" {
-		opt.Password = cfg.Password
+	if scheduleManager != nil {
+		if err := scheduleManager.Shutdown(shutdownCtx); err != nil && loggerInstance != nil {
+			loggerInstance.Error("schedule manager shutdown failed", slog.Any("err", err))
+		}
 	}
-	if cfg.TLS {
-		opt.TLSConfig = &tls.Config{MinVersion: tls.VersionTLS12}
+	if deps.Redis != nil {
+		if err := deps.Redis.Close(); err != nil && loggerInstance != nil {
+			loggerInstance.Error("redis shutdown failed", slog.Any("err", err))
+		}
 	}
-	// 降低不可用时的阻塞时长,避免 readiness 检查长时间等待。
-	opt.DialTimeout = 2 * time.Second
-	opt.MaxRetries = 1
-	return redis.NewClient(opt), nil
+	if deps.Client != nil {
+		if err := deps.Client.Close(); err != nil && loggerInstance != nil {
+			loggerInstance.Error("database shutdown failed", slog.Any("err", err))
+		}
+	}
+}
+
+func gracefulShutdownContext(parent context.Context, timeout time.Duration) (context.Context, context.CancelFunc) {
+	if parent == nil {
+		parent = context.Background()
+	}
+	if timeout <= 0 {
+		timeout = 20 * time.Second
+	}
+	return context.WithTimeout(context.WithoutCancel(parent), timeout)
 }
 
 // newWorkerPool 启动 script-worker 进程池;找不到可执行文件时返回错误,
 // 由调用方降级(禁用脚本转换)而不是阻止服务启动。
-func newWorkerPool(ctx context.Context, logger *slog.Logger) (*worker.Pool, error) {
+func newWorkerPool(ctx context.Context, loggerInstance *slog.Logger) (*worker.Pool, error) {
 	executable := resolveWorkerExecutable()
 	if executable == "" {
 		return nil, errors.New("script-worker executable not found (set NEX_WORKER_PATH or run make build)")

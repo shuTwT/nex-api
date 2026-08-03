@@ -12,7 +12,7 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/shuTwT/nex-api/backend/internal/worker"
+	"github.com/shuTwT/nex-api/backend/internal/infra/worker"
 )
 
 func main() {
