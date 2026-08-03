@@ -1,15 +1,12 @@
 package catalog
 
 import (
-	"encoding/json"
 	"errors"
-	"io"
 	"net/http"
-	"strconv"
 
 	"github.com/go-chi/chi/v5"
-	appRuntime "github.com/shuTwT/nex-api/backend/internal/handler/httpkit"
 	"github.com/shuTwT/nex-api/backend/internal/middleware"
+	handlerutils "github.com/shuTwT/nex-api/backend/internal/pkg/utils"
 	servicecatalog "github.com/shuTwT/nex-api/backend/internal/service/catalog"
 )
 
@@ -56,19 +53,6 @@ func RegisterRoutes(r chi.Router, handler *Handler) error {
 	return nil
 }
 
-func decodeJSON[T any](r *http.Request, destination *T) error {
-	decoder := json.NewDecoder(io.LimitReader(r.Body, 1<<20))
-	decoder.DisallowUnknownFields()
-	if err := decoder.Decode(destination); err != nil {
-		return servicecatalog.ValidationError("body", "invalid JSON")
-	}
-	var extra json.RawMessage
-	if err := decoder.Decode(&extra); !errors.Is(err, io.EOF) {
-		return servicecatalog.ValidationError("body", "must contain exactly one JSON value")
-	}
-	return nil
-}
-
 func parseAPIListOptions(r *http.Request) (servicecatalog.APIListOptions, error) {
 	page, limit, err := parsePage(r)
 	if err != nil {
@@ -101,41 +85,11 @@ func parsePage(r *http.Request) (int, int, error) {
 }
 
 func positiveQueryInt(r *http.Request, name string, fallback int) (int, error) {
-	raw := r.URL.Query().Get(name)
-	if raw == "" {
-		return fallback, nil
-	}
-	value, err := strconv.Atoi(raw)
-	if err != nil || value < 1 {
+	value, err := handlerutils.PositiveInt(r.URL.Query().Get(name), fallback)
+	if err != nil {
 		return 0, servicecatalog.ValidationError(name, "must be a positive integer")
 	}
 	return value, nil
-}
-
-func writeData[T any](w http.ResponseWriter, status int, data T) {
-	if err := appRuntime.WriteData(w, status, data); err != nil {
-		return
-	}
-}
-
-func writePaginated[T any](w http.ResponseWriter, data T, page, limit, total int) {
-	pages := total / limit
-	if total%limit != 0 {
-		pages++
-	}
-	envelope := appRuntime.Envelope[T]{Success: true, Data: &data, Pagination: &appRuntime.Pagination{Page: page, PageSize: limit, Total: total, TotalPages: pages}}
-	if err := appRuntime.WriteEnvelope(w, http.StatusOK, envelope); err != nil {
-		return
-	}
-}
-
-func writeCatalogError(w http.ResponseWriter, r *http.Request, err error) {
-	if err == nil {
-		err = appRuntime.NewAPIError(http.StatusInternalServerError, "internal_error", "internal server error", nil)
-	}
-	if writeErr := appRuntime.WriteError(w, r, err); writeErr != nil {
-		return
-	}
 }
 
 func intValue(value *int) int {

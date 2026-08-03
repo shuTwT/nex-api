@@ -3,6 +3,7 @@ package accounts
 import (
 	"fmt"
 	appRuntime "github.com/shuTwT/nex-api/backend/internal/handler/httpkit"
+	handlerutils "github.com/shuTwT/nex-api/backend/internal/pkg/utils"
 	serviceaccounts "github.com/shuTwT/nex-api/backend/internal/service/accounts"
 	"net/http"
 )
@@ -31,7 +32,7 @@ func (h *Handler) listAudits(w http.ResponseWriter, r *http.Request) {
 		writeServiceError(w, r, err)
 		return
 	}
-	writePage(w, http.StatusOK, views, info)
+	handlerutils.WritePaginated(w, views, info.Page, info.PageSize, info.Total)
 }
 
 func (h *Handler) createAudit(w http.ResponseWriter, r *http.Request) {
@@ -41,7 +42,7 @@ func (h *Handler) createAudit(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	var entry serviceaccounts.AuditEntry
-	if err := decodeJSON(r, &entry); err != nil {
+	if err := handlerutils.DecodeJSON(r, &entry); err != nil {
 		writeServiceError(w, r, fmt.Errorf("decode audit: %w", serviceaccounts.ErrInvalidRequest))
 		return
 	}
@@ -53,7 +54,7 @@ func (h *Handler) createAudit(w http.ResponseWriter, r *http.Request) {
 		writeServiceError(w, r, err)
 		return
 	}
-	writeData(w, http.StatusCreated, view)
+	handlerutils.WriteData(w, http.StatusCreated, view)
 }
 
 func (h *Handler) getAudit(w http.ResponseWriter, r *http.Request) {
@@ -71,7 +72,7 @@ func (h *Handler) getAudit(w http.ResponseWriter, r *http.Request) {
 		writeServiceError(w, r, appRuntime.ErrForbidden)
 		return
 	}
-	writeData(w, http.StatusOK, view)
+	handlerutils.WriteData(w, http.StatusOK, view)
 }
 
 func (h *Handler) updateAudit(w http.ResponseWriter, r *http.Request) {
@@ -90,7 +91,7 @@ func (h *Handler) updateAudit(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	var entry serviceaccounts.AuditEntry
-	if err := decodeJSON(r, &entry); err != nil {
+	if err := handlerutils.DecodeJSON(r, &entry); err != nil {
 		writeServiceError(w, r, fmt.Errorf("decode audit: %w", serviceaccounts.ErrInvalidRequest))
 		return
 	}
@@ -99,7 +100,7 @@ func (h *Handler) updateAudit(w http.ResponseWriter, r *http.Request) {
 		writeServiceError(w, r, err)
 		return
 	}
-	writeData(w, http.StatusOK, view)
+	handlerutils.WriteData(w, http.StatusOK, view)
 }
 
 func (h *Handler) deleteAudit(w http.ResponseWriter, r *http.Request) {
@@ -121,7 +122,7 @@ func (h *Handler) deleteAudit(w http.ResponseWriter, r *http.Request) {
 		writeServiceError(w, r, err)
 		return
 	}
-	writeData(w, http.StatusOK, map[string]string{"message": "审计日志已删除"})
+	handlerutils.WriteData(w, http.StatusOK, map[string]string{"message": "审计日志已删除"})
 }
 
 func (h *Handler) exportAudits(w http.ResponseWriter, r *http.Request) {
@@ -163,5 +164,5 @@ func (h *Handler) auditStats(w http.ResponseWriter, r *http.Request) {
 		writeServiceError(w, r, err)
 		return
 	}
-	writeData(w, http.StatusOK, view)
+	handlerutils.WriteData(w, http.StatusOK, view)
 }

@@ -8,7 +8,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io"
 	"net"
 	"net/http"
 	"strings"
@@ -16,7 +15,9 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/shuTwT/nex-api/backend/internal/middleware"
+	handlerutils "github.com/shuTwT/nex-api/backend/internal/pkg/utils"
 	serviceauth "github.com/shuTwT/nex-api/backend/internal/service/auth"
+	"github.com/shuTwT/nex-api/backend/pkg/domain/model"
 )
 
 type Handler struct {
@@ -25,16 +26,7 @@ type Handler struct {
 	mux     chi.Router
 }
 
-type loginRequest struct {
-	Email    string `json:"email"`
-	Password string `json:"password"`
-}
-
-type responseEnvelope struct {
-	Success bool   `json:"success"`
-	Data    any    `json:"data,omitempty"`
-	Error   string `json:"error,omitempty"`
-}
+type responseEnvelope = model.EnvelopeResp
 
 func NewHandler(service *serviceauth.Service) http.Handler {
 	return newHandler(service)
@@ -97,8 +89,8 @@ func (h *Handler) csrfToken(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) login(w http.ResponseWriter, r *http.Request) {
-	var request loginRequest
-	if err := decodeJSON(r, &request); err != nil || strings.TrimSpace(request.Email) == "" || request.Password == "" {
+	var request model.AuthLoginReq
+	if err := handlerutils.DecodeJSON(r, &request); err != nil || strings.TrimSpace(request.Email) == "" || request.Password == "" {
 		if writeErr := writeError(w, http.StatusBadRequest, "invalid_request"); writeErr != nil {
 			return
 		}
@@ -172,22 +164,6 @@ func (h *Handler) tokenFromRequest(r *http.Request) string {
 		return ""
 	}
 	return cookie.Value
-}
-
-func decodeJSON(r *http.Request, destination any) error {
-	decoder := json.NewDecoder(io.LimitReader(r.Body, 1<<20))
-	decoder.DisallowUnknownFields()
-	if err := decoder.Decode(destination); err != nil {
-		return err
-	}
-	var extra any
-	if err := decoder.Decode(&extra); !errors.Is(err, io.EOF) {
-		if err == nil {
-			return errors.New("auth: multiple json values")
-		}
-		return err
-	}
-	return nil
 }
 
 func writeJSON(w http.ResponseWriter, status int, value responseEnvelope) error {

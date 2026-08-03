@@ -4,8 +4,9 @@ import (
 	"encoding/json"
 	"errors"
 	"github.com/go-chi/chi/v5"
+	handlerutils "github.com/shuTwT/nex-api/backend/internal/pkg/utils"
 	servicesystem "github.com/shuTwT/nex-api/backend/internal/service/system"
-	"io"
+	"github.com/shuTwT/nex-api/backend/pkg/domain/model"
 	"net/http"
 )
 
@@ -14,20 +15,8 @@ type Handler struct {
 	mux     chi.Router
 }
 
-type responseEnvelope struct {
-	Success bool        `json:"success"`
-	Data    interface{} `json:"data,omitempty"`
-	Error   string      `json:"error,omitempty"`
-}
-
-type initializeData struct {
-	ID       string `json:"id"`
-	Email    string `json:"email"`
-	Username string `json:"username"`
-	Role     string `json:"role"`
-	Credits  int    `json:"credits"`
-	Password string `json:"password,omitempty"`
-}
+type responseEnvelope = model.EnvelopeResp
+type initializeData = model.SystemInitializeResp
 
 func NewHandler(service *servicesystem.Service) http.Handler {
 	handler := &Handler{service: service, mux: chi.NewRouter()}
@@ -72,8 +61,8 @@ func (h *Handler) initialized(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) initialize(w http.ResponseWriter, r *http.Request) {
-	var request servicesystem.InitializeRequest
-	if err := decodeJSON(r, &request); err != nil {
+	var request model.SystemInitializeReq
+	if err := handlerutils.DecodeJSON(r, &request); err != nil {
 		writeJSON(w, http.StatusBadRequest, responseEnvelope{Success: false, Error: "invalid_request"})
 		return
 	}
@@ -97,22 +86,6 @@ func (h *Handler) initialize(w http.ResponseWriter, r *http.Request) {
 			Credits: admin.Credits,
 		},
 	})
-}
-
-func decodeJSON(r *http.Request, destination interface{}) error {
-	decoder := json.NewDecoder(io.LimitReader(r.Body, 1<<20))
-	decoder.DisallowUnknownFields()
-	if err := decoder.Decode(destination); err != nil {
-		return err
-	}
-	var extra interface{}
-	if err := decoder.Decode(&extra); !errors.Is(err, io.EOF) {
-		if err == nil {
-			return errors.New("system: multiple JSON values")
-		}
-		return err
-	}
-	return nil
 }
 
 func writeJSON(w http.ResponseWriter, status int, value interface{}) error {

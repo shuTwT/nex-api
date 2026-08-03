@@ -12,6 +12,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	appRuntime "github.com/shuTwT/nex-api/backend/internal/handler/httpkit"
 	"github.com/shuTwT/nex-api/backend/internal/middleware"
+	handlerutils "github.com/shuTwT/nex-api/backend/internal/pkg/utils"
 	serviceupload "github.com/shuTwT/nex-api/backend/internal/service/upload"
 )
 
@@ -40,7 +41,7 @@ func RegisterRoutes(mux chi.Router, storage *serviceupload.Service) error {
 
 func (h *Handler) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
 	if h == nil || h.storage == nil {
-		writeError(writer, request, errors.New("upload: storage is unavailable"))
+		writeUploadError(writer, request, errors.New("upload: storage is unavailable"))
 		return
 	}
 	switch request.Method {
@@ -50,23 +51,23 @@ func (h *Handler) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
 		h.UploadFilenameRouteGet(writer, request, filenameFromRequest(request))
 	default:
 		writer.Header().Set("Allow", http.MethodGet+", "+http.MethodPost)
-		writeError(writer, request, appRuntime.NewAPIError(http.StatusMethodNotAllowed, "method_not_allowed", "method not allowed", nil))
+		writeUploadError(writer, request, appRuntime.NewAPIError(http.StatusMethodNotAllowed, "method_not_allowed", "method not allowed", nil))
 	}
 }
 
 func (h *Handler) UploadRoutePost(writer http.ResponseWriter, request *http.Request) {
 	if h == nil || h.storage == nil {
-		writeError(writer, request, errors.New("upload: storage is unavailable"))
+		writeUploadError(writer, request, errors.New("upload: storage is unavailable"))
 		return
 	}
 	if request.ContentLength > h.storage.MaxBytes()+multipartOverhead {
-		writeError(writer, request, serviceupload.ErrFileTooLarge)
+		writeUploadError(writer, request, serviceupload.ErrFileTooLarge)
 		return
 	}
 	request.Body = http.MaxBytesReader(writer, request.Body, h.storage.MaxBytes()+multipartOverhead)
 	if err := request.ParseMultipartForm(h.storage.MaxBytes()); err != nil {
 		removeMultipartForm(request)
-		writeError(writer, request, err)
+		writeUploadError(writer, request, err)
 		return
 	}
 	file, header, err := request.FormFile("file")
@@ -75,28 +76,26 @@ func (h *Handler) UploadRoutePost(writer http.ResponseWriter, request *http.Requ
 		if removeErr != nil {
 			err = errors.Join(err, removeErr)
 		}
-		writeError(writer, request, err)
+		writeUploadError(writer, request, err)
 		return
 	}
 	metadata, saveErr := h.storage.Save(request.Context(), file, header.Filename, header.Header.Get("Content-Type"))
 	closeErr := file.Close()
 	removeErr := removeMultipartForm(request)
 	if saveErr != nil {
-		writeError(writer, request, saveErr)
+		writeUploadError(writer, request, saveErr)
 		return
 	}
 	if closeErr != nil || removeErr != nil {
-		writeError(writer, request, errors.Join(closeErr, removeErr))
+		writeUploadError(writer, request, errors.Join(closeErr, removeErr))
 		return
 	}
-	if err := appRuntime.WriteData(writer, http.StatusOK, metadata); err != nil {
-		return
-	}
+	handlerutils.WriteData(writer, http.StatusOK, metadata)
 }
 
 func (h *Handler) UploadFilenameRouteGet(writer http.ResponseWriter, request *http.Request, filename string) {
 	if h == nil || h.storage == nil {
-		writeError(writer, request, errors.New("upload: storage is unavailable"))
+		writeUploadError(writer, request, errors.New("upload: storage is unavailable"))
 		return
 	}
 	h.serve(writer, request, filename)
@@ -105,7 +104,7 @@ func (h *Handler) UploadFilenameRouteGet(writer http.ResponseWriter, request *ht
 func (h *Handler) serve(writer http.ResponseWriter, request *http.Request, filename string) {
 	content, err := h.storage.OpenFile(filename)
 	if err != nil {
-		writeError(writer, request, err)
+		writeUploadError(writer, request, err)
 		return
 	}
 	defer content.Body.Close()
@@ -133,11 +132,9 @@ func removeMultipartForm(request *http.Request) error {
 	return request.MultipartForm.RemoveAll()
 }
 
-func writeError(writer http.ResponseWriter, request *http.Request, err error) {
+func writeUploadError(writer http.ResponseWriter, request *http.Request, err error) {
 	apiError := classifyError(err)
-	if writeErr := appRuntime.WriteError(writer, request, apiError); writeErr != nil {
-		return
-	}
+	handlerutils.WriteError(writer, request, apiError)
 }
 
 func classifyError(err error) error {

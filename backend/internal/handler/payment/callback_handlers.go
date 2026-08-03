@@ -4,7 +4,7 @@ import (
 	"io"
 	"net/http"
 
-	appRuntime "github.com/shuTwT/nex-api/backend/internal/handler/httpkit"
+	handlerutils "github.com/shuTwT/nex-api/backend/internal/pkg/utils"
 )
 
 func (h *Handler) wechatCallback(w http.ResponseWriter, r *http.Request) {
@@ -45,11 +45,11 @@ func (h *Handler) mockCallback(w http.ResponseWriter, r *http.Request) {
 		h.callbackError(w, r, err)
 		return
 	}
-	writeData(w, http.StatusOK, struct {
+	handlerutils.WriteData(w, http.StatusOK, struct {
 		Success bool `json:"success"`
 	}{Success: true})
 }
 
 func (h *Handler) callbackError(w http.ResponseWriter, r *http.Request, err error) {
-	_ = appRuntime.WriteError(w, r, err)
+	handlerutils.WriteError(w, r, err)
 }

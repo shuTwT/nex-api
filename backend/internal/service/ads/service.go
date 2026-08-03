@@ -11,6 +11,7 @@ import (
 	"github.com/shuTwT/nex-api/backend/ent"
 	"github.com/shuTwT/nex-api/backend/ent/advertisement"
 	"github.com/shuTwT/nex-api/backend/internal/service/apierror"
+	"github.com/shuTwT/nex-api/backend/pkg/domain/model"
 )
 
 type Service struct{ db *ent.Client }
@@ -55,17 +56,8 @@ type ListResult struct {
 	Total int
 }
 
-type PositionStat struct {
-	Position string         `json:"position"`
-	Count    map[string]int `json:"_count"`
-}
-
-type Stats struct {
-	TotalAds      int            `json:"totalAds"`
-	ActiveAds     int            `json:"activeAds"`
-	InactiveAds   int            `json:"inactiveAds"`
-	PositionStats []PositionStat `json:"positionStats"`
-}
+type PositionStat = model.AdvertisementPositionDTO
+type Stats = model.AdvertisementStatsResp
 
 func (s *Service) List(ctx context.Context, options ListOptions) (ListResult, error) {
 	options = normalizeListOptions(options)

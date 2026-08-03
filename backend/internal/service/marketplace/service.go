@@ -11,42 +11,11 @@ import (
 	"github.com/shuTwT/nex-api/backend/ent/api"
 	"github.com/shuTwT/nex-api/backend/ent/mcpservice"
 	"github.com/shuTwT/nex-api/backend/internal/service/stats"
+	"github.com/shuTwT/nex-api/backend/pkg/domain/model"
 )
 
-// APIView is the marketplace API listing row.
-type APIView struct {
-	ID             string `json:"id"`
-	Name           string `json:"name"`
-	Description    string `json:"description"`
-	Alias          string `json:"alias"`
-	Endpoint       string `json:"endpoint"`
-	Method         string `json:"method"`
-	Pricing        int    `json:"pricing"`
-	Category       string `json:"category"`
-	IsFree         bool   `json:"isFree"`
-	IsActive       bool   `json:"isActive,omitempty"`
-	TodayCallCount int64  `json:"todayCallCount"`
-	UserCount      int    `json:"userCount"`
-	TotalCallCount int64  `json:"totalCallCount"`
-	CreatedAt      string `json:"createdAt,omitempty"`
-	UpdatedAt      string `json:"updatedAt,omitempty"`
-}
-
-// MCPView is the marketplace MCP service listing row.
-type MCPView struct {
-	ID             string `json:"id"`
-	Name           string `json:"name"`
-	Identifier     string `json:"identifier"`
-	Type           string `json:"type"`
-	Pricing        int    `json:"pricing"`
-	IsFree         bool   `json:"isFree"`
-	IsActive       bool   `json:"isActive,omitempty"`
-	TodayCallCount int64  `json:"todayCallCount"`
-	UserCount      int    `json:"userCount"`
-	TotalCallCount int64  `json:"totalCallCount"`
-	CreatedAt      string `json:"createdAt,omitempty"`
-	UpdatedAt      string `json:"updatedAt,omitempty"`
-}
+type APIView = model.MarketplaceAPIResp
+type MCPView = model.MarketplaceMCPResp
 
 // ListOptions filters a marketplace listing.
 type ListOptions struct {

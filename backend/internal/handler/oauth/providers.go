@@ -3,7 +3,7 @@ package oauth
 import (
 	"net/http"
 
-	"github.com/shuTwT/nex-api/backend/internal/handler/httpkit"
+	handlerutils "github.com/shuTwT/nex-api/backend/internal/pkg/utils"
 )
 
 type publicProvider struct {
@@ -21,5 +21,5 @@ func (h *Handler) providers(w http.ResponseWriter, r *http.Request) {
 	for _, provider := range providers {
 		available = append(available, publicProvider{ID: provider.ID, Name: provider.DisplayName()})
 	}
-	_ = httpkit.WriteData(w, http.StatusOK, available)
+	handlerutils.WriteData(w, http.StatusOK, available)
 }

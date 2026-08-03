@@ -2,6 +2,7 @@ package accounts
 
 import (
 	"fmt"
+	handlerutils "github.com/shuTwT/nex-api/backend/internal/pkg/utils"
 	serviceaccounts "github.com/shuTwT/nex-api/backend/internal/service/accounts"
 	"net/http"
 )
@@ -17,7 +18,7 @@ func (h *Handler) getProfile(w http.ResponseWriter, r *http.Request) {
 		writeServiceError(w, r, err)
 		return
 	}
-	writeData(w, http.StatusOK, view)
+	handlerutils.WriteData(w, http.StatusOK, view)
 }
 
 func (h *Handler) updateProfile(w http.ResponseWriter, r *http.Request) {
@@ -27,7 +28,7 @@ func (h *Handler) updateProfile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	var request serviceaccounts.ProfileUpdateRequest
-	if err := decodeJSON(r, &request); err != nil {
+	if err := handlerutils.DecodeJSON(r, &request); err != nil {
 		writeServiceError(w, r, fmt.Errorf("decode profile: %w", serviceaccounts.ErrInvalidRequest))
 		return
 	}
@@ -36,7 +37,7 @@ func (h *Handler) updateProfile(w http.ResponseWriter, r *http.Request) {
 		writeServiceError(w, r, err)
 		return
 	}
-	writeData(w, http.StatusOK, view)
+	handlerutils.WriteData(w, http.StatusOK, view)
 }
 
 func (h *Handler) updatePassword(w http.ResponseWriter, r *http.Request) {
@@ -46,7 +47,7 @@ func (h *Handler) updatePassword(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	var request serviceaccounts.PasswordUpdateRequest
-	if err := decodeJSON(r, &request); err != nil {
+	if err := handlerutils.DecodeJSON(r, &request); err != nil {
 		writeServiceError(w, r, fmt.Errorf("decode password: %w", serviceaccounts.ErrInvalidRequest))
 		return
 	}
@@ -54,5 +55,5 @@ func (h *Handler) updatePassword(w http.ResponseWriter, r *http.Request) {
 		writeServiceError(w, r, err)
 		return
 	}
-	writeData(w, http.StatusOK, map[string]string{"message": "密码已更新"})
+	handlerutils.WriteData(w, http.StatusOK, map[string]string{"message": "密码已更新"})
 }

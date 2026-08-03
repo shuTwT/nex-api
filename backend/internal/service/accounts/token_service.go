@@ -11,48 +11,20 @@ import (
 
 	"github.com/shuTwT/nex-api/backend/ent"
 	"github.com/shuTwT/nex-api/backend/ent/apitoken"
+	"github.com/shuTwT/nex-api/backend/pkg/domain/model"
 )
 
-type TokenCreateRequest struct {
-	Name        string     `json:"name"`
-	Permissions string     `json:"permissions"`
-	ExpiresAt   *time.Time `json:"expiresAt"`
-}
-
-type TokenUpdateRequest struct {
-	Name        string     `json:"name"`
-	Permissions string     `json:"permissions"`
-	ExpiresAt   *time.Time `json:"expiresAt"`
-	IsActive    *bool      `json:"isActive"`
-}
+type TokenCreateRequest = model.TokenCreateReq
+type TokenUpdateRequest = model.TokenUpdateReq
 
 type TokenFilter struct {
 	Search string
 	Status string
 }
 
-type TokenView struct {
-	ID          string     `json:"id"`
-	Name        string     `json:"name"`
-	Permissions string     `json:"permissions"`
-	LastUsedAt  *time.Time `json:"lastUsedAt,omitempty"`
-	ExpiresAt   *time.Time `json:"expiresAt,omitempty"`
-	IsActive    bool       `json:"isActive"`
-	CreatedAt   time.Time  `json:"createdAt"`
-	UpdatedAt   time.Time  `json:"updatedAt"`
-}
-
-type TokenCreationView struct {
-	TokenView
-	Token string `json:"token"`
-}
-
-type TokenStats struct {
-	TotalTokens    int `json:"totalTokens"`
-	ActiveTokens   int `json:"activeTokens"`
-	InactiveTokens int `json:"inactiveTokens"`
-	ExpiredTokens  int `json:"expiredTokens"`
-}
+type TokenView = model.TokenResp
+type TokenCreationView = model.TokenCreateResp
+type TokenStats = model.TokenStatsResp
 
 type TokenService struct {
 	client *ent.Client
@@ -104,7 +76,7 @@ func (s *TokenService) Create(ctx context.Context, ownerID string, request Token
 	if err := s.record(ctx, ownerID, "token.create", "token", created.ID, metadata); err != nil {
 		return TokenCreationView{}, err
 	}
-	return TokenCreationView{TokenView: tokenView(created), Token: plain}, nil
+	return TokenCreationView{TokenResp: tokenView(created), Token: plain}, nil
 }
 
 func (s *TokenService) Get(ctx context.Context, ownerID, id string) (TokenView, error) {

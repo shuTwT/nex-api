@@ -6,6 +6,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	appRuntime "github.com/shuTwT/nex-api/backend/internal/handler/httpkit"
+	handlerutils "github.com/shuTwT/nex-api/backend/internal/pkg/utils"
 	serviceauthz "github.com/shuTwT/nex-api/backend/internal/service/authz"
 	servicedashboard "github.com/shuTwT/nex-api/backend/internal/service/dashboard"
 )
@@ -40,10 +41,10 @@ func (h *Handler) dashboardStats(w http.ResponseWriter, r *http.Request) {
 	}
 	stats, err := h.service.DashboardStats(r.Context(), principal.UserID)
 	if err != nil {
-		writeError(w, r, err)
+		handlerutils.WriteError(w, r, err)
 		return
 	}
-	writeData(w, http.StatusOK, stats)
+	handlerutils.WriteData(w, http.StatusOK, stats)
 }
 
 func (h *Handler) activity(w http.ResponseWriter, r *http.Request) {
@@ -53,10 +54,10 @@ func (h *Handler) activity(w http.ResponseWriter, r *http.Request) {
 	}
 	activities, err := h.service.Activity(r.Context(), principal.UserID)
 	if err != nil {
-		writeError(w, r, err)
+		handlerutils.WriteError(w, r, err)
 		return
 	}
-	writeData(w, http.StatusOK, activities)
+	handlerutils.WriteData(w, http.StatusOK, activities)
 }
 
 func (h *Handler) topAPIs(w http.ResponseWriter, r *http.Request) {
@@ -66,10 +67,10 @@ func (h *Handler) topAPIs(w http.ResponseWriter, r *http.Request) {
 	}
 	result, err := h.service.TopAPIs(r.Context(), principal.UserID)
 	if err != nil {
-		writeError(w, r, err)
+		handlerutils.WriteError(w, r, err)
 		return
 	}
-	writeData(w, http.StatusOK, result)
+	handlerutils.WriteData(w, http.StatusOK, result)
 }
 
 func (h *Handler) usageTrend(w http.ResponseWriter, r *http.Request) {
@@ -79,10 +80,10 @@ func (h *Handler) usageTrend(w http.ResponseWriter, r *http.Request) {
 	}
 	trend, err := h.service.UsageTrend(r.Context(), principal.UserID, principal.Role)
 	if err != nil {
-		writeError(w, r, err)
+		handlerutils.WriteError(w, r, err)
 		return
 	}
-	writeData(w, http.StatusOK, trend)
+	handlerutils.WriteData(w, http.StatusOK, trend)
 }
 
 func (h *Handler) usage(w http.ResponseWriter, r *http.Request) {
@@ -92,10 +93,10 @@ func (h *Handler) usage(w http.ResponseWriter, r *http.Request) {
 	}
 	usage, err := h.service.Usage(r.Context(), principal.UserID)
 	if err != nil {
-		writeError(w, r, err)
+		handlerutils.WriteError(w, r, err)
 		return
 	}
-	writeData(w, http.StatusOK, usage)
+	handlerutils.WriteData(w, http.StatusOK, usage)
 }
 
 func (h *Handler) globalStats(w http.ResponseWriter, r *http.Request) {
@@ -104,10 +105,10 @@ func (h *Handler) globalStats(w http.ResponseWriter, r *http.Request) {
 	}
 	stats, err := h.service.GlobalStats(r.Context(), r.URL.Query().Get("type"))
 	if err != nil {
-		writeError(w, r, err)
+		handlerutils.WriteError(w, r, err)
 		return
 	}
-	writeData(w, http.StatusOK, stats)
+	handlerutils.WriteData(w, http.StatusOK, stats)
 }
 
 func (h *Handler) apiStats(w http.ResponseWriter, r *http.Request) {
@@ -117,10 +118,10 @@ func (h *Handler) apiStats(w http.ResponseWriter, r *http.Request) {
 	}
 	stats, err := h.service.APIStats(r.Context(), principal.UserID, chi.URLParam(r, "alias"), r.URL.Query().Get("user") == "true")
 	if err != nil {
-		writeError(w, r, err)
+		handlerutils.WriteError(w, r, err)
 		return
 	}
-	writeData(w, http.StatusOK, stats)
+	handlerutils.WriteData(w, http.StatusOK, stats)
 }
 
 func (h *Handler) requireUser(w http.ResponseWriter, r *http.Request) (serviceauthz.Principal, bool) {
@@ -134,16 +135,8 @@ func (h *Handler) requireUser(w http.ResponseWriter, r *http.Request) (serviceau
 			code = "forbidden"
 			message = "access denied"
 		}
-		writeError(w, r, appRuntime.NewAPIError(status, code, message, err))
+		handlerutils.WriteError(w, r, appRuntime.NewAPIError(status, code, message, err))
 		return serviceauthz.Principal{}, false
 	}
 	return principal, true
-}
-
-func writeData[T any](w http.ResponseWriter, status int, data T) {
-	_ = appRuntime.WriteData(w, status, data)
-}
-
-func writeError(w http.ResponseWriter, r *http.Request, err error) {
-	_ = appRuntime.WriteError(w, r, err)
 }

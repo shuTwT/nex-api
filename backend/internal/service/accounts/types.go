@@ -1,9 +1,8 @@
 package accounts
 
 import (
-	"time"
-
 	apierror "github.com/shuTwT/nex-api/backend/internal/service/apierror"
+	"github.com/shuTwT/nex-api/backend/pkg/domain/model"
 )
 
 var (
@@ -45,63 +44,13 @@ type AuditMetadata struct {
 	Metadata  string
 }
 
-type UserCreateRequest struct {
-	Email    string
-	Username string
-	Password string
-	Role     string
-	Credits  int
-}
-
-type UserUpdateRequest struct {
-	Email    *string
-	Username *string
-	Role     *string
-	Credits  *int
-}
-
-type SubscriptionView struct {
-	ID        string    `json:"id"`
-	PlanName  string    `json:"planName"`
-	Credits   int       `json:"credits"`
-	Price     float64   `json:"price"`
-	StartDate time.Time `json:"startDate"`
-	EndDate   time.Time `json:"endDate"`
-	IsActive  bool      `json:"isActive"`
-}
-
-type UsageView struct {
-	ID        string    `json:"id"`
-	Credits   int       `json:"credits"`
-	Status    string    `json:"status"`
-	CreatedAt time.Time `json:"createdAt"`
-	API       *APIView  `json:"api,omitempty"`
-}
-
-type APIView struct {
-	Name     string `json:"name"`
-	Endpoint string `json:"endpoint"`
-}
-
-type UserView struct {
-	ID           string            `json:"id"`
-	Name         string            `json:"name,omitempty"`
-	Email        string            `json:"email"`
-	Username     string            `json:"username"`
-	Role         string            `json:"role"`
-	Credits      int               `json:"credits"`
-	CreatedAt    time.Time         `json:"createdAt"`
-	UpdatedAt    time.Time         `json:"updatedAt"`
-	Subscription *SubscriptionView `json:"subscription,omitempty"`
-	APIUsage     []UsageView       `json:"apiUsage,omitempty"`
-}
-
-type UserStats struct {
-	TotalUsers        int `json:"totalUsers"`
-	ActiveUsers       int `json:"activeUsers"`
-	AdminUsers        int `json:"adminUsers"`
-	NewUsersThisMonth int `json:"newUsersThisMonth"`
-}
+type UserCreateRequest = model.UserCreateReq
+type UserUpdateRequest = model.UserUpdateReq
+type SubscriptionView = model.SubscriptionDTO
+type UsageView = model.UsageDTO
+type APIView = model.UsageAPIDTO
+type UserView = model.UserResp
+type UserStats = model.UserStatsResp
 
 type UserListFilter struct {
 	Role   string

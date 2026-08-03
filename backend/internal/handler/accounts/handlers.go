@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io"
 	"net"
 	"net/http"
 	"strconv"
@@ -13,6 +12,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	appRuntime "github.com/shuTwT/nex-api/backend/internal/handler/httpkit"
+	handlerutils "github.com/shuTwT/nex-api/backend/internal/pkg/utils"
 	serviceaccounts "github.com/shuTwT/nex-api/backend/internal/service/accounts"
 	"github.com/shuTwT/nex-api/backend/internal/service/authz"
 )
@@ -96,19 +96,6 @@ func admin(ctx context.Context) (authz.Principal, error) {
 	return value, nil
 }
 
-func decodeJSON(r *http.Request, destination any) error {
-	decoder := json.NewDecoder(io.LimitReader(r.Body, 1<<20))
-	decoder.DisallowUnknownFields()
-	if err := decoder.Decode(destination); err != nil {
-		return err
-	}
-	var extra any
-	if err := decoder.Decode(&extra); !errors.Is(err, io.EOF) {
-		return errors.New("multiple JSON values")
-	}
-	return nil
-}
-
 func parsePage(r *http.Request) (serviceaccounts.PageRequest, error) {
 	page, size := 1, 10
 	var err error
@@ -158,22 +145,6 @@ func requestMetadata(r *http.Request) serviceaccounts.AuditMetadata {
 	return serviceaccounts.AuditMetadata{IP: ip, UserAgent: r.UserAgent(), Metadata: string(metadata)}
 }
 
-func writeData[T any](w http.ResponseWriter, status int, data T) {
-	if err := appRuntime.WriteData(w, status, data); err != nil {
-		return
-	}
-}
-
-func writePage[T any](w http.ResponseWriter, status int, data []T, info serviceaccounts.PageInfo) {
-	envelope := appRuntime.NewSuccessEnvelope(data)
-	envelope.Pagination = &appRuntime.Pagination{Page: info.Page, PageSize: info.PageSize, Total: info.Total, TotalPages: info.TotalPages}
-	if err := appRuntime.WriteEnvelope(w, status, envelope); err != nil {
-		return
-	}
-}
-
 func writeServiceError(w http.ResponseWriter, r *http.Request, err error) {
-	if writeErr := appRuntime.WriteError(w, r, err); writeErr != nil {
-		return
-	}
+	handlerutils.WriteError(w, r, err)
 }

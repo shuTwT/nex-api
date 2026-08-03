@@ -11,6 +11,7 @@ import (
 	"github.com/shuTwT/nex-api/backend/ent/scheduledjob"
 	infraschedule "github.com/shuTwT/nex-api/backend/internal/infra/schedule"
 	appRuntime "github.com/shuTwT/nex-api/backend/internal/service/apierror"
+	"github.com/shuTwT/nex-api/backend/pkg/domain/model"
 )
 
 type DefaultJob struct {
@@ -22,30 +23,8 @@ type DefaultJob struct {
 	Description  string
 }
 
-type UpsertInput struct {
-	Name         string `json:"name"`
-	TaskKey      string `json:"taskKey"`
-	ScheduleType string `json:"scheduleType"`
-	Expression   string `json:"expression"`
-	Enabled      bool   `json:"enabled"`
-	Description  string `json:"description"`
-}
-
-type JobView struct {
-	ID           string                    `json:"id"`
-	Name         string                    `json:"name"`
-	TaskKey      string                    `json:"taskKey"`
-	ScheduleType string                    `json:"scheduleType"`
-	Expression   string                    `json:"expression"`
-	Enabled      bool                      `json:"enabled"`
-	Description  string                    `json:"description,omitempty"`
-	LastRunAt    *time.Time                `json:"lastRunAt,omitempty"`
-	LastStatus   string                    `json:"lastStatus"`
-	LastError    string                    `json:"lastError,omitempty"`
-	CreatedAt    time.Time                 `json:"createdAt"`
-	UpdatedAt    time.Time                 `json:"updatedAt"`
-	Runtime      infraschedule.RuntimeInfo `json:"runtime"`
-}
+type UpsertInput = model.ScheduleJobUpsertReq
+type JobView = model.ScheduleJobResp
 
 type Service struct {
 	database *ent.Client

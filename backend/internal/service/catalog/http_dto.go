@@ -2,65 +2,15 @@ package catalog
 
 import (
 	"github.com/shuTwT/nex-api/backend/ent"
+	"github.com/shuTwT/nex-api/backend/pkg/domain/model"
 	"strings"
 )
 
-type CategoryDTO struct {
-	ID          string  `json:"id"`
-	Name        string  `json:"name"`
-	Description string  `json:"description"`
-	Icon        *string `json:"icon"`
-}
-type ParameterDTO struct {
-	ID           string `json:"id,omitempty"`
-	ApiID        string `json:"apiId,omitempty"`
-	Name         string `json:"name,omitempty"`
-	Type         string `json:"type,omitempty"`
-	Required     bool   `json:"required,omitempty"`
-	Description  string `json:"description,omitempty"`
-	DefaultValue string `json:"defaultValue,omitempty"`
-}
-type ResponseDTO struct {
-	ID          string `json:"id,omitempty"`
-	ApiID       string `json:"apiId,omitempty"`
-	Name        string `json:"name,omitempty"`
-	Type        string `json:"type,omitempty"`
-	Description string `json:"description,omitempty"`
-}
-type APIDTO struct {
-	ID            string         `json:"id"`
-	Name          string         `json:"name"`
-	Alias         string         `json:"alias"`
-	Description   string         `json:"description"`
-	Endpoint      string         `json:"endpoint"`
-	Method        string         `json:"method"`
-	CategoryID    string         `json:"categoryId"`
-	Category      *CategoryDTO   `json:"category,omitempty"`
-	Pricing       int            `json:"pricing"`
-	Documentation *string        `json:"documentation"`
-	PreScript     *string        `json:"preScript"`
-	PostScript    *string        `json:"postScript"`
-	IsActive      bool           `json:"isActive"`
-	CallCount     int            `json:"callCount"`
-	CreatedAt     string         `json:"createdAt"`
-	UpdatedAt     string         `json:"updatedAt"`
-	Parameters    []ParameterDTO `json:"parameters,omitempty"`
-	Responses     []ResponseDTO  `json:"responses,omitempty"`
-}
-type MCPDTO struct {
-	ID         string  `json:"id"`
-	Name       string  `json:"name"`
-	Identifier string  `json:"identifier"`
-	Type       string  `json:"type"`
-	Command    *string `json:"command"`
-	Endpoint   *string `json:"endpoint"`
-	EnvVars    *string `json:"envVars"`
-	Pricing    int     `json:"pricing"`
-	IsActive   bool    `json:"isActive"`
-	CallCount  int     `json:"callCount"`
-	CreatedAt  string  `json:"createdAt"`
-	UpdatedAt  string  `json:"updatedAt"`
-}
+type CategoryDTO = model.CatalogCategoryDTO
+type ParameterDTO = model.CatalogParameterDTO
+type ResponseDTO = model.CatalogResponseDTO
+type APIDTO = model.CatalogAPIDTO
+type MCPDTO = model.CatalogMCPDTO
 
 func CategoryDTOFromEntity(value any) CategoryDTO {
 	item := value.(*ent.ApiCategory)
@@ -75,10 +25,10 @@ func APIDTOFromEntity(value any, relations bool) APIDTO {
 	}
 	if relations {
 		for _, p := range item.Edges.Parameters {
-			data.Parameters = append(data.Parameters, ParameterDTO{ID: p.ID, ApiID: p.ApiId, Name: p.Name, Type: p.Type, Required: p.Required, Description: p.Description, DefaultValue: p.DefaultValue})
+			data.Parameters = append(data.Parameters, ParameterDTO{ID: p.ID, APIID: p.ApiId, Name: p.Name, Type: p.Type, Required: p.Required, Description: p.Description, DefaultValue: p.DefaultValue})
 		}
 		for _, r := range item.Edges.Responses {
-			data.Responses = append(data.Responses, ResponseDTO{ID: r.ID, ApiID: r.ApiId, Name: r.Name, Type: r.Type, Description: r.Description})
+			data.Responses = append(data.Responses, ResponseDTO{ID: r.ID, APIID: r.ApiId, Name: r.Name, Type: r.Type, Description: r.Description})
 		}
 	}
 	return data

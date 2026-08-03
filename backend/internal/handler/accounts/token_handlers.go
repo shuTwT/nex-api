@@ -2,6 +2,7 @@ package accounts
 
 import (
 	"fmt"
+	handlerutils "github.com/shuTwT/nex-api/backend/internal/pkg/utils"
 	serviceaccounts "github.com/shuTwT/nex-api/backend/internal/service/accounts"
 	"net/http"
 )
@@ -22,7 +23,7 @@ func (h *Handler) listTokens(w http.ResponseWriter, r *http.Request) {
 		writeServiceError(w, r, err)
 		return
 	}
-	writePage(w, http.StatusOK, views, info)
+	handlerutils.WritePaginated(w, views, info.Page, info.PageSize, info.Total)
 }
 
 func (h *Handler) createToken(w http.ResponseWriter, r *http.Request) {
@@ -32,7 +33,7 @@ func (h *Handler) createToken(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	var request serviceaccounts.TokenCreateRequest
-	if err := decodeJSON(r, &request); err != nil {
+	if err := handlerutils.DecodeJSON(r, &request); err != nil {
 		writeServiceError(w, r, fmt.Errorf("decode token: %w", serviceaccounts.ErrInvalidRequest))
 		return
 	}
@@ -41,7 +42,7 @@ func (h *Handler) createToken(w http.ResponseWriter, r *http.Request) {
 		writeServiceError(w, r, err)
 		return
 	}
-	writeData(w, http.StatusCreated, view)
+	handlerutils.WriteData(w, http.StatusCreated, view)
 }
 
 func (h *Handler) getToken(w http.ResponseWriter, r *http.Request) {
@@ -55,7 +56,7 @@ func (h *Handler) getToken(w http.ResponseWriter, r *http.Request) {
 		writeServiceError(w, r, err)
 		return
 	}
-	writeData(w, http.StatusOK, view)
+	handlerutils.WriteData(w, http.StatusOK, view)
 }
 
 func (h *Handler) updateToken(w http.ResponseWriter, r *http.Request) {
@@ -65,7 +66,7 @@ func (h *Handler) updateToken(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	var request serviceaccounts.TokenUpdateRequest
-	if err := decodeJSON(r, &request); err != nil {
+	if err := handlerutils.DecodeJSON(r, &request); err != nil {
 		writeServiceError(w, r, fmt.Errorf("decode token: %w", serviceaccounts.ErrInvalidRequest))
 		return
 	}
@@ -74,7 +75,7 @@ func (h *Handler) updateToken(w http.ResponseWriter, r *http.Request) {
 		writeServiceError(w, r, err)
 		return
 	}
-	writeData(w, http.StatusOK, view)
+	handlerutils.WriteData(w, http.StatusOK, view)
 }
 
 func (h *Handler) toggleToken(w http.ResponseWriter, r *http.Request) {
@@ -88,7 +89,7 @@ func (h *Handler) toggleToken(w http.ResponseWriter, r *http.Request) {
 		writeServiceError(w, r, err)
 		return
 	}
-	writeData(w, http.StatusOK, view)
+	handlerutils.WriteData(w, http.StatusOK, view)
 }
 
 func (h *Handler) deleteToken(w http.ResponseWriter, r *http.Request) {
@@ -101,7 +102,7 @@ func (h *Handler) deleteToken(w http.ResponseWriter, r *http.Request) {
 		writeServiceError(w, r, err)
 		return
 	}
-	writeData(w, http.StatusOK, map[string]string{"message": "令牌已删除"})
+	handlerutils.WriteData(w, http.StatusOK, map[string]string{"message": "令牌已删除"})
 }
 
 func (h *Handler) tokenStats(w http.ResponseWriter, r *http.Request) {
@@ -115,5 +116,5 @@ func (h *Handler) tokenStats(w http.ResponseWriter, r *http.Request) {
 		writeServiceError(w, r, err)
 		return
 	}
-	writeData(w, http.StatusOK, view)
+	handlerutils.WriteData(w, http.StatusOK, view)
 }

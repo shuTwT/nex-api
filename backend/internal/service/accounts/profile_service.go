@@ -5,37 +5,17 @@ import (
 	"errors"
 	"fmt"
 	"strings"
-	"time"
 
 	"github.com/shuTwT/nex-api/backend/ent"
 	"github.com/shuTwT/nex-api/backend/ent/apiusage"
 	"github.com/shuTwT/nex-api/backend/ent/user"
 	"github.com/shuTwT/nex-api/backend/internal/service/auth"
+	"github.com/shuTwT/nex-api/backend/pkg/domain/model"
 )
 
-type ProfileUpdateRequest struct {
-	Name     *string `json:"name"`
-	Email    *string `json:"email"`
-	Username *string `json:"username"`
-}
-
-type PasswordUpdateRequest struct {
-	CurrentPassword string `json:"currentPassword"`
-	NewPassword     string `json:"newPassword"`
-}
-
-type ProfileView struct {
-	ID                string    `json:"id"`
-	Name              string    `json:"name,omitempty"`
-	Email             string    `json:"email"`
-	Image             string    `json:"image,omitempty"`
-	Username          string    `json:"username"`
-	Role              string    `json:"role"`
-	Credits           int       `json:"credits"`
-	CreatedAt         time.Time `json:"createdAt"`
-	TotalCreditsSpent int       `json:"totalCreditsSpent"`
-	TotalRequests     int       `json:"totalRequests"`
-}
+type ProfileUpdateRequest = model.ProfileUpdateReq
+type PasswordUpdateRequest = model.PasswordUpdateReq
+type ProfileView = model.ProfileResp
 
 type ProfileService struct {
 	client *ent.Client

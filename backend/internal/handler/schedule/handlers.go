@@ -1,15 +1,14 @@
 package schedule
 
 import (
-	"encoding/json"
 	"errors"
-	"io"
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
-	appRuntime "github.com/shuTwT/nex-api/backend/internal/handler/httpkit"
 	"github.com/shuTwT/nex-api/backend/internal/middleware"
+	handlerutils "github.com/shuTwT/nex-api/backend/internal/pkg/utils"
 	serviceschedule "github.com/shuTwT/nex-api/backend/internal/service/schedule"
+	"github.com/shuTwT/nex-api/backend/pkg/domain/model"
 )
 
 type Handler struct{ service *serviceschedule.Service }
@@ -33,86 +32,65 @@ func RegisterRoutes(mux chi.Router, service *serviceschedule.Service) error {
 func (h *Handler) list(w http.ResponseWriter, r *http.Request) {
 	items, err := h.service.List(r.Context())
 	if err != nil {
-		writeError(w, r, err)
+		handlerutils.WriteError(w, r, err)
 		return
 	}
-	writeData(w, http.StatusOK, items)
+	handlerutils.WriteData(w, http.StatusOK, items)
 }
 
 func (h *Handler) tasks(w http.ResponseWriter, _ *http.Request) {
-	writeData(w, http.StatusOK, h.service.Tasks())
+	handlerutils.WriteData(w, http.StatusOK, h.service.Tasks())
 }
 
 func (h *Handler) get(w http.ResponseWriter, r *http.Request) {
 	item, err := h.service.Get(r.Context(), chi.URLParam(r, "id"))
 	if err != nil {
-		writeError(w, r, err)
+		handlerutils.WriteError(w, r, err)
 		return
 	}
-	writeData(w, http.StatusOK, item)
+	handlerutils.WriteData(w, http.StatusOK, item)
 }
 
 func (h *Handler) create(w http.ResponseWriter, r *http.Request) {
-	var input serviceschedule.UpsertInput
-	if err := decodeJSON(r, &input); err != nil {
-		writeError(w, r, err)
+	var input model.ScheduleJobUpsertReq
+	if err := handlerutils.DecodeJSON(r, &input); err != nil {
+		handlerutils.WriteError(w, r, err)
 		return
 	}
 	item, err := h.service.Create(r.Context(), input)
 	if err != nil {
-		writeError(w, r, err)
+		handlerutils.WriteError(w, r, err)
 		return
 	}
-	writeData(w, http.StatusCreated, item)
+	handlerutils.WriteData(w, http.StatusCreated, item)
 }
 
 func (h *Handler) update(w http.ResponseWriter, r *http.Request) {
-	var input serviceschedule.UpsertInput
-	if err := decodeJSON(r, &input); err != nil {
-		writeError(w, r, err)
+	var input model.ScheduleJobUpsertReq
+	if err := handlerutils.DecodeJSON(r, &input); err != nil {
+		handlerutils.WriteError(w, r, err)
 		return
 	}
 	item, err := h.service.Update(r.Context(), chi.URLParam(r, "id"), input)
 	if err != nil {
-		writeError(w, r, err)
+		handlerutils.WriteError(w, r, err)
 		return
 	}
-	writeData(w, http.StatusOK, item)
+	handlerutils.WriteData(w, http.StatusOK, item)
 }
 
 func (h *Handler) delete(w http.ResponseWriter, r *http.Request) {
 	if err := h.service.Delete(r.Context(), chi.URLParam(r, "id")); err != nil {
-		writeError(w, r, err)
+		handlerutils.WriteError(w, r, err)
 		return
 	}
-	writeData(w, http.StatusOK, map[string]string{"message": "scheduled job deleted"})
+	handlerutils.WriteData(w, http.StatusOK, map[string]string{"message": "scheduled job deleted"})
 }
 
 func (h *Handler) runNow(w http.ResponseWriter, r *http.Request) {
 	if err := h.service.RunNow(r.Context(), chi.URLParam(r, "id")); err != nil {
-		writeError(w, r, err)
+		handlerutils.WriteError(w, r, err)
 		return
 	}
-	writeData(w, http.StatusAccepted, map[string]string{"message": "scheduled job triggered"})
-}
-
-func decodeJSON[T any](r *http.Request, destination *T) error {
-	decoder := json.NewDecoder(io.LimitReader(r.Body, 1<<20))
-	decoder.DisallowUnknownFields()
-	if err := decoder.Decode(destination); err != nil {
-		return appRuntime.NewValidationError(appRuntime.FieldError{Field: "body", Reason: "invalid JSON"})
-	}
-	var extra json.RawMessage
-	if err := decoder.Decode(&extra); !errors.Is(err, io.EOF) {
-		return appRuntime.NewValidationError(appRuntime.FieldError{Field: "body", Reason: "must contain exactly one JSON value"})
-	}
-	return nil
-}
-
-func writeData[T any](w http.ResponseWriter, status int, data T) {
-	_ = appRuntime.WriteData(w, status, data)
-}
-
-func writeError(w http.ResponseWriter, r *http.Request, err error) {
-	_ = appRuntime.WriteError(w, r, err)
+	handlerutils.WriteData(w, http.StatusAccepted, map[string]string{"message": "scheduled job triggered"})
 }

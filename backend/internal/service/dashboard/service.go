@@ -14,24 +14,11 @@ import (
 	"github.com/shuTwT/nex-api/backend/ent/apiusage"
 	"github.com/shuTwT/nex-api/backend/ent/user"
 	"github.com/shuTwT/nex-api/backend/internal/service/stats"
+	"github.com/shuTwT/nex-api/backend/pkg/domain/model"
 )
 
-// ActivityView is a recent API usage row.
-type ActivityView struct {
-	ID        string `json:"id"`
-	APIName   string `json:"apiName"`
-	APIAlias  string `json:"apiAlias"`
-	Credits   int    `json:"credits"`
-	Status    string `json:"status"`
-	CreatedAt string `json:"createdAt"`
-}
-
-// TopAPIView is a top-API ranking entry.
-type TopAPIView struct {
-	Name       string `json:"name"`
-	Calls      int64  `json:"calls"`
-	Percentage int    `json:"percentage"`
-}
+type ActivityView = model.DashboardActivityResp
+type TopAPIView = model.DashboardTopAPIResp
 
 // Service owns dashboard queries; the handler only adapts HTTP.
 type Service struct {

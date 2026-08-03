@@ -11,6 +11,7 @@ import (
 
 	"github.com/shuTwT/nex-api/backend/ent"
 	serviceauth "github.com/shuTwT/nex-api/backend/internal/service/auth"
+	"github.com/shuTwT/nex-api/backend/pkg/domain/model"
 )
 
 var (
@@ -18,12 +19,7 @@ var (
 	ErrInvalidInitialize  = errors.New("system: invalid initialization request")
 )
 
-type InitializeRequest struct {
-	Email           string `json:"email"`
-	Username        string `json:"username"`
-	Password        string `json:"password"`
-	ConfirmPassword string `json:"confirmPassword"`
-}
+type InitializeRequest = model.SystemInitializeReq
 
 type Service struct {
 	client *ent.Client

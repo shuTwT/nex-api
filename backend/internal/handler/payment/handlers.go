@@ -1,17 +1,15 @@
 package payment
 
 import (
-	"encoding/json"
 	"errors"
-	"fmt"
-	"io"
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
-	appRuntime "github.com/shuTwT/nex-api/backend/internal/handler/httpkit"
 	"github.com/shuTwT/nex-api/backend/internal/middleware"
+	handlerutils "github.com/shuTwT/nex-api/backend/internal/pkg/utils"
 	serviceauthz "github.com/shuTwT/nex-api/backend/internal/service/authz"
 	servicepayment "github.com/shuTwT/nex-api/backend/internal/service/payment"
+	"github.com/shuTwT/nex-api/backend/pkg/domain/model"
 )
 
 type Handler struct {
@@ -52,85 +50,74 @@ func RegisterServiceRoutes(r chi.Router, service *servicepayment.Service) error 
 	return RegisterRoutes(r, handler)
 }
 
-type subscriptionPaymentRequest struct {
-	PlanID string `json:"planId"`
-	Method string `json:"method"`
-}
-
-type rechargeRequest struct {
-	Amount  float64 `json:"amount"`
-	Credits int     `json:"credits"`
-	Method  string  `json:"method"`
-}
-
 func (h *Handler) methods(w http.ResponseWriter, r *http.Request) {
 	methods, err := h.service.AvailableMethods(r.Context())
 	if err != nil {
-		writePaymentError(w, r, err)
+		handlerutils.WriteError(w, r, err)
 		return
 	}
-	writeData(w, http.StatusOK, methods)
+	handlerutils.WriteData(w, http.StatusOK, methods)
 }
 
 func (h *Handler) createSubscription(w http.ResponseWriter, r *http.Request) {
-	request, err := decodeJSON[subscriptionPaymentRequest](r)
+	request, err := handlerutils.DecodeJSONValue[model.SubscriptionPaymentCreateReq](r)
 	if err != nil {
-		writePaymentError(w, r, err)
+		handlerutils.WriteError(w, r, err)
 		return
 	}
 	principal, err := serviceauthz.RequestPrincipal(r.Context())
 	if err != nil {
-		writePaymentError(w, r, err)
+		handlerutils.WriteError(w, r, err)
 		return
 	}
 	result, err := h.service.CreateSubscriptionPaymentByMethod(r.Context(), principal.UserID, request.PlanID, request.Method)
 	if err != nil {
-		writePaymentError(w, r, err)
+		handlerutils.WriteError(w, r, err)
 		return
 	}
-	writeData(w, http.StatusCreated, result)
+	handlerutils.WriteData(w, http.StatusCreated, result)
 }
 
 func (h *Handler) recharge(w http.ResponseWriter, r *http.Request) {
-	request, err := decodeJSON[rechargeRequest](r)
+	request, err := handlerutils.DecodeJSONValue[model.RechargePaymentCreateReq](r)
 	if err != nil {
-		writePaymentError(w, r, err)
+		handlerutils.WriteError(w, r, err)
 		return
 	}
 	principal, err := serviceauthz.RequestPrincipal(r.Context())
 	if err != nil {
-		writePaymentError(w, r, err)
+		handlerutils.WriteError(w, r, err)
 		return
 	}
 	result, err := h.service.CreateRechargePaymentByMethod(r.Context(), principal.UserID, request.Amount, request.Credits, request.Method)
 	if err != nil {
-		writePaymentError(w, r, err)
+		handlerutils.WriteError(w, r, err)
 		return
 	}
-	writeData(w, http.StatusCreated, result)
+	handlerutils.WriteData(w, http.StatusCreated, result)
 }
 
 func (h *Handler) history(w http.ResponseWriter, r *http.Request) {
 	principal, err := serviceauthz.RequestPrincipal(r.Context())
 	if err != nil {
-		writePaymentError(w, r, err)
+		handlerutils.WriteError(w, r, err)
 		return
 	}
 	payments, err := h.service.ListHistory(r.Context(), principal.UserID)
 	if err != nil {
-		writePaymentError(w, r, err)
+		handlerutils.WriteError(w, r, err)
 		return
 	}
-	writeData(w, http.StatusOK, payments)
+	handlerutils.WriteData(w, http.StatusOK, payments)
 }
 
 func (h *Handler) settings(w http.ResponseWriter, r *http.Request) {
 	settings, err := h.service.Settings(r.Context())
 	if err != nil {
-		writePaymentError(w, r, err)
+		handlerutils.WriteError(w, r, err)
 		return
 	}
-	writeData(w, http.StatusOK, settings)
+	handlerutils.WriteData(w, http.StatusOK, settings)
 }
 
 func (h *Handler) get(w http.ResponseWriter, r *http.Request) {
@@ -149,66 +136,44 @@ func (h *Handler) respondOwnedPayment(w http.ResponseWriter, r *http.Request, lo
 	outTradeNo := r.PathValue("outTradeNo")
 	view, err := load(outTradeNo)
 	if err != nil {
-		writePaymentError(w, r, err)
+		handlerutils.WriteError(w, r, err)
 		return
 	}
 	principal, err := serviceauthz.RequestPrincipal(r.Context())
 	if err != nil {
-		writePaymentError(w, r, err)
+		handlerutils.WriteError(w, r, err)
 		return
 	}
 	if err := serviceauthz.CheckOwnership(principal, view.UserID); err != nil {
-		writePaymentError(w, r, err)
+		handlerutils.WriteError(w, r, err)
 		return
 	}
-	writeData(w, http.StatusOK, view)
+	handlerutils.WriteData(w, http.StatusOK, view)
 }
 
 func (h *Handler) cancel(w http.ResponseWriter, r *http.Request) {
 	outTradeNo := r.PathValue("outTradeNo")
 	view, err := h.service.GetPayment(r.Context(), outTradeNo)
 	if err != nil {
-		writePaymentError(w, r, err)
+		handlerutils.WriteError(w, r, err)
 		return
 	}
 	principal, err := serviceauthz.RequestPrincipal(r.Context())
 	if err != nil {
-		writePaymentError(w, r, err)
+		handlerutils.WriteError(w, r, err)
 		return
 	}
 	if err := serviceauthz.CheckOwnership(principal, view.UserID); err != nil {
-		writePaymentError(w, r, err)
+		handlerutils.WriteError(w, r, err)
 		return
 	}
 	if err := h.service.CancelPayment(r.Context(), outTradeNo); err != nil {
-		writePaymentError(w, r, err)
+		handlerutils.WriteError(w, r, err)
 		return
 	}
-	writeData(w, http.StatusOK, struct {
+	handlerutils.WriteData(w, http.StatusOK, struct {
 		Message string `json:"message"`
 	}{Message: "payment cancelled"})
-}
-
-func decodeJSON[T interface{}](r *http.Request) (T, error) {
-	var value T
-	decoder := json.NewDecoder(io.LimitReader(r.Body, 1<<20))
-	decoder.DisallowUnknownFields()
-	if err := decoder.Decode(&value); err != nil {
-		return value, fmt.Errorf("decode payment request: %w", err)
-	}
-	var extra json.RawMessage
-	if err := decoder.Decode(&extra); !errors.Is(err, io.EOF) {
-		return value, errors.New("decode payment request: multiple JSON values")
-	}
-	return value, nil
-}
-
-func writeData[T interface{}](w http.ResponseWriter, status int, value T) {
-	_ = appRuntime.WriteData(w, status, value)
-}
-
-func writePaymentError(w http.ResponseWriter, r *http.Request, err error) {
-	_ = appRuntime.WriteError(w, r, err)
 }
 
 func writeRawJSON(w http.ResponseWriter, status int, value string) {

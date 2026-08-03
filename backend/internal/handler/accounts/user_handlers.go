@@ -2,6 +2,7 @@ package accounts
 
 import (
 	"fmt"
+	handlerutils "github.com/shuTwT/nex-api/backend/internal/pkg/utils"
 	serviceaccounts "github.com/shuTwT/nex-api/backend/internal/service/accounts"
 	"net/http"
 )
@@ -21,7 +22,7 @@ func (h *Handler) listUsers(w http.ResponseWriter, r *http.Request) {
 		writeServiceError(w, r, err)
 		return
 	}
-	writePage(w, http.StatusOK, views, info)
+	handlerutils.WritePaginated(w, views, info.Page, info.PageSize, info.Total)
 }
 
 func (h *Handler) createUser(w http.ResponseWriter, r *http.Request) {
@@ -30,7 +31,7 @@ func (h *Handler) createUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	var request serviceaccounts.UserCreateRequest
-	if err := decodeJSON(r, &request); err != nil {
+	if err := handlerutils.DecodeJSON(r, &request); err != nil {
 		writeServiceError(w, r, fmt.Errorf("decode user: %w", serviceaccounts.ErrInvalidRequest))
 		return
 	}
@@ -39,7 +40,7 @@ func (h *Handler) createUser(w http.ResponseWriter, r *http.Request) {
 		writeServiceError(w, r, err)
 		return
 	}
-	writeData(w, http.StatusCreated, view)
+	handlerutils.WriteData(w, http.StatusCreated, view)
 }
 
 func (h *Handler) userStats(w http.ResponseWriter, r *http.Request) {
@@ -52,7 +53,7 @@ func (h *Handler) userStats(w http.ResponseWriter, r *http.Request) {
 		writeServiceError(w, r, err)
 		return
 	}
-	writeData(w, http.StatusOK, view)
+	handlerutils.WriteData(w, http.StatusOK, view)
 }
 
 func (h *Handler) getUser(w http.ResponseWriter, r *http.Request) {
@@ -65,7 +66,7 @@ func (h *Handler) getUser(w http.ResponseWriter, r *http.Request) {
 		writeServiceError(w, r, err)
 		return
 	}
-	writeData(w, http.StatusOK, view)
+	handlerutils.WriteData(w, http.StatusOK, view)
 }
 
 func (h *Handler) updateUser(w http.ResponseWriter, r *http.Request) {
@@ -74,7 +75,7 @@ func (h *Handler) updateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	var request serviceaccounts.UserUpdateRequest
-	if err := decodeJSON(r, &request); err != nil {
+	if err := handlerutils.DecodeJSON(r, &request); err != nil {
 		writeServiceError(w, r, fmt.Errorf("decode user: %w", serviceaccounts.ErrInvalidRequest))
 		return
 	}
@@ -83,7 +84,7 @@ func (h *Handler) updateUser(w http.ResponseWriter, r *http.Request) {
 		writeServiceError(w, r, err)
 		return
 	}
-	writeData(w, http.StatusOK, view)
+	handlerutils.WriteData(w, http.StatusOK, view)
 }
 
 func (h *Handler) deleteUser(w http.ResponseWriter, r *http.Request) {
@@ -95,5 +96,5 @@ func (h *Handler) deleteUser(w http.ResponseWriter, r *http.Request) {
 		writeServiceError(w, r, err)
 		return
 	}
-	writeData(w, http.StatusOK, map[string]string{"message": "用户已删除"})
+	handlerutils.WriteData(w, http.StatusOK, map[string]string{"message": "用户已删除"})
 }

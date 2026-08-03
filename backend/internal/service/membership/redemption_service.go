@@ -12,6 +12,7 @@ import (
 	"github.com/shuTwT/nex-api/backend/ent"
 	"github.com/shuTwT/nex-api/backend/ent/redemptioncode"
 	appRuntime "github.com/shuTwT/nex-api/backend/internal/service/apierror"
+	"github.com/shuTwT/nex-api/backend/pkg/domain/model"
 )
 
 const redemptionAlphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"
@@ -40,22 +41,9 @@ type RedemptionPage struct {
 	TotalPages int
 }
 
-type RedemptionBatchResult struct {
-	Count   int    `json:"count"`
-	BatchID string `json:"batchId"`
-}
-
-type RedemptionLookup struct {
-	Type     string  `json:"type"`
-	PlanName *string `json:"planName"`
-	Credits  *int    `json:"credits"`
-}
-
-type RedemptionResult struct {
-	Message string `json:"message"`
-	Type    string `json:"type"`
-	Credits int    `json:"credits,omitempty"`
-}
+type RedemptionBatchResult = model.RedemptionBatchResp
+type RedemptionLookup = model.RedemptionLookupResp
+type RedemptionResult = model.RedemptionResp
 
 type RedemptionService struct {
 	client *ent.Client

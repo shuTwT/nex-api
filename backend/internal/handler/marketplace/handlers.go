@@ -7,6 +7,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	appRuntime "github.com/shuTwT/nex-api/backend/internal/handler/httpkit"
+	handlerutils "github.com/shuTwT/nex-api/backend/internal/pkg/utils"
 	servicemarketplace "github.com/shuTwT/nex-api/backend/internal/service/marketplace"
 )
 
@@ -35,7 +36,7 @@ func RegisterRoutes(mux chi.Router, handler *Handler) error {
 func (h *Handler) listAPIs(w http.ResponseWriter, r *http.Request) {
 	options, err := parsePage(r, 20, 20)
 	if err != nil {
-		writeError(w, r, err)
+		handlerutils.WriteError(w, r, err)
 		return
 	}
 	views, total, err := h.service.ListAPIs(r.Context(), servicemarketplace.ListOptions{
@@ -43,34 +44,34 @@ func (h *Handler) listAPIs(w http.ResponseWriter, r *http.Request) {
 		Search: options.search, Category: options.category,
 	})
 	if err != nil {
-		writeError(w, r, err)
+		handlerutils.WriteError(w, r, err)
 		return
 	}
-	writePaginated(w, views, options.page, options.limit, total)
+	handlerutils.WritePaginated(w, views, options.page, options.limit, total)
 }
 
 func (h *Handler) getAPI(w http.ResponseWriter, r *http.Request) {
 	view, err := h.service.GetAPI(r.Context(), chi.URLParam(r, "id"))
 	if err != nil {
-		writeError(w, r, appRuntime.NewAPIError(http.StatusNotFound, "not_found", "API 不存在", appRuntime.ErrNotFound))
+		handlerutils.WriteError(w, r, appRuntime.NewAPIError(http.StatusNotFound, "not_found", "API 不存在", appRuntime.ErrNotFound))
 		return
 	}
-	writeData(w, http.StatusOK, view)
+	handlerutils.WriteData(w, http.StatusOK, view)
 }
 
 func (h *Handler) apiStats(w http.ResponseWriter, r *http.Request) {
 	stats, err := h.service.APIStats(r.Context())
 	if err != nil {
-		writeError(w, r, err)
+		handlerutils.WriteError(w, r, err)
 		return
 	}
-	writeData(w, http.StatusOK, stats)
+	handlerutils.WriteData(w, http.StatusOK, stats)
 }
 
 func (h *Handler) listMCP(w http.ResponseWriter, r *http.Request) {
 	options, err := parsePage(r, 20, 20)
 	if err != nil {
-		writeError(w, r, err)
+		handlerutils.WriteError(w, r, err)
 		return
 	}
 	views, total, err := h.service.ListMCP(r.Context(), servicemarketplace.ListOptions{
@@ -78,26 +79,26 @@ func (h *Handler) listMCP(w http.ResponseWriter, r *http.Request) {
 		Search: options.search, Type: strings.TrimSpace(r.URL.Query().Get("type")),
 	})
 	if err != nil {
-		writeError(w, r, err)
+		handlerutils.WriteError(w, r, err)
 		return
 	}
-	writePaginated(w, views, options.page, options.limit, total)
+	handlerutils.WritePaginated(w, views, options.page, options.limit, total)
 }
 
 func (h *Handler) getMCP(w http.ResponseWriter, r *http.Request) {
 	view, err := h.service.GetMCP(r.Context(), chi.URLParam(r, "id"))
 	if err != nil {
-		writeError(w, r, appRuntime.NewAPIError(http.StatusNotFound, "not_found", "MCP 服务不存在", appRuntime.ErrNotFound))
+		handlerutils.WriteError(w, r, appRuntime.NewAPIError(http.StatusNotFound, "not_found", "MCP 服务不存在", appRuntime.ErrNotFound))
 		return
 	}
-	writeData(w, http.StatusOK, view)
+	handlerutils.WriteData(w, http.StatusOK, view)
 }
 
 func (h *Handler) mcpStats(w http.ResponseWriter, r *http.Request) {
 	stats, err := h.service.MCPStats(r.Context())
 	if err != nil {
-		writeError(w, r, err)
+		handlerutils.WriteError(w, r, err)
 		return
 	}
-	writeData(w, http.StatusOK, stats)
+	handlerutils.WriteData(w, http.StatusOK, stats)
 }

@@ -1,18 +1,17 @@
 package membership
 
 import (
-	"encoding/json"
 	"errors"
-	"fmt"
-	"io"
 	"net/http"
 	"strconv"
 
 	"github.com/go-chi/chi/v5"
 	appRuntime "github.com/shuTwT/nex-api/backend/internal/handler/httpkit"
 	"github.com/shuTwT/nex-api/backend/internal/middleware"
+	handlerutils "github.com/shuTwT/nex-api/backend/internal/pkg/utils"
 	serviceauthz "github.com/shuTwT/nex-api/backend/internal/service/authz"
 	servicemembership "github.com/shuTwT/nex-api/backend/internal/service/membership"
+	"github.com/shuTwT/nex-api/backend/pkg/domain/model"
 )
 
 type Handler struct {
@@ -69,89 +68,43 @@ func RegisterServiceRoutes(r chi.Router, plans *servicemembership.PlanService, m
 func (h *Handler) membershipPlans(w http.ResponseWriter, r *http.Request) {
 	plans, err := h.membership.ListPlans(r.Context())
 	if err != nil {
-		writeMembershipError(w, r, err)
+		handlerutils.WriteError(w, r, err)
 		return
 	}
-	writeData(w, http.StatusOK, plans)
+	handlerutils.WriteData(w, http.StatusOK, plans)
 }
 
 func (h *Handler) currentMembership(w http.ResponseWriter, r *http.Request) {
 	principal, err := serviceauthz.RequestPrincipal(r.Context())
 	if err != nil {
-		writeMembershipError(w, r, err)
+		handlerutils.WriteError(w, r, err)
 		return
 	}
 	current, err := h.membership.Current(r.Context(), principal.UserID)
 	if err != nil {
-		writeMembershipError(w, r, err)
+		handlerutils.WriteError(w, r, err)
 		return
 	}
-	writeData(w, http.StatusOK, current)
+	handlerutils.WriteData(w, http.StatusOK, current)
 }
 
 func (h *Handler) subscribe(w http.ResponseWriter, r *http.Request) {
-	body, err := decodeJSON[subscribeBody](r)
+	body, err := handlerutils.DecodeJSONValue[model.MembershipSubscribeReq](r)
 	if err != nil {
-		writeMembershipError(w, r, err)
+		handlerutils.WriteError(w, r, err)
 		return
 	}
 	principal, err := serviceauthz.RequestPrincipal(r.Context())
 	if err != nil {
-		writeMembershipError(w, r, err)
+		handlerutils.WriteError(w, r, err)
 		return
 	}
 	subscription, err := h.membership.Subscribe(r.Context(), principal.UserID, body.PlanID)
 	if err != nil {
-		writeMembershipError(w, r, err)
+		handlerutils.WriteError(w, r, err)
 		return
 	}
-	writeData(w, http.StatusCreated, subscription)
-}
-
-type subscribeBody struct {
-	PlanID string `json:"planId"`
-}
-type codeBody struct {
-	Code string `json:"code"`
-}
-type idsBody struct {
-	IDs []string `json:"ids"`
-}
-
-func decodeJSON[T interface{}](r *http.Request) (T, error) {
-	var value T
-	decoder := json.NewDecoder(io.LimitReader(r.Body, 1<<20))
-	decoder.DisallowUnknownFields()
-	if err := decoder.Decode(&value); err != nil {
-		return value, fmt.Errorf("decode request: %w", err)
-	}
-	var extra json.RawMessage
-	if err := decoder.Decode(&extra); !errors.Is(err, io.EOF) {
-		return value, errors.New("decode request: multiple JSON values")
-	}
-	return value, nil
-}
-
-func writeData[T any](w http.ResponseWriter, status int, data T) {
-	if err := appRuntime.WriteData(w, status, data); err != nil {
-		return
-	}
-}
-
-func writePage[T any](w http.ResponseWriter, status int, items T, total, page, size, pages int) {
-	envelope := appRuntime.Envelope[T]{Success: true, Data: &items, Pagination: &appRuntime.Pagination{Page: page, PageSize: size, Total: total, TotalPages: pages}}
-	if err := appRuntime.WriteEnvelope(w, status, envelope); err != nil {
-		return
-	}
-}
-
-func writeMembershipError(w http.ResponseWriter, r *http.Request, err error) {
-	if err == nil {
-		err = errors.New("membership: empty error")
-	}
-	if writeErr := appRuntime.WriteError(w, r, err); writeErr != nil {
-		return
-	}
+	handlerutils.WriteData(w, http.StatusCreated, subscription)
 }
 
 func planFilter(r *http.Request) (servicemembership.PlanListFilter, error) {

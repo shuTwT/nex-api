@@ -10,6 +10,7 @@ import (
 
 	"github.com/shuTwT/nex-api/backend/ent"
 	"github.com/shuTwT/nex-api/backend/ent/auditlog"
+	"github.com/shuTwT/nex-api/backend/pkg/domain/model"
 )
 
 type AuditEntry struct {
@@ -33,35 +34,9 @@ type AuditFilter struct {
 	EndDate   *time.Time
 }
 
-type AuditUserView struct {
-	ID    string `json:"id"`
-	Name  string `json:"name,omitempty"`
-	Email string `json:"email,omitempty"`
-}
-
-type AuditView struct {
-	ID        string         `json:"id"`
-	UserID    string         `json:"userId,omitempty"`
-	User      *AuditUserView `json:"user,omitempty"`
-	Action    string         `json:"action"`
-	Resource  string         `json:"resource"`
-	Details   string         `json:"details,omitempty"`
-	IPAddress string         `json:"ipAddress,omitempty"`
-	UserAgent string         `json:"userAgent,omitempty"`
-	Level     string         `json:"level"`
-	Status    string         `json:"status"`
-	Metadata  string         `json:"metadata,omitempty"`
-	CreatedAt time.Time      `json:"createdAt"`
-}
-
-type AuditStats struct {
-	TotalLogs   int `json:"totalLogs"`
-	InfoLogs    int `json:"infoLogs"`
-	WarningLogs int `json:"warningLogs"`
-	ErrorLogs   int `json:"errorLogs"`
-	SuccessLogs int `json:"successLogs"`
-	FailedLogs  int `json:"failedLogs"`
-}
+type AuditUserView = model.AuditUserDTO
+type AuditView = model.AuditResp
+type AuditStats = model.AuditStatsResp
 
 type AuditService struct {
 	client *ent.Client
