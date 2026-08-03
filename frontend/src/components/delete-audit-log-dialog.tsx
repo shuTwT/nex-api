@@ -1,13 +1,5 @@
 import { useState } from "react";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
+import { Alert, Button, Modal, Typography } from "antd";
 import { api } from "@/lib/api";
 
 interface DeleteAuditLogDialogProps {
@@ -48,38 +40,21 @@ export function DeleteAuditLogDialog({
   }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>确认删除</DialogTitle>
-          <DialogDescription>
+    <Modal
+      open={open}
+      title="确认删除"
+      onCancel={() => onOpenChange(false)}
+      footer={[
+        <Button key="cancel" onClick={() => onOpenChange(false)} disabled={isLoading}>取消</Button>,
+        <Button key="delete" danger type="primary" onClick={handleDelete} loading={isLoading}>删除</Button>,
+      ]}
+    >
+          <Typography.Paragraph>
             确定要删除审计日志 &ldquo;{auditLogAction}&rdquo; 吗？此操作无法撤销。
-          </DialogDescription>
-        </DialogHeader>
+          </Typography.Paragraph>
         {error && (
-          <div className="p-3 bg-red-50 border border-red-200 rounded-md">
-            <p className="text-sm text-red-700">{error}</p>
-          </div>
+          <Alert type="error" message={error} showIcon />
         )}
-        <DialogFooter>
-          <Button
-            variant="outline"
-            onClick={() => onOpenChange(false)}
-            disabled={isLoading}
-            className="cursor-pointer"
-          >
-            取消
-          </Button>
-          <Button
-            variant="destructive"
-            onClick={handleDelete}
-            disabled={isLoading}
-            className="cursor-pointer"
-          >
-            {isLoading ? "删除中..." : "删除"}
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+    </Modal>
   );
 }

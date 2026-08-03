@@ -2,19 +2,30 @@ package oauth
 
 import (
 	"context"
+	"crypto/subtle"
 	"encoding/json"
 	"errors"
 	"fmt"
+	"net/http"
 	"net/url"
 	"strings"
 	"time"
 
+	"github.com/coreos/go-oidc/v3/oidc"
 	"github.com/shuTwT/nex-api/ent"
 	"github.com/shuTwT/nex-api/ent/systemsetting"
 	infraoauth "github.com/shuTwT/nex-api/internal/infra/oauth"
+	"golang.org/x/oauth2"
 )
 
-const oauthProvidersSettingKey = "oauthProviders"
+const (
+	oauthProvidersSettingKey          = "oauthProviders"
+	githubOAuthClientIDSettingKey     = "githubOAuthClientId"
+	githubOAuthClientSecretSettingKey = "githubOAuthClientSecret"
+	oidcProviderSettingKey            = "oidcProvider"
+	customOIDCProviderID              = "custom-oidc"
+	providerKindOIDC                  = "oidc"
+)
 
 var (
 	errOAuthProviderNotFound = errors.New("oauth: provider not configured")
@@ -25,6 +36,7 @@ var (
 // RoleField is deliberately not used: an upstream identity provider must never
 // be able to grant a local administrative role.
 type ProviderConfig struct {
+	Kind             string `json:"kind,omitempty"`
 	ID               string `json:"id"`
 	Name             string `json:"name"`
 	ClientID         string `json:"clientId"`
@@ -37,6 +49,17 @@ type ProviderConfig struct {
 	EmailField       string `json:"emailField"`
 	UsernameField    string `json:"usernameField"`
 	RoleField        string `json:"roleField"`
+	Issuer           string `json:"issuer,omitempty"`
+}
+
+// OIDCProviderConfig is the separate, single OIDC relying-party configuration.
+// The issuer discovery document supplies the protocol endpoints and signing keys.
+type OIDCProviderConfig struct {
+	Name         string `json:"name"`
+	Issuer       string `json:"issuer"`
+	ClientID     string `json:"clientId"`
+	ClientSecret string `json:"clientSecret"`
+	Scopes       string `json:"scopes"`
 }
 
 // ConfiguredProvider is a validated ProviderConfig bound to an HTTP client.
@@ -61,32 +84,77 @@ func NewService(client *ent.Client) (*Service, error) {
 
 // ConfiguredProviders loads the provider list from system settings.
 func (s *Service) ConfiguredProviders(ctx context.Context) ([]ProviderConfig, error) {
-	setting, err := s.client.SystemSetting.Query().Where(systemsetting.Key(oauthProvidersSettingKey)).Only(ctx)
+	settings, err := s.client.SystemSetting.Query().Where(systemsetting.KeyIn(
+		oauthProvidersSettingKey,
+		githubOAuthClientIDSettingKey,
+		githubOAuthClientSecretSettingKey,
+		oidcProviderSettingKey,
+	)).All(ctx)
 	if err != nil {
-		if ent.IsNotFound(err) {
-			return nil, nil
-		}
 		return nil, fmt.Errorf("oauth: load providers: %w", err)
 	}
-	if strings.TrimSpace(setting.Value) == "" {
-		return nil, nil
+	values := make(map[string]string, len(settings))
+	for _, setting := range settings {
+		values[setting.Key] = setting.Value
 	}
-	var providers []ProviderConfig
-	if err := json.Unmarshal([]byte(setting.Value), &providers); err != nil {
-		return nil, fmt.Errorf("%w: %v", errOAuthProviderInvalid, err)
+
+	providers := make([]ProviderConfig, 0)
+	var legacyGitHub *ProviderConfig
+	if rawProviders := strings.TrimSpace(values[oauthProvidersSettingKey]); rawProviders != "" {
+		if err := json.Unmarshal([]byte(rawProviders), &providers); err != nil {
+			return nil, fmt.Errorf("%w: %v", errOAuthProviderInvalid, err)
+		}
 	}
 	seen := make(map[string]struct{}, len(providers))
-	for index := range providers {
-		providers[index].ID = NormalizeProviderID(providers[index].ID)
-		if providers[index].ID == "" {
+	customProviders := make([]ProviderConfig, 0, len(providers)+1)
+	for _, provider := range providers {
+		provider.ID = NormalizeProviderID(provider.ID)
+		if provider.ID == "" {
 			return nil, errOAuthProviderInvalid
 		}
-		if _, ok := seen[providers[index].ID]; ok {
-			return nil, fmt.Errorf("%w: duplicate provider %q", errOAuthProviderInvalid, providers[index].ID)
+		if _, ok := seen[provider.ID]; ok {
+			return nil, fmt.Errorf("%w: duplicate provider %q", errOAuthProviderInvalid, provider.ID)
 		}
-		seen[providers[index].ID] = struct{}{}
+		seen[provider.ID] = struct{}{}
+		if provider.ID == infraoauth.GitHubProvider {
+			legacyGitHub = &provider
+			continue
+		}
+		customProviders = append(customProviders, provider)
 	}
-	return providers, nil
+
+	githubClientID := strings.TrimSpace(values[githubOAuthClientIDSettingKey])
+	githubClientSecret := strings.TrimSpace(values[githubOAuthClientSecretSettingKey])
+	if githubClientID != "" || githubClientSecret != "" {
+		customProviders = append(customProviders, ProviderConfig{
+			ID:           infraoauth.GitHubProvider,
+			Name:         "GitHub",
+			ClientID:     githubClientID,
+			ClientSecret: githubClientSecret,
+		})
+	} else if legacyGitHub != nil {
+		customProviders = append(customProviders, *legacyGitHub)
+	}
+	if rawOIDCProvider := strings.TrimSpace(values[oidcProviderSettingKey]); rawOIDCProvider != "" {
+		var oidcProvider OIDCProviderConfig
+		if err := json.Unmarshal([]byte(rawOIDCProvider), &oidcProvider); err != nil {
+			return nil, fmt.Errorf("%w: %v", errOAuthProviderInvalid, err)
+		}
+		customProviders = append(customProviders, oidcProvider.providerConfig())
+	}
+	return customProviders, nil
+}
+
+func (config OIDCProviderConfig) providerConfig() ProviderConfig {
+	return ProviderConfig{
+		Kind:         providerKindOIDC,
+		ID:           customOIDCProviderID,
+		Name:         strings.TrimSpace(config.Name),
+		Issuer:       strings.TrimSpace(config.Issuer),
+		ClientID:     strings.TrimSpace(config.ClientID),
+		ClientSecret: strings.TrimSpace(config.ClientSecret),
+		Scopes:       strings.TrimSpace(config.Scopes),
+	}
 }
 
 // Providers returns the validated provider list for display.
@@ -132,6 +200,19 @@ func (p *ConfiguredProvider) validate() error {
 	if !ValidProviderID(p.ID) || strings.TrimSpace(p.ClientID) == "" || strings.TrimSpace(p.ClientSecret) == "" {
 		return errOAuthProviderInvalid
 	}
+	if p.Kind == providerKindOIDC {
+		issuer, err := infraoauth.ParseHTTPURL(p.Issuer)
+		if err != nil || issuer.Scheme != "https" || issuer.RawQuery != "" || issuer.Fragment != "" {
+			return errOAuthProviderInvalid
+		}
+		return nil
+	}
+	if p.Kind != "" {
+		return errOAuthProviderInvalid
+	}
+	if p.ID == infraoauth.GitHubProvider {
+		return nil
+	}
 	for _, rawURL := range []string{p.AuthorizationURL, p.TokenURL, p.UserInfoURL} {
 		parsed, err := url.Parse(strings.TrimSpace(rawURL))
 		if err != nil || parsed.Scheme == "" || parsed.Host == "" || (parsed.Scheme != "https" && parsed.Scheme != "http") || parsed.User != nil {
@@ -148,18 +229,19 @@ func (p *ConfiguredProvider) DisplayName() string {
 	return p.ID
 }
 
-func (p *ConfiguredProvider) BuildAuthorizationURL(state OAuthState, redirectURI string) (string, error) {
+func (p *ConfiguredProvider) BuildAuthorizationURL(ctx context.Context, state OAuthState, redirectURI string) (string, error) {
 	infraState := toInfraState(state)
 	if p.ID == infraoauth.GitHubProvider {
 		github := p.github()
 		return github.AuthorizationURL(infraState, redirectURI)
 	}
-	if p.isEasy1() {
-		easy1, err := p.easy1()
+	if p.Kind == providerKindOIDC {
+		provider, err := p.oidcProvider(ctx)
 		if err != nil {
 			return "", err
 		}
-		return easy1.AuthorizationURL(infraState, redirectURI)
+		config := oauth2.Config{ClientID: p.ClientID, ClientSecret: p.ClientSecret, RedirectURL: redirectURI, Endpoint: provider.Endpoint(), Scopes: oidcScopes(p.Scopes)}
+		return config.AuthCodeURL(state.Value, oauth2.S256ChallengeOption(state.CodeVerifier), oidc.Nonce(state.Nonce)), nil
 	}
 	endpoint, err := url.Parse(p.AuthorizationURL)
 	if err != nil {
@@ -179,7 +261,6 @@ func (p *ConfiguredProvider) BuildAuthorizationURL(state OAuthState, redirectURI
 }
 
 func (p *ConfiguredProvider) Authenticate(ctx context.Context, code, redirectURI string, state OAuthState) (infraoauth.NormalizedProfile, infraoauth.AccountTokens, error) {
-	infraState := toInfraState(state)
 	if p.ID == infraoauth.GitHubProvider {
 		githubTokens, err := p.github().Exchange(ctx, code, redirectURI)
 		if err != nil {
@@ -188,16 +269,8 @@ func (p *ConfiguredProvider) Authenticate(ctx context.Context, code, redirectURI
 		profile, err := p.github().Profile(ctx, githubTokens)
 		return profile, infraoauth.AccountTokensFromOAuth(githubTokens), err
 	}
-	if p.isEasy1() {
-		easy1, err := p.easy1()
-		if err != nil {
-			return infraoauth.NormalizedProfile{}, infraoauth.AccountTokens{}, err
-		}
-		easy1Tokens, err := easy1.Exchange(ctx, code, redirectURI, state.CodeVerifier)
-		if err != nil {
-			return infraoauth.NormalizedProfile{}, infraoauth.AccountTokens{}, err
-		}
-		return easy1.Profile(ctx, easy1Tokens, infraState.Nonce)
+	if p.Kind == providerKindOIDC {
+		return p.authenticateOIDC(ctx, code, redirectURI, state)
 	}
 	form := url.Values{
 		"client_id":     {p.ClientID},
@@ -231,31 +304,106 @@ func (p *ConfiguredProvider) UsesPKCE() bool {
 	return p.ID != infraoauth.GitHubProvider
 }
 
-func (p *ConfiguredProvider) isEasy1() bool {
-	return p.ID == infraoauth.Easy1Provider || p.ID == "easy1"
-}
-
 func (p *ConfiguredProvider) github() *infraoauth.GitHubClient {
 	client := infraoauth.NewGitHubClient(p.ClientID, p.ClientSecret, p.client)
-	client.SetAuthorizationURL(p.AuthorizationURL)
-	client.SetTokenURL(p.TokenURL)
-	client.SetProfileURL(p.UserInfoURL)
+	if authorizationURL := strings.TrimSpace(p.AuthorizationURL); authorizationURL != "" {
+		client.SetAuthorizationURL(authorizationURL)
+	}
+	if tokenURL := strings.TrimSpace(p.TokenURL); tokenURL != "" {
+		client.SetTokenURL(tokenURL)
+	}
+	if userInfoURL := strings.TrimSpace(p.UserInfoURL); userInfoURL != "" {
+		client.SetProfileURL(userInfoURL)
+	}
 	if scope := infraoauth.NormalizedScopes(p.Scopes); scope != "" {
 		client.SetScope(scope)
 	}
 	return client
 }
 
-func (p *ConfiguredProvider) easy1() (*infraoauth.Easy1Client, error) {
-	return infraoauth.NewEasy1Client(
-		p.ClientID,
-		p.ClientSecret,
-		p.AuthorizationURL,
-		p.TokenURL,
-		p.UserInfoURL,
-		infraoauth.NormalizedScopes(p.Scopes),
-		p.client,
-	)
+func (p *ConfiguredProvider) oidcProvider(ctx context.Context) (*oidc.Provider, error) {
+	oidcContext, err := p.oidcContext(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return oidc.NewProvider(oidcContext, p.Issuer)
+}
+
+func (p *ConfiguredProvider) authenticateOIDC(ctx context.Context, code, redirectURI string, state OAuthState) (infraoauth.NormalizedProfile, infraoauth.AccountTokens, error) {
+	provider, err := p.oidcProvider(ctx)
+	if err != nil {
+		return infraoauth.NormalizedProfile{}, infraoauth.AccountTokens{}, fmt.Errorf("oidc: discover provider: %w", err)
+	}
+	oidcContext, err := p.oidcContext(ctx)
+	if err != nil {
+		return infraoauth.NormalizedProfile{}, infraoauth.AccountTokens{}, err
+	}
+	config := oauth2.Config{ClientID: p.ClientID, ClientSecret: p.ClientSecret, RedirectURL: redirectURI, Endpoint: provider.Endpoint(), Scopes: oidcScopes(p.Scopes)}
+	token, err := config.Exchange(oidcContext, code, oauth2.VerifierOption(state.CodeVerifier))
+	if err != nil {
+		return infraoauth.NormalizedProfile{}, infraoauth.AccountTokens{}, fmt.Errorf("oidc: exchange code: %w", err)
+	}
+	rawIDToken, ok := token.Extra("id_token").(string)
+	if !ok || strings.TrimSpace(rawIDToken) == "" {
+		return infraoauth.NormalizedProfile{}, infraoauth.AccountTokens{}, errors.New("oidc: token response has no ID token")
+	}
+	idToken, err := provider.Verifier(&oidc.Config{ClientID: p.ClientID}).Verify(oidcContext, rawIDToken)
+	if err != nil {
+		return infraoauth.NormalizedProfile{}, infraoauth.AccountTokens{}, fmt.Errorf("oidc: verify ID token: %w", err)
+	}
+	if subtle.ConstantTimeCompare([]byte(idToken.Nonce), []byte(state.Nonce)) != 1 {
+		return infraoauth.NormalizedProfile{}, infraoauth.AccountTokens{}, infraoauth.ErrInvalidOAuthState
+	}
+	var claims struct {
+		AuthorizedParty string `json:"azp"`
+		Email           string `json:"email"`
+		EmailVerified   *bool  `json:"email_verified"`
+		Name            string `json:"name"`
+		Username        string `json:"preferred_username"`
+		Picture         string `json:"picture"`
+	}
+	if err := idToken.Claims(&claims); err != nil {
+		return infraoauth.NormalizedProfile{}, infraoauth.AccountTokens{}, fmt.Errorf("oidc: decode ID token claims: %w", err)
+	}
+	if len(idToken.Audience) > 1 && strings.TrimSpace(claims.AuthorizedParty) != p.ClientID {
+		return infraoauth.NormalizedProfile{}, infraoauth.AccountTokens{}, errors.New("oidc: ID token authorized party does not match client")
+	}
+	if strings.TrimSpace(idToken.Subject) == "" || strings.TrimSpace(claims.Email) == "" || claims.EmailVerified == nil || !*claims.EmailVerified {
+		return infraoauth.NormalizedProfile{}, infraoauth.AccountTokens{}, errors.New("oidc: ID token is missing a verified subject or email")
+	}
+	username := strings.TrimSpace(claims.Username)
+	if username == "" {
+		username = strings.Split(strings.TrimSpace(claims.Email), "@")[0]
+	}
+	return infraoauth.NormalizedProfile{ProviderAccountID: idToken.Subject, Email: strings.ToLower(strings.TrimSpace(claims.Email)), Name: strings.TrimSpace(claims.Name), Username: username, Image: strings.TrimSpace(claims.Picture), EmailVerified: true}, infraoauth.AccountTokens{AccessToken: token.AccessToken, RefreshToken: token.RefreshToken, TokenType: token.Type(), Scope: scopeFromToken(token), ExpiresAt: int(token.Expiry.Unix()), IDToken: rawIDToken}, nil
+}
+
+func oidcScopes(raw string) []string {
+	scopes := []string{oidc.ScopeOpenID}
+	for _, scope := range strings.Fields(infraoauth.NormalizedScopes(raw)) {
+		if scope != oidc.ScopeOpenID {
+			scopes = append(scopes, scope)
+		}
+	}
+	if len(scopes) == 1 {
+		scopes = append(scopes, "profile", "email")
+	}
+	return scopes
+}
+
+func (p *ConfiguredProvider) oidcContext(ctx context.Context) (context.Context, error) {
+	client, ok := p.client.(*http.Client)
+	if !ok {
+		return nil, errors.New("oidc: HTTP client must be a net/http client")
+	}
+	return oidc.ClientContext(ctx, client), nil
+}
+
+func scopeFromToken(token *oauth2.Token) string {
+	if scope, ok := token.Extra("scope").(string); ok {
+		return scope
+	}
+	return ""
 }
 
 func (p *ConfiguredProvider) profile(ctx context.Context, tokens infraoauth.OAuthTokens) (infraoauth.NormalizedProfile, error) {

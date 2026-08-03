@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from "react";
-import { Input } from "@/components/ui/input";
+import { Input } from "antd";
 import { api } from "@/lib/api";
 
 interface CategoryFormProps {

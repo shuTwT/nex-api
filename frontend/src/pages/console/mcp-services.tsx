@@ -1,16 +1,5 @@
 import { useEffect, useState, useCallback, useTransition } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Badge, Button, Card, Input, Select, Typography } from "antd";
 import {
   Search,
   Plus,
@@ -223,7 +212,7 @@ export default function McpServicesPage() {
               key={stat.title}
               className="hover:shadow-md transition-shadow cursor-pointer"
             >
-              <CardContent className="p-4">
+              <div className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-slate-500">{stat.title}</p>
@@ -237,14 +226,14 @@ export default function McpServicesPage() {
                     <Icon className="h-5 w-5" />
                   </div>
                 </div>
-              </CardContent>
+              </div>
             </Card>
           );
         })}
       </div>
 
       <Card>
-        <CardContent className="p-4">
+        <div className="p-4">
           <div className="flex flex-wrap items-end gap-3">
             <div className="relative flex-1 min-w-[200px]">
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
@@ -255,51 +244,25 @@ export default function McpServicesPage() {
                 className="pl-10"
               />
             </div>
-            <Select value={typeFilter} onValueChange={setTypeFilter}>
-              <SelectTrigger className="w-[160px]">
-                <SelectValue placeholder="全部类型" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  <SelectItem value="all">全部类型</SelectItem>
-                  <SelectItem value="stdio">stdio</SelectItem>
-                  <SelectItem value="sse">SSE</SelectItem>
-                  <SelectItem value="streamableHttp">Streamable HTTP</SelectItem>
-                </SelectGroup>
-              </SelectContent>
-            </Select>
-            <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="w-[130px]">
-                <SelectValue placeholder="全部状态" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  <SelectItem value="all">全部</SelectItem>
-                  <SelectItem value="active">已启用</SelectItem>
-                  <SelectItem value="inactive">已停用</SelectItem>
-                </SelectGroup>
-              </SelectContent>
-            </Select>
-            <Button size="sm" onClick={handleQuery} className="cursor-pointer">
+            <Select value={typeFilter} onChange={setTypeFilter} className="w-[160px]" options={[{ value: "all", label: "全部类型" }, { value: "stdio", label: "stdio" }, { value: "sse", label: "SSE" }, { value: "streamableHttp", label: "Streamable HTTP" }]} />
+            <Select value={statusFilter} onChange={setStatusFilter} className="w-[130px]" options={[{ value: "all", label: "全部" }, { value: "active", label: "已启用" }, { value: "inactive", label: "已停用" }]} />
+            <Button size="small" onClick={handleQuery} className="cursor-pointer">
               查询
             </Button>
             <Button
-              variant="outline"
-              size="sm"
+              type="default"
+              size="small"
               onClick={handleReset}
               className="cursor-pointer"
             >
               重置
             </Button>
           </div>
-        </CardContent>
+        </div>
       </Card>
 
       <Card>
-        <CardHeader>
-          <CardTitle className="text-lg">服务列表</CardTitle>
-        </CardHeader>
-        <CardContent>
+        <div className="p-4"><Typography.Title level={5}>服务列表</Typography.Title>
           {isLoading ? (
             <div className="flex items-center justify-center py-12">
               <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-600 border-t-transparent" />
@@ -370,7 +333,6 @@ export default function McpServicesPage() {
                         </td>
                         <td className="py-3 px-4">
                           <Badge
-                            variant="outline"
                             className={
                               svc.type === "stdio"
                                 ? "bg-gray-50 text-gray-700 border-gray-200"
@@ -397,7 +359,6 @@ export default function McpServicesPage() {
                         </td>
                         <td className="py-3 px-4">
                           <Badge
-                            variant="outline"
                             className={
                               svc.isActive
                                 ? "bg-green-50 text-green-700 border-green-200 cursor-pointer"
@@ -414,8 +375,8 @@ export default function McpServicesPage() {
                         <td className="py-3 px-4">
                           <div className="flex items-center gap-2">
                             <Button
-                              variant="ghost"
-                              size="sm"
+                              type="text"
+                              size="small"
                               className="h-8 w-8 p-0 cursor-pointer"
                               onClick={() => handleEdit(svc)}
                               title="编辑"
@@ -423,8 +384,8 @@ export default function McpServicesPage() {
                               <Edit className="h-4 w-4" />
                             </Button>
                             <Button
-                              variant="ghost"
-                              size="sm"
+                              type="text"
+                              size="small"
                               className="h-8 w-8 p-0 cursor-pointer text-red-600 hover:text-red-700 hover:bg-red-50"
                               onClick={() => handleDelete(svc.id)}
                               title="删除"
@@ -451,7 +412,7 @@ export default function McpServicesPage() {
               </div>
             </>
           )}
-        </CardContent>
+        </div>
       </Card>
 
       <McpFormDialog

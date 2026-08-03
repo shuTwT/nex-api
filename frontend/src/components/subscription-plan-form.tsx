@@ -1,8 +1,5 @@
 import { useState, type FormEvent } from "react";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Card, CardContent } from "@/components/ui/card";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Card, Checkbox, Input, Select, Typography } from "antd";
 import { api } from "@/lib/api";
 
 interface SubscriptionPlan {
@@ -39,14 +36,20 @@ export function SubscriptionPlanForm({ plan, onSuccess, formId }: SubscriptionPl
     const formData = new FormData(e.currentTarget);
     formData.set("validityUnit", validityUnit);
     formData.set("creditResetCycle", creditResetCycle);
-    const body: Record<string, string> = {};
-    formData.forEach((value, key) => {
-      body[key] = String(value);
-    });
+    const body = {
+      title: String(formData.get("title") ?? ""),
+      price: Number(formData.get("price") ?? 0),
+      totalCredits: Number(formData.get("totalCredits") ?? 0),
+      sortOrder: Number(formData.get("sortOrder") ?? 0),
+      validityDuration: Number(formData.get("validityDuration") ?? 0),
+      validityUnit,
+      creditResetCycle,
+      isActive: formData.has("isActive"),
+    };
 
     try {
       const result = isEdit
-        ? await api.subscription_plans_id_route_put({ id: body.id ?? plan?.id ?? "" }, body)
+        ? await api.subscription_plans_id_route_put({ id: plan?.id ?? "" }, body)
         : await api.subscription_plans_route_post(body);
 
       if (result.success) {
@@ -63,15 +66,11 @@ export function SubscriptionPlanForm({ plan, onSuccess, formId }: SubscriptionPl
 
   return (
     <form id={formId} onSubmit={handleSubmit} className="space-y-4">
-      {plan?.id && (
-        <input type="hidden" name="id" value={plan.id} />
-      )}
-
-      <Card>
-        <CardContent className="p-6 space-y-4">
+      <Card styles={{ body: { padding: 24 } }}>
+        <div className="space-y-4">
           <div className="grid gap-4 md:grid-cols-2">
             <div className="space-y-2">
-              <Label htmlFor="title">套餐标题 *</Label>
+              <Typography.Text>套餐标题 *</Typography.Text>
               <Input
                 id="title"
                 name="title"
@@ -82,7 +81,7 @@ export function SubscriptionPlanForm({ plan, onSuccess, formId }: SubscriptionPl
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="price">价格 *</Label>
+              <Typography.Text>价格 *</Typography.Text>
               <Input
                 id="price"
                 name="price"
@@ -98,7 +97,7 @@ export function SubscriptionPlanForm({ plan, onSuccess, formId }: SubscriptionPl
 
           <div className="grid gap-4 md:grid-cols-2">
             <div className="space-y-2">
-              <Label htmlFor="totalCredits">总额度 *</Label>
+              <Typography.Text>总额度 *</Typography.Text>
               <Input
                 id="totalCredits"
                 name="totalCredits"
@@ -111,7 +110,7 @@ export function SubscriptionPlanForm({ plan, onSuccess, formId }: SubscriptionPl
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="sortOrder">排序</Label>
+              <Typography.Text>排序</Typography.Text>
               <Input
                 id="sortOrder"
                 name="sortOrder"
@@ -125,7 +124,7 @@ export function SubscriptionPlanForm({ plan, onSuccess, formId }: SubscriptionPl
 
           <div className="grid gap-4 md:grid-cols-2">
             <div className="space-y-2">
-              <Label htmlFor="validityDuration">有效期时长 *</Label>
+              <Typography.Text>有效期时长 *</Typography.Text>
               <Input
                 id="validityDuration"
                 name="validityDuration"
@@ -138,45 +137,22 @@ export function SubscriptionPlanForm({ plan, onSuccess, formId }: SubscriptionPl
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="validityUnit">有效期单位</Label>
-              <Select value={validityUnit} onValueChange={setValidityUnit} disabled={isLoading}>
-                <SelectTrigger id="validityUnit">
-                  <SelectValue placeholder="选择单位" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="day">天</SelectItem>
-                  <SelectItem value="week">周</SelectItem>
-                  <SelectItem value="month">月</SelectItem>
-                  <SelectItem value="year">年</SelectItem>
-                </SelectContent>
-              </Select>
+              <Typography.Text>有效期单位</Typography.Text>
+              <Select value={validityUnit} onChange={setValidityUnit} disabled={isLoading} options={[{ value: "day", label: "天" }, { value: "week", label: "周" }, { value: "month", label: "月" }, { value: "year", label: "年" }]} />
             </div>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="creditResetCycle">额度重置周期</Label>
-            <Select value={creditResetCycle} onValueChange={setCreditResetCycle} disabled={isLoading}>
-              <SelectTrigger id="creditResetCycle">
-                <SelectValue placeholder="选择周期" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="day">每天</SelectItem>
-                <SelectItem value="week">每周</SelectItem>
-                <SelectItem value="month">每月</SelectItem>
-                <SelectItem value="year">每年</SelectItem>
-              </SelectContent>
-            </Select>
+            <Typography.Text>额度重置周期</Typography.Text>
+            <Select value={creditResetCycle} onChange={setCreditResetCycle} disabled={isLoading} options={[{ value: "day", label: "每天" }, { value: "week", label: "每周" }, { value: "month", label: "每月" }, { value: "year", label: "每年" }]} />
           </div>
 
           <div className="flex items-center gap-2">
-            <input
-              type="checkbox"
+            <Checkbox
               id="isActive"
               name="isActive"
               defaultChecked={plan?.isActive ?? true}
-              className="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
-            />
-            <Label htmlFor="isActive">启用</Label>
+            >启用</Checkbox>
           </div>
 
           {error && (
@@ -184,7 +160,7 @@ export function SubscriptionPlanForm({ plan, onSuccess, formId }: SubscriptionPl
               <p className="text-sm text-red-700">{error}</p>
             </div>
           )}
-        </CardContent>
+        </div>
       </Card>
     </form>
   );

@@ -31,3 +31,6 @@ npm-debug.log*
 /.omo
 /.playwright-mcp
 /.reasonix
+
+/server
+/script-worker

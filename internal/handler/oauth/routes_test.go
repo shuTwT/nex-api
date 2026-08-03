@@ -13,16 +13,16 @@ import (
 	serviceoauth "github.com/shuTwT/nex-api/internal/service/oauth"
 )
 
-func TestHandlerReadsOAuthProvidersFromSystemSettings(t *testing.T) {
+func TestHandlerReadsGitHubOAuthAppFromSystemSettings(t *testing.T) {
 	client := enttest.Open(t, "sqlite3", "file:"+t.TempDir()+"/oauth.db?_fk=1")
 	t.Cleanup(func() { _ = client.Close() })
-	providers := []serviceoauth.ProviderConfig{{ID: "github", Name: "数据库 GitHub", ClientID: "database-client-id", ClientSecret: "database-client-secret", AuthorizationURL: "https://oauth.example.test/authorize", TokenURL: "https://oauth.example.test/token", UserInfoURL: "https://oauth.example.test/userinfo", Scopes: "read:user,user:email", UserIDField: "id", EmailField: "email", UsernameField: "login"}}
-	payload, err := json.Marshal(providers)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if _, err := client.SystemSetting.Create().SetKey("oauthProviders").SetValue(string(payload)).SetCategory("oauth").Save(t.Context()); err != nil {
-		t.Fatal(err)
+	for key, value := range map[string]string{
+		"githubOAuthClientId":     "database-client-id",
+		"githubOAuthClientSecret": "database-client-secret",
+	} {
+		if _, err := client.SystemSetting.Create().SetKey(key).SetValue(value).SetCategory("oauth").Save(t.Context()); err != nil {
+			t.Fatal(err)
+		}
 	}
 	service, err := serviceoauth.NewService(client)
 	if err != nil {
@@ -52,7 +52,41 @@ func TestHandlerReadsOAuthProvidersFromSystemSettings(t *testing.T) {
 	if list.Code != http.StatusOK {
 		t.Fatalf("providers status = %d", list.Code)
 	}
-	if body := list.Body.String(); body == "" || !containsAll(body, "数据库 GitHub", "github") || containsAll(body, "database-client-secret") {
+	if body := list.Body.String(); body == "" || !containsAll(body, "GitHub", "github") || containsAll(body, "database-client-secret") {
+		t.Fatalf("providers response leaked or omitted expected fields: %s", body)
+	}
+}
+
+func TestHandlerListsCustomOIDCProviderFromSystemSettings(t *testing.T) {
+	client := enttest.Open(t, "sqlite3", "file:"+t.TempDir()+"/oidc.db?_fk=1")
+	t.Cleanup(func() { _ = client.Close() })
+	payload, err := json.Marshal(serviceoauth.OIDCProviderConfig{
+		Name:         "公司统一登录",
+		Issuer:       "https://login.example.test",
+		ClientID:     "oidc-client-id",
+		ClientSecret: "oidc-client-secret",
+		Scopes:       "openid profile email",
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := client.SystemSetting.Create().SetKey("oidcProvider").SetValue(string(payload)).SetCategory("oauth").Save(t.Context()); err != nil {
+		t.Fatal(err)
+	}
+	service, err := serviceoauth.NewService(client)
+	if err != nil {
+		t.Fatal(err)
+	}
+	handler, err := New(service, nil, Config{AppURL: "https://nex.example.test", SessionSecret: []byte("test-session-secret")})
+	if err != nil {
+		t.Fatal(err)
+	}
+	response := httptest.NewRecorder()
+	handler.ServeHTTP(response, httptest.NewRequest(http.MethodGet, "/api/auth/providers", nil))
+	if response.Code != http.StatusOK {
+		t.Fatalf("providers status = %d", response.Code)
+	}
+	if body := response.Body.String(); body == "" || !containsAll(body, "公司统一登录", "custom-oidc") || containsAll(body, "oidc-client-secret") {
 		t.Fatalf("providers response leaked or omitted expected fields: %s", body)
 	}
 }

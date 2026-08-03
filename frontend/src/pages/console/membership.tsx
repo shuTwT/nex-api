@@ -1,20 +1,11 @@
 import { useEffect, useState } from "react";
+import { Badge, Button, Card, Col, Modal, Row, Tag, Typography } from "antd";
 import { useNavigate } from "react-router";
 import { useAuth } from "@/hooks/use-auth";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Crown, Check, Calendar, CreditCard, Zap, Loader2 } from "lucide-react";
 import { api, responseData } from "@/lib/api";
+import { ConsolePageLoading } from "@/components/console-page-loading";
 import { toast } from "sonner";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 
 interface SubscriptionPlan {
   id: string;
@@ -27,7 +18,6 @@ interface SubscriptionPlan {
   creditResetCycle: string;
   isActive: boolean;
 }
-
 interface Subscription {
   id: string;
   planId: string | null;
@@ -42,249 +32,186 @@ interface Subscription {
 
 export default function MembershipPage() {
   const navigate = useNavigate();
-  const [currentSubscription, setCurrentSubscription] = useState<Subscription | null>(null);
+  const { credits: userCredits } = useAuth();
+  const [currentSubscription, setCurrentSubscription] =
+    useState<Subscription | null>(null);
   const [availablePlans, setAvailablePlans] = useState<SubscriptionPlan[]>([]);
   const [paymentMethods, setPaymentMethods] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isProcessing, setIsProcessing] = useState(false);
   const [showPaymentDialog, setShowPaymentDialog] = useState(false);
   const [pendingPlan, setPendingPlan] = useState<SubscriptionPlan | null>(null);
-
   useEffect(() => {
     loadData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
   async function loadData() {
     setIsLoading(true);
-    const [subscriptionResult, plansResult, paymentMethodsResult] = await Promise.all([
-      api.membership_current_route_get(),
-      api.membership_plans_route_get(),
-      api.payment_methods_route_get(),
-    ]);
-
+    const [subscriptionResult, plansResult, paymentMethodsResult] =
+      await Promise.all([
+        api.membership_current_route_get(),
+        api.membership_plans_route_get(),
+        api.payment_methods_route_get(),
+      ]);
     const subscriptionData = responseData<Subscription>(subscriptionResult);
-    if (subscriptionData) setCurrentSubscription(subscriptionData);
-
     const plansData = responseData<SubscriptionPlan[]>(plansResult);
-    if (plansData) setAvailablePlans(plansData);
-
     const methodsData = responseData<string[]>(paymentMethodsResult);
+    if (subscriptionData) setCurrentSubscription(subscriptionData);
+    if (plansData) setAvailablePlans(plansData);
     if (methodsData) setPaymentMethods(methodsData);
-
     setIsLoading(false);
   }
-
   function handlePayment(plan: SubscriptionPlan) {
-    if (plan.price === 0) {
-      toast.error("免费计划无需支付");
-      return;
-    }
-
-    if (paymentMethods.length === 0) {
-      toast.error("暂无可用支付方式，请先在系统设置中配置支付渠道");
-      return;
-    }
-
+    if (plan.price === 0) return toast.error("免费计划无需支付");
+    if (!paymentMethods.length)
+      return toast.error("暂无可用支付方式，请先在系统设置中配置支付渠道");
     setPendingPlan(plan);
     setShowPaymentDialog(true);
   }
-
   async function handleConfirmPayment(method: string) {
     if (!pendingPlan) return;
-
     setIsProcessing(true);
-
     try {
-      const result = await api.payment_methods_route_post({ planId: pendingPlan.id, method });
+      const result = await api.payment_methods_route_post({
+        planId: pendingPlan.id,
+        method,
+      });
       const data = responseData<{ outTradeNo: string }>(result);
-
       if (result.success && data) {
         setShowPaymentDialog(false);
         toast.success("支付订单已创建");
         navigate(`/payment?outTradeNo=${data.outTradeNo}`);
-      } else {
-        toast.error(result.error || "创建支付订单失败");
-      }
+      } else toast.error(result.error || "创建支付订单失败");
     } catch {
       toast.error("支付失败，请重试");
     } finally {
       setIsProcessing(false);
     }
   }
-
   const validityUnitLabels: Record<string, string> = {
     day: "天",
     week: "周",
     month: "月",
     year: "年",
   };
-
   const creditResetCycleLabels: Record<string, string> = {
     day: "每天",
     week: "每周",
     month: "每月",
     year: "每年",
   };
-
-  const paymentMethodLabels: Record<string, { name: string; icon: string; color: string }> = {
-    wechat: { name: "微信支付", icon: "💬", color: "bg-green-500" },
-    alipay: { name: "支付宝", icon: "💳", color: "bg-blue-500" },
-    mock: { name: "模拟支付", icon: "🧪", color: "bg-purple-500" },
+  const paymentMethodLabels: Record<string, { name: string; icon: string }> = {
+    wechat: { name: "微信支付", icon: "💬" },
+    alipay: { name: "支付宝", icon: "💳" },
+    mock: { name: "模拟支付", icon: "🧪" },
   };
-
-  const { credits: userCredits } = useAuth();
-
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center py-12">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-600 border-t-transparent" />
-      </div>
-    );
-  }
-
+  if (isLoading) return <ConsolePageLoading />;
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-slate-900">我的会员</h1>
-        <p className="text-slate-500 mt-1">管理您的订阅计划</p>
+        <Typography.Title level={2}>我的会员</Typography.Title>
+        <Typography.Text type="secondary">管理您的订阅计划</Typography.Text>
       </div>
-
-      <Card className={currentSubscription ? "border-blue-200 bg-gradient-to-r from-blue-50 to-cyan-50" : "border-slate-200"}>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <CardTitle className="flex items-center gap-2">
-              <Crown className={`h-5 w-5 ${currentSubscription ? "text-blue-600" : "text-slate-400"}`} />
-              当前订阅
-            </CardTitle>
-            <Badge className={currentSubscription?.isActive ? "bg-green-100 text-green-700 border-green-200" : "bg-slate-100 text-slate-600 border-slate-200"}>
-              {currentSubscription ? (currentSubscription.isActive ? "有效" : "已过期") : "免费版"}
-            </Badge>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-            <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-lg bg-blue-100 flex items-center justify-center">
-                <Crown className="h-5 w-5 text-blue-600" />
-              </div>
-              <div>
-                <p className="text-sm text-slate-500">计划名称</p>
-                <p className="font-medium text-slate-900">
-                  {currentSubscription ? currentSubscription.planName : "免费版"}
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-lg bg-green-100 flex items-center justify-center">
-                <Zap className="h-5 w-5 text-green-600" />
-              </div>
-              <div>
-                <p className="text-sm text-slate-500">剩余积分</p>
-                <p className="font-medium text-slate-900">
-                  {currentSubscription ? currentSubscription.credits.toLocaleString() : userCredits.toLocaleString()}
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-lg bg-purple-100 flex items-center justify-center">
-                <Calendar className="h-5 w-5 text-purple-600" />
-              </div>
-              <div>
-                <p className="text-sm text-slate-500">到期时间</p>
-                <p className="font-medium text-slate-900">
-                  {currentSubscription
-                    ? new Date(currentSubscription.endDate).toLocaleDateString("zh-CN")
-                    : "无限制"}
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-lg bg-orange-100 flex items-center justify-center">
-                <CreditCard className="h-5 w-5 text-orange-600" />
-              </div>
-              <div>
-                <p className="text-sm text-slate-500">订阅价格</p>
-                <p className="font-medium text-slate-900">
-                  {currentSubscription ? `¥${currentSubscription.price}` : "¥0"}
-                </p>
-              </div>
-            </div>
-          </div>
-        </CardContent>
+      <Card
+        title={
+          <span className="flex items-center gap-2">
+            <Crown size={20} />
+            当前订阅
+          </span>
+        }
+        extra={
+          <Tag color={currentSubscription?.isActive ? "success" : "default"}>
+            {currentSubscription
+              ? currentSubscription.isActive
+                ? "有效"
+                : "已过期"
+              : "免费版"}
+          </Tag>
+        }
+      >
+        <Row gutter={[16, 16]}>
+          <Col xs={24} md={6}>
+            <Typography.Text type="secondary">计划名称</Typography.Text>
+            <Typography.Paragraph>
+              {currentSubscription?.planName || "免费版"}
+            </Typography.Paragraph>
+          </Col>
+          <Col xs={24} md={6}>
+            <Typography.Text type="secondary">剩余积分</Typography.Text>
+            <Typography.Paragraph>
+              {currentSubscription
+                ? currentSubscription.credits.toLocaleString()
+                : userCredits.toLocaleString()}
+            </Typography.Paragraph>
+          </Col>
+          <Col xs={24} md={6}>
+            <Typography.Text type="secondary">到期时间</Typography.Text>
+            <Typography.Paragraph>
+              {currentSubscription
+                ? new Date(currentSubscription.endDate).toLocaleDateString(
+                    "zh-CN",
+                  )
+                : "无限制"}
+            </Typography.Paragraph>
+          </Col>
+          <Col xs={24} md={6}>
+            <Typography.Text type="secondary">订阅价格</Typography.Text>
+            <Typography.Paragraph>
+              {currentSubscription ? `¥${currentSubscription.price}` : "¥0"}
+            </Typography.Paragraph>
+          </Col>
+        </Row>
       </Card>
-
       <div>
-        <h2 className="text-lg font-semibold text-slate-900 mb-4">
+        <Typography.Title level={3}>
           {currentSubscription ? "升级计划" : "选择计划"}
-        </h2>
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        </Typography.Title>
+        <Row gutter={[16, 16]}>
           {availablePlans.map((plan) => {
             const isCurrentPlan = currentSubscription?.planId === plan.id;
-
             return (
-              <Card
-                key={plan.id}
-                className={`hover:shadow-md transition-shadow ${
-                  isCurrentPlan ? "border-blue-500 border-2" : ""
-                }`}
-              >
-                <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <CardTitle className="text-lg">{plan.title}</CardTitle>
-                    {isCurrentPlan && (
-                      <Badge className="bg-blue-100 text-blue-700 border-blue-200">
-                        当前计划
-                      </Badge>
-                    )}
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="mb-4">
-                    <div className="flex items-baseline gap-1">
-                      <span className="text-3xl font-bold text-slate-900">
-                        ¥{plan.price}
-                      </span>
-                      <span className="text-slate-500">
-                        /{validityUnitLabels[plan.validityUnit]}
-                      </span>
+              <Col key={plan.id} xs={24} md={12} xl={8}>
+                <Card
+                  title={plan.title}
+                  extra={
+                    isCurrentPlan && (
+                      <Badge status="processing" text="当前计划" />
+                    )
+                  }
+                >
+                  <Typography.Title level={2}>
+                    ¥{plan.price}
+                    <Typography.Text type="secondary">
+                      /{validityUnitLabels[plan.validityUnit]}
+                    </Typography.Text>
+                  </Typography.Title>
+                  <Typography.Paragraph type="secondary">
+                    {plan.totalCredits.toLocaleString()} 积分/
+                    {creditResetCycleLabels[plan.creditResetCycle]}
+                  </Typography.Paragraph>
+                  {[
+                    `${plan.totalCredits.toLocaleString()} 积分/${creditResetCycleLabels[plan.creditResetCycle]}`,
+                    `有效期 ${plan.validityDuration} ${validityUnitLabels[plan.validityUnit]}`,
+                    "全部接口访问",
+                    "邮件+工单支持",
+                  ].map((feature) => (
+                    <div key={feature} className="flex items-center gap-2 py-1">
+                      <Check size={16} color="#52c41a" />
+                      {feature}
                     </div>
-                    <p className="text-sm text-slate-500 mt-1">
-                      {plan.totalCredits.toLocaleString()} 积分/{creditResetCycleLabels[plan.creditResetCycle]}
-                    </p>
-                  </div>
-
-                  <ul className="space-y-3 mb-6">
-                    <li className="flex items-center gap-2 text-sm text-slate-600">
-                      <Check className="h-4 w-4 text-green-600 flex-shrink-0" />
-                      <span>{plan.totalCredits.toLocaleString()} 积分/{creditResetCycleLabels[plan.creditResetCycle]}</span>
-                    </li>
-                    <li className="flex items-center gap-2 text-sm text-slate-600">
-                      <Check className="h-4 w-4 text-green-600 flex-shrink-0" />
-                      <span>有效期 {plan.validityDuration} {validityUnitLabels[plan.validityUnit]}</span>
-                    </li>
-                    <li className="flex items-center gap-2 text-sm text-slate-600">
-                      <Check className="h-4 w-4 text-green-600 flex-shrink-0" />
-                      <span>全部接口访问</span>
-                    </li>
-                    <li className="flex items-center gap-2 text-sm text-slate-600">
-                      <Check className="h-4 w-4 text-green-600 flex-shrink-0" />
-                      <span>邮件+工单支持</span>
-                    </li>
-                  </ul>
-
+                  ))}
                   <Button
-                    className="w-full cursor-pointer"
-                    variant={isCurrentPlan ? "outline" : "default"}
+                    type="primary"
+                    block
+                    className="mt-6"
                     disabled={isCurrentPlan || isProcessing}
                     onClick={() => handlePayment(plan)}
                   >
                     {isProcessing ? (
                       <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        <Loader2
+                          size={16}
+                          className="mr-2 inline animate-spin"
+                        />
                         处理中...
                       </>
                     ) : isCurrentPlan ? (
@@ -295,60 +222,52 @@ export default function MembershipPage() {
                       "立即订阅"
                     )}
                   </Button>
-                </CardContent>
-              </Card>
+                </Card>
+              </Col>
             );
           })}
-        </div>
+        </Row>
       </div>
-
-      <Dialog open={showPaymentDialog} onOpenChange={setShowPaymentDialog}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>选择支付方式</DialogTitle>
-            <DialogDescription>
-              {pendingPlan && (
-                <>
-                  订阅 <span className="font-medium text-slate-900">{pendingPlan.title}</span>
-                  {" "}— ¥{pendingPlan.price}/{validityUnitLabels[pendingPlan.validityUnit]}
-                </>
-              )}
-            </DialogDescription>
-          </DialogHeader>
-          <div className="grid gap-3 py-4">
-            {paymentMethods.map((method) => {
-              const methodInfo = paymentMethodLabels[method];
-              return (
-                <button
-                  key={method}
-                  onClick={() => handleConfirmPayment(method)}
-                  disabled={isProcessing}
-                  className="flex items-center gap-4 p-4 rounded-lg border-2 border-slate-200 hover:border-blue-400 hover:bg-blue-50 transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  <div
-                    className={`h-10 w-10 rounded-lg ${methodInfo.color} flex items-center justify-center text-white text-xl flex-shrink-0`}
-                  >
-                    {methodInfo.icon}
-                  </div>
-                  <div className="text-left flex-1">
-                    <p className="font-medium text-slate-900">{methodInfo.name}</p>
-                  </div>
-                  {isProcessing ? (
-                    <Loader2 className="h-4 w-4 animate-spin text-slate-400" />
-                  ) : (
-                    <CreditCard className="h-4 w-4 text-slate-400" />
-                  )}
-                </button>
-              );
-            })}
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setShowPaymentDialog(false)} disabled={isProcessing}>
-              取消
+      <Modal
+        open={showPaymentDialog}
+        title="选择支付方式"
+        onCancel={() => setShowPaymentDialog(false)}
+        footer={
+          <Button
+            onClick={() => setShowPaymentDialog(false)}
+            disabled={isProcessing}
+          >
+            取消
+          </Button>
+        }
+      >
+        <Typography.Paragraph>
+          {pendingPlan && (
+            <>
+              订阅 <Typography.Text strong>{pendingPlan.title}</Typography.Text>{" "}
+              — ¥{pendingPlan.price}/
+              {validityUnitLabels[pendingPlan.validityUnit]}
+            </>
+          )}
+        </Typography.Paragraph>
+        {paymentMethods.map((method) => {
+          const methodInfo = paymentMethodLabels[method];
+          if (!methodInfo) return null;
+          return (
+            <Button
+              key={method}
+              block
+              className="mb-3"
+              size="large"
+              disabled={isProcessing}
+              onClick={() => handleConfirmPayment(method)}
+              icon={<CreditCard size={16} />}
+            >
+              {methodInfo.icon} {methodInfo.name}
             </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+          );
+        })}
+      </Modal>
     </div>
   );
 }

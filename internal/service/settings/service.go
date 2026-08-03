@@ -106,7 +106,7 @@ func CategoryForKey(key string) string {
 	switch {
 	case strings.HasPrefix(key, "alipay"), strings.HasPrefix(key, "wechat"), strings.HasPrefix(key, "credit"), strings.HasPrefix(key, "minRecharge"), strings.HasPrefix(key, "mockPayment"):
 		return "payment"
-	case strings.HasPrefix(key, "oauth"):
+	case strings.HasPrefix(key, "oauth"), strings.HasPrefix(key, "githubOAuth"), strings.HasPrefix(key, "oidc"):
 		return "oauth"
 	case strings.HasPrefix(key, "registration"), strings.HasPrefix(key, "defaultCredits"), strings.HasPrefix(key, "inviteRewards"), strings.HasPrefix(key, "maintenance"), strings.HasPrefix(key, "announcement"):
 		return "operation"

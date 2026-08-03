@@ -1,13 +1,5 @@
 import { useState } from "react";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
+import { Alert, Button, Modal, Typography } from "antd";
 import { api } from "@/lib/api";
 import { AlertCircle } from "lucide-react";
 
@@ -48,48 +40,34 @@ export function DeleteUserDialog({
   }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2 text-red-600">
+    <Modal
+      open={open}
+      title={<span className="flex items-center gap-2 text-red-600">
             <AlertCircle className="h-5 w-5" />
             确认删除
-          </DialogTitle>
-          <DialogDescription className="pt-4">
+          </span>}
+      onCancel={() => onOpenChange(false)}
+      footer={[
+        <Button key="cancel" onClick={() => onOpenChange(false)} disabled={isLoading}>取消</Button>,
+        <Button key="delete" danger type="primary" onClick={handleDelete} loading={isLoading}>确认删除</Button>,
+      ]}
+    >
+          <Typography.Paragraph>
             您确定要删除用户 <span className="font-semibold text-slate-900">{userName}</span> 吗？
-          </DialogDescription>
-        </DialogHeader>
+          </Typography.Paragraph>
 
-        <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
+        <Alert type="error" showIcon message="此操作无法撤销" description={
+          <>
           <p className="text-sm text-red-700">
-            此操作无法撤销。删除用户将同时删除该用户的所有数据，包括：
+            删除用户将同时删除该用户的所有数据，包括：
           </p>
           <ul className="mt-2 text-sm text-red-600 list-disc list-inside">
             <li>订阅记录</li>
             <li>API 使用记录</li>
             <li>账单记录</li>
           </ul>
-        </div>
-
-        <DialogFooter className="gap-2 sm:gap-0">
-          <Button
-            variant="outline"
-            onClick={() => onOpenChange(false)}
-            disabled={isLoading}
-            className="cursor-pointer"
-          >
-            取消
-          </Button>
-          <Button
-            variant="destructive"
-            onClick={handleDelete}
-            disabled={isLoading}
-            className="cursor-pointer"
-          >
-            {isLoading ? "删除中..." : "确认删除"}
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+          </>
+        } />
+    </Modal>
   );
 }

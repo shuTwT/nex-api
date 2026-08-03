@@ -1,13 +1,5 @@
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Modal } from "antd";
 import { api } from "@/lib/api";
 import { toast } from "sonner";
 
@@ -44,35 +36,8 @@ export function DeleteSubscriptionPlanDialog({
   }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>删除订阅计划</DialogTitle>
-          <DialogDescription>
-            您确定要删除订阅计划 &quot;{planTitle}&quot; 吗？此操作无法撤销。
-          </DialogDescription>
-        </DialogHeader>
-        <DialogFooter>
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => onOpenChange(false)}
-            disabled={isDeleting}
-            className="cursor-pointer"
-          >
-            取消
-          </Button>
-          <Button
-            type="button"
-            variant="destructive"
-            onClick={handleDelete}
-            disabled={isDeleting}
-            className="cursor-pointer"
-          >
-            {isDeleting ? "删除中..." : "删除"}
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+    <Modal open={open} title="删除订阅计划" okText="删除" okButtonProps={{ danger: true, loading: isDeleting }} cancelButtonProps={{ disabled: isDeleting }} onCancel={() => onOpenChange(false)} onOk={handleDelete} destroyOnHidden>
+      <p>您确定要删除订阅计划 &quot;{planTitle}&quot; 吗？此操作无法撤销。</p>
+    </Modal>
   );
 }

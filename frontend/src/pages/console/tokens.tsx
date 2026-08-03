@@ -1,16 +1,5 @@
 import { useEffect, useState, useCallback, useTransition } from "react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Badge, Button, Card, Input, Select } from "antd";
 import {
   Key,
   Plus,
@@ -235,7 +224,7 @@ export default function TokensPage() {
 
           return (
             <Card key={stat.title} className="hover:shadow-md transition-shadow cursor-pointer">
-              <CardContent className="p-4">
+              <div className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-slate-500">{stat.title}</p>
@@ -245,14 +234,14 @@ export default function TokensPage() {
                     <Icon className="h-5 w-5" />
                   </div>
                 </div>
-              </CardContent>
+              </div>
             </Card>
           );
         })}
       </div>
 
       <Card className="border-orange-200 bg-orange-50">
-        <CardContent className="p-4">
+        <div className="p-4">
           <div className="flex items-start gap-3">
             <Shield className="h-5 w-5 text-orange-600 flex-shrink-0 mt-0.5" />
             <div>
@@ -263,11 +252,11 @@ export default function TokensPage() {
               </p>
             </div>
           </div>
-        </CardContent>
+        </div>
       </Card>
 
       <Card>
-        <CardContent className="p-4">
+        <div className="p-4">
           <div className="flex flex-wrap items-end gap-3">
             <div className="relative flex-1 min-w-[200px]">
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
@@ -278,35 +267,24 @@ export default function TokensPage() {
                 className="pl-10"
               />
             </div>
-            <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="w-[120px]">
-                <SelectValue placeholder="状态" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  <SelectItem value="all">全部</SelectItem>
-                  <SelectItem value="active">活跃</SelectItem>
-                  <SelectItem value="inactive">已停用</SelectItem>
-                </SelectGroup>
-              </SelectContent>
-            </Select>
+            <Select value={statusFilter} onChange={setStatusFilter} className="w-[120px]" options={[{ value: "all", label: "全部" }, { value: "active", label: "活跃" }, { value: "inactive", label: "已停用" }]} />
             <Button
-              size="sm"
+              size="small"
               onClick={handleQuery}
               className="cursor-pointer"
             >
               查询
             </Button>
             <Button
-              variant="outline"
-              size="sm"
+              type="default"
+              size="small"
               onClick={handleReset}
               className="cursor-pointer"
             >
               重置
             </Button>
           </div>
-        </CardContent>
+        </div>
       </Card>
 
       {isLoading ? (
@@ -315,7 +293,7 @@ export default function TokensPage() {
         </div>
       ) : tokens.length === 0 ? (
         <Card>
-          <CardContent className="p-12">
+          <div className="p-12">
             <div className="text-center">
               <Key className="h-12 w-12 text-slate-300 mx-auto mb-4" />
               <h3 className="text-lg font-medium text-slate-900 mb-2">没有找到令牌</h3>
@@ -325,7 +303,7 @@ export default function TokensPage() {
                 创建令牌
               </Button>
             </div>
-          </CardContent>
+          </div>
         </Card>
       ) : (
         <>
@@ -335,7 +313,7 @@ export default function TokensPage() {
 
               return (
                 <Card key={token.id} className="hover:shadow-md transition-shadow">
-                  <CardContent className="p-6">
+                  <div className="p-6">
                     <div className="flex items-start justify-between">
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-3 mb-3">
@@ -346,7 +324,6 @@ export default function TokensPage() {
                             <h3 className="text-lg font-semibold text-slate-900">{token.name}</h3>
                             <div className="flex items-center gap-2 mt-1">
                               <Badge
-                                variant="outline"
                                 className={`cursor-pointer ${
                                   !token.isActive
                                     ? "bg-gray-50 text-gray-700 border-gray-200"
@@ -358,7 +335,7 @@ export default function TokensPage() {
                               >
                                 {!token.isActive ? "已停用" : expired ? "已过期" : "活跃"}
                               </Badge>
-                              <Badge variant="outline" className="bg-slate-50 text-slate-600 border-slate-200">
+                              <Badge className="bg-slate-50 text-slate-600 border-slate-200">
                                 {token.permissions === "read" ? "只读" :
                                  token.permissions === "read,write" ? "读写" :
                                  token.permissions === "read,write,delete" ? "读写删除" : token.permissions}
@@ -374,8 +351,8 @@ export default function TokensPage() {
                             </code>
                             <div className="flex items-center gap-2 ml-3">
                               <Button
-                                variant="ghost"
-                                size="sm"
+                                type="text"
+                                size="small"
                                 onClick={() => toggleShowToken(token.id)}
                                 className="h-8 w-8 p-0 cursor-pointer"
                               >
@@ -386,8 +363,8 @@ export default function TokensPage() {
                                 )}
                               </Button>
                               <Button
-                                variant="ghost"
-                                size="sm"
+                                type="text"
+                                size="small"
                                 onClick={() => handleCopyToken(token.id, token.token)}
                                 className="h-8 w-8 p-0 cursor-pointer"
                               >
@@ -425,8 +402,8 @@ export default function TokensPage() {
 
                       <div className="ml-4 flex gap-2">
                         <Button
-                          variant="ghost"
-                          size="sm"
+                          type="text"
+                          size="small"
                           onClick={() => handleEditToken(token)}
                           className="cursor-pointer"
                           title="编辑"
@@ -434,8 +411,8 @@ export default function TokensPage() {
                           <Edit className="h-4 w-4" />
                         </Button>
                         <Button
-                          variant="ghost"
-                          size="sm"
+                          type="text"
+                          size="small"
                           onClick={() => handleDeleteToken(token)}
                           className="text-red-600 hover:text-red-700 hover:bg-red-50 cursor-pointer"
                           title="删除"
@@ -444,7 +421,7 @@ export default function TokensPage() {
                         </Button>
                       </div>
                     </div>
-                  </CardContent>
+                  </div>
                 </Card>
               );
             })}

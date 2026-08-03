@@ -1,38 +1,9 @@
-import { useEffect, useState, useCallback, useTransition } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import {
-  Search,
-  Plus,
-  Edit,
-  Trash2,
-  Image as ImageIcon,
-  Megaphone,
-  ExternalLink,
-  Power,
-  Eye,
-} from "lucide-react";
+import { useCallback, useEffect, useState, useTransition } from "react";
+import { Button, Card, Flex, Image, Input, Modal, Select, Space, Statistic, Table, Tag, Typography } from "antd";
+import { Edit, ExternalLink, Eye, Image as ImageIcon, Megaphone, Plus, Power, Search, Trash2 } from "lucide-react";
 import { api, responseData } from "@/lib/api";
 import { AdvertisementForm } from "@/components/advertisement-form";
 import { DeleteAdvertisementDialog } from "@/components/delete-advertisement-dialog";
-import { Pagination } from "@/components/pagination";
 import { AdPositionLabels, AdPosition, AdPositionOptions } from "@/types/ad-position";
 
 interface Advertisement {
@@ -47,463 +18,99 @@ interface Advertisement {
   createdAt: Date;
   updatedAt: Date;
 }
-
-interface AdvertisementStats {
-  totalAds: number;
-  activeAds: number;
-  inactiveAds: number;
-  positionStats: Array<{
-    position: string;
-    _count: number;
-  }>;
-}
-
-interface PaginationInfo {
-  page: number;
-  limit: number;
-  total: number;
-  totalPages: number;
-}
+interface AdvertisementStats { totalAds: number; activeAds: number; inactiveAds: number; positionStats: Array<{ position: string; _count: number }>; }
+interface PaginationInfo { page: number; limit: number; total: number; totalPages: number; }
 
 export default function AdvertisementsPage() {
   const [advertisements, setAdvertisements] = useState<Advertisement[]>([]);
   const [stats, setStats] = useState<AdvertisementStats | null>(null);
   const [pagination, setPagination] = useState<PaginationInfo | null>(null);
   const [searchInput, setSearchInput] = useState("");
-  const [positionFilter, setPositionFilter] = useState<string>("all");
-  const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [positionFilter, setPositionFilter] = useState("all");
+  const [statusFilter, setStatusFilter] = useState("all");
   const [appliedSearch, setAppliedSearch] = useState("");
-  const [appliedPosition, setAppliedPosition] = useState<string>("all");
-  const [appliedStatus, setAppliedStatus] = useState<string>("all");
+  const [appliedPosition, setAppliedPosition] = useState("all");
+  const [appliedStatus, setAppliedStatus] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [isLoading, setIsLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editingAd, setEditingAd] = useState<Advertisement | null>(null);
   const [deletingAd, setDeletingAd] = useState<Advertisement | null>(null);
-  const [isPending, startTransition] = useTransition();
+  const [, startTransition] = useTransition();
 
   const loadAdvertisements = useCallback(async () => {
     setIsLoading(true);
-    const query: Record<string, string | number | boolean> = {
-      page: currentPage,
-      limit: pageSize,
-    };
-
-    if (appliedSearch) {
-      query.search = appliedSearch;
-    }
-
-    if (appliedPosition !== "all") {
-      query.position = appliedPosition;
-    }
-
-    if (appliedStatus !== "all") {
-      query.isActive = appliedStatus === "active";
-    }
-
+    const query: Record<string, string | number | boolean> = { page: currentPage, limit: pageSize };
+    if (appliedSearch) query.search = appliedSearch;
+    if (appliedPosition !== "all") query.position = appliedPosition;
+    if (appliedStatus !== "all") query.isActive = appliedStatus === "active";
     const result = await api.advertisements_route_get(query);
-
     if (result.success) {
       const data = responseData<Advertisement[]>(result);
       if (data) setAdvertisements(data);
-      if (result.pagination) {
-        setPagination(result.pagination);
-      }
+      if (result.pagination) setPagination(result.pagination);
     }
     setIsLoading(false);
-  }, [currentPage, pageSize, appliedSearch, appliedPosition, appliedStatus]);
+  }, [appliedPosition, appliedSearch, appliedStatus, currentPage, pageSize]);
+  useEffect(() => { void loadAdvertisements(); }, [loadAdvertisements]);
 
-  useEffect(() => {
-    loadAdvertisements();
-  }, [loadAdvertisements]);
-
-  async function loadStats() {
-    const result = await api.advertisements_stats_route_get();
-    const data = responseData<AdvertisementStats>(result);
+  const loadStats = useCallback(async () => {
+    const data = responseData<AdvertisementStats>(await api.advertisements_stats_route_get());
     if (data) setStats(data);
-  }
-
-  useEffect(() => {
-    loadStats();
   }, []);
+  useEffect(() => { void loadStats(); }, [loadStats]);
 
-  function handleAddAdvertisement() {
-    setEditingAd(null);
-    setShowForm(true);
-  }
-
-  function handleEditAdvertisement(ad: Advertisement) {
-    setEditingAd(ad);
-    setShowForm(true);
-  }
-
-  function handleDeleteAdvertisement(ad: Advertisement) {
-    setDeletingAd(ad);
-  }
-
-  function handleFormSuccess() {
-    setShowForm(false);
-    setEditingAd(null);
-    startTransition(() => {
-      loadAdvertisements();
-      loadStats();
-    });
-  }
-
-  function handleDeleteSuccess() {
-    startTransition(() => {
-      loadAdvertisements();
-      loadStats();
-    });
-  }
-
-  async function handleToggleStatus(ad: Advertisement) {
-    const result = await api.advertisements_id_toggle_route_put({ id: ad.id });
-    if (result.success) {
-      startTransition(() => {
-        loadAdvertisements();
-        loadStats();
-      });
-    }
-  }
-
-  function handlePageChange(page: number) {
-    setCurrentPage(page);
-  }
-
-  function handlePageSizeChange(size: number) {
-    setPageSize(size);
-    setCurrentPage(1);
-  }
-
-  function handleQuery() {
-    setAppliedSearch(searchInput);
-    setAppliedPosition(positionFilter);
-    setAppliedStatus(statusFilter);
-    setCurrentPage(1);
-  }
-
-  function handleReset() {
-    setSearchInput("");
-    setPositionFilter("all");
-    setStatusFilter("all");
-    setAppliedSearch("");
-    setAppliedPosition("all");
-    setAppliedStatus("all");
-    setCurrentPage(1);
-  }
-
-  function getPositionLabel(position: string): string {
-    return AdPositionLabels[position as AdPosition] || position;
-  }
+  function refresh() { startTransition(() => { void loadAdvertisements(); void loadStats(); }); }
+  function handleAddAdvertisement() { setEditingAd(null); setShowForm(true); }
+  function handleQuery() { setAppliedSearch(searchInput); setAppliedPosition(positionFilter); setAppliedStatus(statusFilter); setCurrentPage(1); }
+  function handleReset() { setSearchInput(""); setPositionFilter("all"); setStatusFilter("all"); setAppliedSearch(""); setAppliedPosition("all"); setAppliedStatus("all"); setCurrentPage(1); }
+  function getPositionLabel(position: string) { return AdPositionLabels[position as AdPosition] || position; }
+  async function handleToggleStatus(ad: Advertisement) { const result = await api.advertisements_id_toggle_route_put({ id: ad.id }); if (result.success) refresh(); }
 
   const statsCards = [
-    {
-      title: "总广告数",
-      value: stats?.totalAds || 0,
-      icon: Megaphone,
-      color: "blue",
-    },
-    {
-      title: "已启用",
-      value: stats?.activeAds || 0,
-      icon: Power,
-      color: "green",
-    },
-    {
-      title: "已禁用",
-      value: stats?.inactiveAds || 0,
-      icon: Power,
-      color: "gray",
-    },
-    {
-      title: "广告位类型",
-      value: stats?.positionStats.length || 0,
-      icon: Eye,
-      color: "purple",
-    },
+    { title: "总广告数", value: stats?.totalAds || 0, icon: <Megaphone size={20} />, color: "#1677ff" },
+    { title: "已启用", value: stats?.activeAds || 0, icon: <Power size={20} />, color: "#52c41a" },
+    { title: "已禁用", value: stats?.inactiveAds || 0, icon: <Power size={20} />, color: "#8c8c8c" },
+    { title: "广告位类型", value: stats?.positionStats.length || 0, icon: <Eye size={20} />, color: "#722ed1" },
   ];
 
-  void isPending;
-
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-slate-900">广告位管理</h1>
-          <p className="text-slate-500 mt-1">管理网站广告位和广告内容</p>
-        </div>
-        <Button
-          className="gap-2 cursor-pointer"
-          onClick={handleAddAdvertisement}
-        >
-          <Plus className="h-4 w-4" />
-          添加广告
-        </Button>
-      </div>
-
+    <Flex vertical gap={24}>
+      <Flex justify="space-between" align="center">
+        <div><Typography.Title level={2} style={{ margin: 0 }}>广告位管理</Typography.Title><Typography.Text type="secondary">管理网站广告位和广告内容</Typography.Text></div>
+        <Button type="primary" icon={<Plus size={16} />} onClick={handleAddAdvertisement}>添加广告</Button>
+      </Flex>
       <div className="grid gap-4 md:grid-cols-4">
-        {statsCards.map((stat) => {
-          const Icon = stat.icon;
-          const colorClasses = {
-            blue: "bg-blue-50 text-blue-600",
-            green: "bg-green-50 text-green-600",
-            gray: "bg-gray-50 text-gray-600",
-            purple: "bg-purple-50 text-purple-600",
-          };
-
-          return (
-            <Card key={stat.title} className="hover:shadow-md transition-shadow cursor-pointer">
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-slate-500">{stat.title}</p>
-                    <p className="text-2xl font-bold text-slate-900 mt-1">{stat.value}</p>
-                  </div>
-                  <div className={`h-10 w-10 rounded-lg flex items-center justify-center ${colorClasses[stat.color as keyof typeof colorClasses]}`}>
-                    <Icon className="h-5 w-5" />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          );
-        })}
+        {statsCards.map((stat) => <Card key={stat.title}><Statistic title={stat.title} value={stat.value} prefix={<span style={{ color: stat.color }}>{stat.icon}</span>} /></Card>)}
       </div>
-
       <Card>
-        <CardContent className="p-4">
-          <div className="flex flex-wrap items-end gap-3">
-            <div className="relative flex-1 min-w-[200px]">
-              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-              <Input
-                placeholder="搜索广告标题..."
-                value={searchInput}
-                onChange={(e) => setSearchInput(e.target.value)}
-                className="pl-10"
-              />
-            </div>
-            <Select value={positionFilter} onValueChange={setPositionFilter}>
-              <SelectTrigger className="w-[140px]">
-                <SelectValue placeholder="广告位" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  <SelectItem value="all">全部广告位</SelectItem>
-                  {AdPositionOptions.map((option) => (
-                    <SelectItem key={option.value} value={option.value}>
-                      {option.label}
-                    </SelectItem>
-                  ))}
-                </SelectGroup>
-              </SelectContent>
-            </Select>
-            <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="w-[120px]">
-                <SelectValue placeholder="状态" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  <SelectItem value="all">全部</SelectItem>
-                  <SelectItem value="active">已启用</SelectItem>
-                  <SelectItem value="inactive">已禁用</SelectItem>
-                </SelectGroup>
-              </SelectContent>
-            </Select>
-            <Button
-              size="sm"
-              onClick={handleQuery}
-              className="cursor-pointer"
-            >
-              查询
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleReset}
-              className="cursor-pointer"
-            >
-              重置
-            </Button>
-          </div>
-        </CardContent>
+        <Space wrap>
+          <Input prefix={<Search size={16} />} placeholder="搜索广告标题..." value={searchInput} onChange={(event) => setSearchInput(event.target.value)} style={{ width: 260 }} onPressEnter={handleQuery} />
+          <Select value={positionFilter} onChange={setPositionFilter} style={{ width: 160 }} options={[{ value: "all", label: "全部广告位" }, ...AdPositionOptions.map((option) => ({ value: option.value, label: option.label }))]} />
+          <Select value={statusFilter} onChange={setStatusFilter} style={{ width: 120 }} options={[{ value: "all", label: "全部" }, { value: "active", label: "已启用" }, { value: "inactive", label: "已禁用" }]} />
+          <Button type="primary" onClick={handleQuery}>查询</Button><Button onClick={handleReset}>重置</Button>
+        </Space>
       </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg">广告列表</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {isLoading ? (
-            <div className="flex items-center justify-center py-12">
-              <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-600 border-t-transparent" />
-            </div>
-          ) : advertisements.length === 0 ? (
-            <div className="text-center py-12">
-              <ImageIcon className="h-12 w-12 text-slate-300 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-slate-900 mb-2">没有找到广告</h3>
-              <p className="text-slate-500 mb-4">尝试调整搜索条件或添加新广告</p>
-              <Button onClick={handleAddAdvertisement} className="gap-2 cursor-pointer">
-                <Plus className="h-4 w-4" />
-                添加广告
-              </Button>
-            </div>
-          ) : (
-            <>
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead>
-                    <tr className="border-b border-slate-200">
-                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-600">广告信息</th>
-                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-600">广告位</th>
-                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-600">图片尺寸</th>
-                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-600">状态</th>
-                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-600">创建时间</th>
-                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-600">操作</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {advertisements.map((ad) => (
-                      <tr key={ad.id} className="border-b border-slate-100 hover:bg-slate-50 transition-colors">
-                        <td className="py-3 px-4">
-                          <div className="flex items-center gap-3">
-                            <div className="h-16 w-24 rounded bg-slate-100 overflow-hidden flex items-center justify-center">
-                              {ad.image ? (
-                                <img
-                                  src={ad.image}
-                                  alt={ad.title}
-                                  className="w-full h-full object-cover"
-                                />
-                              ) : (
-                                <ImageIcon className="h-6 w-6 text-slate-400" />
-                              )}
-                            </div>
-                            <div>
-                              <p className="text-sm font-medium text-slate-900">{ad.title}</p>
-                              <a
-                                href={ad.link}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-xs text-blue-600 hover:underline flex items-center gap-1 mt-1"
-                              >
-                                <ExternalLink className="h-3 w-3" />
-                                查看链接
-                              </a>
-                            </div>
-                          </div>
-                        </td>
-                        <td className="py-3 px-4">
-                          <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
-                            {getPositionLabel(ad.position)}
-                          </Badge>
-                        </td>
-                        <td className="py-3 px-4 text-sm text-slate-600">
-                          {ad.imageWidth} × {ad.imageHeight}
-                        </td>
-                        <td className="py-3 px-4">
-                          <Badge
-                            variant="outline"
-                            className={
-                              ad.isActive
-                                ? "bg-green-50 text-green-700 border-green-200"
-                                : "bg-gray-50 text-gray-700 border-gray-200"
-                            }
-                          >
-                            {ad.isActive ? "已启用" : "已禁用"}
-                          </Badge>
-                        </td>
-                        <td className="py-3 px-4 text-sm text-slate-600">
-                          {new Date(ad.createdAt).toLocaleDateString("zh-CN")}
-                        </td>
-                        <td className="py-3 px-4">
-                          <div className="flex items-center gap-2">
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="h-8 w-8 p-0 cursor-pointer"
-                              onClick={() => handleEditAdvertisement(ad)}
-                              title="编辑"
-                            >
-                              <Edit className="h-4 w-4" />
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="h-8 w-8 p-0 cursor-pointer"
-                              onClick={() => handleToggleStatus(ad)}
-                              title={ad.isActive ? "禁用" : "启用"}
-                            >
-                              <Power className={`h-4 w-4 ${ad.isActive ? "text-green-600" : "text-gray-400"}`} />
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="h-8 w-8 p-0 cursor-pointer text-red-600 hover:text-red-700 hover:bg-red-50"
-                              onClick={() => handleDeleteAdvertisement(ad)}
-                              title="删除"
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-
-              <div className="mt-4">
-                <Pagination
-                  currentPage={pagination?.page ?? 1}
-                  totalPages={pagination?.totalPages ?? 1}
-                  total={pagination?.total ?? 0}
-                  pageSize={pagination?.limit ?? pageSize}
-                  onPageChange={handlePageChange}
-                  onPageSizeChange={handlePageSizeChange}
-                />
-              </div>
-            </>
-          )}
-        </CardContent>
-      </Card>
-
-      <Dialog open={showForm} onOpenChange={setShowForm}>
-        <DialogContent className="max-h-[85vh] flex flex-col">
-          <DialogHeader>
-            <DialogTitle>{editingAd ? "编辑广告" : "添加广告"}</DialogTitle>
-          </DialogHeader>
-          <div className="flex-1 overflow-y-auto">
-            <AdvertisementForm
-              advertisement={editingAd || undefined}
-              onSuccess={handleFormSuccess}
-              formId="advertisement-form"
-            />
-          </div>
-          <DialogFooter className="border-t pt-4 mt-4">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => setShowForm(false)}
-              className="cursor-pointer"
-            >
-              取消
-            </Button>
-            <Button type="submit" form="advertisement-form" className="cursor-pointer">
-              {editingAd ? "保存" : "创建"}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      {deletingAd && (
-        <DeleteAdvertisementDialog
-          open={!!deletingAd}
-          onOpenChange={(open) => !open && setDeletingAd(null)}
-          advertisementId={deletingAd.id}
-          advertisementTitle={deletingAd.title}
-          onSuccess={handleDeleteSuccess}
+      <Card title="广告列表">
+        <Table<Advertisement>
+          rowKey="id" loading={isLoading} dataSource={advertisements} scroll={{ x: 1000 }}
+          locale={{ emptyText: <Flex vertical align="center" gap={12}><ImageIcon size={40} color="#bfbfbf" /><Typography.Text type="secondary">没有找到广告</Typography.Text><Button type="primary" icon={<Plus size={16} />} onClick={handleAddAdvertisement}>添加广告</Button></Flex> }}
+          pagination={{ current: pagination?.page ?? currentPage, pageSize: pagination?.limit ?? pageSize, total: pagination?.total ?? 0, showSizeChanger: true, showTotal: (total) => `共 ${total} 条`, onChange: (page, size) => { if (size !== pageSize) { setPageSize(size); setCurrentPage(1); } else setCurrentPage(page); } }}
+          columns={[
+            { title: "广告信息", key: "ad", render: (_, ad) => <Space><Image width={96} height={64} preview={false} src={ad.image} fallback="" style={{ objectFit: "cover", borderRadius: 4 }} /><Flex vertical gap={2}><Typography.Text strong>{ad.title}</Typography.Text><Typography.Link href={ad.link} target="_blank"><ExternalLink size={12} style={{ display: "inline", marginRight: 4 }} />查看链接</Typography.Link></Flex></Space> },
+            { title: "广告位", dataIndex: "position", render: (position) => <Tag color="blue">{getPositionLabel(position)}</Tag> },
+            { title: "图片尺寸", key: "size", render: (_, ad) => `${ad.imageWidth} × ${ad.imageHeight}` },
+            { title: "状态", dataIndex: "isActive", render: (active) => <Tag color={active ? "success" : "default"}>{active ? "已启用" : "已禁用"}</Tag> },
+            { title: "创建时间", dataIndex: "createdAt", render: (createdAt) => new Date(createdAt).toLocaleDateString("zh-CN") },
+            { title: "操作", key: "actions", render: (_, ad) => <Space size="small"><Button type="text" shape="circle" title="编辑" icon={<Edit size={16} />} onClick={() => { setEditingAd(ad); setShowForm(true); }} /><Button type="text" shape="circle" title={ad.isActive ? "禁用" : "启用"} icon={<Power size={16} color={ad.isActive ? "#52c41a" : "#8c8c8c"} />} onClick={() => void handleToggleStatus(ad)} /><Button type="text" danger shape="circle" title="删除" icon={<Trash2 size={16} />} onClick={() => setDeletingAd(ad)} /></Space> },
+          ]}
         />
-      )}
-    </div>
+      </Card>
+      <Modal open={showForm} title={editingAd ? "编辑广告" : "添加广告"} onCancel={() => setShowForm(false)} destroyOnHidden width={640} okText={editingAd ? "保存" : "创建"} okButtonProps={{ htmlType: "submit", form: "advertisement-form" }}>
+        <AdvertisementForm advertisement={editingAd || undefined} onSuccess={() => { setShowForm(false); setEditingAd(null); refresh(); }} formId="advertisement-form" />
+      </Modal>
+      {deletingAd && <DeleteAdvertisementDialog open onOpenChange={(open) => !open && setDeletingAd(null)} advertisementId={deletingAd.id} advertisementTitle={deletingAd.title} onSuccess={refresh} />}
+    </Flex>
   );
 }

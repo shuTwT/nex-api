@@ -1,14 +1,5 @@
 import { useState, type FormEvent } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Button, Checkbox, Input, Select } from "antd";
 import { api, responseData } from "@/lib/api";
 
 interface Token {
@@ -41,10 +32,11 @@ export function TokenForm({ token, onClose, onSuccess, formId }: TokenFormProps)
 
     const formData = new FormData(e.currentTarget);
     formData.set("permissions", permissions);
-    const body: Record<string, string> = {};
+    const body: Record<string, string | boolean> = {};
     formData.forEach((value, key) => {
       body[key] = String(value);
     });
+    if (isEdit) body.isActive = formData.has("isActive");
 
     try {
       const result = isEdit
@@ -98,7 +90,7 @@ export function TokenForm({ token, onClose, onSuccess, formId }: TokenFormProps)
             复制令牌
           </Button>
           <Button
-            variant="outline"
+            type="default"
             onClick={() => {
               onSuccess();
               onClose();
@@ -131,18 +123,7 @@ export function TokenForm({ token, onClose, onSuccess, formId }: TokenFormProps)
 
       <div className="space-y-2">
         <label className="text-sm font-medium text-slate-700">权限</label>
-        <Select value={permissions} onValueChange={setPermissions} disabled={isLoading}>
-          <SelectTrigger className="w-full">
-            <SelectValue placeholder="选择权限" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              <SelectItem value="read">只读</SelectItem>
-              <SelectItem value="read,write">读写</SelectItem>
-              <SelectItem value="read,write,delete">读写删除</SelectItem>
-            </SelectGroup>
-          </SelectContent>
-        </Select>
+        <Select value={permissions} onChange={setPermissions} disabled={isLoading} className="w-full" options={[{ value: "read", label: "只读" }, { value: "read,write", label: "读写" }, { value: "read,write,delete", label: "读写删除" }]} />
       </div>
 
       <div className="space-y-2">
@@ -158,18 +139,12 @@ export function TokenForm({ token, onClose, onSuccess, formId }: TokenFormProps)
 
       {isEdit && (
         <div className="flex items-center gap-2">
-          <input
-            type="checkbox"
+          <Checkbox
             name="isActive"
             id="isActive"
-            value="true"
             defaultChecked={token?.isActive !== false}
             disabled={isLoading}
-            className="h-4 w-4 rounded border-slate-300"
-          />
-          <label htmlFor="isActive" className="text-sm text-slate-700">
-            启用此令牌
-          </label>
+          >启用此令牌</Checkbox>
         </div>
       )}
 

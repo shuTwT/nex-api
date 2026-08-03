@@ -1,13 +1,5 @@
 import { useState, useEffect, type FormEvent } from "react";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Input, Select, Typography } from "antd";
 import { api, responseData } from "@/lib/api";
 
 interface RedemptionCodeFormProps {
@@ -62,20 +54,12 @@ export function RedemptionCodeForm({ onSuccess, formId }: RedemptionCodeFormProp
     <form id={formId} onSubmit={handleSubmit} className="space-y-4">
       <div className="grid gap-4 md:grid-cols-2">
         <div className="space-y-2">
-          <Label>兑换码类型 *</Label>
-          <Select value={type} onValueChange={setType}>
-            <SelectTrigger>
-              <SelectValue placeholder="选择类型" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="subscription">订阅</SelectItem>
-              <SelectItem value="quota">额度</SelectItem>
-            </SelectContent>
-          </Select>
+          <Typography.Text>兑换码类型 *</Typography.Text>
+          <Select value={type} onChange={setType} options={[{ value: "subscription", label: "订阅" }, { value: "quota", label: "额度" }]} />
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="count">生成数量 *</Label>
+          <Typography.Text>生成数量 *</Typography.Text>
           <Input
             id="count"
             type="number"
@@ -89,25 +73,14 @@ export function RedemptionCodeForm({ onSuccess, formId }: RedemptionCodeFormProp
 
         {type === "subscription" && (
           <div className="space-y-2 md:col-span-2">
-            <Label>订阅计划 *</Label>
+            <Typography.Text>订阅计划 *</Typography.Text>
             <Select
               value={planId}
-              onValueChange={setPlanId}
+              onChange={setPlanId}
               disabled={plansLoading}
-            >
-              <SelectTrigger>
-                <SelectValue
-                  placeholder={plansLoading ? "加载中..." : "选择订阅计划"}
-                />
-              </SelectTrigger>
-              <SelectContent>
-                {plans.map((plan) => (
-                  <SelectItem key={plan.id} value={plan.id}>
-                    {plan.title}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+              placeholder={plansLoading ? "加载中..." : "选择订阅计划"}
+              options={plans.map(plan => ({ value: plan.id, label: plan.title }))}
+            />
             {plans.length === 0 && !plansLoading && (
               <p className="text-sm text-amber-600">
                 暂无可用的订阅计划，请先创建订阅计划
@@ -118,7 +91,7 @@ export function RedemptionCodeForm({ onSuccess, formId }: RedemptionCodeFormProp
 
         {type === "quota" && (
           <div className="space-y-2 md:col-span-2">
-            <Label htmlFor="credits">额度数量 *</Label>
+            <Typography.Text>额度数量 *</Typography.Text>
             <Input
               id="credits"
               type="number"
@@ -131,7 +104,7 @@ export function RedemptionCodeForm({ onSuccess, formId }: RedemptionCodeFormProp
         )}
 
         <div className="space-y-2 md:col-span-2">
-          <Label htmlFor="expiresAt">过期时间</Label>
+          <Typography.Text>过期时间</Typography.Text>
           <Input
             id="expiresAt"
             type="datetime-local"

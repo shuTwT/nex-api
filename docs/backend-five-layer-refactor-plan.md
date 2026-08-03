@@ -46,7 +46,7 @@ infra/
 ├── schedule/        # 纯调度引擎、任务注册表和生命周期
 ├── storage/         # 本地文件存储
 ├── httpserver/      # HTTP Server、健康检查和优雅退出
-├── oauth/           # GitHub、Easy1 等外部 OAuth 客户端
+├── oauth/           # GitHub 等外部 OAuth 客户端
 ├── proxy/           # API/MCP 上游 HTTP、SSE、stdio 适配
 └── worker/          # 脚本 Worker、进程池和 IPC
 ```

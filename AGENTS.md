@@ -62,3 +62,26 @@ Never claim a model ran unless the agent activity or tool result identifies it. 
 
 - 前端路径:`frontend/`
 - 后端路径: 项目根目录
+
+## 前端开发指南
+
+### 要求
+
+- 前台使用`shadcn`，后台使用ant-design。
+- 在进行有关ant-design有关的工作时，优先调用可用的antd mcp。
+
+### 前台部分
+
+**以下按路由列出**
+
+- `/`首页
+- `/api-market`api市场
+- `/mcp-market`mcp市场
+- `/price`价格
+- 未在*后台部分*列出的页面
+
+### 后台部分
+
+**以下按路由列出**
+
+- `/console`开头的控制台页面

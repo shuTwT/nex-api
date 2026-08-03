@@ -1,8 +1,5 @@
 import { useState, useEffect, type FormEvent } from "react";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Card, CardContent } from "@/components/ui/card";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Alert, Card, Checkbox, Input, InputNumber, Select } from "antd";
 import { api } from "@/lib/api";
 import { AdPositionOptions } from "@/types/ad-position";
 import { ImageUpload } from "@/components/image-upload";
@@ -58,10 +55,13 @@ export function AdvertisementForm({ advertisement, onSuccess, formId }: Advertis
     }
 
     formData.set("image", imageUrl);
-    const body: Record<string, string> = {};
+    const body: Record<string, string | number | boolean> = {};
     formData.forEach((value, key) => {
       body[key] = String(value);
     });
+    body.imageWidth = Number(formData.get("imageWidth") ?? 0);
+    body.imageHeight = Number(formData.get("imageHeight") ?? 0);
+    body.isActive = formData.has("isActive");
 
     try {
       const result = isEdit
@@ -86,10 +86,10 @@ export function AdvertisementForm({ advertisement, onSuccess, formId }: Advertis
         <input type="hidden" name="id" value={advertisement.id} />
       )}
 
-      <Card>
-        <CardContent className="p-6 space-y-4">
+      <Card styles={{ body: { padding: 24 } }}>
+        <div className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="title">广告标题 *</Label>
+            <label htmlFor="title">广告标题 *</label>
             <Input
               id="title"
               name="title"
@@ -100,7 +100,7 @@ export function AdvertisementForm({ advertisement, onSuccess, formId }: Advertis
           </div>
 
           <div className="space-y-2">
-            <Label>广告图片 *</Label>
+            <label>广告图片 *</label>
             <ImageUpload
               value={imageUrl}
               onChange={setImageUrl}
@@ -110,32 +110,34 @@ export function AdvertisementForm({ advertisement, onSuccess, formId }: Advertis
 
           <div className="grid gap-4 md:grid-cols-2">
             <div className="space-y-2">
-              <Label htmlFor="imageWidth">图片宽度 (px)</Label>
-              <Input
+              <label htmlFor="imageWidth">图片宽度 (px)</label>
+              <InputNumber
                 id="imageWidth"
                 name="imageWidth"
                 type="number"
-                min="0"
+                min={0}
                 defaultValue={advertisement?.imageWidth || 0}
                 placeholder="例如：1200"
+                className="w-full"
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="imageHeight">图片高度 (px)</Label>
-              <Input
+              <label htmlFor="imageHeight">图片高度 (px)</label>
+              <InputNumber
                 id="imageHeight"
                 name="imageHeight"
                 type="number"
-                min="0"
+                min={0}
                 defaultValue={advertisement?.imageHeight || 0}
                 placeholder="例如：300"
+                className="w-full"
               />
             </div>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="link">跳转链接 *</Label>
+            <label htmlFor="link">跳转链接 *</label>
             <Input
               id="link"
               name="link"
@@ -147,39 +149,29 @@ export function AdvertisementForm({ advertisement, onSuccess, formId }: Advertis
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="position">广告位 *</Label>
-            <Select value={position} onValueChange={setPosition} disabled={isLoading}>
-              <SelectTrigger id="position">
-                <SelectValue placeholder="选择广告位" />
-              </SelectTrigger>
-              <SelectContent>
-                {AdPositionOptions.map((option) => (
-                  <SelectItem key={option.value} value={option.value}>
-                    {option.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <label htmlFor="position">广告位 *</label>
+            <Select
+              id="position"
+              value={position}
+              onChange={setPosition}
+              disabled={isLoading}
+              placeholder="选择广告位"
+              options={AdPositionOptions.map((option) => ({ value: option.value, label: option.label }))}
+            />
           </div>
 
           <div className="flex items-center gap-2">
-            <input
-              type="checkbox"
+            <Checkbox
               id="isActive"
               name="isActive"
-              value="true"
               defaultChecked={advertisement?.isActive ?? true}
-              className="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
-            />
-            <Label htmlFor="isActive">启用</Label>
+            >启用</Checkbox>
           </div>
 
           {error && (
-            <div className="p-3 bg-red-50 border border-red-200 rounded-md">
-              <p className="text-sm text-red-700">{error}</p>
-            </div>
+            <Alert type="error" message={error} showIcon />
           )}
-        </CardContent>
+        </div>
       </Card>
     </form>
   );

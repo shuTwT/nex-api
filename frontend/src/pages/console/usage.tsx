@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, Col, Progress, Row, Statistic, Typography } from "antd";
 import {
   TrendingUp,
   Zap,
@@ -10,6 +10,7 @@ import {
   BarChart3,
 } from "lucide-react";
 import { api, responseData } from "@/lib/api";
+import { ConsolePageLoading } from "@/components/console-page-loading";
 
 interface UsageStats {
   freeCredits: number;
@@ -21,12 +22,58 @@ interface UsageStats {
   last7DaysDailyUsage: number[];
   last30DaysDailyUsage: number[];
 }
+interface UsageChartProps {
+  title: string;
+  icon: React.ReactNode;
+  values: number[];
+  labels: string[];
+  color: string;
+}
+
+function UsageChart({ title, icon, values, labels, color }: UsageChartProps) {
+  const max = Math.max(...values, 0);
+  return (
+    <Card
+      title={
+        <span className="flex items-center gap-2">
+          {icon}
+          {title}
+        </span>
+      }
+    >
+      <div
+        className="grid gap-1 h-64 items-end"
+        style={{
+          gridTemplateColumns: `repeat(${values.length}, minmax(0, 1fr))`,
+        }}
+      >
+        {values.map((value, index) => (
+          <div key={labels[index]} className="flex h-full items-end">
+            <div
+              title={`${labels[index]}：${value} 次`}
+              style={{
+                backgroundColor: color,
+                height: `${max ? Math.max((value / max) * 100, value ? 2 : 0) : 0}%`,
+                width: "100%",
+                minHeight: value ? 4 : 0,
+                borderRadius: "4px 4px 0 0",
+              }}
+            />
+          </div>
+        ))}
+      </div>
+      <div className="flex justify-between">
+        <Typography.Text type="secondary">{labels[0]}</Typography.Text>
+        <Typography.Text type="secondary">{labels.at(-1)}</Typography.Text>
+      </div>
+    </Card>
+  );
+}
 
 export default function UsagePage() {
   const [stats, setStats] = useState<UsageStats | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [today] = useState(() => Date.now());
-
   useEffect(() => {
     async function loadStats() {
       setIsLoading(true);
@@ -38,253 +85,136 @@ export default function UsagePage() {
     loadStats();
   }, []);
 
-  if (isLoading) {
+  if (isLoading) return <ConsolePageLoading />;
+  if (!stats)
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-600 border-t-transparent" />
+      <div className="flex justify-center py-12">
+        <Typography.Text type="secondary">无法加载用量统计</Typography.Text>
       </div>
     );
-  }
 
-  if (!stats) {
-    return (
-      <div className="flex items-center justify-center py-12">
-        <p className="text-slate-500">无法加载用量统计</p>
-      </div>
-    );
-  }
-
-  const todayHours = Array.from({ length: 24 }, (_, i) => i);
-  const last7Days = Array.from({ length: 7 }, (_, i) => i);
-  const last30Days = Array.from({ length: 30 }, (_, i) => i);
-
-  const todayHourlyData = todayHours.map((hour, index) => ({
-    label: `${hour}:00`,
-    value: stats.todayHourlyUsage[index] || 0,
-  }));
-
-  const last7DaysData = last7Days.map((day, index) => ({
-    label: new Date(today - (6 - index) * 24 * 60 * 60 * 1000).toLocaleDateString("zh-CN", { weekday: "short" }),
-    value: stats.last7DaysDailyUsage[index] || 0,
-  }));
-
-  const last30DaysData = last30Days.map((day, index) => ({
-    label: new Date(today - (29 - index) * 24 * 60 * 60 * 1000).toLocaleDateString("zh-CN", { month: "short", day: "numeric" }),
-    value: stats.last30DaysDailyUsage[index] || 0,
-  }));
-
+  const todayLabels = Array.from({ length: 24 }, (_, hour) => `${hour}:00`);
+  const days7Labels = Array.from({ length: 7 }, (_, index) =>
+    new Date(today - (6 - index) * 86400000).toLocaleDateString("zh-CN", {
+      weekday: "short",
+    }),
+  );
+  const days30Labels = Array.from({ length: 30 }, (_, index) =>
+    new Date(today - (29 - index) * 86400000).toLocaleDateString("zh-CN", {
+      month: "short",
+      day: "numeric",
+    }),
+  );
+  const summaryCards = [
+    {
+      title: "今日消耗",
+      value: stats.todayUsage,
+      icon: <Activity size={20} />,
+    },
+    {
+      title: "7 日消耗",
+      value: stats.last7DaysUsage,
+      icon: <Calendar size={20} />,
+    },
+    {
+      title: "30 日消耗",
+      value: stats.last30DaysUsage,
+      icon: <TrendingUp size={20} />,
+    },
+  ];
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-slate-900">用量统计</h1>
-        <p className="text-slate-500 mt-1">查看您的 API 使用情况</p>
+        <Typography.Title level={2}>用量统计</Typography.Title>
+        <Typography.Text type="secondary">
+          查看您的 API 使用情况
+        </Typography.Text>
       </div>
+      <Row gutter={[16, 16]}>
+        <Col xs={24} md={12}>
+          <Card>
+            <Statistic
+              title={
+                <span className="flex items-center gap-2">
+                  <Gift size={20} />
+                  免费额度
+                </span>
+              }
+              value={stats.freeCredits}
+              suffix="积分"
+            />
+            <Typography.Text type="secondary">剩余可用积分</Typography.Text>
+          </Card>
+        </Col>
+        <Col xs={24} md={12}>
+          <Card>
+            <Statistic
+              title={
+                <span className="flex items-center gap-2">
+                  <Zap size={20} />
+                  付费额度
+                </span>
+              }
+              value={0}
+              suffix="积分"
+            />
+            <Typography.Text type="secondary">已购买的额外积分</Typography.Text>
+          </Card>
+        </Col>
+      </Row>
+      <Row gutter={[16, 16]}>
+        {summaryCards.map((card) => (
+          <Col key={card.title} xs={24} md={8}>
+            <Card>
+              <Statistic
+                title={card.title}
+                value={card.value}
+                prefix={card.icon}
+              />
+            </Card>
+          </Col>
+        ))}
+      </Row>
+      <Row gutter={[16, 16]}>
 
-      <div className="grid gap-4 md:grid-cols-2">
-        <Card className="border-2 border-blue-200 bg-gradient-to-br from-blue-50 to-white">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <div className="flex items-center gap-2 mb-2">
-                  <Gift className="h-5 w-5 text-blue-600" />
-                  <span className="text-sm font-medium text-blue-700">免费额度</span>
-                </div>
-                <p className="text-3xl font-bold text-blue-900">{stats.freeCredits.toLocaleString()}</p>
-                <p className="text-xs text-blue-600 mt-1">剩余可用积分</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="border-2 border-purple-200 bg-gradient-to-br from-purple-50 to-white">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <div className="flex items-center gap-2 mb-2">
-                  <Zap className="h-5 w-5 text-purple-600" />
-                  <span className="text-sm font-medium text-purple-700">付费额度</span>
-                </div>
-                <p className="text-3xl font-bold text-purple-900">0</p>
-                <p className="text-xs text-purple-600 mt-1">已购买的额外积分</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      <div className="grid gap-4 md:grid-cols-3">
-        <Card className="hover:shadow-md transition-shadow cursor-pointer">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-slate-500">今日消耗</p>
-                <p className="text-2xl font-bold text-slate-900 mt-1">{stats.todayUsage.toLocaleString()}</p>
-              </div>
-              <div className="h-10 w-10 rounded-lg bg-orange-50 flex items-center justify-center">
-                <Activity className="h-5 w-5 text-orange-600" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="hover:shadow-md transition-shadow cursor-pointer">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-slate-500">7 日消耗</p>
-                <p className="text-2xl font-bold text-slate-900 mt-1">{stats.last7DaysUsage.toLocaleString()}</p>
-              </div>
-              <div className="h-10 w-10 rounded-lg bg-blue-50 flex items-center justify-center">
-                <Calendar className="h-5 w-5 text-blue-600" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="hover:shadow-md transition-shadow cursor-pointer">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-slate-500">30 日消耗</p>
-                <p className="text-2xl font-bold text-slate-900 mt-1">{stats.last30DaysUsage.toLocaleString()}</p>
-              </div>
-              <div className="h-10 w-10 rounded-lg bg-purple-50 flex items-center justify-center">
-                <TrendingUp className="h-5 w-5 text-purple-600" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg flex items-center gap-2">
-            <Clock className="h-5 w-5 text-blue-600" />
-            今日消耗（按小时）
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            <div className="h-64 flex items-end gap-1">
-              {todayHourlyData.map((item, index) => {
-                const maxValue = Math.max(...todayHourlyData.map((d) => d.value));
-                const height = maxValue > 0 ? (item.value / maxValue) * 100 : 0;
-
-                return (
-                  <div
-                    key={index}
-                    className="flex-1 bg-gradient-to-t from-blue-600 to-blue-400 rounded-t cursor-pointer hover:from-blue-700 hover:to-blue-500 transition-all relative group"
-                    style={{ height: `${height}%`, minHeight: item.value > 0 ? "4px" : "0" }}
-                  >
-                    <div className="absolute -top-8 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <div className="bg-slate-900 text-white text-xs px-2 py-1 rounded whitespace-nowrap">
-                        {item.value} 次
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-            <div className="flex justify-between text-xs text-slate-500">
-              {todayHourlyData.filter((_, i) => i % 6 === 0).map((item, index) => (
-                <span key={index}>{item.label}</span>
-              ))}
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg flex items-center gap-2">
-            <Calendar className="h-5 w-5 text-blue-600" />
-            7 日消耗（按天）
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            <div className="h-64 flex items-end gap-2">
-              {last7DaysData.map((item, index) => {
-                const maxValue = Math.max(...last7DaysData.map((d) => d.value));
-                const height = maxValue > 0 ? (item.value / maxValue) * 100 : 0;
-
-                return (
-                  <div
-                    key={index}
-                    className="flex-1 bg-gradient-to-t from-cyan-600 to-cyan-400 rounded-t cursor-pointer hover:from-cyan-700 hover:to-cyan-500 transition-all relative group"
-                    style={{ height: `${height}%`, minHeight: item.value > 0 ? "4px" : "0" }}
-                  >
-                    <div className="absolute -top-8 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <div className="bg-slate-900 text-white text-xs px-2 py-1 rounded whitespace-nowrap">
-                        {item.value} 次
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-            <div className="flex justify-between text-xs text-slate-500">
-              {last7DaysData.map((item, index) => (
-                <span key={index}>{item.label}</span>
-              ))}
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg flex items-center gap-2">
-            <TrendingUp className="h-5 w-5 text-blue-600" />
-            30 日消耗（按天）
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            <div className="h-64 flex items-end gap-1">
-              {last30DaysData.map((item, index) => {
-                const maxValue = Math.max(...last30DaysData.map((d) => d.value));
-                const height = maxValue > 0 ? (item.value / maxValue) * 100 : 0;
-
-                return (
-                  <div
-                    key={index}
-                    className="flex-1 bg-gradient-to-t from-purple-600 to-purple-400 rounded-t cursor-pointer hover:from-purple-700 hover:to-purple-500 transition-all relative group"
-                    style={{ height: `${height}%`, minHeight: item.value > 0 ? "4px" : "0" }}
-                  >
-                    <div className="absolute -top-8 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <div className="bg-slate-900 text-white text-xs px-2 py-1 rounded whitespace-nowrap">
-                        {item.value} 次
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-            <div className="flex justify-between text-xs text-slate-500">
-              {last30DaysData.filter((_, i) => i % 5 === 0).map((item, index) => (
-                <span key={index}>{item.label}</span>
-              ))}
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg flex items-center gap-2">
-            <BarChart3 className="h-5 w-5 text-blue-600" />
+      <Col span={24}>
+      <UsageChart
+        title="今日消耗（按小时）"
+        icon={<Clock size={20} />}
+        values={stats.todayHourlyUsage}
+        labels={todayLabels}
+        color="#1677ff"
+      />
+      </Col>
+      <Col span={24}>
+      <UsageChart
+        title="7 日消耗（按天）"
+        icon={<Calendar size={20} />}
+        values={stats.last7DaysDailyUsage}
+        labels={days7Labels}
+        color="#13c2c2"
+      />
+      </Col>
+      <Col span={24}>
+      <UsageChart
+        title="30 日消耗（按天）"
+        icon={<TrendingUp size={20} />}
+        values={stats.last30DaysDailyUsage}
+        labels={days30Labels}
+        color="#722ed1"
+      />
+      </Col>
+      </Row>
+      <Card
+        title={
+          <span className="flex items-center gap-2">
+            <BarChart3 size={20} />
             总计使用量
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex items-center justify-center py-8">
-            <div className="text-center">
-              <p className="text-6xl font-bold text-slate-900">{stats.totalUsage.toLocaleString()}</p>
-              <p className="text-sm text-slate-500 mt-2">总 API 调用次数</p>
-            </div>
-          </div>
-        </CardContent>
+          </span>
+        }
+      >
+        <Statistic value={stats.totalUsage} suffix="次" />
+        <Progress percent={100} showInfo={false} />
       </Card>
     </div>
   );

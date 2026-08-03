@@ -1,14 +1,5 @@
 import { useState, type FormEvent } from "react";
-import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Checkbox, Input, Select, Tabs } from "antd";
 import { MonacoEditor } from "@/components/monaco-editor";
 import { api } from "@/lib/api";
 
@@ -106,14 +97,8 @@ export function ApiForm({ apiItem, categories, onClose, onSuccess, formId }: Api
 
   return (
     <form id={formId} onSubmit={handleSubmit} className="space-y-4">
-      <Tabs defaultValue="basic" className="w-full">
-        <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="basic">基本信息</TabsTrigger>
-          <TabsTrigger value="pre-script">预处理脚本</TabsTrigger>
-          <TabsTrigger value="post-script">后处理脚本</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="basic" className="space-y-4 mt-4">
+      <Tabs defaultActiveKey="basic" items={[
+        { key: "basic", label: "基本信息", children: <div className="space-y-4 mt-4">
           <div className="space-y-2">
             <label className="text-sm font-medium text-slate-700">
               接口名称 <span className="text-red-500">*</span>
@@ -178,40 +163,14 @@ export function ApiForm({ apiItem, categories, onClose, onSuccess, formId }: Api
               <label className="text-sm font-medium text-slate-700">
                 请求方法 <span className="text-red-500">*</span>
               </label>
-              <Select value={method} onValueChange={setMethod} disabled={isLoading}>
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="选择方法" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    <SelectItem value="GET">GET</SelectItem>
-                    <SelectItem value="POST">POST</SelectItem>
-                    <SelectItem value="PUT">PUT</SelectItem>
-                    <SelectItem value="DELETE">DELETE</SelectItem>
-                    <SelectItem value="PATCH">PATCH</SelectItem>
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
+              <Select value={method} onChange={setMethod} disabled={isLoading} className="w-full" options={["GET", "POST", "PUT", "DELETE", "PATCH"].map(value => ({ value, label: value }))} />
             </div>
 
             <div className="space-y-2">
               <label className="text-sm font-medium text-slate-700">
                 分类 <span className="text-red-500">*</span>
               </label>
-              <Select value={categoryId} onValueChange={setCategoryId} disabled={isLoading}>
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="选择分类" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    {categories.map((cat) => (
-                      <SelectItem key={cat.id} value={cat.id}>
-                        {cat.name}
-                      </SelectItem>
-                    ))}
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
+              <Select value={categoryId} onChange={setCategoryId} disabled={isLoading} placeholder="选择分类" className="w-full" options={categories.map(cat => ({ value: cat.id, label: cat.name }))} />
             </div>
           </div>
 
@@ -243,22 +202,16 @@ export function ApiForm({ apiItem, categories, onClose, onSuccess, formId }: Api
           </div>
 
           <div className="flex items-center gap-2">
-            <input
-              type="checkbox"
+            <Checkbox
               name="isActive"
               id="isActive"
               checked={isActive}
               onChange={(e) => setIsActive(e.target.checked)}
               disabled={isLoading}
-              className="h-4 w-4 rounded border"
-            />
-            <label htmlFor="isActive" className="text-sm text-slate-700">
-              立即启用此接口
-            </label>
+            >立即启用此接口</Checkbox>
           </div>
-        </TabsContent>
-
-        <TabsContent value="pre-script" className="space-y-4 mt-4">
+        </div> },
+        { key: "pre-script", label: "预处理脚本", children: <div className="space-y-4 mt-4">
           <div className="space-y-2">
             <label className="text-sm font-medium text-slate-700">预处理脚本</label>
             <p className="text-xs text-slate-500 mb-2">
@@ -276,9 +229,8 @@ export function ApiForm({ apiItem, categories, onClose, onSuccess, formId }: Api
               disabled={isLoading}
             />
           </div>
-        </TabsContent>
-
-        <TabsContent value="post-script" className="space-y-4 mt-4">
+        </div> },
+        { key: "post-script", label: "后处理脚本", children: <div className="space-y-4 mt-4">
           <div className="space-y-2">
             <label className="text-sm font-medium text-slate-700">后处理脚本</label>
             <p className="text-xs text-slate-500 mb-2">
@@ -296,8 +248,8 @@ export function ApiForm({ apiItem, categories, onClose, onSuccess, formId }: Api
               disabled={isLoading}
             />
           </div>
-        </TabsContent>
-      </Tabs>
+        </div> },
+      ]} />
 
       {error && (
         <div className="mt-3 bg-red-50 border border-red-200 rounded-md">

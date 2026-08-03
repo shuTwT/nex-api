@@ -1,23 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Badge, Button, Card, Checkbox, Input, Modal, Select, Typography } from "antd";
 import {
   Plus,
   Trash2,
@@ -236,7 +218,7 @@ export default function RedemptionCodesPage() {
       </div>
 
       <Card>
-        <CardContent className="p-4">
+        <div className="p-4">
           <div className="flex flex-wrap items-end gap-3">
             <div className="relative flex-1 min-w-[200px]">
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
@@ -247,58 +229,36 @@ export default function RedemptionCodesPage() {
                 className="pl-10"
               />
             </div>
-            <Select value={typeFilter} onValueChange={setTypeFilter}>
-              <SelectTrigger className="w-[120px]">
-                <SelectValue placeholder="类型" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  <SelectItem value="all">全部</SelectItem>
-                  <SelectItem value="subscription">订阅</SelectItem>
-                  <SelectItem value="quota">额度</SelectItem>
-                </SelectGroup>
-              </SelectContent>
-            </Select>
-            <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="w-[130px]">
-                <SelectValue placeholder="状态" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  <SelectItem value="all">全部</SelectItem>
-                  <SelectItem value="false">未使用</SelectItem>
-                  <SelectItem value="true">已使用</SelectItem>
-                </SelectGroup>
-              </SelectContent>
-            </Select>
+            <Select value={typeFilter} onChange={setTypeFilter} className="w-[120px]" options={[{ value: "all", label: "全部" }, { value: "subscription", label: "订阅" }, { value: "quota", label: "额度" }]} />
+            <Select value={statusFilter} onChange={setStatusFilter} className="w-[130px]" options={[{ value: "all", label: "全部" }, { value: "false", label: "未使用" }, { value: "true", label: "已使用" }]} />
             <Button
-              size="sm"
+              size="small"
               onClick={handleQuery}
               className="cursor-pointer"
             >
               查询
             </Button>
             <Button
-              variant="outline"
-              size="sm"
+              type="default"
+              size="small"
               onClick={handleReset}
               className="cursor-pointer"
             >
               重置
             </Button>
           </div>
-        </CardContent>
+        </div>
       </Card>
 
       <Card>
-        <CardHeader className="pb-3">
+        <div className="p-4">
           <div className="flex items-center justify-between">
-            <CardTitle className="text-lg">兑换码列表</CardTitle>
+            <Typography.Title level={5}>兑换码列表</Typography.Title>
             <div className="flex items-center gap-2">
               {selectedIds.size > 0 && (
                 <Button
-                  variant="destructive"
-                  size="sm"
+                  danger
+                  size="small"
                   onClick={handleBatchDelete}
                   className="cursor-pointer gap-1"
                 >
@@ -307,8 +267,8 @@ export default function RedemptionCodesPage() {
                 </Button>
               )}
               <Button
-                variant="outline"
-                size="sm"
+                type="default"
+                size="small"
                 onClick={handleExport}
                 className="cursor-pointer gap-1"
               >
@@ -317,8 +277,8 @@ export default function RedemptionCodesPage() {
               </Button>
             </div>
           </div>
-        </CardHeader>
-        <CardContent>
+        </div>
+        <div className="px-4 pb-4">
           {isLoading ? (
             <div className="flex items-center justify-center py-12">
               <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-600 border-t-transparent" />
@@ -345,14 +305,12 @@ export default function RedemptionCodesPage() {
                   <thead>
                     <tr className="border-b border-slate-200">
                       <th className="py-3 px-2 w-10">
-                        <input
-                          type="checkbox"
+                        <Checkbox
                           checked={
                             codes.length > 0 &&
                             selectedIds.size === codes.length
                           }
                           onChange={toggleSelectAll}
-                          className="h-4 w-4 rounded border-slate-300 cursor-pointer"
                         />
                       </th>
                       <th className="text-left py-3 px-3 text-sm font-medium text-slate-600">
@@ -396,11 +354,9 @@ export default function RedemptionCodesPage() {
                           }`}
                         >
                           <td className="py-3 px-2">
-                            <input
-                              type="checkbox"
+                            <Checkbox
                               checked={isChecked}
                               onChange={() => toggleSelect(code.id)}
-                              className="h-4 w-4 rounded border-slate-300 cursor-pointer"
                             />
                           </td>
                           <td className="py-3 px-3">
@@ -416,8 +372,8 @@ export default function RedemptionCodesPage() {
                               </span>
                               {!code.isUsed && (
                                 <Button
-                                  variant="ghost"
-                                  size="icon"
+                                  type="text"
+                                  size="small"
                                   className="h-6 w-6 cursor-pointer"
                                   onClick={() => handleCopyCode(code.code)}
                                 >
@@ -432,7 +388,6 @@ export default function RedemptionCodesPage() {
                           </td>
                           <td className="py-3 px-3">
                             <Badge
-                              variant="outline"
                               className={typeBadgeColors[code.type]}
                             >
                               {code.type === "subscription" ? (
@@ -471,21 +426,18 @@ export default function RedemptionCodesPage() {
                           <td className="py-3 px-3">
                             {code.isUsed ? (
                               <Badge
-                                variant="outline"
                                 className="bg-green-50 text-green-700 border-green-200"
                               >
                                 已使用
                               </Badge>
                             ) : isExpired ? (
                               <Badge
-                                variant="outline"
                                 className="bg-red-50 text-red-700 border-red-200"
                               >
                                 已过期
                               </Badge>
                             ) : (
                               <Badge
-                                variant="outline"
                                 className="bg-slate-50 text-slate-700 border-slate-200"
                               >
                                 未使用
@@ -500,8 +452,8 @@ export default function RedemptionCodesPage() {
                           <td className="py-3 px-3">
                             {!code.isUsed && (
                               <Button
-                                variant="ghost"
-                                size="icon"
+                                type="text"
+                                size="small"
                                 className="h-8 w-8 cursor-pointer text-red-500 hover:text-red-600 hover:bg-red-50"
                                 onClick={() =>
                                   setDeletingCode({
@@ -531,37 +483,15 @@ export default function RedemptionCodesPage() {
               />
             </>
           )}
-        </CardContent>
+        </div>
       </Card>
 
-      <Dialog open={showForm} onOpenChange={setShowForm}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>生成兑换码</DialogTitle>
-          </DialogHeader>
+      <Modal open={showForm} title="生成兑换码" onCancel={() => setShowForm(false)} destroyOnHidden footer={[<Button key="cancel" onClick={() => setShowForm(false)}>取消</Button>, <Button key="submit" type="primary" htmlType="submit" form="redemption-code-form">生成</Button>]}>
           <RedemptionCodeForm
             onSuccess={handleCreateSuccess}
             formId="redemption-code-form"
           />
-          <DialogFooter>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => setShowForm(false)}
-              className="cursor-pointer"
-            >
-              取消
-            </Button>
-            <Button
-              type="submit"
-              form="redemption-code-form"
-              className="cursor-pointer"
-            >
-              生成
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      </Modal>
 
       {deletingCode && (
         <DeleteRedemptionCodeDialog

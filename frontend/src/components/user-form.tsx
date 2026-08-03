@@ -1,13 +1,5 @@
 import { useState, type FormEvent } from "react";
-import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Alert, Input, InputNumber, Select } from "antd";
 import { api } from "@/lib/api";
 
 interface User {
@@ -73,10 +65,11 @@ export function UserForm({ user, onClose, onSuccess, formId }: UserFormProps) {
       )}
 
       <div className="space-y-2">
-        <label className="text-sm font-medium text-slate-700">
+        <label className="text-sm font-medium text-slate-700" htmlFor="user-email">
           邮箱 <span className="text-red-500">*</span>
         </label>
         <Input
+          id="user-email"
           name="email"
           type="email"
           placeholder="user@example.com"
@@ -87,10 +80,11 @@ export function UserForm({ user, onClose, onSuccess, formId }: UserFormProps) {
       </div>
 
       <div className="space-y-2">
-        <label className="text-sm font-medium text-slate-700">
+        <label className="text-sm font-medium text-slate-700" htmlFor="user-username">
           用户名 <span className="text-red-500">*</span>
         </label>
         <Input
+          id="user-username"
           name="username"
           placeholder="username"
           defaultValue={user?.username}
@@ -101,10 +95,11 @@ export function UserForm({ user, onClose, onSuccess, formId }: UserFormProps) {
 
       {!isEdit && (
         <div className="space-y-2">
-          <label className="text-sm font-medium text-slate-700">
+          <label className="text-sm font-medium text-slate-700" htmlFor="user-password">
             密码 <span className="text-red-500">*</span>
           </label>
           <Input
+            id="user-password"
             name="password"
             type="password"
             placeholder="至少8个字符"
@@ -118,36 +113,34 @@ export function UserForm({ user, onClose, onSuccess, formId }: UserFormProps) {
         <label className="text-sm font-medium text-slate-700">
           角色 <span className="text-red-500">*</span>
         </label>
-        <Select value={role} onValueChange={setRole} disabled={isLoading}>
-          <SelectTrigger className="w-full">
-            <SelectValue placeholder="选择角色" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              <SelectItem value="user">普通用户</SelectItem>
-              <SelectItem value="admin">管理员</SelectItem>
-            </SelectGroup>
-          </SelectContent>
-        </Select>
+        <Select
+          value={role}
+          onChange={setRole}
+          disabled={isLoading}
+          className="w-full"
+          options={[
+            { value: "user", label: "普通用户" },
+            { value: "admin", label: "管理员" },
+          ]}
+        />
       </div>
 
       <div className="space-y-2">
-        <label className="text-sm font-medium text-slate-700">
+        <label className="text-sm font-medium text-slate-700" htmlFor="user-credits">
           积分
         </label>
-        <Input
+        <InputNumber
+          id="user-credits"
           name="credits"
-          type="number"
           placeholder="1000"
           defaultValue={user?.credits || 1000}
           disabled={isLoading}
+          className="w-full"
         />
       </div>
 
       {error && (
-        <div className="p-3 text-sm text-red-600 bg-red-50 border border-red-200 rounded-md">
-          {error}
-        </div>
+        <Alert type="error" message={error} showIcon />
       )}
     </form>
   );

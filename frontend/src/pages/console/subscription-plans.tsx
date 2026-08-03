@@ -1,23 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Badge, Button, Card, Input, Modal, Select, Typography } from "antd";
 import { Plus, Edit, Trash2, CreditCard, Calendar, DollarSign, ArrowUpDown, Search } from "lucide-react";
 import { api, responseData } from "@/lib/api";
 import { SubscriptionPlanForm } from "@/components/subscription-plan-form";
@@ -169,7 +151,7 @@ export default function SubscriptionPlansPage() {
       </div>
 
       <Card>
-        <CardContent className="p-4">
+        <div className="p-4">
           <div className="flex flex-wrap items-end gap-3">
             <div className="relative flex-1 min-w-[200px]">
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
@@ -180,40 +162,29 @@ export default function SubscriptionPlansPage() {
                 className="pl-10"
               />
             </div>
-            <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="w-[120px]">
-                <SelectValue placeholder="状态" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  <SelectItem value="all">全部</SelectItem>
-                  <SelectItem value="true">启用</SelectItem>
-                  <SelectItem value="false">禁用</SelectItem>
-                </SelectGroup>
-              </SelectContent>
-            </Select>
+            <Select value={statusFilter} onChange={setStatusFilter} className="w-[120px]" options={[{ value: "all", label: "全部" }, { value: "true", label: "启用" }, { value: "false", label: "禁用" }]} />
             <Button
-              size="sm"
+              size="small"
               onClick={handleQuery}
               className="cursor-pointer"
             >
               查询
             </Button>
             <Button
-              variant="outline"
-              size="sm"
+              type="default"
+              size="small"
               onClick={handleReset}
               className="cursor-pointer"
             >
               重置
             </Button>
           </div>
-        </CardContent>
+        </div>
       </Card>
 
       {plans.length === 0 ? (
         <Card>
-          <CardContent className="text-center py-12">
+          <div className="py-12 text-center">
             <CreditCard className="h-12 w-12 text-slate-300 mx-auto mb-4" />
             <h3 className="text-lg font-medium text-slate-900 mb-2">暂无订阅计划</h3>
             <p className="text-slate-500 mb-4">创建第一个订阅计划开始使用</p>
@@ -221,22 +192,22 @@ export default function SubscriptionPlansPage() {
               <Plus className="h-4 w-4" />
               添加套餐
             </Button>
-          </CardContent>
+          </div>
         </Card>
       ) : (
         <>
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {plans.map((plan) => (
               <Card key={plan.id} className="hover:shadow-md transition-shadow">
-                <CardHeader>
+                <div className="p-4">
                   <div className="flex items-start justify-between">
-                    <CardTitle className="text-lg">{plan.title}</CardTitle>
-                    <Badge variant="outline" className={plan.isActive ? "bg-green-50 text-green-700 border-green-200" : "bg-gray-50 text-gray-700 border-gray-200"}>
+                    <Typography.Title level={5}>{plan.title}</Typography.Title>
+                    <Badge className={plan.isActive ? "bg-green-50 text-green-700 border-green-200" : "bg-gray-50 text-gray-700 border-gray-200"}>
                       {plan.isActive ? "启用" : "禁用"}
                     </Badge>
                   </div>
-                </CardHeader>
-                <CardContent className="space-y-4">
+                </div>
+                <div className="space-y-4 px-4 pb-4">
                   <div className="flex items-baseline gap-1">
                     <DollarSign className="h-5 w-5 text-slate-400" />
                     <span className="text-3xl font-bold text-slate-900">{plan.price}</span>
@@ -267,8 +238,8 @@ export default function SubscriptionPlansPage() {
 
                   <div className="flex items-center gap-2 pt-4 border-t border-slate-200">
                     <Button
-                      variant="ghost"
-                      size="sm"
+                      type="text"
+                      size="small"
                       className="h-8 w-8 p-0 cursor-pointer"
                       onClick={() => handleEditPlan(plan)}
                       title="编辑"
@@ -276,8 +247,8 @@ export default function SubscriptionPlansPage() {
                       <Edit className="h-4 w-4" />
                     </Button>
                     <Button
-                      variant="ghost"
-                      size="sm"
+                      type="text"
+                      size="small"
                       className="h-8 w-8 p-0 cursor-pointer text-red-600 hover:text-red-700 hover:bg-red-50"
                       onClick={() => handleDeletePlan(plan)}
                       title="删除"
@@ -285,7 +256,7 @@ export default function SubscriptionPlansPage() {
                       <Trash2 className="h-4 w-4" />
                     </Button>
                   </div>
-                </CardContent>
+                </div>
               </Card>
             ))}
           </div>
@@ -301,11 +272,7 @@ export default function SubscriptionPlansPage() {
         </>
       )}
 
-      <Dialog open={showForm} onOpenChange={setShowForm}>
-        <DialogContent className="max-h-[85vh] flex flex-col">
-          <DialogHeader>
-            <DialogTitle>{editingPlan ? "编辑订阅计划" : "添加订阅计划"}</DialogTitle>
-          </DialogHeader>
+      <Modal open={showForm} title={editingPlan ? "编辑订阅计划" : "添加订阅计划"} onCancel={() => setShowForm(false)} destroyOnHidden footer={[<Button key="cancel" onClick={() => setShowForm(false)}>取消</Button>, <Button key="submit" type="primary" htmlType="submit" form="subscription-plan-form">{editingPlan ? "保存" : "创建"}</Button>]}>
           <div className="flex-1 overflow-y-auto">
             <SubscriptionPlanForm
               plan={editingPlan || undefined}
@@ -313,21 +280,7 @@ export default function SubscriptionPlansPage() {
               formId="subscription-plan-form"
             />
           </div>
-          <DialogFooter className="border-t pt-4 mt-4">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => setShowForm(false)}
-              className="cursor-pointer"
-            >
-              取消
-            </Button>
-            <Button type="submit" form="subscription-plan-form" className="cursor-pointer">
-              {editingPlan ? "保存" : "创建"}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      </Modal>
 
       {deletingPlan && (
         <DeleteSubscriptionPlanDialog

@@ -144,9 +144,9 @@ func (h *Handler) registerRoutes() {
 	h.mux.Get("/api/auth/signin/{provider}", h.authorize)
 	h.mux.Get("/api/auth/callback/{provider}", h.callback)
 
-	// Keep the legacy endpoint aliases while provider definitions move to system
-	// settings. New callers should use /signin/{provider} and /callback/{provider}.
-	for _, providerID := range []string{"github", "easy1", "easy1auth"} {
+	// Keep the legacy GitHub endpoint aliases while provider definitions move to
+	// system settings. New callers should use /signin/{provider} and /callback/{provider}.
+	for _, providerID := range []string{"github"} {
 		providerID := providerID
 		h.mux.Get("/api/auth/"+providerID, func(w http.ResponseWriter, r *http.Request) {
 			h.authorizeProvider(w, r, providerID)
@@ -185,7 +185,7 @@ func (h *Handler) authorizeProvider(w http.ResponseWriter, r *http.Request, prov
 		h.writeOAuthError(w, http.StatusInternalServerError, "oauth_unavailable")
 		return
 	}
-	authorizationURL, err := provider.BuildAuthorizationURL(state, h.callbackURL(provider.ID))
+	authorizationURL, err := provider.BuildAuthorizationURL(r.Context(), state, h.callbackURL(provider.ID))
 	if err != nil {
 		h.writeOAuthError(w, http.StatusBadGateway, "oauth_provider_unavailable")
 		return

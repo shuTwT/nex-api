@@ -169,7 +169,7 @@ func setAccountUpdateFields(builder *ent.AccountUpdateOne, tokens infraoauth.Acc
 
 func validateProfile(profile infraoauth.NormalizedProfile) error {
 	parsed, err := mail.ParseAddress(profile.Email)
-	if err != nil || parsed.Address != profile.Email || profile.Provider == "" || profile.ProviderAccountID == "" {
+	if err != nil || parsed.Address != profile.Email || profile.Provider == "" || profile.ProviderAccountID == "" || !profile.EmailVerified {
 		return errors.New("oauth: invalid provider profile")
 	}
 	return nil

@@ -21,17 +21,17 @@ func TestStateCodec_roundTripsPKCEAndNonce(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	state, err := codec.New("easy1auth", "https://nex.example.com/console", true)
+	state, err := codec.New("custom-oauth", "https://nex.example.com/console", true)
 	if err != nil {
 		t.Fatal(err)
 	}
 	response := httptest.NewRecorder()
 	codec.Write(response, state)
-	request := httptest.NewRequest("GET", "/api/auth/callback/easy1auth?state="+state.Value, nil)
+	request := httptest.NewRequest("GET", "/api/auth/callback/custom-oauth?state="+state.Value, nil)
 	for _, cookie := range response.Result().Cookies() {
 		request.AddCookie(cookie)
 	}
-	got, err := codec.Read(request, "easy1auth", state.Value)
+	got, err := codec.Read(request, "custom-oauth", state.Value)
 	if err != nil {
 		t.Fatal(err)
 	}

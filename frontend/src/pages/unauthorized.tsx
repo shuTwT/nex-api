@@ -31,11 +31,6 @@ export default function UnauthorizedPage() {
               返回首页
             </Button>
           </Link>
-          <Link to="/console">
-            <Button className="bg-blue-600 hover:bg-blue-700">
-              前往控制台
-            </Button>
-          </Link>
         </div>
       </div>
     </div>

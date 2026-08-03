@@ -1,39 +1,9 @@
-import { useEffect, useState, useCallback, useTransition } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import {
-  Search,
-  Plus,
-  Edit,
-  Trash2,
-  Key,
-  UserIcon,
-  Shield,
-  Crown,
-  Calendar,
-  Users as UsersIcon,
-} from "lucide-react";
+import { useCallback, useEffect, useState, useTransition } from "react";
+import { Avatar, Button, Card, Flex, Input, Modal, Select, Space, Statistic, Table, Tag, Typography } from "antd";
+import { Calendar, Crown, Edit, Key, Plus, Search, Shield, Trash2, UserIcon, Users as UsersIcon } from "lucide-react";
 import { api, responseData } from "@/lib/api";
 import { UserForm } from "@/components/user-form";
 import { DeleteUserDialog } from "@/components/delete-user-dialog";
-import { Pagination } from "@/components/pagination";
 
 interface User {
   id: string;
@@ -42,10 +12,7 @@ interface User {
   role: string;
   credits: number;
   createdAt: Date;
-  subscription?: {
-    planName: string;
-    endDate: Date;
-  } | null;
+  subscription?: { planName: string; endDate: Date } | null;
 }
 
 interface UserStats {
@@ -67,379 +34,110 @@ export default function UsersPage() {
   const [stats, setStats] = useState<UserStats | null>(null);
   const [pagination, setPagination] = useState<PaginationInfo | null>(null);
   const [searchInput, setSearchInput] = useState("");
-  const [roleFilter, setRoleFilter] = useState<string>("all");
+  const [roleFilter, setRoleFilter] = useState("all");
   const [appliedSearch, setAppliedSearch] = useState("");
-  const [appliedRole, setAppliedRole] = useState<string>("all");
+  const [appliedRole, setAppliedRole] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [isLoading, setIsLoading] = useState(true);
   const [showUserForm, setShowUserForm] = useState(false);
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [deletingUser, setDeletingUser] = useState<User | null>(null);
-  const [isPending, startTransition] = useTransition();
+  const [, startTransition] = useTransition();
 
   const loadUsers = useCallback(async () => {
     setIsLoading(true);
-    const query: Record<string, string | number | boolean> = {
-      role: appliedRole,
-      search: appliedSearch,
-      page: currentPage,
-      limit: pageSize,
-    };
-    const result = await api.users_route_get(query);
-
+    const result = await api.users_route_get({ role: appliedRole, search: appliedSearch, page: currentPage, limit: pageSize });
     if (result.success) {
       const data = responseData<User[]>(result);
       if (data) setUsers(data);
-      if (result.pagination) {
-        setPagination(result.pagination);
-      }
+      if (result.pagination) setPagination(result.pagination);
     }
     setIsLoading(false);
-  }, [currentPage, pageSize, appliedSearch, appliedRole]);
+  }, [appliedRole, appliedSearch, currentPage, pageSize]);
 
-  useEffect(() => {
-    loadUsers();
-  }, [loadUsers]);
+  useEffect(() => { void loadUsers(); }, [loadUsers]);
 
-  async function loadStats() {
-    const result = await api.users_stats_route_get();
-    const data = responseData<UserStats>(result);
+  const loadStats = useCallback(async () => {
+    const data = responseData<UserStats>(await api.users_stats_route_get());
     if (data) setStats(data);
-  }
-
-  useEffect(() => {
-    loadStats();
   }, []);
+  useEffect(() => { void loadStats(); }, [loadStats]);
 
-  function handleAddUser() {
-    setEditingUser(null);
-    setShowUserForm(true);
-  }
-
-  function handleEditUser(user: User) {
-    setEditingUser(user);
-    setShowUserForm(true);
-  }
-
-  function handleDeleteUser(user: User) {
-    setDeletingUser(user);
-  }
-
-  function handleFormSuccess() {
-    startTransition(() => {
-      loadUsers();
-      loadStats();
-    });
-  }
-
-  function handleDeleteSuccess() {
-    startTransition(() => {
-      loadUsers();
-      loadStats();
-    });
-  }
-
-  function handlePageChange(page: number) {
-    setCurrentPage(page);
-  }
-
-  function handlePageSizeChange(size: number) {
-    setPageSize(size);
-    setCurrentPage(1);
-  }
-
-  function handleQuery() {
-    setAppliedSearch(searchInput);
-    setAppliedRole(roleFilter);
-    setCurrentPage(1);
-  }
-
-  function handleReset() {
-    setSearchInput("");
-    setRoleFilter("all");
-    setAppliedSearch("");
-    setAppliedRole("all");
-    setCurrentPage(1);
-  }
+  function refresh() { startTransition(() => { void loadUsers(); void loadStats(); }); }
+  function handleAddUser() { setEditingUser(null); setShowUserForm(true); }
+  function handlePageChange(page: number) { setCurrentPage(page); }
+  function handlePageSizeChange(size: number) { setPageSize(size); setCurrentPage(1); }
+  function handleQuery() { setAppliedSearch(searchInput); setAppliedRole(roleFilter); setCurrentPage(1); }
+  function handleReset() { setSearchInput(""); setRoleFilter("all"); setAppliedSearch(""); setAppliedRole("all"); setCurrentPage(1); }
 
   const statsCards = [
-    {
-      title: "总用户数",
-      value: stats?.totalUsers || 0,
-      icon: UsersIcon,
-      color: "blue",
-    },
-    {
-      title: "活跃用户",
-      value: stats?.activeUsers || 0,
-      icon: Shield,
-      color: "green",
-    },
-    {
-      title: "管理员",
-      value: stats?.adminUsers || 0,
-      icon: Crown,
-      color: "purple",
-    },
-    {
-      title: "本月新增",
-      value: stats?.newUsersThisMonth || 0,
-      icon: Calendar,
-      color: "cyan",
-    },
+    { title: "总用户数", value: stats?.totalUsers || 0, icon: <UsersIcon size={20} />, color: "#1677ff" },
+    { title: "活跃用户", value: stats?.activeUsers || 0, icon: <Shield size={20} />, color: "#52c41a" },
+    { title: "管理员", value: stats?.adminUsers || 0, icon: <Crown size={20} />, color: "#722ed1" },
+    { title: "本月新增", value: stats?.newUsersThisMonth || 0, icon: <Calendar size={20} />, color: "#13c2c2" },
   ];
 
-  void isPending;
-
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-slate-900">用户管理</h1>
-          <p className="text-slate-500 mt-1">管理系统用户和权限</p>
-        </div>
-        <Button
-          className="gap-2 cursor-pointer"
-          onClick={handleAddUser}
-        >
-          <Plus className="h-4 w-4" />
-          添加用户
-        </Button>
-      </div>
+    <Flex vertical gap={24}>
+      <Flex justify="space-between" align="center">
+        <div><Typography.Title level={2} style={{ margin: 0 }}>用户管理</Typography.Title><Typography.Text type="secondary">管理系统用户和权限</Typography.Text></div>
+        <Button type="primary" icon={<Plus size={16} />} onClick={handleAddUser}>添加用户</Button>
+      </Flex>
 
       <div className="grid gap-4 md:grid-cols-4">
-        {statsCards.map((stat) => {
-          const Icon = stat.icon;
-          const colorClasses = {
-            blue: "bg-blue-50 text-blue-600",
-            green: "bg-green-50 text-green-600",
-            purple: "bg-purple-50 text-purple-600",
-            cyan: "bg-cyan-50 text-cyan-600",
-          };
-
-          return (
-            <Card key={stat.title} className="hover:shadow-md transition-shadow cursor-pointer">
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-slate-500">{stat.title}</p>
-                    <p className="text-2xl font-bold text-slate-900 mt-1">{stat.value}</p>
-                  </div>
-                  <div className={`h-10 w-10 rounded-lg flex items-center justify-center ${colorClasses[stat.color as keyof typeof colorClasses]}`}>
-                    <Icon className="h-5 w-5" />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          );
-        })}
+        {statsCards.map((stat) => <Card key={stat.title}><Statistic title={stat.title} value={stat.value} prefix={<span style={{ color: stat.color }}>{stat.icon}</span>} /></Card>)}
       </div>
 
       <Card>
-        <CardContent className="p-4">
-          <div className="flex flex-wrap items-end gap-3">
-            <div className="relative flex-1 min-w-[200px]">
-              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-              <Input
-                placeholder="搜索用户名或邮箱..."
-                value={searchInput}
-                onChange={(e) => setSearchInput(e.target.value)}
-                className="pl-10"
-              />
-            </div>
-            <Select value={roleFilter} onValueChange={setRoleFilter}>
-              <SelectTrigger className="w-[130px]">
-                <SelectValue placeholder="角色" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  <SelectItem value="all">全部</SelectItem>
-                  <SelectItem value="admin">管理员</SelectItem>
-                  <SelectItem value="user">普通用户</SelectItem>
-                </SelectGroup>
-              </SelectContent>
-            </Select>
-            <Button
-              size="sm"
-              onClick={handleQuery}
-              className="cursor-pointer"
-            >
-              查询
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleReset}
-              className="cursor-pointer"
-            >
-              重置
-            </Button>
-          </div>
-        </CardContent>
+        <Space wrap>
+          <Input prefix={<Search size={16} />} placeholder="搜索用户名或邮箱..." value={searchInput} onChange={(event) => setSearchInput(event.target.value)} style={{ width: 280 }} onPressEnter={handleQuery} />
+          <Select value={roleFilter} onChange={setRoleFilter} style={{ width: 130 }} options={[{ value: "all", label: "全部" }, { value: "admin", label: "管理员" }, { value: "user", label: "普通用户" }]} />
+          <Button type="primary" onClick={handleQuery}>查询</Button>
+          <Button onClick={handleReset}>重置</Button>
+        </Space>
       </Card>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg">用户列表</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {isLoading ? (
-            <div className="flex items-center justify-center py-12">
-              <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-600 border-t-transparent" />
-            </div>
-          ) : users.length === 0 ? (
-            <div className="text-center py-12">
-              <UserIcon className="h-12 w-12 text-slate-300 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-slate-900 mb-2">没有找到用户</h3>
-              <p className="text-slate-500 mb-4">尝试调整搜索条件或添加新用户</p>
-              <Button onClick={handleAddUser} className="gap-2 cursor-pointer">
-                <Plus className="h-4 w-4" />
-                添加用户
-              </Button>
-            </div>
-          ) : (
-            <>
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead>
-                    <tr className="border-b border-slate-200">
-                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-600">用户信息</th>
-                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-600">角色</th>
-                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-600">订阅计划</th>
-                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-600">剩余积分</th>
-                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-600">注册时间</th>
-                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-600">操作</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {users.map((user) => (
-                      <tr key={user.id} className="border-b border-slate-100 hover:bg-slate-50 transition-colors">
-                        <td className="py-3 px-4">
-                          <div className="flex items-center gap-3">
-                            <div className="h-10 w-10 rounded-full bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center">
-                              <span className="text-white text-sm font-medium">
-                                {user.username.charAt(0).toUpperCase()}
-                              </span>
-                            </div>
-                            <div>
-                              <p className="text-sm font-medium text-slate-900">{user.username}</p>
-                              <p className="text-xs text-slate-500">{user.email}</p>
-                            </div>
-                          </div>
-                        </td>
-                        <td className="py-3 px-4">
-                          <Badge
-                            variant="outline"
-                            className={
-                              user.role === "admin"
-                                ? "bg-purple-50 text-purple-700 border-purple-200"
-                                : "bg-gray-50 text-gray-700 border-gray-200"
-                            }
-                          >
-                            {user.role === "admin" ? "管理员" : "用户"}
-                          </Badge>
-                        </td>
-                        <td className="py-3 px-4 text-sm text-slate-600">
-                          {user.subscription?.planName || "免费版"}
-                        </td>
-                        <td className="py-3 px-4">
-                          <span className="text-sm font-medium text-slate-900">
-                            {user.credits.toLocaleString()}
-                          </span>
-                        </td>
-                        <td className="py-3 px-4 text-sm text-slate-600">
-                          {new Date(user.createdAt).toLocaleDateString("zh-CN")}
-                        </td>
-                        <td className="py-3 px-4">
-                          <div className="flex items-center gap-2">
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="h-8 w-8 p-0 cursor-pointer"
-                              onClick={() => handleEditUser(user)}
-                              title="编辑"
-                            >
-                              <Edit className="h-4 w-4" />
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="h-8 w-8 p-0 cursor-pointer"
-                              title="重置密码"
-                            >
-                              <Key className="h-4 w-4" />
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="h-8 w-8 p-0 cursor-pointer text-red-600 hover:text-red-700 hover:bg-red-50"
-                              onClick={() => handleDeleteUser(user)}
-                              title="删除"
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-
-              <div className="mt-4">
-                <Pagination
-                  currentPage={pagination?.page ?? 1}
-                  totalPages={pagination?.totalPages ?? 1}
-                  total={pagination?.total ?? 0}
-                  pageSize={pagination?.limit ?? pageSize}
-                  onPageChange={handlePageChange}
-                  onPageSizeChange={handlePageSizeChange}
-                />
-              </div>
-            </>
-          )}
-        </CardContent>
-      </Card>
-
-      <Dialog open={showUserForm} onOpenChange={setShowUserForm}>
-        <DialogContent className="max-h-[85vh] flex flex-col">
-          <DialogHeader>
-            <DialogTitle>{editingUser ? "编辑用户" : "添加用户"}</DialogTitle>
-          </DialogHeader>
-          <div className="flex-1 overflow-y-auto">
-            <UserForm
-              user={editingUser || undefined}
-              onClose={() => setShowUserForm(false)}
-              onSuccess={handleFormSuccess}
-              formId="user-form"
-            />
-          </div>
-          <DialogFooter className="border-t pt-4 mt-4">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => setShowUserForm(false)}
-              className="cursor-pointer"
-            >
-              取消
-            </Button>
-            <Button type="submit" form="user-form" className="cursor-pointer">
-              {editingUser ? "保存" : "创建"}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      {deletingUser && (
-        <DeleteUserDialog
-          open={!!deletingUser}
-          onOpenChange={(open) => !open && setDeletingUser(null)}
-          userId={deletingUser.id}
-          userName={deletingUser.username}
-          onSuccess={handleDeleteSuccess}
+      <Card title="用户列表">
+        <Table<User>
+          rowKey="id"
+          loading={isLoading}
+          dataSource={users}
+          scroll={{ x: 900 }}
+          locale={{ emptyText: <Flex vertical align="center" gap={12}><UserIcon size={40} color="#bfbfbf" /><Typography.Text type="secondary">没有找到用户</Typography.Text><Button type="primary" icon={<Plus size={16} />} onClick={handleAddUser}>添加用户</Button></Flex> }}
+          pagination={{
+            current: pagination?.page ?? currentPage,
+            pageSize: pagination?.limit ?? pageSize,
+            total: pagination?.total ?? 0,
+            showSizeChanger: true,
+            showTotal: (total) => `共 ${total} 条`,
+            onChange: (page, size) => size !== pageSize ? handlePageSizeChange(size) : handlePageChange(page),
+          }}
+          columns={[
+            { title: "用户信息", key: "user", render: (_, user) => <Space><Avatar style={{ background: "linear-gradient(135deg, #1677ff, #13c2c2)" }}>{user.username.charAt(0).toUpperCase()}</Avatar><Flex vertical gap={0}><Typography.Text strong>{user.username}</Typography.Text><Typography.Text type="secondary">{user.email}</Typography.Text></Flex></Space> },
+            { title: "角色", dataIndex: "role", render: (role) => <Tag color={role === "admin" ? "purple" : "default"}>{role === "admin" ? "管理员" : "用户"}</Tag> },
+            { title: "订阅计划", key: "subscription", render: (_, user) => user.subscription?.planName || "免费版" },
+            { title: "剩余积分", dataIndex: "credits", render: (credits) => Number(credits).toLocaleString() },
+            { title: "注册时间", dataIndex: "createdAt", render: (createdAt) => new Date(createdAt).toLocaleDateString("zh-CN") },
+            { title: "操作", key: "actions", render: (_, user) => <Space size="small"><Button type="text" shape="circle" title="编辑" icon={<Edit size={16} />} onClick={() => { setEditingUser(user); setShowUserForm(true); }} /><Button type="text" shape="circle" title="重置密码" icon={<Key size={16} />} /><Button type="text" danger shape="circle" title="删除" icon={<Trash2 size={16} />} onClick={() => setDeletingUser(user)} /></Space> },
+          ]}
         />
-      )}
-    </div>
+      </Card>
+
+      <Modal
+        open={showUserForm}
+        title={editingUser ? "编辑用户" : "添加用户"}
+        onCancel={() => setShowUserForm(false)}
+        destroyOnHidden
+        width={560}
+        okText={editingUser ? "保存" : "创建"}
+        okButtonProps={{ htmlType: "submit", form: "user-form" }}
+        modalRender={(dom) => <>{dom}</>}
+      >
+        <UserForm user={editingUser || undefined} onClose={() => setShowUserForm(false)} onSuccess={refresh} formId="user-form" />
+      </Modal>
+
+      {deletingUser && <DeleteUserDialog open onOpenChange={(open) => !open && setDeletingUser(null)} userId={deletingUser.id} userName={deletingUser.username} onSuccess={refresh} />}
+    </Flex>
   );
 }

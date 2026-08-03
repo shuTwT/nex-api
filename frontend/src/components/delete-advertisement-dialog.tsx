@@ -1,13 +1,5 @@
 import { useState } from "react";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
+import { Button, Modal, Typography } from "antd";
 import { api } from "@/lib/api";
 
 interface DeleteAdvertisementDialogProps {
@@ -43,33 +35,18 @@ export function DeleteAdvertisementDialog({
   }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>删除广告</DialogTitle>
-          <DialogDescription>
+    <Modal
+      open={open}
+      title="删除广告"
+      onCancel={() => onOpenChange(false)}
+      footer={[
+        <Button key="cancel" onClick={() => onOpenChange(false)} disabled={isLoading}>取消</Button>,
+        <Button key="delete" danger type="primary" onClick={handleDelete} loading={isLoading}>删除</Button>,
+      ]}
+    >
+          <Typography.Paragraph>
             确定要删除广告 <span className="font-medium text-slate-900">{advertisementTitle}</span> 吗？此操作无法撤销。
-          </DialogDescription>
-        </DialogHeader>
-        <DialogFooter>
-          <Button
-            variant="outline"
-            onClick={() => onOpenChange(false)}
-            disabled={isLoading}
-            className="cursor-pointer"
-          >
-            取消
-          </Button>
-          <Button
-            variant="destructive"
-            onClick={handleDelete}
-            disabled={isLoading}
-            className="cursor-pointer"
-          >
-            {isLoading ? "删除中..." : "删除"}
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+          </Typography.Paragraph>
+    </Modal>
   );
 }
