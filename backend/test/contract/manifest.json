@@ -1,572 +1,1090 @@
 {
-  "version": 1,
-  "sourceRoot": "src/app/api",
-  "routeFileCount": 76,
+  "version": 2,
   "routes": [
     {
-      "file": "src/app/api/advertisements/[id]/route.ts",
       "path": "/api/advertisements/:id",
       "handlers": [
-        { "method": "GET", "auth": "admin", "mediaType": "application/json", "responseClass": "json" },
-        { "method": "PUT", "auth": "admin", "mediaType": "application/json", "responseClass": "json" },
-        { "method": "DELETE", "auth": "admin", "mediaType": "application/json", "responseClass": "json" }
-      ]
+        {
+          "method": "GET",
+          "auth": "admin",
+          "mediaType": "application/json",
+          "responseClass": "json"
+        },
+        {
+          "method": "PUT",
+          "auth": "admin",
+          "mediaType": "application/json",
+          "responseClass": "json"
+        },
+        {
+          "method": "DELETE",
+          "auth": "admin",
+          "mediaType": "application/json",
+          "responseClass": "json"
+        }
+      ],
+      "id": "advertisements/[id]"
     },
     {
-      "file": "src/app/api/advertisements/[id]/toggle/route.ts",
       "path": "/api/advertisements/:id/toggle",
       "handlers": [
-        { "method": "PUT", "auth": "admin", "mediaType": "application/json", "responseClass": "json" }
-      ]
+        {
+          "method": "PUT",
+          "auth": "admin",
+          "mediaType": "application/json",
+          "responseClass": "json"
+        }
+      ],
+      "id": "advertisements/[id]/toggle"
     },
     {
-      "file": "src/app/api/advertisements/by-position/[position]/route.ts",
       "path": "/api/advertisements/by-position/:position",
       "handlers": [
-        { "method": "GET", "auth": "none", "mediaType": "application/json", "responseClass": "json" }
-      ]
+        {
+          "method": "GET",
+          "auth": "none",
+          "mediaType": "application/json",
+          "responseClass": "json"
+        }
+      ],
+      "id": "advertisements/by-position/[position]"
     },
     {
-      "file": "src/app/api/advertisements/route.ts",
       "path": "/api/advertisements",
       "handlers": [
-        { "method": "GET", "auth": "admin", "mediaType": "application/json", "responseClass": "json" },
-        { "method": "POST", "auth": "admin", "mediaType": "application/json", "responseClass": "json" }
-      ]
+        {
+          "method": "GET",
+          "auth": "admin",
+          "mediaType": "application/json",
+          "responseClass": "json"
+        },
+        {
+          "method": "POST",
+          "auth": "admin",
+          "mediaType": "application/json",
+          "responseClass": "json"
+        }
+      ],
+      "id": "advertisements"
     },
     {
-      "file": "src/app/api/advertisements/stats/route.ts",
       "path": "/api/advertisements/stats",
       "handlers": [
-        { "method": "GET", "auth": "none", "mediaType": "application/json", "responseClass": "json" }
-      ]
+        {
+          "method": "GET",
+          "auth": "none",
+          "mediaType": "application/json",
+          "responseClass": "json"
+        }
+      ],
+      "id": "advertisements/stats"
     },
     {
-      "file": "src/app/api/apis/[id]/route.ts",
       "path": "/api/apis/:id",
       "handlers": [
-        { "method": "GET", "auth": "admin", "mediaType": "application/json", "responseClass": "json" },
-        { "method": "PUT", "auth": "admin", "mediaType": "application/json", "responseClass": "json" },
-        { "method": "DELETE", "auth": "admin", "mediaType": "application/json", "responseClass": "json" }
-      ]
+        {
+          "method": "GET",
+          "auth": "admin",
+          "mediaType": "application/json",
+          "responseClass": "json"
+        },
+        {
+          "method": "PUT",
+          "auth": "admin",
+          "mediaType": "application/json",
+          "responseClass": "json"
+        },
+        {
+          "method": "DELETE",
+          "auth": "admin",
+          "mediaType": "application/json",
+          "responseClass": "json"
+        }
+      ],
+      "id": "apis/[id]"
     },
     {
-      "file": "src/app/api/apis/[id]/toggle/route.ts",
       "path": "/api/apis/:id/toggle",
       "handlers": [
-        { "method": "PUT", "auth": "admin", "mediaType": "application/json", "responseClass": "json" }
-      ]
+        {
+          "method": "PUT",
+          "auth": "admin",
+          "mediaType": "application/json",
+          "responseClass": "json"
+        }
+      ],
+      "id": "apis/[id]/toggle"
     },
     {
-      "file": "src/app/api/apis/route.ts",
       "path": "/api/apis",
       "handlers": [
-        { "method": "GET", "auth": "admin", "mediaType": "application/json", "responseClass": "json" },
-        { "method": "POST", "auth": "admin", "mediaType": "application/json", "responseClass": "json" }
-      ]
+        {
+          "method": "GET",
+          "auth": "admin",
+          "mediaType": "application/json",
+          "responseClass": "json"
+        },
+        {
+          "method": "POST",
+          "auth": "admin",
+          "mediaType": "application/json",
+          "responseClass": "json"
+        }
+      ],
+      "id": "apis"
     },
     {
-      "file": "src/app/api/apis/stats/route.ts",
       "path": "/api/apis/stats",
       "handlers": [
-        { "method": "GET", "auth": "admin", "mediaType": "application/json", "responseClass": "json" }
-      ]
+        {
+          "method": "GET",
+          "auth": "admin",
+          "mediaType": "application/json",
+          "responseClass": "json"
+        }
+      ],
+      "id": "apis/stats"
     },
     {
-      "file": "src/app/api/audit-logs/[id]/route.ts",
       "path": "/api/audit-logs/:id",
       "handlers": [
-        { "method": "PUT", "auth": "user", "mediaType": "application/json", "responseClass": "json" },
-        { "method": "DELETE", "auth": "user", "mediaType": "application/json", "responseClass": "json" }
-      ]
+        {
+          "method": "PUT",
+          "auth": "user",
+          "mediaType": "application/json",
+          "responseClass": "json"
+        },
+        {
+          "method": "DELETE",
+          "auth": "user",
+          "mediaType": "application/json",
+          "responseClass": "json"
+        }
+      ],
+      "id": "audit-logs/[id]"
     },
     {
-      "file": "src/app/api/audit-logs/export/route.ts",
       "path": "/api/audit-logs/export",
       "handlers": [
-        { "method": "GET", "auth": "user", "mediaType": "application/json", "responseClass": "json" }
-      ]
+        {
+          "method": "GET",
+          "auth": "user",
+          "mediaType": "application/json",
+          "responseClass": "json"
+        }
+      ],
+      "id": "audit-logs/export"
     },
     {
-      "file": "src/app/api/audit-logs/route.ts",
       "path": "/api/audit-logs",
       "handlers": [
-        { "method": "GET", "auth": "user", "mediaType": "application/json", "responseClass": "json" },
-        { "method": "POST", "auth": "user", "mediaType": "application/json", "responseClass": "json" }
-      ]
+        {
+          "method": "GET",
+          "auth": "user",
+          "mediaType": "application/json",
+          "responseClass": "json"
+        },
+        {
+          "method": "POST",
+          "auth": "user",
+          "mediaType": "application/json",
+          "responseClass": "json"
+        }
+      ],
+      "id": "audit-logs"
     },
     {
-      "file": "src/app/api/audit-logs/stats/route.ts",
       "path": "/api/audit-logs/stats",
       "handlers": [
-        { "method": "GET", "auth": "user", "mediaType": "application/json", "responseClass": "json" }
-      ]
+        {
+          "method": "GET",
+          "auth": "user",
+          "mediaType": "application/json",
+          "responseClass": "json"
+        }
+      ],
+      "id": "audit-logs/stats"
     },
     {
-      "file": "src/app/api/auth/[...nextauth]/route.ts",
-      "path": "/api/auth/:nextauth*",
-      "handlers": [
-        { "method": "GET", "auth": "none", "mediaType": "application/json|text/html", "responseClass": "raw" },
-        { "method": "POST", "auth": "none", "mediaType": "application/json|text/html", "responseClass": "raw" }
-      ]
-    },
-    {
-      "file": "src/app/api/auth/logout/route.ts",
       "path": "/api/auth/logout",
       "handlers": [
-        { "method": "POST", "auth": "none", "mediaType": "application/json", "responseClass": "json" }
-      ]
+        {
+          "method": "POST",
+          "auth": "none",
+          "mediaType": "application/json",
+          "responseClass": "json"
+        }
+      ],
+      "id": "auth/logout"
     },
     {
-      "file": "src/app/api/auth/me/route.ts",
       "path": "/api/auth/me",
       "handlers": [
-        { "method": "GET", "auth": "user", "mediaType": "application/json", "responseClass": "json" }
-      ]
+        {
+          "method": "GET",
+          "auth": "user",
+          "mediaType": "application/json",
+          "responseClass": "json"
+        }
+      ],
+      "id": "auth/me"
     },
     {
-      "file": "src/app/api/categories/[id]/route.ts",
       "path": "/api/categories/:id",
       "handlers": [
-        { "method": "PUT", "auth": "admin", "mediaType": "application/json", "responseClass": "json" },
-        { "method": "DELETE", "auth": "admin", "mediaType": "application/json", "responseClass": "json" }
-      ]
+        {
+          "method": "PUT",
+          "auth": "admin",
+          "mediaType": "application/json",
+          "responseClass": "json"
+        },
+        {
+          "method": "DELETE",
+          "auth": "admin",
+          "mediaType": "application/json",
+          "responseClass": "json"
+        }
+      ],
+      "id": "categories/[id]"
     },
     {
-      "file": "src/app/api/categories/route.ts",
       "path": "/api/categories",
       "handlers": [
-        { "method": "GET", "auth": "admin", "mediaType": "application/json", "responseClass": "json" },
-        { "method": "POST", "auth": "admin", "mediaType": "application/json", "responseClass": "json" }
-      ]
+        {
+          "method": "GET",
+          "auth": "admin",
+          "mediaType": "application/json",
+          "responseClass": "json"
+        },
+        {
+          "method": "POST",
+          "auth": "admin",
+          "mediaType": "application/json",
+          "responseClass": "json"
+        }
+      ],
+      "id": "categories"
     },
     {
-      "file": "src/app/api/cron/sync-stats/route.ts",
       "path": "/api/cron/sync-stats",
       "authScheme": "cron-secret",
       "handlers": [
-        { "method": "POST", "auth": "none", "mediaType": "application/json", "responseClass": "json" }
-      ]
+        {
+          "method": "POST",
+          "auth": "none",
+          "mediaType": "application/json",
+          "responseClass": "json"
+        }
+      ],
+      "id": "cron/sync-stats"
     },
     {
-      "file": "src/app/api/dashboard/activity/route.ts",
       "path": "/api/dashboard/activity",
       "handlers": [
-        { "method": "GET", "auth": "user", "mediaType": "application/json", "responseClass": "json" }
-      ]
+        {
+          "method": "GET",
+          "auth": "user",
+          "mediaType": "application/json",
+          "responseClass": "json"
+        }
+      ],
+      "id": "dashboard/activity"
     },
     {
-      "file": "src/app/api/dashboard/stats/route.ts",
       "path": "/api/dashboard/stats",
       "handlers": [
-        { "method": "GET", "auth": "user", "mediaType": "application/json", "responseClass": "json" }
-      ]
+        {
+          "method": "GET",
+          "auth": "user",
+          "mediaType": "application/json",
+          "responseClass": "json"
+        }
+      ],
+      "id": "dashboard/stats"
     },
     {
-      "file": "src/app/api/dashboard/top-apis/route.ts",
       "path": "/api/dashboard/top-apis",
       "handlers": [
-        { "method": "GET", "auth": "user", "mediaType": "application/json", "responseClass": "json" }
-      ]
+        {
+          "method": "GET",
+          "auth": "user",
+          "mediaType": "application/json",
+          "responseClass": "json"
+        }
+      ],
+      "id": "dashboard/top-apis"
     },
     {
-      "file": "src/app/api/dashboard/usage-trend/route.ts",
       "path": "/api/dashboard/usage-trend",
       "handlers": [
-        { "method": "GET", "auth": "user", "mediaType": "application/json", "responseClass": "json" }
-      ]
+        {
+          "method": "GET",
+          "auth": "user",
+          "mediaType": "application/json",
+          "responseClass": "json"
+        }
+      ],
+      "id": "dashboard/usage-trend"
     },
     {
-      "file": "src/app/api/marketplace/apis/[id]/route.ts",
       "path": "/api/marketplace/apis/:id",
       "handlers": [
-        { "method": "GET", "auth": "none", "mediaType": "application/json", "responseClass": "json" }
-      ]
+        {
+          "method": "GET",
+          "auth": "none",
+          "mediaType": "application/json",
+          "responseClass": "json"
+        }
+      ],
+      "id": "marketplace/apis/[id]"
     },
     {
-      "file": "src/app/api/marketplace/apis/route.ts",
       "path": "/api/marketplace/apis",
       "handlers": [
-        { "method": "GET", "auth": "none", "mediaType": "application/json", "responseClass": "json" }
-      ]
+        {
+          "method": "GET",
+          "auth": "none",
+          "mediaType": "application/json",
+          "responseClass": "json"
+        }
+      ],
+      "id": "marketplace/apis"
     },
     {
-      "file": "src/app/api/marketplace/mcp-services/route.ts",
       "path": "/api/marketplace/mcp-services",
       "handlers": [
-        { "method": "GET", "auth": "none", "mediaType": "application/json", "responseClass": "json" }
-      ]
+        {
+          "method": "GET",
+          "auth": "none",
+          "mediaType": "application/json",
+          "responseClass": "json"
+        }
+      ],
+      "id": "marketplace/mcp-services"
     },
     {
-      "file": "src/app/api/marketplace/mcp-stats/route.ts",
       "path": "/api/marketplace/mcp-stats",
       "handlers": [
-        { "method": "GET", "auth": "none", "mediaType": "application/json", "responseClass": "json" }
-      ]
+        {
+          "method": "GET",
+          "auth": "none",
+          "mediaType": "application/json",
+          "responseClass": "json"
+        }
+      ],
+      "id": "marketplace/mcp-stats"
     },
     {
-      "file": "src/app/api/marketplace/stats/route.ts",
       "path": "/api/marketplace/stats",
       "handlers": [
-        { "method": "GET", "auth": "none", "mediaType": "application/json", "responseClass": "json" }
-      ]
+        {
+          "method": "GET",
+          "auth": "none",
+          "mediaType": "application/json",
+          "responseClass": "json"
+        }
+      ],
+      "id": "marketplace/stats"
     },
     {
-      "file": "src/app/api/mcp-services/[id]/route.ts",
       "path": "/api/mcp-services/:id",
       "handlers": [
-        { "method": "PUT", "auth": "admin", "mediaType": "application/json", "responseClass": "json" },
-        { "method": "DELETE", "auth": "admin", "mediaType": "application/json", "responseClass": "json" }
-      ]
+        {
+          "method": "PUT",
+          "auth": "admin",
+          "mediaType": "application/json",
+          "responseClass": "json"
+        },
+        {
+          "method": "DELETE",
+          "auth": "admin",
+          "mediaType": "application/json",
+          "responseClass": "json"
+        }
+      ],
+      "id": "mcp-services/[id]"
     },
     {
-      "file": "src/app/api/mcp-services/[id]/toggle/route.ts",
       "path": "/api/mcp-services/:id/toggle",
       "handlers": [
-        { "method": "PUT", "auth": "admin", "mediaType": "application/json", "responseClass": "json" }
-      ]
+        {
+          "method": "PUT",
+          "auth": "admin",
+          "mediaType": "application/json",
+          "responseClass": "json"
+        }
+      ],
+      "id": "mcp-services/[id]/toggle"
     },
     {
-      "file": "src/app/api/mcp-services/route.ts",
       "path": "/api/mcp-services",
       "handlers": [
-        { "method": "GET", "auth": "admin", "mediaType": "application/json", "responseClass": "json" },
-        { "method": "POST", "auth": "admin", "mediaType": "application/json", "responseClass": "json" }
-      ]
+        {
+          "method": "GET",
+          "auth": "admin",
+          "mediaType": "application/json",
+          "responseClass": "json"
+        },
+        {
+          "method": "POST",
+          "auth": "admin",
+          "mediaType": "application/json",
+          "responseClass": "json"
+        }
+      ],
+      "id": "mcp-services"
     },
     {
-      "file": "src/app/api/mcp-services/stats/route.ts",
       "path": "/api/mcp-services/stats",
       "handlers": [
-        { "method": "GET", "auth": "admin", "mediaType": "application/json", "responseClass": "json" }
-      ]
+        {
+          "method": "GET",
+          "auth": "admin",
+          "mediaType": "application/json",
+          "responseClass": "json"
+        }
+      ],
+      "id": "mcp-services/stats"
     },
     {
-      "file": "src/app/api/membership/current/route.ts",
       "path": "/api/membership/current",
       "handlers": [
-        { "method": "GET", "auth": "user", "mediaType": "application/json", "responseClass": "json" }
-      ]
+        {
+          "method": "GET",
+          "auth": "user",
+          "mediaType": "application/json",
+          "responseClass": "json"
+        }
+      ],
+      "id": "membership/current"
     },
     {
-      "file": "src/app/api/membership/plans/route.ts",
       "path": "/api/membership/plans",
       "handlers": [
-        { "method": "GET", "auth": "none", "mediaType": "application/json", "responseClass": "json" }
-      ]
+        {
+          "method": "GET",
+          "auth": "none",
+          "mediaType": "application/json",
+          "responseClass": "json"
+        }
+      ],
+      "id": "membership/plans"
     },
     {
-      "file": "src/app/api/membership/subscribe/route.ts",
       "path": "/api/membership/subscribe",
       "handlers": [
-        { "method": "POST", "auth": "user", "mediaType": "application/json", "responseClass": "json" }
-      ]
+        {
+          "method": "POST",
+          "auth": "user",
+          "mediaType": "application/json",
+          "responseClass": "json"
+        }
+      ],
+      "id": "membership/subscribe"
     },
     {
-      "file": "src/app/api/payment/[outTradeNo]/cancel/route.ts",
       "path": "/api/payment/:outTradeNo/cancel",
       "handlers": [
-        { "method": "POST", "auth": "user", "mediaType": "application/json", "responseClass": "json" }
-      ]
+        {
+          "method": "POST",
+          "auth": "user",
+          "mediaType": "application/json",
+          "responseClass": "json"
+        }
+      ],
+      "id": "payment/[outTradeNo]/cancel"
     },
     {
-      "file": "src/app/api/payment/[outTradeNo]/route.ts",
       "path": "/api/payment/:outTradeNo",
       "handlers": [
-        { "method": "GET", "auth": "user", "mediaType": "application/json", "responseClass": "json" }
-      ]
+        {
+          "method": "GET",
+          "auth": "user",
+          "mediaType": "application/json",
+          "responseClass": "json"
+        }
+      ],
+      "id": "payment/[outTradeNo]"
     },
     {
-      "file": "src/app/api/payment/[outTradeNo]/status/route.ts",
       "path": "/api/payment/:outTradeNo/status",
       "handlers": [
-        { "method": "GET", "auth": "user", "mediaType": "application/json", "responseClass": "json" }
-      ]
+        {
+          "method": "GET",
+          "auth": "user",
+          "mediaType": "application/json",
+          "responseClass": "json"
+        }
+      ],
+      "id": "payment/[outTradeNo]/status"
     },
     {
-      "file": "src/app/api/payment/business/recharge/route.ts",
       "path": "/api/payment/business/recharge",
       "handlers": [
-        { "method": "POST", "auth": "none", "mediaType": "application/json", "responseClass": "json" }
-      ]
+        {
+          "method": "POST",
+          "auth": "none",
+          "mediaType": "application/json",
+          "responseClass": "json"
+        }
+      ],
+      "id": "payment/business/recharge"
     },
     {
-      "file": "src/app/api/payment/business/subscription/route.ts",
       "path": "/api/payment/business/subscription",
       "handlers": [
-        { "method": "POST", "auth": "none", "mediaType": "application/json", "responseClass": "json" }
-      ]
+        {
+          "method": "POST",
+          "auth": "none",
+          "mediaType": "application/json",
+          "responseClass": "json"
+        }
+      ],
+      "id": "payment/business/subscription"
     },
     {
-      "file": "src/app/api/payment/callback/alipay/route.ts",
       "path": "/api/payment/callback/alipay",
       "handlers": [
-        { "method": "POST", "auth": "none", "mediaType": "text/plain", "requestMediaType": "application/x-www-form-urlencoded", "responseClass": "raw" }
-      ]
+        {
+          "method": "POST",
+          "auth": "none",
+          "mediaType": "text/plain",
+          "requestMediaType": "application/x-www-form-urlencoded",
+          "responseClass": "raw"
+        }
+      ],
+      "id": "payment/callback/alipay"
     },
     {
-      "file": "src/app/api/payment/callback/mock/route.ts",
       "path": "/api/payment/callback/mock",
       "handlers": [
-        { "method": "POST", "auth": "none", "mediaType": "application/json", "responseClass": "json" }
-      ]
+        {
+          "method": "POST",
+          "auth": "none",
+          "mediaType": "application/json",
+          "responseClass": "json"
+        }
+      ],
+      "id": "payment/callback/mock"
     },
     {
-      "file": "src/app/api/payment/callback/wechat/route.ts",
       "path": "/api/payment/callback/wechat",
       "handlers": [
-        { "method": "POST", "auth": "none", "mediaType": "application/json", "responseClass": "raw" }
-      ]
+        {
+          "method": "POST",
+          "auth": "none",
+          "mediaType": "application/json",
+          "responseClass": "raw"
+        }
+      ],
+      "id": "payment/callback/wechat"
     },
     {
-      "file": "src/app/api/payment/methods/route.ts",
       "path": "/api/payment/methods",
       "handlers": [
-        { "method": "GET", "auth": "user", "mediaType": "application/json", "responseClass": "json" },
-        { "method": "POST", "auth": "user", "mediaType": "application/json", "responseClass": "json" }
-      ]
+        {
+          "method": "GET",
+          "auth": "user",
+          "mediaType": "application/json",
+          "responseClass": "json"
+        },
+        {
+          "method": "POST",
+          "auth": "user",
+          "mediaType": "application/json",
+          "responseClass": "json"
+        }
+      ],
+      "id": "payment/methods"
     },
     {
-      "file": "src/app/api/payment/settings/route.ts",
       "path": "/api/payment/settings",
       "handlers": [
-        { "method": "GET", "auth": "user", "mediaType": "application/json", "responseClass": "json" }
-      ]
+        {
+          "method": "GET",
+          "auth": "user",
+          "mediaType": "application/json",
+          "responseClass": "json"
+        }
+      ],
+      "id": "payment/settings"
     },
     {
-      "file": "src/app/api/payment/user/route.ts",
       "path": "/api/payment/user",
       "handlers": [
-        { "method": "GET", "auth": "user", "mediaType": "application/json", "responseClass": "json" }
-      ]
+        {
+          "method": "GET",
+          "auth": "user",
+          "mediaType": "application/json",
+          "responseClass": "json"
+        }
+      ],
+      "id": "payment/user"
     },
     {
-      "file": "src/app/api/personal/profile/route.ts",
       "path": "/api/personal/profile",
       "handlers": [
-        { "method": "GET", "auth": "user", "mediaType": "application/json", "responseClass": "json" }
-      ]
+        {
+          "method": "GET",
+          "auth": "user",
+          "mediaType": "application/json",
+          "responseClass": "json"
+        }
+      ],
+      "id": "personal/profile"
     },
     {
-      "file": "src/app/api/personal/redeem/lookup/route.ts",
       "path": "/api/personal/redeem/lookup",
       "handlers": [
-        { "method": "POST", "auth": "user", "mediaType": "application/json", "responseClass": "json" }
-      ]
+        {
+          "method": "POST",
+          "auth": "user",
+          "mediaType": "application/json",
+          "responseClass": "json"
+        }
+      ],
+      "id": "personal/redeem/lookup"
     },
     {
-      "file": "src/app/api/personal/redeem/route.ts",
       "path": "/api/personal/redeem",
       "handlers": [
-        { "method": "POST", "auth": "user", "mediaType": "application/json", "responseClass": "json" }
-      ]
+        {
+          "method": "POST",
+          "auth": "user",
+          "mediaType": "application/json",
+          "responseClass": "json"
+        }
+      ],
+      "id": "personal/redeem"
     },
     {
-      "file": "src/app/api/recharge/route.ts",
       "path": "/api/recharge",
       "handlers": [
-        { "method": "POST", "auth": "user", "mediaType": "application/json", "responseClass": "json" }
-      ]
+        {
+          "method": "POST",
+          "auth": "user",
+          "mediaType": "application/json",
+          "responseClass": "json"
+        }
+      ],
+      "id": "recharge"
     },
     {
-      "file": "src/app/api/redemption-codes/[id]/route.ts",
       "path": "/api/redemption-codes/:id",
       "handlers": [
-        { "method": "DELETE", "auth": "admin", "mediaType": "application/json", "responseClass": "json" }
-      ]
+        {
+          "method": "DELETE",
+          "auth": "admin",
+          "mediaType": "application/json",
+          "responseClass": "json"
+        }
+      ],
+      "id": "redemption-codes/[id]"
     },
     {
-      "file": "src/app/api/redemption-codes/batch/route.ts",
       "path": "/api/redemption-codes/batch",
       "handlers": [
-        { "method": "DELETE", "auth": "admin", "mediaType": "application/json", "responseClass": "json" },
-        { "method": "POST", "auth": "admin", "mediaType": "application/json", "responseClass": "json" }
-      ]
+        {
+          "method": "DELETE",
+          "auth": "admin",
+          "mediaType": "application/json",
+          "responseClass": "json"
+        },
+        {
+          "method": "POST",
+          "auth": "admin",
+          "mediaType": "application/json",
+          "responseClass": "json"
+        }
+      ],
+      "id": "redemption-codes/batch"
     },
     {
-      "file": "src/app/api/redemption-codes/export/route.ts",
       "path": "/api/redemption-codes/export",
       "handlers": [
-        { "method": "GET", "auth": "admin", "mediaType": "application/json", "responseClass": "json" }
-      ]
+        {
+          "method": "GET",
+          "auth": "admin",
+          "mediaType": "application/json",
+          "responseClass": "json"
+        }
+      ],
+      "id": "redemption-codes/export"
     },
     {
-      "file": "src/app/api/redemption-codes/plans/route.ts",
       "path": "/api/redemption-codes/plans",
       "handlers": [
-        { "method": "GET", "auth": "none", "mediaType": "application/json", "responseClass": "json" }
-      ]
+        {
+          "method": "GET",
+          "auth": "none",
+          "mediaType": "application/json",
+          "responseClass": "json"
+        }
+      ],
+      "id": "redemption-codes/plans"
     },
     {
-      "file": "src/app/api/redemption-codes/route.ts",
       "path": "/api/redemption-codes",
       "handlers": [
-        { "method": "GET", "auth": "admin", "mediaType": "application/json", "responseClass": "json" },
-        { "method": "POST", "auth": "admin", "mediaType": "application/json", "responseClass": "json" }
-      ]
+        {
+          "method": "GET",
+          "auth": "admin",
+          "mediaType": "application/json",
+          "responseClass": "json"
+        },
+        {
+          "method": "POST",
+          "auth": "admin",
+          "mediaType": "application/json",
+          "responseClass": "json"
+        }
+      ],
+      "id": "redemption-codes"
     },
     {
-      "file": "src/app/api/stats/[alias]/route.ts",
       "path": "/api/stats/:alias",
       "handlers": [
-        { "method": "GET", "auth": "user", "mediaType": "application/json", "responseClass": "json" }
-      ]
+        {
+          "method": "GET",
+          "auth": "user",
+          "mediaType": "application/json",
+          "responseClass": "json"
+        }
+      ],
+      "id": "stats/[alias]"
     },
     {
-      "file": "src/app/api/stats/route.ts",
       "path": "/api/stats",
       "handlers": [
-        { "method": "GET", "auth": "user", "mediaType": "application/json", "responseClass": "json" }
-      ]
+        {
+          "method": "GET",
+          "auth": "user",
+          "mediaType": "application/json",
+          "responseClass": "json"
+        }
+      ],
+      "id": "stats"
     },
     {
-      "file": "src/app/api/subscription-plans/[id]/route.ts",
       "path": "/api/subscription-plans/:id",
       "handlers": [
-        { "method": "GET", "auth": "admin", "mediaType": "application/json", "responseClass": "json" },
-        { "method": "PUT", "auth": "admin", "mediaType": "application/json", "responseClass": "json" },
-        { "method": "DELETE", "auth": "admin", "mediaType": "application/json", "responseClass": "json" }
-      ]
+        {
+          "method": "GET",
+          "auth": "admin",
+          "mediaType": "application/json",
+          "responseClass": "json"
+        },
+        {
+          "method": "PUT",
+          "auth": "admin",
+          "mediaType": "application/json",
+          "responseClass": "json"
+        },
+        {
+          "method": "DELETE",
+          "auth": "admin",
+          "mediaType": "application/json",
+          "responseClass": "json"
+        }
+      ],
+      "id": "subscription-plans/[id]"
     },
     {
-      "file": "src/app/api/subscription-plans/route.ts",
       "path": "/api/subscription-plans",
       "handlers": [
-        { "method": "GET", "auth": "admin", "mediaType": "application/json", "responseClass": "json" },
-        { "method": "POST", "auth": "admin", "mediaType": "application/json", "responseClass": "json" }
-      ]
+        {
+          "method": "GET",
+          "auth": "admin",
+          "mediaType": "application/json",
+          "responseClass": "json"
+        },
+        {
+          "method": "POST",
+          "auth": "admin",
+          "mediaType": "application/json",
+          "responseClass": "json"
+        }
+      ],
+      "id": "subscription-plans"
     },
     {
-      "file": "src/app/api/system/initialize/route.ts",
       "path": "/api/system/initialize",
       "handlers": [
-        { "method": "POST", "auth": "none", "mediaType": "application/json", "responseClass": "json" }
-      ]
+        {
+          "method": "POST",
+          "auth": "none",
+          "mediaType": "application/json",
+          "responseClass": "json"
+        }
+      ],
+      "id": "system/initialize"
     },
     {
-      "file": "src/app/api/system/initialized/route.ts",
       "path": "/api/system/initialized",
       "handlers": [
-        { "method": "GET", "auth": "none", "mediaType": "application/json", "responseClass": "json" }
-      ]
+        {
+          "method": "GET",
+          "auth": "none",
+          "mediaType": "application/json",
+          "responseClass": "json"
+        }
+      ],
+      "id": "system/initialized"
     },
     {
-      "file": "src/app/api/system-settings/announcement/route.ts",
       "path": "/api/system-settings/announcement",
       "handlers": [
-        { "method": "GET", "auth": "none", "mediaType": "application/json", "responseClass": "json" }
-      ]
+        {
+          "method": "GET",
+          "auth": "none",
+          "mediaType": "application/json",
+          "responseClass": "json"
+        }
+      ],
+      "id": "system-settings/announcement"
     },
     {
-      "file": "src/app/api/system-settings/defaults/route.ts",
       "path": "/api/system-settings/defaults",
       "handlers": [
-        { "method": "GET", "auth": "none", "mediaType": "application/json", "responseClass": "json" }
-      ]
+        {
+          "method": "GET",
+          "auth": "none",
+          "mediaType": "application/json",
+          "responseClass": "json"
+        }
+      ],
+      "id": "system-settings/defaults"
     },
     {
-      "file": "src/app/api/system-settings/route.ts",
       "path": "/api/system-settings",
       "handlers": [
-        { "method": "GET", "auth": "admin", "mediaType": "application/json", "responseClass": "json" },
-        { "method": "PUT", "auth": "admin", "mediaType": "application/json", "responseClass": "json" }
-      ]
+        {
+          "method": "GET",
+          "auth": "admin",
+          "mediaType": "application/json",
+          "responseClass": "json"
+        },
+        {
+          "method": "PUT",
+          "auth": "admin",
+          "mediaType": "application/json",
+          "responseClass": "json"
+        }
+      ],
+      "id": "system-settings"
     },
     {
-      "file": "src/app/api/tokens/[id]/route.ts",
       "path": "/api/tokens/:id",
       "handlers": [
-        { "method": "PUT", "auth": "user", "mediaType": "application/json", "responseClass": "json" },
-        { "method": "DELETE", "auth": "user", "mediaType": "application/json", "responseClass": "json" }
-      ]
+        {
+          "method": "PUT",
+          "auth": "user",
+          "mediaType": "application/json",
+          "responseClass": "json"
+        },
+        {
+          "method": "DELETE",
+          "auth": "user",
+          "mediaType": "application/json",
+          "responseClass": "json"
+        }
+      ],
+      "id": "tokens/[id]"
     },
     {
-      "file": "src/app/api/tokens/[id]/toggle/route.ts",
       "path": "/api/tokens/:id/toggle",
       "handlers": [
-        { "method": "PUT", "auth": "user", "mediaType": "application/json", "responseClass": "json" }
-      ]
+        {
+          "method": "PUT",
+          "auth": "user",
+          "mediaType": "application/json",
+          "responseClass": "json"
+        }
+      ],
+      "id": "tokens/[id]/toggle"
     },
     {
-      "file": "src/app/api/tokens/route.ts",
       "path": "/api/tokens",
       "handlers": [
-        { "method": "GET", "auth": "user", "mediaType": "application/json", "responseClass": "json" },
-        { "method": "POST", "auth": "user", "mediaType": "application/json", "responseClass": "json" }
-      ]
+        {
+          "method": "GET",
+          "auth": "user",
+          "mediaType": "application/json",
+          "responseClass": "json"
+        },
+        {
+          "method": "POST",
+          "auth": "user",
+          "mediaType": "application/json",
+          "responseClass": "json"
+        }
+      ],
+      "id": "tokens"
     },
     {
-      "file": "src/app/api/tokens/stats/route.ts",
       "path": "/api/tokens/stats",
       "handlers": [
-        { "method": "GET", "auth": "user", "mediaType": "application/json", "responseClass": "json" }
-      ]
+        {
+          "method": "GET",
+          "auth": "user",
+          "mediaType": "application/json",
+          "responseClass": "json"
+        }
+      ],
+      "id": "tokens/stats"
     },
     {
-      "file": "src/app/api/upload/[filename]/route.ts",
       "path": "/api/upload/:filename",
       "handlers": [
-        { "method": "GET", "auth": "none", "mediaType": "*/*", "responseClass": "file" }
-      ]
+        {
+          "method": "GET",
+          "auth": "none",
+          "mediaType": "*/*",
+          "responseClass": "file"
+        }
+      ],
+      "id": "upload/[filename]"
     },
     {
-      "file": "src/app/api/upload/route.ts",
       "path": "/api/upload",
       "handlers": [
-        { "method": "POST", "auth": "user", "mediaType": "application/json", "requestMediaType": "multipart/form-data", "responseClass": "json" }
-      ]
+        {
+          "method": "POST",
+          "auth": "user",
+          "mediaType": "application/json",
+          "requestMediaType": "multipart/form-data",
+          "responseClass": "json"
+        }
+      ],
+      "id": "upload"
     },
     {
-      "file": "src/app/api/usage/route.ts",
       "path": "/api/usage",
       "handlers": [
-        { "method": "GET", "auth": "user", "mediaType": "application/json", "responseClass": "json" }
-      ]
+        {
+          "method": "GET",
+          "auth": "user",
+          "mediaType": "application/json",
+          "responseClass": "json"
+        }
+      ],
+      "id": "usage"
     },
     {
-      "file": "src/app/api/users/[id]/route.ts",
       "path": "/api/users/:id",
       "handlers": [
-        { "method": "GET", "auth": "admin", "mediaType": "application/json", "responseClass": "json" },
-        { "method": "PUT", "auth": "admin", "mediaType": "application/json", "responseClass": "json" },
-        { "method": "DELETE", "auth": "admin", "mediaType": "application/json", "responseClass": "json" }
-      ]
+        {
+          "method": "GET",
+          "auth": "admin",
+          "mediaType": "application/json",
+          "responseClass": "json"
+        },
+        {
+          "method": "PUT",
+          "auth": "admin",
+          "mediaType": "application/json",
+          "responseClass": "json"
+        },
+        {
+          "method": "DELETE",
+          "auth": "admin",
+          "mediaType": "application/json",
+          "responseClass": "json"
+        }
+      ],
+      "id": "users/[id]"
     },
     {
-      "file": "src/app/api/users/route.ts",
       "path": "/api/users",
       "handlers": [
-        { "method": "GET", "auth": "admin", "mediaType": "application/json", "responseClass": "json" },
-        { "method": "POST", "auth": "admin", "mediaType": "application/json", "responseClass": "json" }
-      ]
+        {
+          "method": "GET",
+          "auth": "admin",
+          "mediaType": "application/json",
+          "responseClass": "json"
+        },
+        {
+          "method": "POST",
+          "auth": "admin",
+          "mediaType": "application/json",
+          "responseClass": "json"
+        }
+      ],
+      "id": "users"
     },
     {
-      "file": "src/app/api/users/stats/route.ts",
       "path": "/api/users/stats",
       "handlers": [
-        { "method": "GET", "auth": "admin", "mediaType": "application/json", "responseClass": "json" }
-      ]
+        {
+          "method": "GET",
+          "auth": "admin",
+          "mediaType": "application/json",
+          "responseClass": "json"
+        }
+      ],
+      "id": "users/stats"
     },
     {
-      "file": "src/app/api/v1/[alias]/route.ts",
       "path": "/api/v1/:alias",
       "authScheme": "api-token",
       "handlers": [
-        { "method": "GET", "auth": "user", "mediaType": "*/*", "responseClass": "raw", "requestMediaType": "*/*" },
-        { "method": "POST", "auth": "user", "mediaType": "*/*", "responseClass": "raw", "requestMediaType": "*/*" },
-        { "method": "PUT", "auth": "user", "mediaType": "*/*", "responseClass": "raw", "requestMediaType": "*/*" },
-        { "method": "DELETE", "auth": "user", "mediaType": "*/*", "responseClass": "raw", "requestMediaType": "*/*" },
-        { "method": "PATCH", "auth": "user", "mediaType": "*/*", "responseClass": "raw", "requestMediaType": "*/*" }
-      ]
+        {
+          "method": "GET",
+          "auth": "user",
+          "mediaType": "*/*",
+          "responseClass": "raw",
+          "requestMediaType": "*/*"
+        },
+        {
+          "method": "POST",
+          "auth": "user",
+          "mediaType": "*/*",
+          "responseClass": "raw",
+          "requestMediaType": "*/*"
+        },
+        {
+          "method": "PUT",
+          "auth": "user",
+          "mediaType": "*/*",
+          "responseClass": "raw",
+          "requestMediaType": "*/*"
+        },
+        {
+          "method": "DELETE",
+          "auth": "user",
+          "mediaType": "*/*",
+          "responseClass": "raw",
+          "requestMediaType": "*/*"
+        },
+        {
+          "method": "PATCH",
+          "auth": "user",
+          "mediaType": "*/*",
+          "responseClass": "raw",
+          "requestMediaType": "*/*"
+        }
+      ],
+      "id": "v1/[alias]"
     },
     {
-      "file": "src/app/api/v1/mcp/[identifier]/route.ts",
       "path": "/api/v1/mcp/:identifier",
       "authScheme": "api-token",
       "handlers": [
-        { "method": "OPTIONS", "auth": "none", "mediaType": "*/*", "responseClass": "raw" },
-        { "method": "POST", "auth": "user", "mediaType": "application/json; charset=utf-8", "responseClass": "stream", "requestMediaType": "application/json" }
-      ]
+        {
+          "method": "OPTIONS",
+          "auth": "none",
+          "mediaType": "*/*",
+          "responseClass": "raw"
+        },
+        {
+          "method": "POST",
+          "auth": "user",
+          "mediaType": "application/json; charset=utf-8",
+          "responseClass": "stream",
+          "requestMediaType": "application/json"
+        }
+      ],
+      "id": "v1/mcp/[identifier]"
     }
   ]
 }

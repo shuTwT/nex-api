@@ -123,32 +123,6 @@ func TestHandler_loginMeLogout_usesOpaqueSessionCookie(t *testing.T) {
 	}
 }
 
-func TestHandler_rejectsBearerAndExpiresNextAuthCookies(t *testing.T) {
-	// Given
-	service, _, _ := newTestService(t, "cutover", "user")
-	request := httptest.NewRequest(http.MethodGet, "/api/auth/me", nil)
-	request.Header.Set("Authorization", "Bearer legacy-local-storage-token")
-	request.AddCookie(&http.Cookie{Name: "next-auth.session-token", Value: "legacy"})
-	response := httptest.NewRecorder()
-
-	// When
-	NewHandler(service).ServeHTTP(response, request)
-
-	// Then
-	if response.Code != http.StatusUnauthorized {
-		t.Fatalf("bearer-only status = %d", response.Code)
-	}
-	foundExpired := false
-	for _, cookie := range response.Result().Cookies() {
-		if cookie.Name == "next-auth.session-token" && cookie.MaxAge < 0 {
-			foundExpired = true
-		}
-	}
-	if !foundExpired {
-		t.Fatal("stale NextAuth cookie was not expired")
-	}
-}
-
 func TestHandler_requiresCSRFForStateChanges(t *testing.T) {
 	// Given
 	service, _, _ := newTestService(t, "csrf", "user")

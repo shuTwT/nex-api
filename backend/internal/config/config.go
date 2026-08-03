@@ -25,7 +25,7 @@ type envBinding struct {
 
 var envBindings = []envBinding{
 	{key: "environment", names: []string{"APP_ENV", "NODE_ENV"}},
-	{key: "app_url", names: []string{"APP_URL", "NEXT_PUBLIC_APP_URL"}},
+	{key: "app_url", names: []string{"APP_URL"}},
 	{key: "server.host", names: []string{"SERVER_HOST", "HOST"}},
 	{key: "server.port", names: []string{"SERVER_PORT", "PORT"}},
 	{key: "server.read_timeout", names: []string{"SERVER_READ_TIMEOUT", "READ_TIMEOUT"}},
@@ -48,7 +48,6 @@ var envBindings = []envBinding{
 	{key: "redis.tls", names: []string{"REDIS_TLS"}},
 	{key: "auth.session_secret", names: []string{"SESSION_SECRET"}},
 	{key: "auth.jwt_secret", names: []string{"JWT_SECRET"}},
-	{key: "auth.nextauth_secret", names: []string{"NEXTAUTH_SECRET"}},
 	{key: "auth.session_cookie_name", names: []string{"SESSION_COOKIE_NAME"}},
 	{key: "upload.directory", names: []string{"UPLOAD_DIRECTORY", "UPLOAD_DIR"}},
 	{key: "upload.max_bytes", names: []string{"UPLOAD_MAX_BYTES"}},

@@ -29,7 +29,7 @@ export function AuthModal({ open, onOpenChange }: AuthModalProps) {
 
   const handleOAuthLogin = (provider: string) => {
     setIsLoading(provider);
-    // 弹窗无 callbackUrl 参数,回跳当前页面(与迁移前 NextAuth 行为一致)。
+    // 弹窗无 callbackUrl 参数，回跳当前页面。
     const callbackUrl = window.location.pathname + window.location.search;
     window.location.href = `/api/auth/signin/${provider}?callbackUrl=${encodeURIComponent(callbackUrl)}`;
   };

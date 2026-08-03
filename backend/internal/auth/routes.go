@@ -49,7 +49,6 @@ func (h *Handler) registerRoutes() {
 	h.mux.HandleFunc("POST /api/auth/login", h.login)
 	h.mux.HandleFunc("GET /api/auth/me", h.me)
 	h.mux.HandleFunc("POST /api/auth/logout", h.logout)
-	h.mux.HandleFunc("/api/auth/", h.removedNextAuth)
 }
 
 func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -141,12 +140,6 @@ func (h *Handler) logout(w http.ResponseWriter, r *http.Request) {
 	h.service.ClearSessionCookie(w)
 	h.service.ClearCSRFCookie(w)
 	if err := writeJSON(w, http.StatusOK, responseEnvelope{Success: true, Data: map[string]string{"message": "logged out"}}); err != nil {
-		return
-	}
-}
-
-func (h *Handler) removedNextAuth(w http.ResponseWriter, r *http.Request) {
-	if err := writeError(w, http.StatusGone, "nextauth_removed"); err != nil {
 		return
 	}
 }

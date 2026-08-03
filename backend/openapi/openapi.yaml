@@ -25,7 +25,7 @@ paths:
       operationId: advertisements_id_route_get
       summary: "advertisements_id_route_get"
       tags: [admin]
-      x-source-file: "src/app/api/advertisements/[id]/route.ts"
+      x-contract-id: "advertisements/[id]"
       x-auth-role: "admin"
       x-response-class: "json"
       security: [{ sessionCookie: [] }]
@@ -44,7 +44,7 @@ paths:
       operationId: advertisements_id_route_put
       summary: "advertisements_id_route_put"
       tags: [admin]
-      x-source-file: "src/app/api/advertisements/[id]/route.ts"
+      x-contract-id: "advertisements/[id]"
       x-auth-role: "admin"
       x-response-class: "json"
       security: [{ sessionCookie: [] }]
@@ -64,7 +64,7 @@ paths:
       operationId: advertisements_id_route_delete
       summary: "advertisements_id_route_delete"
       tags: [admin]
-      x-source-file: "src/app/api/advertisements/[id]/route.ts"
+      x-contract-id: "advertisements/[id]"
       x-auth-role: "admin"
       x-response-class: "json"
       security: [{ sessionCookie: [] }]
@@ -82,7 +82,7 @@ paths:
       operationId: advertisements_id_toggle_route_put
       summary: "advertisements_id_toggle_route_put"
       tags: [admin]
-      x-source-file: "src/app/api/advertisements/[id]/toggle/route.ts"
+      x-contract-id: "advertisements/[id]/toggle"
       x-auth-role: "admin"
       x-response-class: "json"
       security: [{ sessionCookie: [] }]
@@ -105,7 +105,7 @@ paths:
       operationId: advertisements_by_position_position_route_get
       summary: "advertisements_by_position_position_route_get"
       tags: [public]
-      x-source-file: "src/app/api/advertisements/by-position/[position]/route.ts"
+      x-contract-id: "advertisements/by-position/[position]"
       x-auth-role: "none"
       x-response-class: "json"
       security: []
@@ -125,7 +125,7 @@ paths:
       operationId: advertisements_route_get
       summary: "advertisements_route_get"
       tags: [admin]
-      x-source-file: "src/app/api/advertisements/route.ts"
+      x-contract-id: "advertisements"
       x-auth-role: "admin"
       x-response-class: "json"
       security: [{ sessionCookie: [] }]
@@ -144,7 +144,7 @@ paths:
       operationId: advertisements_route_post
       summary: "advertisements_route_post"
       tags: [admin]
-      x-source-file: "src/app/api/advertisements/route.ts"
+      x-contract-id: "advertisements"
       x-auth-role: "admin"
       x-response-class: "json"
       security: [{ sessionCookie: [] }]
@@ -166,7 +166,7 @@ paths:
       operationId: advertisements_stats_route_get
       summary: "advertisements_stats_route_get"
       tags: [public]
-      x-source-file: "src/app/api/advertisements/stats/route.ts"
+      x-contract-id: "advertisements/stats"
       x-auth-role: "none"
       x-response-class: "json"
       security: []
@@ -188,7 +188,7 @@ paths:
       operationId: apis_id_route_get
       summary: "apis_id_route_get"
       tags: [admin]
-      x-source-file: "src/app/api/apis/[id]/route.ts"
+      x-contract-id: "apis/[id]"
       x-auth-role: "admin"
       x-response-class: "json"
       security: [{ sessionCookie: [] }]
@@ -207,7 +207,7 @@ paths:
       operationId: apis_id_route_put
       summary: "apis_id_route_put"
       tags: [admin]
-      x-source-file: "src/app/api/apis/[id]/route.ts"
+      x-contract-id: "apis/[id]"
       x-auth-role: "admin"
       x-response-class: "json"
       security: [{ sessionCookie: [] }]
@@ -227,7 +227,7 @@ paths:
       operationId: apis_id_route_delete
       summary: "apis_id_route_delete"
       tags: [admin]
-      x-source-file: "src/app/api/apis/[id]/route.ts"
+      x-contract-id: "apis/[id]"
       x-auth-role: "admin"
       x-response-class: "json"
       security: [{ sessionCookie: [] }]
@@ -245,7 +245,7 @@ paths:
       operationId: apis_id_toggle_route_put
       summary: "apis_id_toggle_route_put"
       tags: [admin]
-      x-source-file: "src/app/api/apis/[id]/toggle/route.ts"
+      x-contract-id: "apis/[id]/toggle"
       x-auth-role: "admin"
       x-response-class: "json"
       security: [{ sessionCookie: [] }]
@@ -266,7 +266,7 @@ paths:
       operationId: apis_route_get
       summary: "apis_route_get"
       tags: [admin]
-      x-source-file: "src/app/api/apis/route.ts"
+      x-contract-id: "apis"
       x-auth-role: "admin"
       x-response-class: "json"
       security: [{ sessionCookie: [] }]
@@ -285,7 +285,7 @@ paths:
       operationId: apis_route_post
       summary: "apis_route_post"
       tags: [admin]
-      x-source-file: "src/app/api/apis/route.ts"
+      x-contract-id: "apis"
       x-auth-role: "admin"
       x-response-class: "json"
       security: [{ sessionCookie: [] }]
@@ -307,7 +307,7 @@ paths:
       operationId: apis_stats_route_get
       summary: "apis_stats_route_get"
       tags: [admin]
-      x-source-file: "src/app/api/apis/stats/route.ts"
+      x-contract-id: "apis/stats"
       x-auth-role: "admin"
       x-response-class: "json"
       security: [{ sessionCookie: [] }]
@@ -329,7 +329,7 @@ paths:
       operationId: audit_logs_id_route_put
       summary: "audit_logs_id_route_put"
       tags: [user]
-      x-source-file: "src/app/api/audit-logs/[id]/route.ts"
+      x-contract-id: "audit-logs/[id]"
       x-auth-role: "user"
       x-response-class: "json"
       security: [{ sessionCookie: [] }]
@@ -349,7 +349,7 @@ paths:
       operationId: audit_logs_id_route_delete
       summary: "audit_logs_id_route_delete"
       tags: [user]
-      x-source-file: "src/app/api/audit-logs/[id]/route.ts"
+      x-contract-id: "audit-logs/[id]"
       x-auth-role: "user"
       x-response-class: "json"
       security: [{ sessionCookie: [] }]
@@ -365,7 +365,7 @@ paths:
       operationId: audit_logs_export_route_get
       summary: "audit_logs_export_route_get"
       tags: [user]
-      x-source-file: "src/app/api/audit-logs/export/route.ts"
+      x-contract-id: "audit-logs/export"
       x-auth-role: "user"
       x-response-class: "json"
       security: [{ sessionCookie: [] }]
@@ -385,7 +385,7 @@ paths:
       operationId: audit_logs_route_get
       summary: "audit_logs_route_get"
       tags: [user]
-      x-source-file: "src/app/api/audit-logs/route.ts"
+      x-contract-id: "audit-logs"
       x-auth-role: "user"
       x-response-class: "json"
       security: [{ sessionCookie: [] }]
@@ -404,7 +404,7 @@ paths:
       operationId: audit_logs_route_post
       summary: "audit_logs_route_post"
       tags: [user]
-      x-source-file: "src/app/api/audit-logs/route.ts"
+      x-contract-id: "audit-logs"
       x-auth-role: "user"
       x-response-class: "json"
       security: [{ sessionCookie: [] }]
@@ -426,7 +426,7 @@ paths:
       operationId: audit_logs_stats_route_get
       summary: "audit_logs_stats_route_get"
       tags: [user]
-      x-source-file: "src/app/api/audit-logs/stats/route.ts"
+      x-contract-id: "audit-logs/stats"
       x-auth-role: "user"
       x-response-class: "json"
       security: [{ sessionCookie: [] }]
@@ -441,56 +441,12 @@ paths:
         '403': { $ref: '#/components/responses/Forbidden' }
         '404': { $ref: '#/components/responses/NotFound' }
         '500': { $ref: '#/components/responses/InternalError' }
-  /api/auth/{nextauth}:
-    parameters:
-      - { name: nextauth, in: path, required: true, schema: { type: string } }
-    get:
-      operationId: auth_nextauth_route_get
-      summary: "auth_nextauth_route_get"
-      tags: [auth]
-      x-source-file: "src/app/api/auth/[...nextauth]/route.ts"
-      x-auth-role: "none"
-      x-response-class: "raw"
-      x-client-exclude: true
-      security: []
-      parameters:
-        - { $ref: '#/components/parameters/Page' }
-        - { $ref: '#/components/parameters/Limit' }
-        - { $ref: '#/components/parameters/Search' }
-      responses:
-        '200': { $ref: '#/components/responses/RawSuccess' }
-        '400': { $ref: '#/components/responses/BadRequest' }
-        '401': { $ref: '#/components/responses/Unauthorized' }
-        '403': { $ref: '#/components/responses/Forbidden' }
-        '404': { $ref: '#/components/responses/NotFound' }
-        '500': { $ref: '#/components/responses/InternalError' }
-    post:
-      operationId: auth_nextauth_route_post
-      summary: "auth_nextauth_route_post"
-      tags: [auth]
-      x-source-file: "src/app/api/auth/[...nextauth]/route.ts"
-      x-auth-role: "none"
-      x-response-class: "raw"
-      x-client-exclude: true
-      security: []
-      requestBody:
-        required: true
-        content:
-          "application/json":
-            schema: { $ref: '#/components/schemas/RawPayload' }
-      responses:
-        '200': { $ref: '#/components/responses/RawSuccess' }
-        '400': { $ref: '#/components/responses/BadRequest' }
-        '401': { $ref: '#/components/responses/Unauthorized' }
-        '403': { $ref: '#/components/responses/Forbidden' }
-        '404': { $ref: '#/components/responses/NotFound' }
-        '500': { $ref: '#/components/responses/InternalError' }
   /api/auth/logout:
     post:
       operationId: auth_logout_route_post
       summary: "auth_logout_route_post"
       tags: [auth]
-      x-source-file: "src/app/api/auth/logout/route.ts"
+      x-contract-id: "auth/logout"
       x-auth-role: "none"
       x-response-class: "json"
       security: []
@@ -512,7 +468,7 @@ paths:
       operationId: auth_me_route_get
       summary: "auth_me_route_get"
       tags: [user]
-      x-source-file: "src/app/api/auth/me/route.ts"
+      x-contract-id: "auth/me"
       x-auth-role: "user"
       x-response-class: "json"
       security: [{ sessionCookie: [] }]
@@ -534,7 +490,7 @@ paths:
       operationId: categories_id_route_put
       summary: "categories_id_route_put"
       tags: [admin]
-      x-source-file: "src/app/api/categories/[id]/route.ts"
+      x-contract-id: "categories/[id]"
       x-auth-role: "admin"
       x-response-class: "json"
       security: [{ sessionCookie: [] }]
@@ -554,7 +510,7 @@ paths:
       operationId: categories_id_route_delete
       summary: "categories_id_route_delete"
       tags: [admin]
-      x-source-file: "src/app/api/categories/[id]/route.ts"
+      x-contract-id: "categories/[id]"
       x-auth-role: "admin"
       x-response-class: "json"
       security: [{ sessionCookie: [] }]
@@ -570,7 +526,7 @@ paths:
       operationId: categories_route_get
       summary: "categories_route_get"
       tags: [admin]
-      x-source-file: "src/app/api/categories/route.ts"
+      x-contract-id: "categories"
       x-auth-role: "admin"
       x-response-class: "json"
       security: [{ sessionCookie: [] }]
@@ -589,7 +545,7 @@ paths:
       operationId: categories_route_post
       summary: "categories_route_post"
       tags: [admin]
-      x-source-file: "src/app/api/categories/route.ts"
+      x-contract-id: "categories"
       x-auth-role: "admin"
       x-response-class: "json"
       security: [{ sessionCookie: [] }]
@@ -611,7 +567,7 @@ paths:
       operationId: cron_sync_stats_route_post
       summary: "cron_sync_stats_route_post"
       tags: [admin]
-      x-source-file: "src/app/api/cron/sync-stats/route.ts"
+      x-contract-id: "cron/sync-stats"
       x-auth-role: "none"
       x-response-class: "json"
       x-auth-scheme: "cron-secret"
@@ -634,7 +590,7 @@ paths:
       operationId: dashboard_activity_route_get
       summary: "dashboard_activity_route_get"
       tags: [user]
-      x-source-file: "src/app/api/dashboard/activity/route.ts"
+      x-contract-id: "dashboard/activity"
       x-auth-role: "user"
       x-response-class: "json"
       security: [{ sessionCookie: [] }]
@@ -654,7 +610,7 @@ paths:
       operationId: dashboard_stats_route_get
       summary: "dashboard_stats_route_get"
       tags: [user]
-      x-source-file: "src/app/api/dashboard/stats/route.ts"
+      x-contract-id: "dashboard/stats"
       x-auth-role: "user"
       x-response-class: "json"
       security: [{ sessionCookie: [] }]
@@ -674,7 +630,7 @@ paths:
       operationId: dashboard_top_apis_route_get
       summary: "dashboard_top_apis_route_get"
       tags: [user]
-      x-source-file: "src/app/api/dashboard/top-apis/route.ts"
+      x-contract-id: "dashboard/top-apis"
       x-auth-role: "user"
       x-response-class: "json"
       security: [{ sessionCookie: [] }]
@@ -694,7 +650,7 @@ paths:
       operationId: dashboard_usage_trend_route_get
       summary: "dashboard_usage_trend_route_get"
       tags: [user]
-      x-source-file: "src/app/api/dashboard/usage-trend/route.ts"
+      x-contract-id: "dashboard/usage-trend"
       x-auth-role: "user"
       x-response-class: "json"
       security: [{ sessionCookie: [] }]
@@ -716,7 +672,7 @@ paths:
       operationId: marketplace_apis_id_route_get
       summary: "marketplace_apis_id_route_get"
       tags: [public]
-      x-source-file: "src/app/api/marketplace/apis/[id]/route.ts"
+      x-contract-id: "marketplace/apis/[id]"
       x-auth-role: "none"
       x-response-class: "json"
       security: []
@@ -736,7 +692,7 @@ paths:
       operationId: marketplace_apis_route_get
       summary: "marketplace_apis_route_get"
       tags: [public]
-      x-source-file: "src/app/api/marketplace/apis/route.ts"
+      x-contract-id: "marketplace/apis"
       x-auth-role: "none"
       x-response-class: "json"
       security: []
@@ -756,7 +712,7 @@ paths:
       operationId: marketplace_mcp_services_route_get
       summary: "marketplace_mcp_services_route_get"
       tags: [public]
-      x-source-file: "src/app/api/marketplace/mcp-services/route.ts"
+      x-contract-id: "marketplace/mcp-services"
       x-auth-role: "none"
       x-response-class: "json"
       security: []
@@ -776,7 +732,7 @@ paths:
       operationId: marketplace_mcp_stats_route_get
       summary: "marketplace_mcp_stats_route_get"
       tags: [public]
-      x-source-file: "src/app/api/marketplace/mcp-stats/route.ts"
+      x-contract-id: "marketplace/mcp-stats"
       x-auth-role: "none"
       x-response-class: "json"
       security: []
@@ -796,7 +752,7 @@ paths:
       operationId: marketplace_stats_route_get
       summary: "marketplace_stats_route_get"
       tags: [public]
-      x-source-file: "src/app/api/marketplace/stats/route.ts"
+      x-contract-id: "marketplace/stats"
       x-auth-role: "none"
       x-response-class: "json"
       security: []
@@ -818,7 +774,7 @@ paths:
       operationId: mcp_services_id_route_put
       summary: "mcp_services_id_route_put"
       tags: [admin]
-      x-source-file: "src/app/api/mcp-services/[id]/route.ts"
+      x-contract-id: "mcp-services/[id]"
       x-auth-role: "admin"
       x-response-class: "json"
       security: [{ sessionCookie: [] }]
@@ -838,7 +794,7 @@ paths:
       operationId: mcp_services_id_route_delete
       summary: "mcp_services_id_route_delete"
       tags: [admin]
-      x-source-file: "src/app/api/mcp-services/[id]/route.ts"
+      x-contract-id: "mcp-services/[id]"
       x-auth-role: "admin"
       x-response-class: "json"
       security: [{ sessionCookie: [] }]
@@ -856,7 +812,7 @@ paths:
       operationId: mcp_services_id_toggle_route_put
       summary: "mcp_services_id_toggle_route_put"
       tags: [admin]
-      x-source-file: "src/app/api/mcp-services/[id]/toggle/route.ts"
+      x-contract-id: "mcp-services/[id]/toggle"
       x-auth-role: "admin"
       x-response-class: "json"
       security: [{ sessionCookie: [] }]
@@ -877,7 +833,7 @@ paths:
       operationId: mcp_services_route_get
       summary: "mcp_services_route_get"
       tags: [admin]
-      x-source-file: "src/app/api/mcp-services/route.ts"
+      x-contract-id: "mcp-services"
       x-auth-role: "admin"
       x-response-class: "json"
       security: [{ sessionCookie: [] }]
@@ -896,7 +852,7 @@ paths:
       operationId: mcp_services_route_post
       summary: "mcp_services_route_post"
       tags: [admin]
-      x-source-file: "src/app/api/mcp-services/route.ts"
+      x-contract-id: "mcp-services"
       x-auth-role: "admin"
       x-response-class: "json"
       security: [{ sessionCookie: [] }]
@@ -918,7 +874,7 @@ paths:
       operationId: mcp_services_stats_route_get
       summary: "mcp_services_stats_route_get"
       tags: [admin]
-      x-source-file: "src/app/api/mcp-services/stats/route.ts"
+      x-contract-id: "mcp-services/stats"
       x-auth-role: "admin"
       x-response-class: "json"
       security: [{ sessionCookie: [] }]
@@ -938,7 +894,7 @@ paths:
       operationId: membership_current_route_get
       summary: "membership_current_route_get"
       tags: [user]
-      x-source-file: "src/app/api/membership/current/route.ts"
+      x-contract-id: "membership/current"
       x-auth-role: "user"
       x-response-class: "json"
       security: [{ sessionCookie: [] }]
@@ -958,7 +914,7 @@ paths:
       operationId: membership_plans_route_get
       summary: "membership_plans_route_get"
       tags: [public]
-      x-source-file: "src/app/api/membership/plans/route.ts"
+      x-contract-id: "membership/plans"
       x-auth-role: "none"
       x-response-class: "json"
       security: []
@@ -978,7 +934,7 @@ paths:
       operationId: membership_subscribe_route_post
       summary: "membership_subscribe_route_post"
       tags: [user]
-      x-source-file: "src/app/api/membership/subscribe/route.ts"
+      x-contract-id: "membership/subscribe"
       x-auth-role: "user"
       x-response-class: "json"
       security: [{ sessionCookie: [] }]
@@ -1002,7 +958,7 @@ paths:
       operationId: payment_outtradeno_cancel_route_post
       summary: "payment_outtradeno_cancel_route_post"
       tags: [payment]
-      x-source-file: "src/app/api/payment/[outTradeNo]/cancel/route.ts"
+      x-contract-id: "payment/[outTradeNo]/cancel"
       x-auth-role: "user"
       x-response-class: "json"
       security: [{ sessionCookie: [] }]
@@ -1026,7 +982,7 @@ paths:
       operationId: payment_outtradeno_route_get
       summary: "payment_outtradeno_route_get"
       tags: [payment]
-      x-source-file: "src/app/api/payment/[outTradeNo]/route.ts"
+      x-contract-id: "payment/[outTradeNo]"
       x-auth-role: "user"
       x-response-class: "json"
       security: [{ sessionCookie: [] }]
@@ -1048,7 +1004,7 @@ paths:
       operationId: payment_outtradeno_status_route_get
       summary: "payment_outtradeno_status_route_get"
       tags: [payment]
-      x-source-file: "src/app/api/payment/[outTradeNo]/status/route.ts"
+      x-contract-id: "payment/[outTradeNo]/status"
       x-auth-role: "user"
       x-response-class: "json"
       security: [{ sessionCookie: [] }]
@@ -1068,7 +1024,7 @@ paths:
       operationId: payment_business_recharge_route_post
       summary: "payment_business_recharge_route_post"
       tags: [payment]
-      x-source-file: "src/app/api/payment/business/recharge/route.ts"
+      x-contract-id: "payment/business/recharge"
       x-auth-role: "none"
       x-response-class: "json"
       security: []
@@ -1092,7 +1048,7 @@ paths:
       operationId: payment_business_subscription_route_post
       summary: "payment_business_subscription_route_post"
       tags: [payment]
-      x-source-file: "src/app/api/payment/business/subscription/route.ts"
+      x-contract-id: "payment/business/subscription"
       x-auth-role: "none"
       x-response-class: "json"
       security: []
@@ -1116,7 +1072,7 @@ paths:
       operationId: payment_callback_alipay_route_post
       summary: "payment_callback_alipay_route_post"
       tags: [payment]
-      x-source-file: "src/app/api/payment/callback/alipay/route.ts"
+      x-contract-id: "payment/callback/alipay"
       x-auth-role: "none"
       x-response-class: "raw"
       x-client-exclude: true
@@ -1138,7 +1094,7 @@ paths:
       operationId: payment_callback_mock_route_post
       summary: "payment_callback_mock_route_post"
       tags: [payment]
-      x-source-file: "src/app/api/payment/callback/mock/route.ts"
+      x-contract-id: "payment/callback/mock"
       x-auth-role: "none"
       x-response-class: "json"
       x-client-exclude: true
@@ -1161,7 +1117,7 @@ paths:
       operationId: payment_callback_wechat_route_post
       summary: "payment_callback_wechat_route_post"
       tags: [payment]
-      x-source-file: "src/app/api/payment/callback/wechat/route.ts"
+      x-contract-id: "payment/callback/wechat"
       x-auth-role: "none"
       x-response-class: "raw"
       x-client-exclude: true
@@ -1183,7 +1139,7 @@ paths:
       operationId: payment_methods_route_get
       summary: "payment_methods_route_get"
       tags: [payment]
-      x-source-file: "src/app/api/payment/methods/route.ts"
+      x-contract-id: "payment/methods"
       x-auth-role: "user"
       x-response-class: "json"
       security: [{ sessionCookie: [] }]
@@ -1202,7 +1158,7 @@ paths:
       operationId: payment_methods_route_post
       summary: "payment_methods_route_post"
       tags: [payment]
-      x-source-file: "src/app/api/payment/methods/route.ts"
+      x-contract-id: "payment/methods"
       x-auth-role: "user"
       x-response-class: "json"
       security: [{ sessionCookie: [] }]
@@ -1224,7 +1180,7 @@ paths:
       operationId: payment_settings_route_get
       summary: "payment_settings_route_get"
       tags: [payment]
-      x-source-file: "src/app/api/payment/settings/route.ts"
+      x-contract-id: "payment/settings"
       x-auth-role: "user"
       x-response-class: "json"
       security: [{ sessionCookie: [] }]
@@ -1244,7 +1200,7 @@ paths:
       operationId: payment_user_route_get
       summary: "payment_user_route_get"
       tags: [payment]
-      x-source-file: "src/app/api/payment/user/route.ts"
+      x-contract-id: "payment/user"
       x-auth-role: "user"
       x-response-class: "json"
       security: [{ sessionCookie: [] }]
@@ -1264,7 +1220,7 @@ paths:
       operationId: personal_profile_route_get
       summary: "personal_profile_route_get"
       tags: [user]
-      x-source-file: "src/app/api/personal/profile/route.ts"
+      x-contract-id: "personal/profile"
       x-auth-role: "user"
       x-response-class: "json"
       security: [{ sessionCookie: [] }]
@@ -1284,7 +1240,7 @@ paths:
       operationId: personal_redeem_lookup_route_post
       summary: "personal_redeem_lookup_route_post"
       tags: [user]
-      x-source-file: "src/app/api/personal/redeem/lookup/route.ts"
+      x-contract-id: "personal/redeem/lookup"
       x-auth-role: "user"
       x-response-class: "json"
       security: [{ sessionCookie: [] }]
@@ -1306,7 +1262,7 @@ paths:
       operationId: personal_redeem_route_post
       summary: "personal_redeem_route_post"
       tags: [user]
-      x-source-file: "src/app/api/personal/redeem/route.ts"
+      x-contract-id: "personal/redeem"
       x-auth-role: "user"
       x-response-class: "json"
       security: [{ sessionCookie: [] }]
@@ -1328,7 +1284,7 @@ paths:
       operationId: recharge_route_post
       summary: "recharge_route_post"
       tags: [user]
-      x-source-file: "src/app/api/recharge/route.ts"
+      x-contract-id: "recharge"
       x-auth-role: "user"
       x-response-class: "json"
       security: [{ sessionCookie: [] }]
@@ -1352,7 +1308,7 @@ paths:
       operationId: redemption_codes_id_route_delete
       summary: "redemption_codes_id_route_delete"
       tags: [admin]
-      x-source-file: "src/app/api/redemption-codes/[id]/route.ts"
+      x-contract-id: "redemption-codes/[id]"
       x-auth-role: "admin"
       x-response-class: "json"
       security: [{ sessionCookie: [] }]
@@ -1368,7 +1324,7 @@ paths:
       operationId: redemption_codes_batch_route_delete
       summary: "redemption_codes_batch_route_delete"
       tags: [admin]
-      x-source-file: "src/app/api/redemption-codes/batch/route.ts"
+      x-contract-id: "redemption-codes/batch"
       x-auth-role: "admin"
       x-response-class: "json"
       security: [{ sessionCookie: [] }]
@@ -1383,7 +1339,7 @@ paths:
       operationId: redemption_codes_batch_route_post
       summary: "redemption_codes_batch_route_post"
       tags: [admin]
-      x-source-file: "src/app/api/redemption-codes/batch/route.ts"
+      x-contract-id: "redemption-codes/batch"
       x-auth-role: "admin"
       x-response-class: "json"
       security: [{ sessionCookie: [] }]
@@ -1405,7 +1361,7 @@ paths:
       operationId: redemption_codes_export_route_get
       summary: "redemption_codes_export_route_get"
       tags: [admin]
-      x-source-file: "src/app/api/redemption-codes/export/route.ts"
+      x-contract-id: "redemption-codes/export"
       x-auth-role: "admin"
       x-response-class: "json"
       security: [{ sessionCookie: [] }]
@@ -1425,7 +1381,7 @@ paths:
       operationId: redemption_codes_plans_route_get
       summary: "redemption_codes_plans_route_get"
       tags: [public]
-      x-source-file: "src/app/api/redemption-codes/plans/route.ts"
+      x-contract-id: "redemption-codes/plans"
       x-auth-role: "none"
       x-response-class: "json"
       security: []
@@ -1445,7 +1401,7 @@ paths:
       operationId: redemption_codes_route_get
       summary: "redemption_codes_route_get"
       tags: [admin]
-      x-source-file: "src/app/api/redemption-codes/route.ts"
+      x-contract-id: "redemption-codes"
       x-auth-role: "admin"
       x-response-class: "json"
       security: [{ sessionCookie: [] }]
@@ -1464,7 +1420,7 @@ paths:
       operationId: redemption_codes_route_post
       summary: "redemption_codes_route_post"
       tags: [admin]
-      x-source-file: "src/app/api/redemption-codes/route.ts"
+      x-contract-id: "redemption-codes"
       x-auth-role: "admin"
       x-response-class: "json"
       security: [{ sessionCookie: [] }]
@@ -1488,7 +1444,7 @@ paths:
       operationId: stats_alias_route_get
       summary: "stats_alias_route_get"
       tags: [user]
-      x-source-file: "src/app/api/stats/[alias]/route.ts"
+      x-contract-id: "stats/[alias]"
       x-auth-role: "user"
       x-response-class: "json"
       security: [{ sessionCookie: [] }]
@@ -1508,7 +1464,7 @@ paths:
       operationId: stats_route_get
       summary: "stats_route_get"
       tags: [user]
-      x-source-file: "src/app/api/stats/route.ts"
+      x-contract-id: "stats"
       x-auth-role: "user"
       x-response-class: "json"
       security: [{ sessionCookie: [] }]
@@ -1530,7 +1486,7 @@ paths:
       operationId: subscription_plans_id_route_get
       summary: "subscription_plans_id_route_get"
       tags: [admin]
-      x-source-file: "src/app/api/subscription-plans/[id]/route.ts"
+      x-contract-id: "subscription-plans/[id]"
       x-auth-role: "admin"
       x-response-class: "json"
       security: [{ sessionCookie: [] }]
@@ -1549,7 +1505,7 @@ paths:
       operationId: subscription_plans_id_route_put
       summary: "subscription_plans_id_route_put"
       tags: [admin]
-      x-source-file: "src/app/api/subscription-plans/[id]/route.ts"
+      x-contract-id: "subscription-plans/[id]"
       x-auth-role: "admin"
       x-response-class: "json"
       security: [{ sessionCookie: [] }]
@@ -1569,7 +1525,7 @@ paths:
       operationId: subscription_plans_id_route_delete
       summary: "subscription_plans_id_route_delete"
       tags: [admin]
-      x-source-file: "src/app/api/subscription-plans/[id]/route.ts"
+      x-contract-id: "subscription-plans/[id]"
       x-auth-role: "admin"
       x-response-class: "json"
       security: [{ sessionCookie: [] }]
@@ -1585,7 +1541,7 @@ paths:
       operationId: subscription_plans_route_get
       summary: "subscription_plans_route_get"
       tags: [admin]
-      x-source-file: "src/app/api/subscription-plans/route.ts"
+      x-contract-id: "subscription-plans"
       x-auth-role: "admin"
       x-response-class: "json"
       security: [{ sessionCookie: [] }]
@@ -1604,7 +1560,7 @@ paths:
       operationId: subscription_plans_route_post
       summary: "subscription_plans_route_post"
       tags: [admin]
-      x-source-file: "src/app/api/subscription-plans/route.ts"
+      x-contract-id: "subscription-plans"
       x-auth-role: "admin"
       x-response-class: "json"
       security: [{ sessionCookie: [] }]
@@ -1626,7 +1582,7 @@ paths:
       operationId: system_initialize_route_post
       summary: "system_initialize_route_post"
       tags: [public]
-      x-source-file: "src/app/api/system/initialize/route.ts"
+      x-contract-id: "system/initialize"
       x-auth-role: "none"
       x-response-class: "json"
       security: []
@@ -1648,7 +1604,7 @@ paths:
       operationId: system_initialized_route_get
       summary: "system_initialized_route_get"
       tags: [public]
-      x-source-file: "src/app/api/system/initialized/route.ts"
+      x-contract-id: "system/initialized"
       x-auth-role: "none"
       x-response-class: "json"
       security: []
@@ -1668,7 +1624,7 @@ paths:
       operationId: system_settings_announcement_route_get
       summary: "system_settings_announcement_route_get"
       tags: [public]
-      x-source-file: "src/app/api/system-settings/announcement/route.ts"
+      x-contract-id: "system-settings/announcement"
       x-auth-role: "none"
       x-response-class: "json"
       security: []
@@ -1688,7 +1644,7 @@ paths:
       operationId: system_settings_defaults_route_get
       summary: "system_settings_defaults_route_get"
       tags: [public]
-      x-source-file: "src/app/api/system-settings/defaults/route.ts"
+      x-contract-id: "system-settings/defaults"
       x-auth-role: "none"
       x-response-class: "json"
       security: []
@@ -1708,7 +1664,7 @@ paths:
       operationId: system_settings_route_get
       summary: "system_settings_route_get"
       tags: [admin]
-      x-source-file: "src/app/api/system-settings/route.ts"
+      x-contract-id: "system-settings"
       x-auth-role: "admin"
       x-response-class: "json"
       security: [{ sessionCookie: [] }]
@@ -1727,7 +1683,7 @@ paths:
       operationId: system_settings_route_put
       summary: "system_settings_route_put"
       tags: [admin]
-      x-source-file: "src/app/api/system-settings/route.ts"
+      x-contract-id: "system-settings"
       x-auth-role: "admin"
       x-response-class: "json"
       security: [{ sessionCookie: [] }]
@@ -1750,7 +1706,7 @@ paths:
       operationId: tokens_id_route_put
       summary: "tokens_id_route_put"
       tags: [user]
-      x-source-file: "src/app/api/tokens/[id]/route.ts"
+      x-contract-id: "tokens/[id]"
       x-auth-role: "user"
       x-response-class: "json"
       security: [{ sessionCookie: [] }]
@@ -1770,7 +1726,7 @@ paths:
       operationId: tokens_id_route_delete
       summary: "tokens_id_route_delete"
       tags: [user]
-      x-source-file: "src/app/api/tokens/[id]/route.ts"
+      x-contract-id: "tokens/[id]"
       x-auth-role: "user"
       x-response-class: "json"
       security: [{ sessionCookie: [] }]
@@ -1788,7 +1744,7 @@ paths:
       operationId: tokens_id_toggle_route_put
       summary: "tokens_id_toggle_route_put"
       tags: [user]
-      x-source-file: "src/app/api/tokens/[id]/toggle/route.ts"
+      x-contract-id: "tokens/[id]/toggle"
       x-auth-role: "user"
       x-response-class: "json"
       security: [{ sessionCookie: [] }]
@@ -1809,7 +1765,7 @@ paths:
       operationId: tokens_route_get
       summary: "tokens_route_get"
       tags: [user]
-      x-source-file: "src/app/api/tokens/route.ts"
+      x-contract-id: "tokens"
       x-auth-role: "user"
       x-response-class: "json"
       security: [{ sessionCookie: [] }]
@@ -1828,7 +1784,7 @@ paths:
       operationId: tokens_route_post
       summary: "tokens_route_post"
       tags: [user]
-      x-source-file: "src/app/api/tokens/route.ts"
+      x-contract-id: "tokens"
       x-auth-role: "user"
       x-response-class: "json"
       security: [{ sessionCookie: [] }]
@@ -1850,7 +1806,7 @@ paths:
       operationId: tokens_stats_route_get
       summary: "tokens_stats_route_get"
       tags: [user]
-      x-source-file: "src/app/api/tokens/stats/route.ts"
+      x-contract-id: "tokens/stats"
       x-auth-role: "user"
       x-response-class: "json"
       security: [{ sessionCookie: [] }]
@@ -1872,7 +1828,7 @@ paths:
       operationId: upload_filename_route_get
       summary: "upload_filename_route_get"
       tags: [files]
-      x-source-file: "src/app/api/upload/[filename]/route.ts"
+      x-contract-id: "upload/[filename]"
       x-auth-role: "none"
       x-response-class: "file"
       x-client-exclude: true
@@ -1893,7 +1849,7 @@ paths:
       operationId: upload_route_post
       summary: "upload_route_post"
       tags: [user]
-      x-source-file: "src/app/api/upload/route.ts"
+      x-contract-id: "upload"
       x-auth-role: "user"
       x-response-class: "json"
       security: [{ sessionCookie: [] }]
@@ -1915,7 +1871,7 @@ paths:
       operationId: usage_route_get
       summary: "usage_route_get"
       tags: [user]
-      x-source-file: "src/app/api/usage/route.ts"
+      x-contract-id: "usage"
       x-auth-role: "user"
       x-response-class: "json"
       security: [{ sessionCookie: [] }]
@@ -1937,7 +1893,7 @@ paths:
       operationId: users_id_route_get
       summary: "users_id_route_get"
       tags: [admin]
-      x-source-file: "src/app/api/users/[id]/route.ts"
+      x-contract-id: "users/[id]"
       x-auth-role: "admin"
       x-response-class: "json"
       security: [{ sessionCookie: [] }]
@@ -1956,7 +1912,7 @@ paths:
       operationId: users_id_route_put
       summary: "users_id_route_put"
       tags: [admin]
-      x-source-file: "src/app/api/users/[id]/route.ts"
+      x-contract-id: "users/[id]"
       x-auth-role: "admin"
       x-response-class: "json"
       security: [{ sessionCookie: [] }]
@@ -1976,7 +1932,7 @@ paths:
       operationId: users_id_route_delete
       summary: "users_id_route_delete"
       tags: [admin]
-      x-source-file: "src/app/api/users/[id]/route.ts"
+      x-contract-id: "users/[id]"
       x-auth-role: "admin"
       x-response-class: "json"
       security: [{ sessionCookie: [] }]
@@ -1992,7 +1948,7 @@ paths:
       operationId: users_route_get
       summary: "users_route_get"
       tags: [admin]
-      x-source-file: "src/app/api/users/route.ts"
+      x-contract-id: "users"
       x-auth-role: "admin"
       x-response-class: "json"
       security: [{ sessionCookie: [] }]
@@ -2011,7 +1967,7 @@ paths:
       operationId: users_route_post
       summary: "users_route_post"
       tags: [admin]
-      x-source-file: "src/app/api/users/route.ts"
+      x-contract-id: "users"
       x-auth-role: "admin"
       x-response-class: "json"
       security: [{ sessionCookie: [] }]
@@ -2033,7 +1989,7 @@ paths:
       operationId: users_stats_route_get
       summary: "users_stats_route_get"
       tags: [admin]
-      x-source-file: "src/app/api/users/stats/route.ts"
+      x-contract-id: "users/stats"
       x-auth-role: "admin"
       x-response-class: "json"
       security: [{ sessionCookie: [] }]
@@ -2055,7 +2011,7 @@ paths:
       operationId: v1_alias_route_get
       summary: "v1_alias_route_get"
       tags: [gateway]
-      x-source-file: "src/app/api/v1/[alias]/route.ts"
+      x-contract-id: "v1/[alias]"
       x-auth-role: "user"
       x-response-class: "raw"
       x-auth-scheme: "api-token"
@@ -2076,7 +2032,7 @@ paths:
       operationId: v1_alias_route_post
       summary: "v1_alias_route_post"
       tags: [gateway]
-      x-source-file: "src/app/api/v1/[alias]/route.ts"
+      x-contract-id: "v1/[alias]"
       x-auth-role: "user"
       x-response-class: "raw"
       x-auth-scheme: "api-token"
@@ -2098,7 +2054,7 @@ paths:
       operationId: v1_alias_route_put
       summary: "v1_alias_route_put"
       tags: [gateway]
-      x-source-file: "src/app/api/v1/[alias]/route.ts"
+      x-contract-id: "v1/[alias]"
       x-auth-role: "user"
       x-response-class: "raw"
       x-auth-scheme: "api-token"
@@ -2120,7 +2076,7 @@ paths:
       operationId: v1_alias_route_delete
       summary: "v1_alias_route_delete"
       tags: [gateway]
-      x-source-file: "src/app/api/v1/[alias]/route.ts"
+      x-contract-id: "v1/[alias]"
       x-auth-role: "user"
       x-response-class: "raw"
       x-auth-scheme: "api-token"
@@ -2137,7 +2093,7 @@ paths:
       operationId: v1_alias_route_patch
       summary: "v1_alias_route_patch"
       tags: [gateway]
-      x-source-file: "src/app/api/v1/[alias]/route.ts"
+      x-contract-id: "v1/[alias]"
       x-auth-role: "user"
       x-response-class: "raw"
       x-auth-scheme: "api-token"
@@ -2162,7 +2118,7 @@ paths:
       operationId: v1_mcp_identifier_route_options
       summary: "v1_mcp_identifier_route_options"
       tags: [mcp]
-      x-source-file: "src/app/api/v1/mcp/[identifier]/route.ts"
+      x-contract-id: "v1/mcp/[identifier]"
       x-auth-role: "none"
       x-response-class: "raw"
       x-auth-scheme: "api-token"
@@ -2180,7 +2136,7 @@ paths:
       operationId: v1_mcp_identifier_route_post
       summary: "v1_mcp_identifier_route_post"
       tags: [mcp]
-      x-source-file: "src/app/api/v1/mcp/[identifier]/route.ts"
+      x-contract-id: "v1/mcp/[identifier]"
       x-auth-role: "user"
       x-response-class: "stream"
       x-auth-scheme: "api-token"
@@ -2203,7 +2159,7 @@ components:
     sessionCookie:
       type: apiKey
       in: cookie
-      name: next-auth.session-token
+      name: nex_session
     apiToken:
       type: http
       scheme: bearer

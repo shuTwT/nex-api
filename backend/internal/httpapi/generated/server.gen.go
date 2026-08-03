@@ -88,12 +88,6 @@ type ServerInterface interface {
 	// auth_me_route_get
 	// (GET /api/auth/me)
 	AuthMeRouteGet(w http.ResponseWriter, r *http.Request, params AuthMeRouteGetParams)
-	// auth_nextauth_route_get
-	// (GET /api/auth/{nextauth})
-	AuthNextauthRouteGet(w http.ResponseWriter, r *http.Request, nextauth string, params AuthNextauthRouteGetParams)
-	// auth_nextauth_route_post
-	// (POST /api/auth/{nextauth})
-	AuthNextauthRoutePost(w http.ResponseWriter, r *http.Request, nextauth string)
 	// categories_route_get
 	// (GET /api/categories)
 	CategoriesRouteGet(w http.ResponseWriter, r *http.Request, params CategoriesRouteGetParams)
@@ -478,18 +472,6 @@ func (_ Unimplemented) AuthLogoutRoutePost(w http.ResponseWriter, r *http.Reques
 // auth_me_route_get
 // (GET /api/auth/me)
 func (_ Unimplemented) AuthMeRouteGet(w http.ResponseWriter, r *http.Request, params AuthMeRouteGetParams) {
-	w.WriteHeader(http.StatusNotImplemented)
-}
-
-// auth_nextauth_route_get
-// (GET /api/auth/{nextauth})
-func (_ Unimplemented) AuthNextauthRouteGet(w http.ResponseWriter, r *http.Request, nextauth string, params AuthNextauthRouteGetParams) {
-	w.WriteHeader(http.StatusNotImplemented)
-}
-
-// auth_nextauth_route_post
-// (POST /api/auth/{nextauth})
-func (_ Unimplemented) AuthNextauthRoutePost(w http.ResponseWriter, r *http.Request, nextauth string) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -2039,100 +2021,6 @@ func (siw *ServerInterfaceWrapper) AuthMeRouteGet(w http.ResponseWriter, r *http
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.AuthMeRouteGet(w, r, params)
-	}))
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r)
-}
-
-// AuthNextauthRouteGet operation middleware
-func (siw *ServerInterfaceWrapper) AuthNextauthRouteGet(w http.ResponseWriter, r *http.Request) {
-
-	var err error
-	_ = err
-
-	// ------------- Path parameter "nextauth" -------------
-	var nextauth string
-
-	err = runtime.BindStyledParameterWithOptions("simple", "nextauth", chi.URLParam(r, "nextauth"), &nextauth, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: ""})
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "nextauth", Err: err})
-		return
-	}
-
-	// Parameter object where we will unmarshal all parameters from the context
-	var params AuthNextauthRouteGetParams
-
-	// ------------- Optional query parameter "page" -------------
-
-	err = runtime.BindQueryParameterWithOptions("form", true, false, "page", r.URL.Query(), &params.Page, runtime.BindQueryParameterOptions{Type: "integer", Format: ""})
-	if err != nil {
-		var requiredError *runtime.RequiredParameterError
-		if errors.As(err, &requiredError) {
-			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "page"})
-		} else {
-			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "page", Err: err})
-		}
-		return
-	}
-
-	// ------------- Optional query parameter "limit" -------------
-
-	err = runtime.BindQueryParameterWithOptions("form", true, false, "limit", r.URL.Query(), &params.Limit, runtime.BindQueryParameterOptions{Type: "integer", Format: ""})
-	if err != nil {
-		var requiredError *runtime.RequiredParameterError
-		if errors.As(err, &requiredError) {
-			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "limit"})
-		} else {
-			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "limit", Err: err})
-		}
-		return
-	}
-
-	// ------------- Optional query parameter "search" -------------
-
-	err = runtime.BindQueryParameterWithOptions("form", true, false, "search", r.URL.Query(), &params.Search, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
-	if err != nil {
-		var requiredError *runtime.RequiredParameterError
-		if errors.As(err, &requiredError) {
-			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "search"})
-		} else {
-			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "search", Err: err})
-		}
-		return
-	}
-
-	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.AuthNextauthRouteGet(w, r, nextauth, params)
-	}))
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r)
-}
-
-// AuthNextauthRoutePost operation middleware
-func (siw *ServerInterfaceWrapper) AuthNextauthRoutePost(w http.ResponseWriter, r *http.Request) {
-
-	var err error
-	_ = err
-
-	// ------------- Path parameter "nextauth" -------------
-	var nextauth string
-
-	err = runtime.BindStyledParameterWithOptions("simple", "nextauth", chi.URLParam(r, "nextauth"), &nextauth, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: ""})
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "nextauth", Err: err})
-		return
-	}
-
-	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.AuthNextauthRoutePost(w, r, nextauth)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -5910,12 +5798,6 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 		r.Get(options.BaseURL+"/api/auth/me", wrapper.AuthMeRouteGet)
 	})
 	r.Group(func(r chi.Router) {
-		r.Get(options.BaseURL+"/api/auth/{nextauth}", wrapper.AuthNextauthRouteGet)
-	})
-	r.Group(func(r chi.Router) {
-		r.Post(options.BaseURL+"/api/auth/{nextauth}", wrapper.AuthNextauthRoutePost)
-	})
-	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/api/categories", wrapper.CategoriesRouteGet)
 	})
 	r.Group(func(r chi.Router) {
@@ -8401,248 +8283,6 @@ func (response AuthMeRouteGet404JSONResponse) VisitAuthMeRouteGetResponse(w http
 type AuthMeRouteGet500JSONResponse struct{ InternalErrorJSONResponse }
 
 func (response AuthMeRouteGet500JSONResponse) VisitAuthMeRouteGetResponse(w http.ResponseWriter) error {
-
-	var buf bytes.Buffer
-	if err := json.NewEncoder(&buf).Encode(response); err != nil {
-		return err
-	}
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(500)
-	_, err := buf.WriteTo(w)
-	return err
-}
-
-type AuthNextauthRouteGetRequestObject struct {
-	Nextauth string `json:"nextauth"`
-	Params   AuthNextauthRouteGetParams
-}
-
-type AuthNextauthRouteGetResponseObject interface {
-	VisitAuthNextauthRouteGetResponse(w http.ResponseWriter) error
-}
-
-type AuthNextauthRouteGet200AsteriskResponse struct{ RawSuccessAsteriskResponse }
-
-func (response AuthNextauthRouteGet200AsteriskResponse) VisitAuthNextauthRouteGetResponse(w http.ResponseWriter) error {
-
-	w.Header().Set("Content-Type", response.ContentType)
-	if response.ContentLength != 0 {
-		w.Header().Set("Content-Length", fmt.Sprint(response.ContentLength))
-	}
-	w.WriteHeader(200)
-
-	if closer, ok := response.Body.(io.ReadCloser); ok {
-		defer closer.Close()
-	}
-	_, err := io.Copy(w, response.Body)
-	return err
-}
-
-type AuthNextauthRouteGet200JSONResponse struct{ RawSuccessJSONResponse }
-
-func (response AuthNextauthRouteGet200JSONResponse) VisitAuthNextauthRouteGetResponse(w http.ResponseWriter) error {
-
-	var buf bytes.Buffer
-	if err := json.NewEncoder(&buf).Encode(response); err != nil {
-		return err
-	}
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(200)
-	_, err := buf.WriteTo(w)
-	return err
-}
-
-type AuthNextauthRouteGet200TextResponse RawSuccessTextResponse
-
-func (response AuthNextauthRouteGet200TextResponse) VisitAuthNextauthRouteGetResponse(w http.ResponseWriter) error {
-
-	w.Header().Set("Content-Type", "text/plain")
-	w.WriteHeader(200)
-
-	_, err := w.Write([]byte(response))
-	return err
-}
-
-type AuthNextauthRouteGet400JSONResponse struct{ BadRequestJSONResponse }
-
-func (response AuthNextauthRouteGet400JSONResponse) VisitAuthNextauthRouteGetResponse(w http.ResponseWriter) error {
-
-	var buf bytes.Buffer
-	if err := json.NewEncoder(&buf).Encode(response); err != nil {
-		return err
-	}
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(400)
-	_, err := buf.WriteTo(w)
-	return err
-}
-
-type AuthNextauthRouteGet401JSONResponse struct{ UnauthorizedJSONResponse }
-
-func (response AuthNextauthRouteGet401JSONResponse) VisitAuthNextauthRouteGetResponse(w http.ResponseWriter) error {
-
-	var buf bytes.Buffer
-	if err := json.NewEncoder(&buf).Encode(response); err != nil {
-		return err
-	}
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(401)
-	_, err := buf.WriteTo(w)
-	return err
-}
-
-type AuthNextauthRouteGet403JSONResponse struct{ ForbiddenJSONResponse }
-
-func (response AuthNextauthRouteGet403JSONResponse) VisitAuthNextauthRouteGetResponse(w http.ResponseWriter) error {
-
-	var buf bytes.Buffer
-	if err := json.NewEncoder(&buf).Encode(response); err != nil {
-		return err
-	}
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(403)
-	_, err := buf.WriteTo(w)
-	return err
-}
-
-type AuthNextauthRouteGet404JSONResponse struct{ NotFoundJSONResponse }
-
-func (response AuthNextauthRouteGet404JSONResponse) VisitAuthNextauthRouteGetResponse(w http.ResponseWriter) error {
-
-	var buf bytes.Buffer
-	if err := json.NewEncoder(&buf).Encode(response); err != nil {
-		return err
-	}
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(404)
-	_, err := buf.WriteTo(w)
-	return err
-}
-
-type AuthNextauthRouteGet500JSONResponse struct{ InternalErrorJSONResponse }
-
-func (response AuthNextauthRouteGet500JSONResponse) VisitAuthNextauthRouteGetResponse(w http.ResponseWriter) error {
-
-	var buf bytes.Buffer
-	if err := json.NewEncoder(&buf).Encode(response); err != nil {
-		return err
-	}
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(500)
-	_, err := buf.WriteTo(w)
-	return err
-}
-
-type AuthNextauthRoutePostRequestObject struct {
-	Nextauth string `json:"nextauth"`
-	Body     *AuthNextauthRoutePostJSONRequestBody
-}
-
-type AuthNextauthRoutePostResponseObject interface {
-	VisitAuthNextauthRoutePostResponse(w http.ResponseWriter) error
-}
-
-type AuthNextauthRoutePost200AsteriskResponse struct{ RawSuccessAsteriskResponse }
-
-func (response AuthNextauthRoutePost200AsteriskResponse) VisitAuthNextauthRoutePostResponse(w http.ResponseWriter) error {
-
-	w.Header().Set("Content-Type", response.ContentType)
-	if response.ContentLength != 0 {
-		w.Header().Set("Content-Length", fmt.Sprint(response.ContentLength))
-	}
-	w.WriteHeader(200)
-
-	if closer, ok := response.Body.(io.ReadCloser); ok {
-		defer closer.Close()
-	}
-	_, err := io.Copy(w, response.Body)
-	return err
-}
-
-type AuthNextauthRoutePost200JSONResponse struct{ RawSuccessJSONResponse }
-
-func (response AuthNextauthRoutePost200JSONResponse) VisitAuthNextauthRoutePostResponse(w http.ResponseWriter) error {
-
-	var buf bytes.Buffer
-	if err := json.NewEncoder(&buf).Encode(response); err != nil {
-		return err
-	}
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(200)
-	_, err := buf.WriteTo(w)
-	return err
-}
-
-type AuthNextauthRoutePost200TextResponse RawSuccessTextResponse
-
-func (response AuthNextauthRoutePost200TextResponse) VisitAuthNextauthRoutePostResponse(w http.ResponseWriter) error {
-
-	w.Header().Set("Content-Type", "text/plain")
-	w.WriteHeader(200)
-
-	_, err := w.Write([]byte(response))
-	return err
-}
-
-type AuthNextauthRoutePost400JSONResponse struct{ BadRequestJSONResponse }
-
-func (response AuthNextauthRoutePost400JSONResponse) VisitAuthNextauthRoutePostResponse(w http.ResponseWriter) error {
-
-	var buf bytes.Buffer
-	if err := json.NewEncoder(&buf).Encode(response); err != nil {
-		return err
-	}
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(400)
-	_, err := buf.WriteTo(w)
-	return err
-}
-
-type AuthNextauthRoutePost401JSONResponse struct{ UnauthorizedJSONResponse }
-
-func (response AuthNextauthRoutePost401JSONResponse) VisitAuthNextauthRoutePostResponse(w http.ResponseWriter) error {
-
-	var buf bytes.Buffer
-	if err := json.NewEncoder(&buf).Encode(response); err != nil {
-		return err
-	}
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(401)
-	_, err := buf.WriteTo(w)
-	return err
-}
-
-type AuthNextauthRoutePost403JSONResponse struct{ ForbiddenJSONResponse }
-
-func (response AuthNextauthRoutePost403JSONResponse) VisitAuthNextauthRoutePostResponse(w http.ResponseWriter) error {
-
-	var buf bytes.Buffer
-	if err := json.NewEncoder(&buf).Encode(response); err != nil {
-		return err
-	}
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(403)
-	_, err := buf.WriteTo(w)
-	return err
-}
-
-type AuthNextauthRoutePost404JSONResponse struct{ NotFoundJSONResponse }
-
-func (response AuthNextauthRoutePost404JSONResponse) VisitAuthNextauthRoutePostResponse(w http.ResponseWriter) error {
-
-	var buf bytes.Buffer
-	if err := json.NewEncoder(&buf).Encode(response); err != nil {
-		return err
-	}
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(404)
-	_, err := buf.WriteTo(w)
-	return err
-}
-
-type AuthNextauthRoutePost500JSONResponse struct{ InternalErrorJSONResponse }
-
-func (response AuthNextauthRoutePost500JSONResponse) VisitAuthNextauthRoutePostResponse(w http.ResponseWriter) error {
 
 	var buf bytes.Buffer
 	if err := json.NewEncoder(&buf).Encode(response); err != nil {
@@ -16760,12 +16400,6 @@ type StrictServerInterface interface {
 	// auth_me_route_get
 	// (GET /api/auth/me)
 	AuthMeRouteGet(ctx context.Context, request AuthMeRouteGetRequestObject) (AuthMeRouteGetResponseObject, error)
-	// auth_nextauth_route_get
-	// (GET /api/auth/{nextauth})
-	AuthNextauthRouteGet(ctx context.Context, request AuthNextauthRouteGetRequestObject) (AuthNextauthRouteGetResponseObject, error)
-	// auth_nextauth_route_post
-	// (POST /api/auth/{nextauth})
-	AuthNextauthRoutePost(ctx context.Context, request AuthNextauthRoutePostRequestObject) (AuthNextauthRoutePostResponseObject, error)
 	// categories_route_get
 	// (GET /api/categories)
 	CategoriesRouteGet(ctx context.Context, request CategoriesRouteGetRequestObject) (CategoriesRouteGetResponseObject, error)
@@ -17689,66 +17323,6 @@ func (sh *strictHandler) AuthMeRouteGet(w http.ResponseWriter, r *http.Request, 
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(AuthMeRouteGetResponseObject); ok {
 		if err := validResponse.VisitAuthMeRouteGetResponse(w); err != nil {
-			sh.options.ResponseErrorHandlerFunc(w, r, err)
-		}
-	} else if response != nil {
-		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
-	}
-}
-
-// AuthNextauthRouteGet operation middleware
-func (sh *strictHandler) AuthNextauthRouteGet(w http.ResponseWriter, r *http.Request, nextauth string, params AuthNextauthRouteGetParams) {
-	var request AuthNextauthRouteGetRequestObject
-
-	request.Nextauth = nextauth
-	request.Params = params
-
-	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
-		return sh.ssi.AuthNextauthRouteGet(ctx, request.(AuthNextauthRouteGetRequestObject))
-	}
-	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "AuthNextauthRouteGet")
-	}
-
-	response, err := handler(r.Context(), w, r, request)
-
-	if err != nil {
-		sh.options.ResponseErrorHandlerFunc(w, r, err)
-	} else if validResponse, ok := response.(AuthNextauthRouteGetResponseObject); ok {
-		if err := validResponse.VisitAuthNextauthRouteGetResponse(w); err != nil {
-			sh.options.ResponseErrorHandlerFunc(w, r, err)
-		}
-	} else if response != nil {
-		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
-	}
-}
-
-// AuthNextauthRoutePost operation middleware
-func (sh *strictHandler) AuthNextauthRoutePost(w http.ResponseWriter, r *http.Request, nextauth string) {
-	var request AuthNextauthRoutePostRequestObject
-
-	request.Nextauth = nextauth
-
-	var body AuthNextauthRoutePostJSONRequestBody
-	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
-		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
-		return
-	}
-	request.Body = &body
-
-	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
-		return sh.ssi.AuthNextauthRoutePost(ctx, request.(AuthNextauthRoutePostRequestObject))
-	}
-	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "AuthNextauthRoutePost")
-	}
-
-	response, err := handler(r.Context(), w, r, request)
-
-	if err != nil {
-		sh.options.ResponseErrorHandlerFunc(w, r, err)
-	} else if validResponse, ok := response.(AuthNextauthRoutePostResponseObject); ok {
-		if err := validResponse.VisitAuthNextauthRoutePostResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {

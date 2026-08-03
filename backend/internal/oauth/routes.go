@@ -40,9 +40,6 @@ func New(client *ent.Client, sessions SessionIssuer, cfg config.Config) (*Handle
 	}
 	secret := append([]byte(nil), cfg.Auth.SessionSecret...)
 	if len(secret) == 0 {
-		secret = append(secret, cfg.Auth.NextAuthSecret...)
-	}
-	if len(secret) == 0 {
 		secret = make([]byte, 32)
 		if _, err := rand.Read(secret); err != nil {
 			return nil, fmt.Errorf("oauth: generate state secret: %w", err)

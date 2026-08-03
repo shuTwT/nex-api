@@ -47,7 +47,7 @@ func TestManifestRoutesMapToOpenAPI(t *testing.T) {
 		path := normalizeManifestPath(route.Path)
 		pathItem, exists := document.Paths[path]
 		if !exists {
-			t.Errorf("manifest route %s is missing from OpenAPI paths", route.File)
+			t.Errorf("manifest route %s is missing from OpenAPI paths", route.ID)
 			continue
 		}
 		routeMapped := true
@@ -55,7 +55,7 @@ func TestManifestRoutesMapToOpenAPI(t *testing.T) {
 			operation := pathItem.operation(handler.Method)
 			if operation == nil || operation.OperationID == "" {
 				routeMapped = false
-				t.Errorf("manifest handler %s %s has no operationId", handler.Method, route.File)
+				t.Errorf("manifest handler %s %s has no operationId", handler.Method, route.ID)
 			}
 		}
 		if routeMapped {

@@ -16,7 +16,7 @@ type manifest struct {
 }
 
 type route struct {
-	File       string    `json:"file"`
+	ID         string    `json:"id"`
 	Path       string    `json:"path"`
 	AuthScheme string    `json:"authScheme,omitempty"`
 	Handlers   []handler `json:"handlers"`
@@ -85,13 +85,13 @@ func writePath(document *strings.Builder, currentRoute route) {
 
 func writeOperation(document *strings.Builder, currentRoute route, currentHandler handler) {
 	method := strings.ToLower(currentHandler.Method)
-	operationID := operationID(currentRoute.File, currentHandler.Method)
+	operationID := operationID(currentRoute.ID, currentHandler.Method)
 	tag := routeTag(currentRoute.Path, currentRoute.AuthScheme, currentHandler.Auth, currentHandler.ResponseClass)
 	fmt.Fprintf(document, "    %s:\n", method)
 	fmt.Fprintf(document, "      operationId: %s\n", operationID)
 	fmt.Fprintf(document, "      summary: %s\n", strconv.Quote(operationID))
 	fmt.Fprintf(document, "      tags: [%s]\n", tag)
-	fmt.Fprintf(document, "      x-source-file: %s\n", strconv.Quote(currentRoute.File))
+	fmt.Fprintf(document, "      x-contract-id: %s\n", strconv.Quote(currentRoute.ID))
 	fmt.Fprintf(document, "      x-auth-role: %s\n", strconv.Quote(currentHandler.Auth))
 	fmt.Fprintf(document, "      x-response-class: %s\n", strconv.Quote(currentHandler.ResponseClass))
 	if currentRoute.AuthScheme != "" {
@@ -214,7 +214,7 @@ func writeComponents(document *strings.Builder) {
     sessionCookie:
       type: apiKey
       in: cookie
-      name: next-auth.session-token
+      name: nex_session
     apiToken:
       type: http
       scheme: bearer
@@ -458,10 +458,8 @@ func pathParameters(path string) []string {
 	return parameters
 }
 
-func operationID(file, method string) string {
-	name := strings.TrimPrefix(file, "src/app/api/")
-	name = strings.TrimSuffix(name, "/route.ts")
-	parts := strings.Split(name, "/")
+func operationID(routeID, method string) string {
+	parts := strings.Split(routeID, "/")
 	for index, part := range parts {
 		part = strings.TrimPrefix(strings.TrimSuffix(part, "]"), "[")
 		part = strings.TrimPrefix(part, "...")

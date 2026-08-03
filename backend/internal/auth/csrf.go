@@ -15,23 +15,6 @@ const CSRFHeaderName = "X-CSRF-Token"
 
 var ErrCSRF = errors.New("auth: csrf validation failed")
 
-var legacyCookieNames = []string{
-	"next-auth.session-token",
-	"__Secure-next-auth.session-token",
-	"next-auth.callback-url",
-	"__Secure-next-auth.callback-url",
-	"next-auth.csrf-token",
-	"__Host-next-auth.csrf-token",
-	"next-auth.pkce.code_verifier",
-	"__Secure-next-auth.pkce.code_verifier",
-	"next-auth.state",
-	"__Secure-next-auth.state",
-	"next-auth.nonce",
-	"__Secure-next-auth.nonce",
-	"authjs.session-token",
-	"__Secure-authjs.session-token",
-}
-
 func (s *Service) EnsureCSRFToken(w http.ResponseWriter, r *http.Request) (string, error) {
 	if r == nil {
 		return "", errors.New("auth: csrf request is nil")
@@ -126,21 +109,6 @@ func (s *Service) tokenFromRequest(r *http.Request) string {
 		return ""
 	}
 	return cookie.Value
-}
-
-func ClearLegacyCookies(w http.ResponseWriter) {
-	for _, name := range legacyCookieNames {
-		http.SetCookie(w, &http.Cookie{
-			Name:     name,
-			Value:    "",
-			Path:     "/",
-			Expires:  time.Unix(1, 0).UTC(),
-			MaxAge:   -1,
-			HttpOnly: true,
-			Secure:   true,
-			SameSite: http.SameSiteStrictMode,
-		})
-	}
 }
 
 func maxAgeSeconds(duration time.Duration) int {

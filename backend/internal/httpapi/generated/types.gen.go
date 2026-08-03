@@ -299,13 +299,6 @@ type AuthMeRouteGetParams struct {
 	Search *Search `form:"search,omitempty" json:"search,omitempty"`
 }
 
-// AuthNextauthRouteGetParams defines parameters for AuthNextauthRouteGet.
-type AuthNextauthRouteGetParams struct {
-	Page   *Page   `form:"page,omitempty" json:"page,omitempty"`
-	Limit  *Limit  `form:"limit,omitempty" json:"limit,omitempty"`
-	Search *Search `form:"search,omitempty" json:"search,omitempty"`
-}
-
 // CategoriesRouteGetParams defines parameters for CategoriesRouteGet.
 type CategoriesRouteGetParams struct {
 	Page   *Page   `form:"page,omitempty" json:"page,omitempty"`
@@ -605,9 +598,6 @@ type AuditLogsIdRoutePutJSONRequestBody = JsonRequest
 
 // AuthLogoutRoutePostJSONRequestBody defines body for AuthLogoutRoutePost for application/json ContentType.
 type AuthLogoutRoutePostJSONRequestBody = JsonRequest
-
-// AuthNextauthRoutePostJSONRequestBody defines body for AuthNextauthRoutePost for application/json ContentType.
-type AuthNextauthRoutePostJSONRequestBody = RawPayload
 
 // CategoriesRoutePostJSONRequestBody defines body for CategoriesRoutePost for application/json ContentType.
 type CategoriesRoutePostJSONRequestBody = JsonRequest

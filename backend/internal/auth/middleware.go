@@ -29,14 +29,12 @@ func UserFromContext(ctx context.Context) (User, bool) {
 
 func (s *Service) CutoverMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		ClearLegacyCookies(w)
 		next.ServeHTTP(w, r)
 	})
 }
 
 func (s *Service) AuthMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		ClearLegacyCookies(w)
 		authContext, err := s.Authenticate(r.Context(), s.tokenFromRequest(r))
 		if err != nil {
 			if writeErr := writeError(w, http.StatusUnauthorized, "unauthorized"); writeErr != nil {

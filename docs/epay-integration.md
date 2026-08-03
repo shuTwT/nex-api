@@ -251,34 +251,27 @@ function verifyNotifySign(params: Record<string, string>, key: string): boolean 
 }
 ```
 
-### 3.5 通知处理示例（Next.js Route Handler）
+### 3.5 通知处理示例（Go HTTP Handler）
 
-```typescript
-// app/api/payment/notify/route.ts
-import { NextRequest, NextResponse } from "next/server";
-import crypto from "crypto";
+```go
+func notify(w http.ResponseWriter, r *http.Request) {
+    if err := r.ParseForm(); err != nil {
+        http.Error(w, "invalid request", http.StatusBadRequest)
+        return
+    }
+    params := r.Form
 
-export async function POST(request: NextRequest) {
-  const body = await request.text();
-  const params = Object.fromEntries(new URLSearchParams(body));
-  const key = process.env.EPAY_KEY!;
-
-  // 1. 验证签名
-  if (!verifyNotifySign(params, key)) {
-    return new NextResponse("sign error", { status: 400 });
-  }
-
-  // 2. 检查支付状态
-  if (params.trade_status !== "TRADE_SUCCESS") {
-    return new NextResponse("success");
-  }
-
-  // 3. 处理业务逻辑
-  const { out_trade_no, money, trade_no } = params;
-  // await updateOrder(out_trade_no, { status: "paid", tradeNo: trade_no });
-
-  // 4. 返回 success 表示已收到通知
-  return new NextResponse("success");
+    // 1. 根据文档使用商户密钥验证签名。
+    if !verifyNotifySign(params, merchantKey) {
+        http.Error(w, "sign error", http.StatusBadRequest)
+        return
+    }
+    // 2. 仅在支付成功时执行业务处理，且必须按订单号保证幂等。
+    if params.Get("trade_status") == "TRADE_SUCCESS" {
+        // updateOrder(params.Get("out_trade_no"), params.Get("trade_no"))
+    }
+    // 3. 返回 success 表示已接收通知。
+    _, _ = w.Write([]byte("success"))
 }
 ```
 

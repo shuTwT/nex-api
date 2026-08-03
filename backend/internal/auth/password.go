@@ -19,7 +19,7 @@ const (
 )
 
 // HashPassword emits the exact salt:derived-key encoding used by the legacy
-// Next.js credentials provider.
+// Legacy scrypt password encoding accepted during account migration.
 func HashPassword(password string) (string, error) {
 	saltBytes := make([]byte, legacySaltBytes)
 	if _, err := rand.Read(saltBytes); err != nil {

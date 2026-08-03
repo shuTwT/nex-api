@@ -15,7 +15,7 @@ type clientManifest struct {
 }
 
 type clientRoute struct {
-	File     string          `json:"file"`
+	ID       string          `json:"id"`
 	Path     string          `json:"path"`
 	Handlers []clientHandler `json:"handlers"`
 }
@@ -203,7 +203,7 @@ export class NexApiClient {
 }
 
 func writeClientMethod(output *strings.Builder, currentRoute clientRoute, currentHandler clientHandler) {
-	name := operationID(currentRoute.File, currentHandler.Method)
+	name := operationID(currentRoute.ID, currentHandler.Method)
 	pathParams := pathParameters(currentRoute.Path)
 	method := strings.ToUpper(currentHandler.Method)
 	input := "query?: Readonly<Record<string, string | number | boolean>>"
@@ -226,10 +226,8 @@ func writeClientMethod(output *strings.Builder, currentRoute clientRoute, curren
 	output.WriteString("  }\n\n")
 }
 
-func operationID(file, method string) string {
-	name := strings.TrimPrefix(file, "src/app/api/")
-	name = strings.TrimSuffix(name, "/route.ts")
-	parts := strings.Split(name, "/")
+func operationID(routeID, method string) string {
+	parts := strings.Split(routeID, "/")
 	for index, part := range parts {
 		part = strings.TrimPrefix(strings.TrimSuffix(part, "]"), "[")
 		part = strings.TrimPrefix(part, "...")
