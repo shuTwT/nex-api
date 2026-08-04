@@ -12,6 +12,7 @@ import {
   Megaphone,
   Ticket,
   Plug,
+  CalendarClock,
   type LucideIcon,
 } from "lucide-react";
 
@@ -75,6 +76,12 @@ export const consoleMenuItems: MenuItem[] = [
     name: "广告位管理",
     icon: Megaphone,
     href: "/console/advertisements",
+    adminOnly: true,
+  },
+  {
+    name: "定时任务管理",
+    icon: CalendarClock,
+    href: "/console/scheduled-jobs",
     adminOnly: true,
   },
   {

@@ -1,8 +1,8 @@
-import { useState, useEffect, type FormEvent } from "react";
-import { Alert, Card, Checkbox, Input, InputNumber, Select } from "antd";
+import { useState } from "react";
+import { Alert, Card, Checkbox, Form, Input, InputNumber, Select } from "antd";
 import { api } from "@/lib/api";
-import { AdPositionOptions } from "@/types/ad-position";
 import { ImageUpload } from "@/components/image-upload";
+import { AdPositionOptions } from "@/types/ad-position";
 
 interface Advertisement {
   id?: string;
@@ -14,65 +14,47 @@ interface Advertisement {
   position: string;
   isActive: boolean;
 }
-
 interface AdvertisementFormProps {
   advertisement?: Advertisement;
   onSuccess: () => void;
   formId: string;
 }
+interface AdvertisementFormValues {
+  title: string;
+  image: string;
+  imageWidth?: number;
+  imageHeight?: number;
+  link: string;
+  position: string;
+  isActive: boolean;
+}
 
-export function AdvertisementForm({ advertisement, onSuccess, formId }: AdvertisementFormProps) {
+export function AdvertisementForm({
+  advertisement,
+  onSuccess,
+  formId,
+}: AdvertisementFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [position, setPosition] = useState(advertisement?.position || "");
-  const [imageUrl, setImageUrl] = useState(advertisement?.image || "");
-
-  useEffect(() => {
-    if (advertisement) {
-      setPosition(advertisement.position || "");
-      setImageUrl(advertisement.image || "");
-    } else {
-      setPosition("");
-      setImageUrl("");
-    }
-    setError(null);
-  }, [advertisement]);
-
   const isEdit = !!advertisement;
 
-  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault();
+  async function handleFinish(values: AdvertisementFormValues) {
     setIsLoading(true);
     setError(null);
-
-    const formData = new FormData(e.currentTarget);
-    if (position) formData.set("position", position);
-
-    if (!imageUrl) {
-      setError("请上传广告图片");
-      setIsLoading(false);
-      return;
-    }
-
-    formData.set("image", imageUrl);
-    const body: Record<string, string | number | boolean> = {};
-    formData.forEach((value, key) => {
-      body[key] = String(value);
-    });
-    body.imageWidth = Number(formData.get("imageWidth") ?? 0);
-    body.imageHeight = Number(formData.get("imageHeight") ?? 0);
-    body.isActive = formData.has("isActive");
-
+    const body = {
+      ...values,
+      imageWidth: values.imageWidth ?? 0,
+      imageHeight: values.imageHeight ?? 0,
+    };
     try {
       const result = isEdit
-        ? await api.advertisements_id_route_put({ id: body.id ?? advertisement?.id ?? "" }, body)
+        ? await api.advertisements_id_route_put(
+            { id: advertisement!.id! },
+            body,
+          )
         : await api.advertisements_route_post(body);
-
-      if (result.success) {
-        onSuccess();
-      } else {
-        setError(result.error || "操作失败");
-      }
+      if (result.success) onSuccess();
+      else setError(result.error || "操作失败");
     } catch {
       setError("操作失败，请重试");
     } finally {
@@ -81,98 +63,73 @@ export function AdvertisementForm({ advertisement, onSuccess, formId }: Advertis
   }
 
   return (
-    <form id={formId} onSubmit={handleSubmit} className="space-y-4">
-      {advertisement?.id && (
-        <input type="hidden" name="id" value={advertisement.id} />
-      )}
-
+    <Form<AdvertisementFormValues>
+      id={formId}
+      layout="vertical"
+      onFinish={handleFinish}
+      disabled={isLoading}
+      initialValues={{
+        title: advertisement?.title ?? "",
+        image: advertisement?.image ?? "",
+        imageWidth: advertisement?.imageWidth ?? 0,
+        imageHeight: advertisement?.imageHeight ?? 0,
+        link: advertisement?.link ?? "",
+        position: advertisement?.position ?? "",
+        isActive: advertisement?.isActive ?? true,
+      }}
+    >
       <Card styles={{ body: { padding: 24 } }}>
-        <div className="space-y-4">
-          <div className="space-y-2">
-            <label htmlFor="title">广告标题 *</label>
-            <Input
-              id="title"
-              name="title"
-              defaultValue={advertisement?.title || ""}
-              required
-              placeholder="输入广告标题"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <label>广告图片 *</label>
-            <ImageUpload
-              value={imageUrl}
-              onChange={setImageUrl}
-              disabled={isLoading}
-            />
-          </div>
-
-          <div className="grid gap-4 md:grid-cols-2">
-            <div className="space-y-2">
-              <label htmlFor="imageWidth">图片宽度 (px)</label>
-              <InputNumber
-                id="imageWidth"
-                name="imageWidth"
-                type="number"
-                min={0}
-                defaultValue={advertisement?.imageWidth || 0}
-                placeholder="例如：1200"
-                className="w-full"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <label htmlFor="imageHeight">图片高度 (px)</label>
-              <InputNumber
-                id="imageHeight"
-                name="imageHeight"
-                type="number"
-                min={0}
-                defaultValue={advertisement?.imageHeight || 0}
-                placeholder="例如：300"
-                className="w-full"
-              />
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <label htmlFor="link">跳转链接 *</label>
-            <Input
-              id="link"
-              name="link"
-              type="url"
-              defaultValue={advertisement?.link || ""}
-              required
-              placeholder="https://example.com"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <label htmlFor="position">广告位 *</label>
-            <Select
-              id="position"
-              value={position}
-              onChange={setPosition}
-              disabled={isLoading}
-              placeholder="选择广告位"
-              options={AdPositionOptions.map((option) => ({ value: option.value, label: option.label }))}
-            />
-          </div>
-
-          <div className="flex items-center gap-2">
-            <Checkbox
-              id="isActive"
-              name="isActive"
-              defaultChecked={advertisement?.isActive ?? true}
-            >启用</Checkbox>
-          </div>
-
-          {error && (
-            <Alert type="error" message={error} showIcon />
-          )}
+        <Form.Item
+          name="title"
+          label="广告标题"
+          rules={[{ required: true, message: "请输入广告标题" }]}
+        >
+          <Input placeholder="输入广告标题" />
+        </Form.Item>
+        <Form.Item
+          name="image"
+          label="广告图片"
+          valuePropName="value"
+          rules={[{ required: true, message: "请上传广告图片" }]}
+        >
+          <ImageUpload disabled={isLoading} />
+        </Form.Item>
+        <div className="grid gap-4 md:grid-cols-2">
+          <Form.Item name="imageWidth" label="图片宽度 (px)">
+            <InputNumber min={0} className="w-full" placeholder="例如：1200" />
+          </Form.Item>
+          <Form.Item name="imageHeight" label="图片高度 (px)">
+            <InputNumber min={0} className="w-full" placeholder="例如：300" />
+          </Form.Item>
         </div>
+        <Form.Item
+          name="link"
+          label="跳转链接"
+          rules={[
+            { required: true, message: "请输入跳转链接" },
+            { type: "url", message: "请输入有效的 URL" },
+          ]}
+        >
+          <Input placeholder="https://example.com" />
+        </Form.Item>
+        <Form.Item
+          name="position"
+          label="广告位"
+          rules={[{ required: true, message: "请选择广告位" }]}
+        >
+          <Select
+            placeholder="选择广告位"
+            options={AdPositionOptions.map((option) => ({
+              value: option.value,
+              label: option.label,
+            }))}
+          />
+        </Form.Item>
+        <Form.Item name="isActive" valuePropName="checked">
+          <Checkbox>启用</Checkbox>
+        </Form.Item>
+        {error && <Alert type="error" message={error} showIcon />}
       </Card>
-    </form>
+    </Form>
   );
 }

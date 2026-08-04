@@ -1,5 +1,5 @@
-import { useState, type FormEvent } from "react";
-import { Checkbox, Input, Select, Tabs } from "antd";
+import { useState } from "react";
+import { Alert, Checkbox, Form, Input, InputNumber, Select, Tabs } from "antd";
 import { MonacoEditor } from "@/components/monaco-editor";
 import { api } from "@/lib/api";
 
@@ -10,10 +10,7 @@ interface Api {
   description: string;
   endpoint: string;
   method: string;
-  category: {
-    id: string;
-    name: string;
-  };
+  category: { id: string; name: string };
   pricing: string;
   documentation: string | null;
   preScript: string | null;
@@ -31,20 +28,29 @@ interface ApiFormProps {
   formId?: string;
 }
 
-export function ApiForm({ apiItem, categories, onClose, onSuccess, formId }: ApiFormProps) {
+interface ApiFormValues {
+  name: string;
+  alias: string;
+  description: string;
+  endpoint: string;
+  method: string;
+  categoryId: string;
+  pricing?: number;
+  documentation?: string;
+  isActive: boolean;
+  preScript?: string;
+  postScript?: string;
+}
+
+export function ApiForm({
+  apiItem,
+  categories,
+  onClose,
+  onSuccess,
+  formId,
+}: ApiFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [name, setName] = useState(apiItem?.name || "");
-  const [alias, setAlias] = useState(apiItem?.alias || "");
-  const [description, setDescription] = useState(apiItem?.description || "");
-  const [endpoint, setEndpoint] = useState(apiItem?.endpoint || "");
-  const [method, setMethod] = useState(apiItem?.method || "GET");
-  const [categoryId, setCategoryId] = useState(apiItem?.category?.id || "");
-  const [pricing, setPricing] = useState(apiItem?.pricing || "0");
-  const [documentation, setDocumentation] = useState(apiItem?.documentation || "");
-  const [isActive, setIsActive] = useState(apiItem?.isActive !== false);
-  const [preScript, setPreScript] = useState(apiItem?.preScript || "");
-  const [postScript, setPostScript] = useState(apiItem?.postScript || "");
   const isEdit = !!apiItem;
 
   const preScriptPlaceholder = `function preScript(headers, query, body) {
@@ -58,23 +64,16 @@ export function ApiForm({ apiItem, categories, onClose, onSuccess, formId }: Api
 }
   `;
 
-  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault();
+  async function handleFinish(values: ApiFormValues) {
     setIsLoading(true);
     setError(null);
 
     const body = {
-      name,
-      alias,
-      description,
-      endpoint,
-      method,
-      categoryId,
-      pricing: parseInt(pricing, 10) || 0,
-      documentation,
-      isActive,
-      preScript,
-      postScript,
+      ...values,
+      pricing: Number(values.pricing ?? 0),
+      documentation: values.documentation ?? "",
+      preScript: values.preScript ?? "",
+      postScript: values.postScript ?? "",
     };
 
     try {
@@ -96,166 +95,190 @@ export function ApiForm({ apiItem, categories, onClose, onSuccess, formId }: Api
   }
 
   return (
-    <form id={formId} onSubmit={handleSubmit} className="space-y-4">
-      <Tabs defaultActiveKey="basic" items={[
-        { key: "basic", label: "基本信息", children: <div className="space-y-4 mt-4">
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-slate-700">
-              接口名称 <span className="text-red-500">*</span>
-            </label>
-            <Input
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="如：GPT-4 对话 API"
-              required
-              disabled={isLoading}
-            />
-          </div>
-
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-slate-700">
-              别名 <span className="text-red-500">*</span>
-            </label>
-            <Input
-              value={alias}
-              onChange={(e) => setAlias(e.target.value)}
-              placeholder="如：gpt4Chat（用于 API 路径，只能包含字母和数字，且不能以数字开头）"
-              required
-              disabled={isLoading}
-              pattern="^[a-zA-Z][a-zA-Z0-9]*$"
-            />
-            <p className="text-xs text-slate-500">
-              别名用于生成 API 访问路径，如 /api/gpt4Chat
-            </p>
-          </div>
-
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-slate-700">
-              接口描述 <span className="text-red-500">*</span>
-            </label>
-            <Input
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              placeholder="如：OpenAI GPT-4 模型对话接口"
-              required
-              disabled={isLoading}
-            />
-          </div>
-
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-slate-700">
-              上游端点 <span className="text-red-500">*</span>
-            </label>
-            <Input
-              value={endpoint}
-              onChange={(e) => setEndpoint(e.target.value)}
-              placeholder="如：https://api.openai.com/v1/chat/completions"
-              required
-              disabled={isLoading}
-            />
-            <p className="text-xs text-slate-500">
-              上游渠道的实际接口地址
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-slate-700">
-                请求方法 <span className="text-red-500">*</span>
-              </label>
-              <Select value={method} onChange={setMethod} disabled={isLoading} className="w-full" options={["GET", "POST", "PUT", "DELETE", "PATCH"].map(value => ({ value, label: value }))} />
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-slate-700">
-                分类 <span className="text-red-500">*</span>
-              </label>
-              <Select value={categoryId} onChange={setCategoryId} disabled={isLoading} placeholder="选择分类" className="w-full" options={categories.map(cat => ({ value: cat.id, label: cat.name }))} />
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-slate-700">定价（积分/次）</label>
-            <Input
-              value={pricing}
-              onChange={(e) => setPricing(e.target.value)}
-              type="number"
-              min="0"
-              step="1"
-              placeholder="如：10（表示每次调用消耗10积分）"
-              disabled={isLoading}
-            />
-            <p className="text-xs text-slate-500">
-              每次调用此接口消耗的积分数量，0 表示免费
-            </p>
-          </div>
-
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-slate-700">文档链接</label>
-            <Input
-              value={documentation}
-              onChange={(e) => setDocumentation(e.target.value)}
-              type="url"
-              placeholder="https://docs.example.com/api"
-              disabled={isLoading}
-            />
-          </div>
-
-          <div className="flex items-center gap-2">
-            <Checkbox
-              name="isActive"
-              id="isActive"
-              checked={isActive}
-              onChange={(e) => setIsActive(e.target.checked)}
-              disabled={isLoading}
-            >立即启用此接口</Checkbox>
-          </div>
-        </div> },
-        { key: "pre-script", label: "预处理脚本", children: <div className="space-y-4 mt-4">
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-slate-700">预处理脚本</label>
-            <p className="text-xs text-slate-500 mb-2">
-              在转发请求到上游前执行的脚本，可用于修改请求头、查询参数和请求体
-            </p>
-            <p className="text-xs text-slate-500 mb-2">
-              可用变量：<code className="bg-slate-100 px-1 py-0.5 rounded">headers</code>（请求头）、<code className="bg-slate-100 px-1 py-0.5 rounded">query</code>（查询参数）、<code className="bg-slate-100 px-1 py-0.5 rounded">body</code>（请求体）
-            </p>
-            <MonacoEditor
-              value={preScript}
-              onChange={setPreScript}
-              language="javascript"
-              height="400px"
-              placeholder={preScriptPlaceholder}
-              disabled={isLoading}
-            />
-          </div>
-        </div> },
-        { key: "post-script", label: "后处理脚本", children: <div className="space-y-4 mt-4">
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-slate-700">后处理脚本</label>
-            <p className="text-xs text-slate-500 mb-2">
-              在收到上游响应后执行的脚本，可用于转换响应格式或过滤敏感数据
-            </p>
-            <p className="text-xs text-slate-500 mb-2">
-              可用变量：<code className="bg-slate-100 px-1 py-0.5 rounded">responseBody</code>（响应体）、<code className="bg-slate-100 px-1 py-0.5 rounded">responseHeaders</code>（响应头）
-            </p>
-            <MonacoEditor
-              value={postScript}
-              onChange={setPostScript}
-              language="javascript"
-              height="400px"
-              placeholder={postScriptPlaceholder}
-              disabled={isLoading}
-            />
-          </div>
-        </div> },
-      ]} />
-
-      {error && (
-        <div className="mt-3 bg-red-50 border border-red-200 rounded-md">
-          <p className="text-sm text-red-700">{error}</p>
-        </div>
-      )}
-    </form>
+    <Form<ApiFormValues>
+      id={formId}
+      layout="vertical"
+      onFinish={handleFinish}
+      disabled={isLoading}
+      className="space-y-4"
+      initialValues={{
+        name: apiItem?.name ?? "",
+        alias: apiItem?.alias ?? "",
+        description: apiItem?.description ?? "",
+        endpoint: apiItem?.endpoint ?? "",
+        method: apiItem?.method ?? "GET",
+        categoryId: apiItem?.category?.id ?? "",
+        pricing: Number(apiItem?.pricing ?? 0),
+        documentation: apiItem?.documentation ?? "",
+        isActive: apiItem?.isActive !== false,
+        preScript: apiItem?.preScript ?? "",
+        postScript: apiItem?.postScript ?? "",
+      }}
+    >
+      <Tabs
+        defaultActiveKey="basic"
+        items={[
+          {
+            key: "basic",
+            label: "基本信息",
+            children: (
+              <div className="mt-4 space-y-4">
+                <Form.Item
+                  name="name"
+                  label="接口名称"
+                  rules={[{ required: true, message: "请输入接口名称" }]}
+                >
+                  <Input placeholder="如：GPT-4 对话 API" />
+                </Form.Item>
+                <Form.Item
+                  name="alias"
+                  label="别名"
+                  extra="别名用于生成 API 访问路径，如 /api/gpt4Chat"
+                  rules={[
+                    { required: true, message: "请输入别名" },
+                    {
+                      pattern: /^[a-zA-Z][a-zA-Z0-9]*$/,
+                      message: "只能包含字母和数字，且不能以数字开头",
+                    },
+                  ]}
+                >
+                  <Input placeholder="如：gpt4Chat" />
+                </Form.Item>
+                <Form.Item
+                  name="description"
+                  label="接口描述"
+                  rules={[{ required: true, message: "请输入接口描述" }]}
+                >
+                  <Input placeholder="如：OpenAI GPT-4 模型对话接口" />
+                </Form.Item>
+                <Form.Item
+                  name="endpoint"
+                  label="上游端点"
+                  extra="上游渠道的实际接口地址"
+                  rules={[
+                    { required: true, message: "请输入上游端点" },
+                    { type: "url", message: "请输入有效的 URL" },
+                  ]}
+                >
+                  <Input placeholder="如：https://api.openai.com/v1/chat/completions" />
+                </Form.Item>
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                  <Form.Item
+                    name="method"
+                    label="请求方法"
+                    rules={[{ required: true, message: "请选择请求方法" }]}
+                  >
+                    <Select
+                      options={["GET", "POST", "PUT", "DELETE", "PATCH"].map(
+                        (value) => ({ value, label: value }),
+                      )}
+                    />
+                  </Form.Item>
+                  <Form.Item
+                    name="categoryId"
+                    label="分类"
+                    rules={[{ required: true, message: "请选择分类" }]}
+                  >
+                    <Select
+                      placeholder="选择分类"
+                      options={categories.map((category) => ({
+                        value: category.id,
+                        label: category.name,
+                      }))}
+                    />
+                  </Form.Item>
+                </div>
+                <Form.Item
+                  name="pricing"
+                  label="定价（积分/次）"
+                  extra="每次调用此接口消耗的积分数量，0 表示免费"
+                >
+                  <InputNumber
+                    min={0}
+                    step={1}
+                    className="w-full"
+                    placeholder="如：10"
+                  />
+                </Form.Item>
+                <Form.Item
+                  name="documentation"
+                  label="文档链接"
+                  rules={[{ type: "url", message: "请输入有效的 URL" }]}
+                >
+                  <Input placeholder="https://docs.example.com/api" />
+                </Form.Item>
+                <Form.Item name="isActive" valuePropName="checked">
+                  <Checkbox>立即启用此接口</Checkbox>
+                </Form.Item>
+              </div>
+            ),
+          },
+          {
+            key: "pre-script",
+            label: "预处理脚本",
+            children: (
+              <div className="mt-4 space-y-4">
+                <Form.Item
+                  name="preScript"
+                  label="预处理脚本"
+                  extra={
+                    <>
+                      <span>
+                        在转发请求到上游前执行的脚本，可用于修改请求头、查询参数和请求体。
+                      </span>
+                      <br />
+                      <span>
+                        可用变量：<code>headers</code>（请求头）、
+                        <code>query</code>（查询参数）、<code>body</code>
+                        （请求体）
+                      </span>
+                    </>
+                  }
+                >
+                  <MonacoEditor
+                    language="javascript"
+                    height="400px"
+                    placeholder={preScriptPlaceholder}
+                    disabled={isLoading}
+                  />
+                </Form.Item>
+              </div>
+            ),
+          },
+          {
+            key: "post-script",
+            label: "后处理脚本",
+            children: (
+              <div className="mt-4 space-y-4">
+                <Form.Item
+                  name="postScript"
+                  label="后处理脚本"
+                  extra={
+                    <>
+                      <span>
+                        在收到上游响应后执行的脚本，可用于转换响应格式或过滤敏感数据。
+                      </span>
+                      <br />
+                      <span>
+                        可用变量：<code>responseBody</code>（响应体）、
+                        <code>responseHeaders</code>（响应头）
+                      </span>
+                    </>
+                  }
+                >
+                  <MonacoEditor
+                    language="javascript"
+                    height="400px"
+                    placeholder={postScriptPlaceholder}
+                    disabled={isLoading}
+                  />
+                </Form.Item>
+              </div>
+            ),
+          },
+        ]}
+      />
+      {error && <Alert type="error" message={error} showIcon />}
+    </Form>
   );
 }

@@ -20,7 +20,7 @@ type SubscriptionPlan struct {
 	// Title holds the value of the "title" field.
 	Title string `json:"title,omitempty"`
 	// Price holds the value of the "price" field.
-	Price float64 `json:"price,omitempty"`
+	Price float64 `json:"price"`
 	// TotalCredits holds the value of the "totalCredits" field.
 	TotalCredits int `json:"totalCredits,omitempty"`
 	// SortOrder holds the value of the "sortOrder" field.

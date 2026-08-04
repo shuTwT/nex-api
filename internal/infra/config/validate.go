@@ -127,9 +127,6 @@ func validate(cfg Config, requireExternal bool, externalValue func(string) bool)
 		if strings.TrimSpace(cfg.Cron.Secret) == "" {
 			add("cron.secret", "is required when cron is enabled")
 		}
-		if cfg.Cron.Interval <= 0 {
-			add("cron.interval", "must be positive when cron is enabled")
-		}
 	}
 	if !validLogLevel(cfg.Log.Level) {
 		add("log.level", "must be debug, info, warn, or error")

@@ -59,7 +59,6 @@ var envBindings = []envBinding{
 	{key: "upload.create_on_start", names: []string{"UPLOAD_CREATE_ON_START"}},
 	{key: "cron.enabled", names: []string{"CRON_ENABLED"}},
 	{key: "cron.secret", names: []string{"CRON_SECRET"}},
-	{key: "cron.interval", names: []string{"CRON_INTERVAL"}},
 	{key: "log.level", names: []string{"LOG_LEVEL"}},
 	{key: "log.format", names: []string{"LOG_FORMAT"}},
 	{key: "log.add_source", names: []string{"LOG_ADD_SOURCE"}},
@@ -191,7 +190,6 @@ func newViper() (*viper.Viper, error) {
 	v.SetDefault("upload.allowed_types", []string{"image/jpeg", "image/png", "image/gif", "image/webp"})
 	v.SetDefault("upload.create_on_start", true)
 	v.SetDefault("cron.enabled", false)
-	v.SetDefault("cron.interval", 5*time.Minute)
 	v.SetDefault("log.level", "info")
 	v.SetDefault("log.format", "text")
 	v.SetDefault("log.add_source", false)

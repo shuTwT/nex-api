@@ -116,7 +116,7 @@ export default function PersonalPage() {
     },
   ];
   return (
-    <div className="space-y-6">
+    <div className="flex flex-col gap-6">
       <div>
         <Typography.Title level={2}>个人中心</Typography.Title>
         <Typography.Text type="secondary">

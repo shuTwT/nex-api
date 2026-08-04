@@ -93,8 +93,8 @@ export default function UsersPage() {
         <Space wrap>
           <Input prefix={<Search size={16} />} placeholder="搜索用户名或邮箱..." value={searchInput} onChange={(event) => setSearchInput(event.target.value)} style={{ width: 280 }} onPressEnter={handleQuery} />
           <Select value={roleFilter} onChange={setRoleFilter} style={{ width: 130 }} options={[{ value: "all", label: "全部" }, { value: "admin", label: "管理员" }, { value: "user", label: "普通用户" }]} />
-          <Button type="primary" onClick={handleQuery}>查询</Button>
-          <Button onClick={handleReset}>重置</Button>
+          <Button type="primary" size="medium" onClick={handleQuery}>查询</Button>
+          <Button size="medium" onClick={handleReset}>重置</Button>
         </Space>
       </Card>
 

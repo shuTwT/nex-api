@@ -106,7 +106,7 @@ export default function MembershipPage() {
   };
   if (isLoading) return <ConsolePageLoading />;
   return (
-    <div className="space-y-6">
+    <div className="flex flex-col gap-6">
       <div>
         <Typography.Title level={2}>我的会员</Typography.Title>
         <Typography.Text type="secondary">管理您的订阅计划</Typography.Text>

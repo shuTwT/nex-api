@@ -41,7 +41,6 @@ func TestBuildServicesClosesCreatedClientsWhenLaterConstructionFails(t *testing.
 			Directory:    filepath.Join(t.TempDir(), "uploads"),
 			AllowedTypes: []string{"*/*"},
 		},
-		Cron:   config.Cron{Interval: time.Minute},
 		Server: config.Server{ShutdownTimeout: time.Second},
 	}
 

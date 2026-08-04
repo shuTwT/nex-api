@@ -1,6 +1,15 @@
 import { useEffect, useState, useCallback } from "react";
 import { Badge, Button, Card, Input, Modal, Select, Typography } from "antd";
-import { Plus, Edit, Trash2, CreditCard, Calendar, DollarSign, ArrowUpDown, Search } from "lucide-react";
+import {
+  Plus,
+  Edit,
+  Trash2,
+  CreditCard,
+  Calendar,
+  DollarSign,
+  ArrowUpDown,
+  Search,
+} from "lucide-react";
 import { api, responseData } from "@/lib/api";
 import { SubscriptionPlanForm } from "@/components/subscription-plan-form";
 import { DeleteSubscriptionPlanDialog } from "@/components/delete-subscription-plan-dialog";
@@ -40,7 +49,9 @@ export default function SubscriptionPlansPage() {
   const [pageSize, setPageSize] = useState(10);
   const [showForm, setShowForm] = useState(false);
   const [editingPlan, setEditingPlan] = useState<SubscriptionPlan | null>(null);
-  const [deletingPlan, setDeletingPlan] = useState<SubscriptionPlan | null>(null);
+  const [deletingPlan, setDeletingPlan] = useState<SubscriptionPlan | null>(
+    null,
+  );
 
   const loadPlans = useCallback(async () => {
     setIsLoading(true);
@@ -138,7 +149,7 @@ export default function SubscriptionPlansPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="flex flex-col gap-6">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-slate-900">订阅计划管理</h1>
@@ -150,43 +161,55 @@ export default function SubscriptionPlansPage() {
         </Button>
       </div>
 
-      <Card>
-        <div className="p-4">
-          <div className="flex flex-wrap items-end gap-3">
-            <div className="relative flex-1 min-w-[200px]">
-              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-              <Input
-                placeholder="搜索计划名称..."
-                value={searchInput}
-                onChange={(e) => setSearchInput(e.target.value)}
-                className="pl-10"
+      <div>
+        <Card>
+          <div className="p-4">
+            <div className="flex flex-wrap items-end gap-3">
+              <div className="relative flex-1 min-w-[200px]">
+                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                <Input
+                  placeholder="搜索计划名称..."
+                  value={searchInput}
+                  onChange={(e) => setSearchInput(e.target.value)}
+                  className="pl-10"
+                />
+              </div>
+              <Select
+                value={statusFilter}
+                onChange={setStatusFilter}
+                className="w-[120px]"
+                options={[
+                  { value: "all", label: "全部" },
+                  { value: "true", label: "启用" },
+                  { value: "false", label: "禁用" },
+                ]}
               />
+              <Button
+                size="medium"
+                onClick={handleQuery}
+                className="cursor-pointer"
+              >
+                查询
+              </Button>
+              <Button
+                type="default"
+                size="medium"
+                onClick={handleReset}
+                className="cursor-pointer"
+              >
+                重置
+              </Button>
             </div>
-            <Select value={statusFilter} onChange={setStatusFilter} className="w-[120px]" options={[{ value: "all", label: "全部" }, { value: "true", label: "启用" }, { value: "false", label: "禁用" }]} />
-            <Button
-              size="small"
-              onClick={handleQuery}
-              className="cursor-pointer"
-            >
-              查询
-            </Button>
-            <Button
-              type="default"
-              size="small"
-              onClick={handleReset}
-              className="cursor-pointer"
-            >
-              重置
-            </Button>
           </div>
-        </div>
-      </Card>
-
+        </Card>
+      </div>
       {plans.length === 0 ? (
         <Card>
           <div className="py-12 text-center">
             <CreditCard className="h-12 w-12 text-slate-300 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-slate-900 mb-2">暂无订阅计划</h3>
+            <h3 className="text-lg font-medium text-slate-900 mb-2">
+              暂无订阅计划
+            </h3>
             <p className="text-slate-500 mb-4">创建第一个订阅计划开始使用</p>
             <Button onClick={handleAddPlan} className="gap-2 cursor-pointer">
               <Plus className="h-4 w-4" />
@@ -202,37 +225,54 @@ export default function SubscriptionPlansPage() {
                 <div className="p-4">
                   <div className="flex items-start justify-between">
                     <Typography.Title level={5}>{plan.title}</Typography.Title>
-                    <Badge className={plan.isActive ? "bg-green-50 text-green-700 border-green-200" : "bg-gray-50 text-gray-700 border-gray-200"}>
+                    <Badge
+                      className={
+                        plan.isActive
+                          ? "bg-green-50 text-green-700 border-green-200"
+                          : "bg-gray-50 text-gray-700 border-gray-200"
+                      }
+                    >
                       {plan.isActive ? "启用" : "禁用"}
                     </Badge>
                   </div>
                 </div>
-                <div className="space-y-4 px-4 pb-4">
+                <div className="flex flex-col gap-4 px-4 pb-4">
                   <div className="flex items-baseline gap-1">
                     <DollarSign className="h-5 w-5 text-slate-400" />
-                    <span className="text-3xl font-bold text-slate-900">{plan.price}</span>
+                    <span className="text-3xl font-bold text-slate-900">
+                      {plan.price}
+                    </span>
                   </div>
 
-                  <div className="space-y-2">
+                  <div className="flex flex-col gap-2">
                     <div className="flex items-center gap-2 text-sm">
                       <CreditCard className="h-4 w-4 text-slate-400" />
                       <span className="text-slate-600">总额度: </span>
-                      <span className="font-medium text-slate-900">{plan.totalCredits.toLocaleString()}</span>
+                      <span className="font-medium text-slate-900">
+                        {plan.totalCredits.toLocaleString()}
+                      </span>
                     </div>
                     <div className="flex items-center gap-2 text-sm">
                       <Calendar className="h-4 w-4 text-slate-400" />
                       <span className="text-slate-600">有效期: </span>
-                      <span className="font-medium text-slate-900">{plan.validityDuration} {validityUnitLabels[plan.validityUnit]}</span>
+                      <span className="font-medium text-slate-900">
+                        {plan.validityDuration}{" "}
+                        {validityUnitLabels[plan.validityUnit]}
+                      </span>
                     </div>
                     <div className="flex items-center gap-2 text-sm">
                       <ArrowUpDown className="h-4 w-4 text-slate-400" />
                       <span className="text-slate-600">重置周期: </span>
-                      <span className="font-medium text-slate-900">{creditResetCycleLabels[plan.creditResetCycle]}</span>
+                      <span className="font-medium text-slate-900">
+                        {creditResetCycleLabels[plan.creditResetCycle]}
+                      </span>
                     </div>
                     <div className="flex items-center gap-2 text-sm">
                       <span className="h-4 w-4 text-slate-400" />
                       <span className="text-slate-600">排序: </span>
-                      <span className="font-medium text-slate-900">{plan.sortOrder}</span>
+                      <span className="font-medium text-slate-900">
+                        {plan.sortOrder}
+                      </span>
                     </div>
                   </div>
 
@@ -272,14 +312,32 @@ export default function SubscriptionPlansPage() {
         </>
       )}
 
-      <Modal open={showForm} title={editingPlan ? "编辑订阅计划" : "添加订阅计划"} onCancel={() => setShowForm(false)} destroyOnHidden footer={[<Button key="cancel" onClick={() => setShowForm(false)}>取消</Button>, <Button key="submit" type="primary" htmlType="submit" form="subscription-plan-form">{editingPlan ? "保存" : "创建"}</Button>]}>
-          <div className="flex-1 overflow-y-auto">
-            <SubscriptionPlanForm
-              plan={editingPlan || undefined}
-              onSuccess={handleFormSuccess}
-              formId="subscription-plan-form"
-            />
-          </div>
+      <Modal
+        open={showForm}
+        title={editingPlan ? "编辑订阅计划" : "添加订阅计划"}
+        onCancel={() => setShowForm(false)}
+        destroyOnHidden
+        footer={[
+          <Button key="cancel" onClick={() => setShowForm(false)}>
+            取消
+          </Button>,
+          <Button
+            key="submit"
+            type="primary"
+            htmlType="submit"
+            form="subscription-plan-form"
+          >
+            {editingPlan ? "保存" : "创建"}
+          </Button>,
+        ]}
+      >
+        <div className="flex-1 overflow-y-auto">
+          <SubscriptionPlanForm
+            plan={editingPlan || undefined}
+            onSuccess={handleFormSuccess}
+            formId="subscription-plan-form"
+          />
+        </div>
       </Modal>
 
       {deletingPlan && (

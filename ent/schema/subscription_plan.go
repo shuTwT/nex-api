@@ -24,7 +24,7 @@ func (SubscriptionPlan) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("id").StorageKey("id").DefaultFunc(NewCUID),
 		field.String("title").StorageKey("title"),
-		field.Float("price").StorageKey("price"),
+		field.Float("price").StorageKey("price").StructTag(`json:"price"`),
 		field.Int("totalCredits").StorageKey("totalCredits"),
 		field.Int("sortOrder").StorageKey("sortOrder").Default(0),
 		field.Int("validityDuration").StorageKey("validityDuration"),

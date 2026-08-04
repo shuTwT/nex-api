@@ -4,8 +4,8 @@ import Editor from "@monaco-editor/react";
 import { useEffect } from "react";
 
 interface MonacoEditorProps {
-  value: string;
-  onChange: (value: string) => void;
+  value?: string;
+  onChange?: (value: string) => void;
   language?: string;
   height?: string;
   placeholder?: string;
@@ -14,7 +14,7 @@ interface MonacoEditorProps {
 
 export function MonacoEditor({
   value,
-  onChange,
+  onChange = () => undefined,
   language = "javascript",
   height = "300px",
   placeholder = "",

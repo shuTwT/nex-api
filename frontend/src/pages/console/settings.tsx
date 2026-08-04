@@ -39,9 +39,9 @@ export default function SettingsPage() {
   if (isLoading || !defaultSettings) return <ConsolePageLoading />;
   const tabItems = [
     { key: "general", icon: <SettingsIcon size={16} className="inline-block align-middle" />, label: "通用设置", children: settingsCard("通用设置", defaultSettings.general) },
-    { key: "operation", icon: <SettingsIcon size={16} className="inline-block align-middle" />, label: "运营设置", children: <div className="space-y-6">{settingsCard("基本设置", defaultSettings.operation.basic)}{settingsCard("公告设置", defaultSettings.operation.announcement)}</div> },
-    { key: "payment", icon: <SettingsIcon size={16} className="inline-block align-middle" />, label: "支付设置", children: <div className="space-y-6">{settingsCard("基本设置", defaultSettings.payment.basic)}{settingsCard("支付宝设置", defaultSettings.payment.alipay)}{settingsCard("微信设置", defaultSettings.payment.wechat)}</div> },
-    { key: "oauth", icon: <SettingsIcon size={16} className="inline-block align-middle" />, label: "OAuth 设置", children: <div className="space-y-6">{githubOAuthContent()}{oidcContent()}{oauthContent()}</div> },
+    { key: "operation", icon: <SettingsIcon size={16} className="inline-block align-middle" />, label: "运营设置", children: <div className="flex flex-col gap-6">{settingsCard("基本设置", defaultSettings.operation.basic)}{settingsCard("公告设置", defaultSettings.operation.announcement)}</div> },
+    { key: "payment", icon: <SettingsIcon size={16} className="inline-block align-middle" />, label: "支付设置", children: <div className="flex flex-col gap-6">{settingsCard("基本设置", defaultSettings.payment.basic)}{settingsCard("支付宝设置", defaultSettings.payment.alipay)}{settingsCard("微信设置", defaultSettings.payment.wechat)}</div> },
+    { key: "oauth", icon: <SettingsIcon size={16} className="inline-block align-middle" />, label: "OAuth 设置", children: <div className="flex flex-col gap-6">{githubOAuthContent()}{oidcContent()}{oauthContent()}</div> },
   ];
-  return <div className="space-y-6"><div className="flex items-center justify-between"><div><Typography.Title level={2}>系统设置</Typography.Title><Typography.Text type="secondary">管理系统配置</Typography.Text></div><Button type="primary" icon={<Save size={16} />} loading={isSaving} onClick={handleSave}>保存设置</Button></div><Tabs defaultActiveKey="general" items={tabItems} /></div>;
+  return <div className="flex flex-col gap-6"><div className="flex items-center justify-between"><div><Typography.Title level={2}>系统设置</Typography.Title><Typography.Text type="secondary">管理系统配置</Typography.Text></div><Button type="primary" icon={<Save size={16} />} loading={isSaving} onClick={handleSave}>保存设置</Button></div><Tabs defaultActiveKey="general" items={tabItems} /></div>;
 }

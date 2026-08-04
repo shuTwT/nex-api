@@ -278,10 +278,10 @@ export default function AuditLogsPage() {
             style={{ width: 210 }}
             aria-label="结束时间"
           />
-          <Button type="primary" onClick={handleQuery}>
+          <Button type="primary" size="medium" onClick={handleQuery}>
             查询
           </Button>
-          <Button onClick={handleReset}>重置</Button>
+          <Button size="medium" onClick={handleReset}>重置</Button>
         </Space>
       </Card>
       <Card title="日志列表">

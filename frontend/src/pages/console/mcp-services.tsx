@@ -185,7 +185,7 @@ export default function McpServicesPage() {
   void isPending;
 
   return (
-    <div className="space-y-6">
+    <div className="flex flex-col gap-6">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-slate-900">MCP 服务管理</h1>
@@ -246,12 +246,12 @@ export default function McpServicesPage() {
             </div>
             <Select value={typeFilter} onChange={setTypeFilter} className="w-[160px]" options={[{ value: "all", label: "全部类型" }, { value: "stdio", label: "stdio" }, { value: "sse", label: "SSE" }, { value: "streamableHttp", label: "Streamable HTTP" }]} />
             <Select value={statusFilter} onChange={setStatusFilter} className="w-[130px]" options={[{ value: "all", label: "全部" }, { value: "active", label: "已启用" }, { value: "inactive", label: "已停用" }]} />
-            <Button size="small" onClick={handleQuery} className="cursor-pointer">
+            <Button size="medium" onClick={handleQuery} className="cursor-pointer">
               查询
             </Button>
             <Button
               type="default"
-              size="small"
+              size="medium"
               onClick={handleReset}
               className="cursor-pointer"
             >

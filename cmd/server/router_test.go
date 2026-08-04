@@ -38,7 +38,6 @@ func TestBuildRouterUsesChiForHandwrittenAndOpenAPIRoutes(t *testing.T) {
 			AllowedTypes:  []string{"image/png"},
 			CreateOnStart: true,
 		},
-		Cron:   config.Cron{Interval: time.Minute},
 		Server: config.Server{ShutdownTimeout: time.Second},
 	}
 	deps, scheduler, err := buildServices(ctx, cfg, slog.Default())

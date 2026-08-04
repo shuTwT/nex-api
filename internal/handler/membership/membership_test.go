@@ -64,3 +64,53 @@ func TestRegisterRoutes_subscribeReturnsSuccessEnvelope(t *testing.T) {
 		t.Fatalf("response = %s", recorder.Body.String())
 	}
 }
+
+func TestRegisterRoutes_listPlansIncludesZeroPrice(t *testing.T) {
+	client := enttest.Open(t, "sqlite3", "file:"+t.TempDir()+"/membership.db?_fk=1")
+	t.Cleanup(func() { _ = client.Close() })
+	if _, err := client.SubscriptionPlan.Create().SetID("free-plan").SetTitle("Free").SetPrice(0).SetTotalCredits(100).SetSortOrder(0).SetValidityDuration(1).SetValidityUnit("month").SetCreditResetCycle("month").SetIsActive(true).Save(context.Background()); err != nil {
+		t.Fatal(err)
+	}
+	plans, err := servicemembership.NewPlanService(client)
+	if err != nil {
+		t.Fatal(err)
+	}
+	membership, err := servicemembership.NewMembershipService(client)
+	if err != nil {
+		t.Fatal(err)
+	}
+	redemption, err := servicemembership.NewRedemptionService(client)
+	if err != nil {
+		t.Fatal(err)
+	}
+	handler, err := NewHandler(plans, membership, redemption)
+	if err != nil {
+		t.Fatal(err)
+	}
+	mux := chi.NewRouter()
+	if err := RegisterRoutes(mux, handler); err != nil {
+		t.Fatal(err)
+	}
+
+	request := httptest.NewRequest(http.MethodGet, "/api/subscription-plans", nil)
+	request = request.WithContext(serviceauth.WithAuthContext(request.Context(), serviceauth.AuthContext{User: serviceauth.User{ID: "admin-1", Role: "admin"}}))
+	recorder := httptest.NewRecorder()
+	mux.ServeHTTP(recorder, request)
+	if recorder.Code != http.StatusOK {
+		t.Fatalf("status = %d, body = %s", recorder.Code, recorder.Body.String())
+	}
+
+	var envelope struct {
+		Success bool                         `json:"success"`
+		Data    []map[string]json.RawMessage `json:"data"`
+	}
+	if err := json.Unmarshal(recorder.Body.Bytes(), &envelope); err != nil {
+		t.Fatal(err)
+	}
+	if !envelope.Success || len(envelope.Data) != 1 {
+		t.Fatalf("response = %s", recorder.Body.String())
+	}
+	if price, exists := envelope.Data[0]["price"]; !exists || string(price) != "0" {
+		t.Fatalf("price = %s, want JSON value 0; body = %s", price, recorder.Body.String())
+	}
+}

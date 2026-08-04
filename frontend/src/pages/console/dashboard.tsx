@@ -37,7 +37,7 @@ export default function ConsoleDashboardPage() {
 
   if (isLoading) return <ConsolePageLoading />;
 
-  return <div className="space-y-6">
+  return <div className="flex flex-col gap-6">
     <div><Typography.Title level={2}>概览</Typography.Title><Typography.Text type="secondary">欢迎回来，这是您的账户概览</Typography.Text></div>
     <Row gutter={[24, 24]}>
       {statsCards.map((stat) => { const Icon = stat.icon; return <Col key={stat.title} xs={24} md={12} xl={6}><Card hoverable><Icon size={24} /><Typography.Text type="secondary" className="block mt-4">{stat.title}</Typography.Text><Typography.Title level={3}>{stat.value}</Typography.Title></Card></Col>; })}

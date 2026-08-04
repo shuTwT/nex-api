@@ -129,6 +129,10 @@ const consoleRoutes: RouteObject[] = [
     ...lazyRoute(() => import("@/pages/console/advertisements")),
   },
   {
+    path: "scheduled-jobs",
+    ...lazyRoute(() => import("@/pages/console/scheduled-jobs")),
+  },
+  {
     path: "usage",
     ...lazyRoute(() => import("@/pages/console/usage")),
   },

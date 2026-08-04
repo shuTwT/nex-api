@@ -240,7 +240,7 @@ export default function APIManagementPage() {
   void isPending;
 
   return (
-    <div className="space-y-6">
+    <div className="flex flex-col gap-6">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-slate-900">HTTP接口管理</h1>
@@ -302,7 +302,7 @@ export default function APIManagementPage() {
             <Select value={categoryFilter} onChange={setCategoryFilter} className="w-[160px]" options={[{ value: "all", label: "全部分类" }, ...categories.map(cat => ({ value: cat.id, label: `${cat.name} (${cat.apiCount})` }))]} />
             <Select value={statusFilter} onChange={setStatusFilter} className="w-[130px]" options={[{ value: "all", label: "全部" }, { value: "active", label: "已启用" }, { value: "inactive", label: "已停用" }]} />
             <Button
-              size="small"
+              size="medium"
               onClick={handleQuery}
               className="cursor-pointer"
             >
@@ -310,7 +310,7 @@ export default function APIManagementPage() {
             </Button>
             <Button
               type="default"
-              size="small"
+              size="medium"
               onClick={handleReset}
               className="cursor-pointer"
             >

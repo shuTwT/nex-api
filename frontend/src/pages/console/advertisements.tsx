@@ -89,7 +89,7 @@ export default function AdvertisementsPage() {
           <Input prefix={<Search size={16} />} placeholder="搜索广告标题..." value={searchInput} onChange={(event) => setSearchInput(event.target.value)} style={{ width: 260 }} onPressEnter={handleQuery} />
           <Select value={positionFilter} onChange={setPositionFilter} style={{ width: 160 }} options={[{ value: "all", label: "全部广告位" }, ...AdPositionOptions.map((option) => ({ value: option.value, label: option.label }))]} />
           <Select value={statusFilter} onChange={setStatusFilter} style={{ width: 120 }} options={[{ value: "all", label: "全部" }, { value: "active", label: "已启用" }, { value: "inactive", label: "已禁用" }]} />
-          <Button type="primary" onClick={handleQuery}>查询</Button><Button onClick={handleReset}>重置</Button>
+          <Button type="primary" size="medium" onClick={handleQuery}>查询</Button><Button size="medium" onClick={handleReset}>重置</Button>
         </Space>
       </Card>
       <Card title="广告列表">

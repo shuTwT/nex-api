@@ -144,12 +144,12 @@ func buildServices(ctx context.Context, cfg config.Config, logger *slog.Logger) 
 	if err := scheduleService.EnsureDefaults(ctx,
 		serviceschedule.DefaultJob{
 			Name: "统计数据同步", TaskKey: schedule.TaskKeyStatsSync, ScheduleType: "duration",
-			Expression: cfg.Cron.Interval.String(), Enabled: cfg.Cron.Enabled,
+			Expression: "5m", Enabled: true,
 			Description: "周期性将 Redis 调用计数同步到数据库",
 		},
 		serviceschedule.DefaultJob{
 			Name: "支付订单过期", TaskKey: schedule.TaskKeyExpirePayments, ScheduleType: "duration",
-			Expression: "1m", Enabled: true,
+			Expression: "10m", Enabled: true,
 			Description: "关闭 Provider 订单并将超过 expiredAt 的 pending 订单置为 expired",
 		},
 	); err != nil {

@@ -202,7 +202,7 @@ export default function RedemptionCodesPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="flex flex-col gap-6">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-slate-900">兑换码管理</h1>
@@ -232,7 +232,7 @@ export default function RedemptionCodesPage() {
             <Select value={typeFilter} onChange={setTypeFilter} className="w-[120px]" options={[{ value: "all", label: "全部" }, { value: "subscription", label: "订阅" }, { value: "quota", label: "额度" }]} />
             <Select value={statusFilter} onChange={setStatusFilter} className="w-[130px]" options={[{ value: "all", label: "全部" }, { value: "false", label: "未使用" }, { value: "true", label: "已使用" }]} />
             <Button
-              size="small"
+              size="medium"
               onClick={handleQuery}
               className="cursor-pointer"
             >
@@ -240,7 +240,7 @@ export default function RedemptionCodesPage() {
             </Button>
             <Button
               type="default"
-              size="small"
+              size="medium"
               onClick={handleReset}
               className="cursor-pointer"
             >

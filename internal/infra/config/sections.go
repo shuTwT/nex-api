@@ -64,9 +64,8 @@ type Upload struct {
 }
 
 type Cron struct {
-	Enabled  bool          `mapstructure:"enabled"`
-	Secret   string        `mapstructure:"secret"`
-	Interval time.Duration `mapstructure:"interval"`
+	Enabled bool   `mapstructure:"enabled"`
+	Secret  string `mapstructure:"secret"`
 }
 
 type Log struct {
