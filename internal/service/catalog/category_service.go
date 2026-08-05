@@ -117,6 +117,13 @@ func (s *CategoryService) Delete(ctx context.Context, id string) error {
 	if apiCount > 0 {
 		return abortTx(tx, apierror.NewError(apierror.KindConflict, "dependent_records", fmt.Sprintf("cannot delete category %q: %d APIs still reference it", category.Name, apiCount), apierror.ErrConflict))
 	}
+	mcpCount, err := tx.ApiCategory.Query().Where(apicategory.ID(id)).QueryMcpServices().Count(ctx)
+	if err != nil {
+		return abortTx(tx, fmt.Errorf("check category MCP dependencies: %w", err))
+	}
+	if mcpCount > 0 {
+		return abortTx(tx, apierror.NewError(apierror.KindConflict, "dependent_records", fmt.Sprintf("cannot delete category %q: %d MCP services still reference it", category.Name, mcpCount), apierror.ErrConflict))
+	}
 	if err := tx.ApiCategory.DeleteOneID(id).Exec(ctx); err != nil {
 		return abortTx(tx, classifyMutationError(err, "category has dependent APIs"))
 	}

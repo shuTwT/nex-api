@@ -20,6 +20,8 @@ const (
 	FieldIcon = "icon"
 	// EdgeApis holds the string denoting the apis edge name in mutations.
 	EdgeApis = "apis"
+	// EdgeMcpServices holds the string denoting the mcpservices edge name in mutations.
+	EdgeMcpServices = "mcpServices"
 	// Table holds the table name of the apicategory in the database.
 	Table = "ApiCategory"
 	// ApisTable is the table that holds the apis relation/edge.
@@ -29,6 +31,13 @@ const (
 	ApisInverseTable = "Api"
 	// ApisColumn is the table column denoting the apis relation/edge.
 	ApisColumn = "categoryId"
+	// McpServicesTable is the table that holds the mcpServices relation/edge.
+	McpServicesTable = "McpService"
+	// McpServicesInverseTable is the table name for the McpService entity.
+	// It exists in this package in order to avoid circular dependency with the "mcpservice" package.
+	McpServicesInverseTable = "McpService"
+	// McpServicesColumn is the table column denoting the mcpServices relation/edge.
+	McpServicesColumn = "categoryId"
 )
 
 // Columns holds all SQL columns for apicategory fields.
@@ -90,10 +99,31 @@ func ByApis(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newApisStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
+
+// ByMcpServicesCount orders the results by mcpServices count.
+func ByMcpServicesCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newMcpServicesStep(), opts...)
+	}
+}
+
+// ByMcpServices orders the results by mcpServices terms.
+func ByMcpServices(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newMcpServicesStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
 func newApisStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(ApisInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.O2M, false, ApisTable, ApisColumn),
+	)
+}
+func newMcpServicesStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(McpServicesInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, McpServicesTable, McpServicesColumn),
 	)
 }

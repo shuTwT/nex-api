@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
@@ -24,6 +25,9 @@ interface MarketplaceMcpService {
   id: string;
   name: string;
   identifier: string;
+  category: string;
+  description: string;
+  documentation?: string;
   type: string;
   pricing: number;
   isFree: boolean;
@@ -50,6 +54,7 @@ export default function McpMarketPage() {
   const [stats, setStats] = useState<MarketplaceStats | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedType, setSelectedType] = useState("全部");
+  const [selectedCategory, setSelectedCategory] = useState("全部");
   const [searchQuery, setSearchQuery] = useState("");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [sortBy, setSortBy] = useState("popular");
@@ -85,13 +90,17 @@ export default function McpMarketPage() {
     });
   });
 
+  const categories = ["全部", ...Array.from(new Set(services.map((s) => s.category))).filter(Boolean)];
+
   const filteredServices = services.filter((s) => {
     const matchType =
       selectedType === "全部" || (TYPE_LABELS[s.type] || s.type) === selectedType;
+    const matchCategory = selectedCategory === "全部" || s.category === selectedCategory;
     const matchSearch =
       s.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      s.identifier.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchType && matchSearch;
+      s.identifier.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      s.description.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchType && matchCategory && matchSearch;
   });
 
   const sortedServices = [...filteredServices].sort((a, b) => {
@@ -202,6 +211,28 @@ export default function McpMarketPage() {
 
             <div className="rounded-lg border bg-white dark:bg-black p-4">
               <div className="flex items-center gap-2 mb-4">
+                <Sparkles className="h-5 w-5 text-purple-600" />
+                <h3 className="font-semibold">服务分类</h3>
+              </div>
+              <div className="space-y-2">
+                {categories.map((category) => (
+                  <button
+                    key={category}
+                    onClick={() => setSelectedCategory(category)}
+                    className={`w-full text-left px-3 py-2 rounded-md text-sm transition-colors cursor-pointer ${
+                      selectedCategory === category
+                        ? "bg-purple-50 text-purple-600"
+                        : "text-gray-600 hover:bg-gray-50"
+                    }`}
+                  >
+                    {category}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="rounded-lg border bg-white dark:bg-black p-4">
+              <div className="flex items-center gap-2 mb-4">
                 <TrendingUp className="h-5 w-5 text-purple-600" />
                 <h3 className="font-semibold">市场动态</h3>
               </div>
@@ -295,7 +326,7 @@ export default function McpMarketPage() {
             ) : viewMode === "grid" ? (
               <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                 {sortedServices.map((svc) => (
-                  <div key={svc.id}>
+                  <Link key={svc.id} to={`/mcp-detail/${encodeURIComponent(svc.id)}`}>
                     <Card className="group hover:shadow-lg transition-all cursor-pointer border-0 shadow-md h-full">
                       <CardContent className="p-6 space-y-4">
                         <div className="flex items-start justify-between">
@@ -328,6 +359,10 @@ export default function McpMarketPage() {
                           <h3 className="text-lg font-semibold mb-1 group-hover:text-purple-600 transition-colors">
                             {svc.name}
                           </h3>
+                          <p className="mb-2 line-clamp-2 text-sm text-slate-600">{svc.description || "暂无服务描述"}</p>
+                          <Badge variant="outline" className="mb-2 bg-slate-50 text-slate-600">
+                            {svc.category || "未分类"}
+                          </Badge>
                           <code className="text-xs text-purple-500 bg-purple-50 px-2 py-0.5 rounded">
                             /api/v1/mcp/{svc.identifier}
                           </code>
@@ -344,12 +379,13 @@ export default function McpMarketPage() {
                         </div>
                       </CardContent>
                     </Card>
-                  </div>
+                  </Link>
                 ))}
               </div>
             ) : (
               <div className="space-y-4">
                 {sortedServices.map((svc) => (
+                  <Link key={svc.id} to={`/mcp-detail/${encodeURIComponent(svc.id)}`}>
                   <Card
                     key={svc.id}
                     className="group hover:shadow-lg transition-all cursor-pointer border-0 shadow-md"
@@ -385,6 +421,10 @@ export default function McpMarketPage() {
                             <h3 className="text-lg font-semibold mb-1 group-hover:text-purple-600 transition-colors">
                               {svc.name}
                             </h3>
+                            <p className="mb-2 text-sm text-slate-600">{svc.description || "暂无服务描述"}</p>
+                            <Badge variant="outline" className="mb-2 bg-slate-50 text-slate-600">
+                              {svc.category || "未分类"}
+                            </Badge>
                             <code className="text-xs text-purple-500 bg-purple-50 px-2 py-0.5 rounded">
                               /api/v1/mcp/{svc.identifier}
                             </code>
@@ -407,6 +447,7 @@ export default function McpMarketPage() {
                       </div>
                     </CardContent>
                   </Card>
+                  </Link>
                 ))}
               </div>
             )}

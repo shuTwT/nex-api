@@ -562,6 +562,32 @@ func SwaggerMarketplaceApisGET34() {}
 // @Router /api/marketplace/mcp-services [get]
 func SwaggerMarketplaceMcpServicesGET35() {}
 
+// SwaggerMarketplaceMcpServicesIdGET35a documents GET /api/marketplace/mcp-services/{id}.
+//
+// @Summary GET /api/marketplace/mcp-services/{id}
+// @ID marketplace_mcp_services_id_route_get
+// @Tags marketplace
+// @Produce json
+// @Param id path string true "id"
+// @Success 200 {object} SwaggerEnvelope
+// @Failure 404 {object} SwaggerEnvelope
+// @Failure 500 {object} SwaggerEnvelope
+// @Router /api/marketplace/mcp-services/{id} [get]
+func SwaggerMarketplaceMcpServicesIdGET35a() {}
+
+// SwaggerMarketplaceMcpServicesIdToolsGET35b documents GET /api/marketplace/mcp-services/{id}/tools.
+//
+// @Summary GET /api/marketplace/mcp-services/{id}/tools
+// @ID marketplace_mcp_services_id_tools_route_get
+// @Tags marketplace
+// @Produce json
+// @Param id path string true "id"
+// @Success 200 {object} SwaggerEnvelope
+// @Failure 404 {object} SwaggerEnvelope
+// @Failure 502 {object} SwaggerEnvelope
+// @Router /api/marketplace/mcp-services/{id}/tools [get]
+func SwaggerMarketplaceMcpServicesIdToolsGET35b() {}
+
 // SwaggerMarketplaceMcpStatsGET36 documents GET /api/marketplace/mcp-stats.
 //
 // @Summary GET /api/marketplace/mcp-stats

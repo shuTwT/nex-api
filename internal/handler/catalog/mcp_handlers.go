@@ -31,7 +31,7 @@ func (h *Handler) createMCP(w http.ResponseWriter, r *http.Request) {
 		handlerutils.WriteError(w, r, err)
 		return
 	}
-	item, err := h.mcp.Create(r.Context(), servicecatalog.MCPInput{Name: request.Name, Identifier: request.Identifier, Type: request.Type, Command: request.Command, Endpoint: request.Endpoint, EnvVars: request.EnvVars, Pricing: intValue(request.Pricing), IsActive: boolValue(request.IsActive, true)})
+	item, err := h.mcp.Create(r.Context(), servicecatalog.MCPInput{Name: request.Name, Identifier: request.Identifier, CategoryID: request.CategoryID, Description: request.Description, Documentation: request.Documentation, Type: request.Type, Command: request.Command, Endpoint: request.Endpoint, EnvVars: request.EnvVars, Pricing: intValue(request.Pricing), IsActive: boolValue(request.IsActive, true)})
 	if err != nil {
 		handlerutils.WriteError(w, r, err)
 		return
@@ -54,7 +54,7 @@ func (h *Handler) updateMCP(w http.ResponseWriter, r *http.Request) {
 		handlerutils.WriteError(w, r, err)
 		return
 	}
-	item, err := h.mcp.Update(r.Context(), r.PathValue("id"), servicecatalog.MCPUpdateInput{Name: request.Name, Identifier: request.Identifier, Type: request.Type, Command: request.Command, Endpoint: request.Endpoint, EnvVars: request.EnvVars, Pricing: request.Pricing, IsActive: request.IsActive})
+	item, err := h.mcp.Update(r.Context(), r.PathValue("id"), servicecatalog.MCPUpdateInput{Name: request.Name, Identifier: request.Identifier, CategoryID: request.CategoryID, Description: request.Description, Documentation: request.Documentation, Type: request.Type, Command: request.Command, Endpoint: request.Endpoint, EnvVars: request.EnvVars, Pricing: request.Pricing, IsActive: request.IsActive})
 	if err != nil {
 		handlerutils.WriteError(w, r, err)
 		return

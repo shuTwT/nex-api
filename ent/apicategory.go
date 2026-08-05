@@ -32,9 +32,11 @@ type ApiCategory struct {
 type ApiCategoryEdges struct {
 	// Apis holds the value of the apis edge.
 	Apis []*Api `json:"apis,omitempty"`
+	// McpServices holds the value of the mcpServices edge.
+	McpServices []*McpService `json:"mcpServices,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [1]bool
+	loadedTypes [2]bool
 }
 
 // ApisOrErr returns the Apis value or an error if the edge
@@ -44,6 +46,15 @@ func (e ApiCategoryEdges) ApisOrErr() ([]*Api, error) {
 		return e.Apis, nil
 	}
 	return nil, &NotLoadedError{edge: "apis"}
+}
+
+// McpServicesOrErr returns the McpServices value or an error if the edge
+// was not loaded in eager-loading.
+func (e ApiCategoryEdges) McpServicesOrErr() ([]*McpService, error) {
+	if e.loadedTypes[1] {
+		return e.McpServices, nil
+	}
+	return nil, &NotLoadedError{edge: "mcpServices"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -108,6 +119,11 @@ func (_m *ApiCategory) Value(name string) (ent.Value, error) {
 // QueryApis queries the "apis" edge of the ApiCategory entity.
 func (_m *ApiCategory) QueryApis() *APIQuery {
 	return NewApiCategoryClient(_m.config).QueryApis(_m)
+}
+
+// QueryMcpServices queries the "mcpServices" edge of the ApiCategory entity.
+func (_m *ApiCategory) QueryMcpServices() *McpServiceQuery {
+	return NewApiCategoryClient(_m.config).QueryMcpServices(_m)
 }
 
 // Update returns a builder for updating this ApiCategory.

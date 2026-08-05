@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/shuTwT/nex-api/ent/api"
 	"github.com/shuTwT/nex-api/ent/apicategory"
+	"github.com/shuTwT/nex-api/ent/mcpservice"
 	"github.com/shuTwT/nex-api/ent/predicate"
 )
 
@@ -91,6 +92,21 @@ func (_u *ApiCategoryUpdate) AddApis(v ...*Api) *ApiCategoryUpdate {
 	return _u.AddAPIIDs(ids...)
 }
 
+// AddMcpServiceIDs adds the "mcpServices" edge to the McpService entity by IDs.
+func (_u *ApiCategoryUpdate) AddMcpServiceIDs(ids ...string) *ApiCategoryUpdate {
+	_u.mutation.AddMcpServiceIDs(ids...)
+	return _u
+}
+
+// AddMcpServices adds the "mcpServices" edges to the McpService entity.
+func (_u *ApiCategoryUpdate) AddMcpServices(v ...*McpService) *ApiCategoryUpdate {
+	ids := make([]string, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddMcpServiceIDs(ids...)
+}
+
 // Mutation returns the ApiCategoryMutation object of the builder.
 func (_u *ApiCategoryUpdate) Mutation() *ApiCategoryMutation {
 	return _u.mutation
@@ -115,6 +131,27 @@ func (_u *ApiCategoryUpdate) RemoveApis(v ...*Api) *ApiCategoryUpdate {
 		ids[i] = v[i].ID
 	}
 	return _u.RemoveAPIIDs(ids...)
+}
+
+// ClearMcpServices clears all "mcpServices" edges to the McpService entity.
+func (_u *ApiCategoryUpdate) ClearMcpServices() *ApiCategoryUpdate {
+	_u.mutation.ClearMcpServices()
+	return _u
+}
+
+// RemoveMcpServiceIDs removes the "mcpServices" edge to McpService entities by IDs.
+func (_u *ApiCategoryUpdate) RemoveMcpServiceIDs(ids ...string) *ApiCategoryUpdate {
+	_u.mutation.RemoveMcpServiceIDs(ids...)
+	return _u
+}
+
+// RemoveMcpServices removes "mcpServices" edges to McpService entities.
+func (_u *ApiCategoryUpdate) RemoveMcpServices(v ...*McpService) *ApiCategoryUpdate {
+	ids := make([]string, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveMcpServiceIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -210,6 +247,51 @@ func (_u *ApiCategoryUpdate) sqlSave(ctx context.Context) (_node int, err error)
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if _u.mutation.McpServicesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   apicategory.McpServicesTable,
+			Columns: []string{apicategory.McpServicesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(mcpservice.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedMcpServicesIDs(); len(nodes) > 0 && !_u.mutation.McpServicesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   apicategory.McpServicesTable,
+			Columns: []string{apicategory.McpServicesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(mcpservice.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.McpServicesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   apicategory.McpServicesTable,
+			Columns: []string{apicategory.McpServicesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(mcpservice.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{apicategory.Label}
@@ -293,6 +375,21 @@ func (_u *ApiCategoryUpdateOne) AddApis(v ...*Api) *ApiCategoryUpdateOne {
 	return _u.AddAPIIDs(ids...)
 }
 
+// AddMcpServiceIDs adds the "mcpServices" edge to the McpService entity by IDs.
+func (_u *ApiCategoryUpdateOne) AddMcpServiceIDs(ids ...string) *ApiCategoryUpdateOne {
+	_u.mutation.AddMcpServiceIDs(ids...)
+	return _u
+}
+
+// AddMcpServices adds the "mcpServices" edges to the McpService entity.
+func (_u *ApiCategoryUpdateOne) AddMcpServices(v ...*McpService) *ApiCategoryUpdateOne {
+	ids := make([]string, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddMcpServiceIDs(ids...)
+}
+
 // Mutation returns the ApiCategoryMutation object of the builder.
 func (_u *ApiCategoryUpdateOne) Mutation() *ApiCategoryMutation {
 	return _u.mutation
@@ -317,6 +414,27 @@ func (_u *ApiCategoryUpdateOne) RemoveApis(v ...*Api) *ApiCategoryUpdateOne {
 		ids[i] = v[i].ID
 	}
 	return _u.RemoveAPIIDs(ids...)
+}
+
+// ClearMcpServices clears all "mcpServices" edges to the McpService entity.
+func (_u *ApiCategoryUpdateOne) ClearMcpServices() *ApiCategoryUpdateOne {
+	_u.mutation.ClearMcpServices()
+	return _u
+}
+
+// RemoveMcpServiceIDs removes the "mcpServices" edge to McpService entities by IDs.
+func (_u *ApiCategoryUpdateOne) RemoveMcpServiceIDs(ids ...string) *ApiCategoryUpdateOne {
+	_u.mutation.RemoveMcpServiceIDs(ids...)
+	return _u
+}
+
+// RemoveMcpServices removes "mcpServices" edges to McpService entities.
+func (_u *ApiCategoryUpdateOne) RemoveMcpServices(v ...*McpService) *ApiCategoryUpdateOne {
+	ids := make([]string, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveMcpServiceIDs(ids...)
 }
 
 // Where appends a list predicates to the ApiCategoryUpdate builder.
@@ -435,6 +553,51 @@ func (_u *ApiCategoryUpdateOne) sqlSave(ctx context.Context) (_node *ApiCategory
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(api.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.McpServicesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   apicategory.McpServicesTable,
+			Columns: []string{apicategory.McpServicesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(mcpservice.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedMcpServicesIDs(); len(nodes) > 0 && !_u.mutation.McpServicesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   apicategory.McpServicesTable,
+			Columns: []string{apicategory.McpServicesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(mcpservice.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.McpServicesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   apicategory.McpServicesTable,
+			Columns: []string{apicategory.McpServicesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(mcpservice.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {

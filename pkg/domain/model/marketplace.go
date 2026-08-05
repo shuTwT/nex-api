@@ -21,6 +21,9 @@ type MarketplaceMCPResp struct {
 	ID             string `json:"id"`
 	Name           string `json:"name"`
 	Identifier     string `json:"identifier"`
+	Category       string `json:"category"`
+	Description    string `json:"description"`
+	Documentation  string `json:"documentation,omitempty"`
 	Type           string `json:"type"`
 	Pricing        int    `json:"pricing"`
 	IsFree         bool   `json:"isFree"`
@@ -30,4 +33,11 @@ type MarketplaceMCPResp struct {
 	TotalCallCount int64  `json:"totalCallCount"`
 	CreatedAt      string `json:"createdAt,omitempty"`
 	UpdatedAt      string `json:"updatedAt,omitempty"`
+}
+
+type MarketplaceMCPTool struct {
+	Name        string         `json:"name"`
+	Title       string         `json:"title,omitempty"`
+	Description string         `json:"description,omitempty"`
+	InputSchema map[string]any `json:"inputSchema,omitempty"`
 }

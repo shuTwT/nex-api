@@ -64,11 +64,11 @@ func TestCatalogServices_CRUDStatsToggleAndAudit(t *testing.T) {
 	if err != nil || stats.TotalAPIs != 1 || stats.InactiveAPIs != 1 || stats.CategoriesCount != 1 {
 		t.Fatalf("stats = %+v, %v", stats, err)
 	}
-	mcpItem, err := mcp.Create(ctx, MCPInput{Name: "Browser", Identifier: "browser", Type: "sse", Endpoint: stringPtr("mcp.example"), IsActive: true})
-	if err != nil {
-		t.Fatal(err)
+	mcpItem, err := mcp.Create(ctx, MCPInput{Name: "Browser", Identifier: "browser", CategoryID: category.ID, Description: stringPtr("浏览器自动化服务"), Documentation: stringPtr("https://example.com/mcp-docs"), Type: "sse", Endpoint: stringPtr("mcp.example"), IsActive: true})
+	if err != nil || mcpItem.CategoryId != category.ID || mcpItem.Description != "浏览器自动化服务" || mcpItem.Documentation != "https://example.com/mcp-docs" {
+		t.Fatalf("MCP create = %+v, %v", mcpItem, err)
 	}
-	if _, err := mcp.Create(ctx, MCPInput{Name: "Duplicate", Identifier: "browser", Type: "sse", Endpoint: stringPtr("duplicate"), IsActive: true}); err == nil || !errors.Is(err, apierror.ErrConflict) {
+	if _, err := mcp.Create(ctx, MCPInput{Name: "Duplicate", Identifier: "browser", CategoryID: category.ID, Type: "sse", Endpoint: stringPtr("duplicate"), IsActive: true}); err == nil || !errors.Is(err, apierror.ErrConflict) {
 		t.Fatalf("duplicate MCP error = %v", err)
 	}
 	mcpItem, err = mcp.Toggle(ctx, mcpItem.ID)
@@ -105,7 +105,7 @@ func TestCatalogDeletes_returnConflictForLegacyDependents(t *testing.T) {
 	if _, err := client.User.Create().SetID("user-1").SetEmail("user@example.com").SetUsername("user").SetPassword("redacted").SetRole("user").SetCredits(0).Save(ctx); err != nil {
 		t.Fatal(err)
 	}
-	service, err := mcp.Create(ctx, MCPInput{Name: "Browser", Identifier: "browser", Type: "stdio", Command: stringPtr("browser"), IsActive: true})
+	service, err := mcp.Create(ctx, MCPInput{Name: "Browser", Identifier: "browser", CategoryID: category.ID, Type: "stdio", Command: stringPtr("browser"), IsActive: true})
 	if err != nil {
 		t.Fatal(err)
 	}

@@ -1263,6 +1263,70 @@ paths:
       summary: GET /api/marketplace/mcp-services
       tags:
         - marketplace
+  "/api/marketplace/mcp-services/{id}":
+    get:
+      operationId: marketplace_mcp_services_id_route_get
+      parameters:
+        - description: id
+          in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/main.SwaggerEnvelope"
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/main.SwaggerEnvelope"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/main.SwaggerEnvelope"
+      summary: GET /api/marketplace/mcp-services/{id}
+      tags:
+        - marketplace
+  "/api/marketplace/mcp-services/{id}/tools":
+    get:
+      operationId: marketplace_mcp_services_id_tools_route_get
+      parameters:
+        - description: id
+          in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/main.SwaggerEnvelope"
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/main.SwaggerEnvelope"
+        "502":
+          description: Bad Gateway
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/main.SwaggerEnvelope"
+      summary: GET /api/marketplace/mcp-services/{id}/tools
+      tags:
+        - marketplace
   /api/marketplace/mcp-stats:
     get:
       operationId: marketplace_mcp_stats_route_get

@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/shuTwT/nex-api/ent/apicategory"
 	"github.com/shuTwT/nex-api/ent/mcpservice"
 	"github.com/shuTwT/nex-api/ent/mcpusage"
 	"github.com/shuTwT/nex-api/ent/predicate"
@@ -54,6 +55,66 @@ func (_u *McpServiceUpdate) SetNillableIdentifier(v *string) *McpServiceUpdate {
 	if v != nil {
 		_u.SetIdentifier(*v)
 	}
+	return _u
+}
+
+// SetCategoryId sets the "categoryId" field.
+func (_u *McpServiceUpdate) SetCategoryId(v string) *McpServiceUpdate {
+	_u.mutation.SetCategoryId(v)
+	return _u
+}
+
+// SetNillableCategoryId sets the "categoryId" field if the given value is not nil.
+func (_u *McpServiceUpdate) SetNillableCategoryId(v *string) *McpServiceUpdate {
+	if v != nil {
+		_u.SetCategoryId(*v)
+	}
+	return _u
+}
+
+// ClearCategoryId clears the value of the "categoryId" field.
+func (_u *McpServiceUpdate) ClearCategoryId() *McpServiceUpdate {
+	_u.mutation.ClearCategoryId()
+	return _u
+}
+
+// SetDescription sets the "description" field.
+func (_u *McpServiceUpdate) SetDescription(v string) *McpServiceUpdate {
+	_u.mutation.SetDescription(v)
+	return _u
+}
+
+// SetNillableDescription sets the "description" field if the given value is not nil.
+func (_u *McpServiceUpdate) SetNillableDescription(v *string) *McpServiceUpdate {
+	if v != nil {
+		_u.SetDescription(*v)
+	}
+	return _u
+}
+
+// ClearDescription clears the value of the "description" field.
+func (_u *McpServiceUpdate) ClearDescription() *McpServiceUpdate {
+	_u.mutation.ClearDescription()
+	return _u
+}
+
+// SetDocumentation sets the "documentation" field.
+func (_u *McpServiceUpdate) SetDocumentation(v string) *McpServiceUpdate {
+	_u.mutation.SetDocumentation(v)
+	return _u
+}
+
+// SetNillableDocumentation sets the "documentation" field if the given value is not nil.
+func (_u *McpServiceUpdate) SetNillableDocumentation(v *string) *McpServiceUpdate {
+	if v != nil {
+		_u.SetDocumentation(*v)
+	}
+	return _u
+}
+
+// ClearDocumentation clears the value of the "documentation" field.
+func (_u *McpServiceUpdate) ClearDocumentation() *McpServiceUpdate {
+	_u.mutation.ClearDocumentation()
 	return _u
 }
 
@@ -207,6 +268,25 @@ func (_u *McpServiceUpdate) SetUpdatedAt(v time.Time) *McpServiceUpdate {
 	return _u
 }
 
+// SetCategoryID sets the "category" edge to the ApiCategory entity by ID.
+func (_u *McpServiceUpdate) SetCategoryID(id string) *McpServiceUpdate {
+	_u.mutation.SetCategoryID(id)
+	return _u
+}
+
+// SetNillableCategoryID sets the "category" edge to the ApiCategory entity by ID if the given value is not nil.
+func (_u *McpServiceUpdate) SetNillableCategoryID(id *string) *McpServiceUpdate {
+	if id != nil {
+		_u = _u.SetCategoryID(*id)
+	}
+	return _u
+}
+
+// SetCategory sets the "category" edge to the ApiCategory entity.
+func (_u *McpServiceUpdate) SetCategory(v *ApiCategory) *McpServiceUpdate {
+	return _u.SetCategoryID(v.ID)
+}
+
 // AddUsageRecordIDs adds the "usageRecords" edge to the McpUsage entity by IDs.
 func (_u *McpServiceUpdate) AddUsageRecordIDs(ids ...string) *McpServiceUpdate {
 	_u.mutation.AddUsageRecordIDs(ids...)
@@ -225,6 +305,12 @@ func (_u *McpServiceUpdate) AddUsageRecords(v ...*McpUsage) *McpServiceUpdate {
 // Mutation returns the McpServiceMutation object of the builder.
 func (_u *McpServiceUpdate) Mutation() *McpServiceMutation {
 	return _u.mutation
+}
+
+// ClearCategory clears the "category" edge to the ApiCategory entity.
+func (_u *McpServiceUpdate) ClearCategory() *McpServiceUpdate {
+	_u.mutation.ClearCategory()
+	return _u
 }
 
 // ClearUsageRecords clears all "usageRecords" edges to the McpUsage entity.
@@ -299,6 +385,18 @@ func (_u *McpServiceUpdate) sqlSave(ctx context.Context) (_node int, err error) 
 	if value, ok := _u.mutation.Identifier(); ok {
 		_spec.SetField(mcpservice.FieldIdentifier, field.TypeString, value)
 	}
+	if value, ok := _u.mutation.Description(); ok {
+		_spec.SetField(mcpservice.FieldDescription, field.TypeString, value)
+	}
+	if _u.mutation.DescriptionCleared() {
+		_spec.ClearField(mcpservice.FieldDescription, field.TypeString)
+	}
+	if value, ok := _u.mutation.Documentation(); ok {
+		_spec.SetField(mcpservice.FieldDocumentation, field.TypeString, value)
+	}
+	if _u.mutation.DocumentationCleared() {
+		_spec.ClearField(mcpservice.FieldDocumentation, field.TypeString)
+	}
 	if value, ok := _u.mutation.GetType(); ok {
 		_spec.SetField(mcpservice.FieldType, field.TypeString, value)
 	}
@@ -340,6 +438,35 @@ func (_u *McpServiceUpdate) sqlSave(ctx context.Context) (_node int, err error) 
 	}
 	if value, ok := _u.mutation.UpdatedAt(); ok {
 		_spec.SetField(mcpservice.FieldUpdatedAt, field.TypeTime, value)
+	}
+	if _u.mutation.CategoryCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   mcpservice.CategoryTable,
+			Columns: []string{mcpservice.CategoryColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(apicategory.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.CategoryIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   mcpservice.CategoryTable,
+			Columns: []string{mcpservice.CategoryColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(apicategory.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	if _u.mutation.UsageRecordsCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -431,6 +558,66 @@ func (_u *McpServiceUpdateOne) SetNillableIdentifier(v *string) *McpServiceUpdat
 	if v != nil {
 		_u.SetIdentifier(*v)
 	}
+	return _u
+}
+
+// SetCategoryId sets the "categoryId" field.
+func (_u *McpServiceUpdateOne) SetCategoryId(v string) *McpServiceUpdateOne {
+	_u.mutation.SetCategoryId(v)
+	return _u
+}
+
+// SetNillableCategoryId sets the "categoryId" field if the given value is not nil.
+func (_u *McpServiceUpdateOne) SetNillableCategoryId(v *string) *McpServiceUpdateOne {
+	if v != nil {
+		_u.SetCategoryId(*v)
+	}
+	return _u
+}
+
+// ClearCategoryId clears the value of the "categoryId" field.
+func (_u *McpServiceUpdateOne) ClearCategoryId() *McpServiceUpdateOne {
+	_u.mutation.ClearCategoryId()
+	return _u
+}
+
+// SetDescription sets the "description" field.
+func (_u *McpServiceUpdateOne) SetDescription(v string) *McpServiceUpdateOne {
+	_u.mutation.SetDescription(v)
+	return _u
+}
+
+// SetNillableDescription sets the "description" field if the given value is not nil.
+func (_u *McpServiceUpdateOne) SetNillableDescription(v *string) *McpServiceUpdateOne {
+	if v != nil {
+		_u.SetDescription(*v)
+	}
+	return _u
+}
+
+// ClearDescription clears the value of the "description" field.
+func (_u *McpServiceUpdateOne) ClearDescription() *McpServiceUpdateOne {
+	_u.mutation.ClearDescription()
+	return _u
+}
+
+// SetDocumentation sets the "documentation" field.
+func (_u *McpServiceUpdateOne) SetDocumentation(v string) *McpServiceUpdateOne {
+	_u.mutation.SetDocumentation(v)
+	return _u
+}
+
+// SetNillableDocumentation sets the "documentation" field if the given value is not nil.
+func (_u *McpServiceUpdateOne) SetNillableDocumentation(v *string) *McpServiceUpdateOne {
+	if v != nil {
+		_u.SetDocumentation(*v)
+	}
+	return _u
+}
+
+// ClearDocumentation clears the value of the "documentation" field.
+func (_u *McpServiceUpdateOne) ClearDocumentation() *McpServiceUpdateOne {
+	_u.mutation.ClearDocumentation()
 	return _u
 }
 
@@ -584,6 +771,25 @@ func (_u *McpServiceUpdateOne) SetUpdatedAt(v time.Time) *McpServiceUpdateOne {
 	return _u
 }
 
+// SetCategoryID sets the "category" edge to the ApiCategory entity by ID.
+func (_u *McpServiceUpdateOne) SetCategoryID(id string) *McpServiceUpdateOne {
+	_u.mutation.SetCategoryID(id)
+	return _u
+}
+
+// SetNillableCategoryID sets the "category" edge to the ApiCategory entity by ID if the given value is not nil.
+func (_u *McpServiceUpdateOne) SetNillableCategoryID(id *string) *McpServiceUpdateOne {
+	if id != nil {
+		_u = _u.SetCategoryID(*id)
+	}
+	return _u
+}
+
+// SetCategory sets the "category" edge to the ApiCategory entity.
+func (_u *McpServiceUpdateOne) SetCategory(v *ApiCategory) *McpServiceUpdateOne {
+	return _u.SetCategoryID(v.ID)
+}
+
 // AddUsageRecordIDs adds the "usageRecords" edge to the McpUsage entity by IDs.
 func (_u *McpServiceUpdateOne) AddUsageRecordIDs(ids ...string) *McpServiceUpdateOne {
 	_u.mutation.AddUsageRecordIDs(ids...)
@@ -602,6 +808,12 @@ func (_u *McpServiceUpdateOne) AddUsageRecords(v ...*McpUsage) *McpServiceUpdate
 // Mutation returns the McpServiceMutation object of the builder.
 func (_u *McpServiceUpdateOne) Mutation() *McpServiceMutation {
 	return _u.mutation
+}
+
+// ClearCategory clears the "category" edge to the ApiCategory entity.
+func (_u *McpServiceUpdateOne) ClearCategory() *McpServiceUpdateOne {
+	_u.mutation.ClearCategory()
+	return _u
 }
 
 // ClearUsageRecords clears all "usageRecords" edges to the McpUsage entity.
@@ -706,6 +918,18 @@ func (_u *McpServiceUpdateOne) sqlSave(ctx context.Context) (_node *McpService, 
 	if value, ok := _u.mutation.Identifier(); ok {
 		_spec.SetField(mcpservice.FieldIdentifier, field.TypeString, value)
 	}
+	if value, ok := _u.mutation.Description(); ok {
+		_spec.SetField(mcpservice.FieldDescription, field.TypeString, value)
+	}
+	if _u.mutation.DescriptionCleared() {
+		_spec.ClearField(mcpservice.FieldDescription, field.TypeString)
+	}
+	if value, ok := _u.mutation.Documentation(); ok {
+		_spec.SetField(mcpservice.FieldDocumentation, field.TypeString, value)
+	}
+	if _u.mutation.DocumentationCleared() {
+		_spec.ClearField(mcpservice.FieldDocumentation, field.TypeString)
+	}
 	if value, ok := _u.mutation.GetType(); ok {
 		_spec.SetField(mcpservice.FieldType, field.TypeString, value)
 	}
@@ -747,6 +971,35 @@ func (_u *McpServiceUpdateOne) sqlSave(ctx context.Context) (_node *McpService, 
 	}
 	if value, ok := _u.mutation.UpdatedAt(); ok {
 		_spec.SetField(mcpservice.FieldUpdatedAt, field.TypeTime, value)
+	}
+	if _u.mutation.CategoryCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   mcpservice.CategoryTable,
+			Columns: []string{mcpservice.CategoryColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(apicategory.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.CategoryIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   mcpservice.CategoryTable,
+			Columns: []string{mcpservice.CategoryColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(apicategory.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	if _u.mutation.UsageRecordsCleared() {
 		edge := &sqlgraph.EdgeSpec{

@@ -15,6 +15,10 @@ export interface McpServiceData {
   id: string;
   name: string;
   identifier: string;
+  categoryId: string;
+  category: { id: string; name: string } | null;
+  description: string | null;
+  documentation: string | null;
   type: string;
   command: string | null;
   endpoint: string | null;
@@ -28,11 +32,16 @@ interface McpFormDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   service?: McpServiceData | null;
+  categories: { id: string; name: string }[];
+  categoriesLoading?: boolean;
   onSuccess: () => void;
 }
 interface McpFormValues {
   name: string;
   identifier: string;
+  categoryId: string;
+  description?: string;
+  documentation?: string;
   type: "stdio" | "sse" | "streamableHttp";
   command?: string;
   endpoint?: string;
@@ -45,6 +54,9 @@ function initialValues(service?: McpServiceData | null): McpFormValues {
   return {
     name: service?.name ?? "",
     identifier: service?.identifier ?? "",
+    categoryId: service?.categoryId ?? service?.category?.id ?? "",
+    description: service?.description ?? "",
+    documentation: service?.documentation ?? "",
     type: (service?.type as McpFormValues["type"]) ?? "stdio",
     command: service?.command ?? "",
     endpoint: service?.endpoint ?? "",
@@ -58,6 +70,8 @@ export function McpFormDialog({
   open,
   onOpenChange,
   service,
+  categories,
+  categoriesLoading = false,
   onSuccess,
 }: McpFormDialogProps) {
   const [form] = Form.useForm<McpFormValues>();
@@ -79,9 +93,12 @@ export function McpFormDialog({
     const body: Record<string, string | number | boolean | null> = {
       name: values.name,
       identifier: values.identifier,
+      categoryId: values.categoryId,
       type: values.type,
       pricing: values.pricing ?? 0,
       isActive: values.isActive,
+      description: values.description ?? "",
+      documentation: values.documentation ?? "",
       envVars: values.envVars || null,
     };
     if (values.type === "stdio") body.command = values.command ?? "";
@@ -147,6 +164,38 @@ export function McpFormDialog({
           ]}
         >
           <Input placeholder="如：filesystem（用于路径 /api/v1/mcp/filesystem）" />
+        </Form.Item>
+        <Form.Item
+          name="categoryId"
+          label="分类"
+          rules={[{ required: true, message: "请选择分类" }]}
+        >
+          <Select
+            placeholder="选择分类"
+            loading={categoriesLoading}
+            disabled={categoriesLoading || categories.length === 0}
+            showSearch={{ optionFilterProp: "label" }}
+            options={categories.map((category) => ({
+              value: category.id,
+              label: category.name,
+            }))}
+            notFoundContent={categoriesLoading ? "正在加载分类..." : "暂无分类，请先在 HTTP 接口管理中添加"}
+          />
+        </Form.Item>
+        <Form.Item name="description" label="描述">
+          <Input.TextArea
+            placeholder="简要说明该 MCP 服务的能力和适用场景"
+            rows={3}
+            maxLength={500}
+            showCount
+          />
+        </Form.Item>
+        <Form.Item
+          name="documentation"
+          label="文档链接"
+          rules={[{ type: "url", message: "请输入有效的 URL" }]}
+        >
+          <Input placeholder="如：https://example.com/docs" />
         </Form.Item>
         <Form.Item
           name="type"

@@ -28,6 +28,7 @@ func RegisterRoutes(mux chi.Router, handler *Handler) error {
 	mux.Get("/api/marketplace/apis/{id}", handler.getAPI)
 	mux.Get("/api/marketplace/stats", handler.apiStats)
 	mux.Get("/api/marketplace/mcp-services", handler.listMCP)
+	mux.Get("/api/marketplace/mcp-services/{id}/tools", handler.listMCPTools)
 	mux.Get("/api/marketplace/mcp-services/{id}", handler.getMCP)
 	mux.Get("/api/marketplace/mcp-stats", handler.mcpStats)
 	return nil
@@ -76,7 +77,7 @@ func (h *Handler) listMCP(w http.ResponseWriter, r *http.Request) {
 	}
 	views, total, err := h.service.ListMCP(r.Context(), servicemarketplace.ListOptions{
 		Page: options.page, Limit: options.limit,
-		Search: options.search, Type: strings.TrimSpace(r.URL.Query().Get("type")),
+		Search: options.search, Category: strings.TrimSpace(r.URL.Query().Get("category")), Type: strings.TrimSpace(r.URL.Query().Get("type")),
 	})
 	if err != nil {
 		handlerutils.WriteError(w, r, err)
@@ -92,6 +93,15 @@ func (h *Handler) getMCP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	handlerutils.WriteData(w, http.StatusOK, view)
+}
+
+func (h *Handler) listMCPTools(w http.ResponseWriter, r *http.Request) {
+	tools, err := h.service.ListMCPTools(r.Context(), chi.URLParam(r, "id"))
+	if err != nil {
+		handlerutils.WriteError(w, r, appRuntime.NewAPIError(http.StatusBadGateway, "mcp_tools_unavailable", "暂时无法获取 MCP 工具", err))
+		return
+	}
+	handlerutils.WriteData(w, http.StatusOK, tools)
 }
 
 func (h *Handler) mcpStats(w http.ResponseWriter, r *http.Request) {

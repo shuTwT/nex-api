@@ -306,6 +306,29 @@ func HasApisWith(preds ...predicate.Api) predicate.ApiCategory {
 	})
 }
 
+// HasMcpServices applies the HasEdge predicate on the "mcpServices" edge.
+func HasMcpServices() predicate.ApiCategory {
+	return predicate.ApiCategory(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, McpServicesTable, McpServicesColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasMcpServicesWith applies the HasEdge predicate on the "mcpServices" edge with a given conditions (other predicates).
+func HasMcpServicesWith(preds ...predicate.McpService) predicate.ApiCategory {
+	return predicate.ApiCategory(func(s *sql.Selector) {
+		step := newMcpServicesStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.ApiCategory) predicate.ApiCategory {
 	return predicate.ApiCategory(sql.AndPredicates(predicates...))

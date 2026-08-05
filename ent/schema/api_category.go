@@ -38,5 +38,8 @@ func (ApiCategory) Edges() []ent.Edge {
 		edge.To("apis", Api.Type).
 			StorageKey(edge.Symbol("Api_categoryId_fkey")).
 			Annotations(entsql.OnDelete(entsql.Restrict)),
+		edge.To("mcpServices", McpService.Type).
+			StorageKey(edge.Symbol("McpService_categoryId_fkey")).
+			Annotations(entsql.OnDelete(entsql.Restrict)),
 	}
 }

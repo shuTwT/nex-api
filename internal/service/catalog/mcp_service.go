@@ -8,6 +8,7 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"github.com/shuTwT/nex-api/ent"
+	"github.com/shuTwT/nex-api/ent/apicategory"
 	"github.com/shuTwT/nex-api/ent/mcpservice"
 	"github.com/shuTwT/nex-api/internal/service/apierror"
 )
@@ -31,11 +32,18 @@ func (s *MCPService) Create(ctx context.Context, input MCPInput) (*ent.McpServic
 	if err := validateMCPInput(input); err != nil {
 		return nil, err
 	}
+	categoryExists, err := s.db.ApiCategory.Query().Where(apicategory.ID(input.CategoryID)).Exist(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("check MCP category: %w", err)
+	}
+	if !categoryExists {
+		return nil, apierror.NewError(apierror.KindNotFound, "not_found", "MCP category not found", apierror.ErrNotFound)
+	}
 	tx, err := s.db.Tx(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("begin MCP create: %w", err)
 	}
-	builder := tx.McpService.Create().SetName(input.Name).SetIdentifier(input.Identifier).SetType(input.Type).SetPricing(input.Pricing).SetIsActive(input.IsActive).SetUpdatedAt(time.Now()).SetNillableEnvVars(input.EnvVars)
+	builder := tx.McpService.Create().SetName(input.Name).SetIdentifier(input.Identifier).SetCategoryId(input.CategoryID).SetType(input.Type).SetPricing(input.Pricing).SetIsActive(input.IsActive).SetUpdatedAt(time.Now()).SetNillableDescription(input.Description).SetNillableDocumentation(input.Documentation).SetNillableEnvVars(input.EnvVars)
 	if input.Type == "stdio" {
 		builder.SetNillableCommand(input.Command)
 	} else {
@@ -58,7 +66,7 @@ func (s *MCPService) Get(ctx context.Context, id string) (*ent.McpService, error
 	if strings.TrimSpace(id) == "" {
 		return nil, ValidationError("id", "required")
 	}
-	item, err := s.db.McpService.Query().Where(mcpservice.ID(id)).Only(ctx)
+	item, err := s.db.McpService.Query().Where(mcpservice.ID(id)).WithCategory().Only(ctx)
 	if err != nil {
 		return nil, ClassifyNotFound(err, "MCP service")
 	}
@@ -80,6 +88,15 @@ func (s *MCPService) Update(ctx context.Context, id string, input MCPUpdateInput
 	if err := validateMCPUpdate(input); err != nil {
 		return nil, err
 	}
+	if input.CategoryID != nil {
+		categoryExists, err := s.db.ApiCategory.Query().Where(apicategory.ID(*input.CategoryID)).Exist(ctx)
+		if err != nil {
+			return nil, fmt.Errorf("check MCP category: %w", err)
+		}
+		if !categoryExists {
+			return nil, apierror.NewError(apierror.KindNotFound, "not_found", "MCP category not found", apierror.ErrNotFound)
+		}
+	}
 	tx, err := s.db.Tx(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("begin MCP update: %w", err)
@@ -90,6 +107,15 @@ func (s *MCPService) Update(ctx context.Context, id string, input MCPUpdateInput
 	}
 	if input.Identifier != nil {
 		builder.SetIdentifier(*input.Identifier)
+	}
+	if input.CategoryID != nil {
+		builder.SetCategoryId(*input.CategoryID)
+	}
+	if input.Description != nil {
+		builder.SetDescription(*input.Description)
+	}
+	if input.Documentation != nil {
+		builder.SetDocumentation(*input.Documentation)
 	}
 	if input.Type != nil {
 		builder.SetType(*input.Type)
@@ -165,7 +191,10 @@ func (s *MCPService) List(ctx context.Context, options MCPListOptions) (MCPListR
 		query = query.Where(mcpservice.Type(options.Type))
 	}
 	if options.Search != "" {
-		query = query.Where(mcpservice.Or(mcpservice.NameContainsFold(options.Search), mcpservice.IdentifierContainsFold(options.Search)))
+		query = query.Where(mcpservice.Or(mcpservice.NameContainsFold(options.Search), mcpservice.IdentifierContainsFold(options.Search), mcpservice.DescriptionContainsFold(options.Search)))
+	}
+	if options.CategoryID != "" && options.CategoryID != "all" {
+		query = query.Where(mcpservice.CategoryId(options.CategoryID))
 	}
 	switch options.Status {
 	case "active":
@@ -180,7 +209,7 @@ func (s *MCPService) List(ctx context.Context, options MCPListOptions) (MCPListR
 	if err != nil {
 		return MCPListResult{}, fmt.Errorf("count MCP services: %w", err)
 	}
-	items, err := query.Order(mcpservice.ByCreatedAt(sql.OrderDesc())).Offset((options.Page - 1) * options.Limit).Limit(options.Limit).All(ctx)
+	items, err := query.WithCategory().Order(mcpservice.ByCreatedAt(sql.OrderDesc())).Offset((options.Page - 1) * options.Limit).Limit(options.Limit).All(ctx)
 	if err != nil {
 		return MCPListResult{}, fmt.Errorf("list MCP services: %w", err)
 	}

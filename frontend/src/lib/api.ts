@@ -66,6 +66,8 @@ const legacyOperations: Record<string, LegacyOperation> = {
   "marketplace_apis_id_route_get": ["GET", "/api/marketplace/apis/{id}"],
   "marketplace_apis_route_get": ["GET", "/api/marketplace/apis"],
   "marketplace_mcp_services_route_get": ["GET", "/api/marketplace/mcp-services"],
+  "marketplace_mcp_services_id_route_get": ["GET", "/api/marketplace/mcp-services/{id}"],
+  "marketplace_mcp_services_id_tools_route_get": ["GET", "/api/marketplace/mcp-services/{id}/tools"],
   "marketplace_mcp_stats_route_get": ["GET", "/api/marketplace/mcp-stats"],
   "marketplace_stats_route_get": ["GET", "/api/marketplace/stats"],
   "mcp_services_id_route_put": ["PUT", "/api/mcp-services/{id}"],

@@ -1,6 +1,7 @@
 package catalog
 
 import (
+	"net/url"
 	"regexp"
 	"strings"
 )
@@ -12,8 +13,8 @@ var validMCPTypes = map[string]struct{}{
 }
 
 func validateMCPInput(input MCPInput) error {
-	if strings.TrimSpace(input.Name) == "" || strings.TrimSpace(input.Identifier) == "" || strings.TrimSpace(input.Type) == "" {
-		return ValidationError("request", "name, identifier, and type are required")
+	if strings.TrimSpace(input.Name) == "" || strings.TrimSpace(input.Identifier) == "" || strings.TrimSpace(input.CategoryID) == "" || strings.TrimSpace(input.Type) == "" {
+		return ValidationError("request", "name, identifier, category, and type are required")
 	}
 	if err := validateIdentifier(input.Identifier); err != nil {
 		return err
@@ -24,10 +25,18 @@ func validateMCPInput(input MCPInput) error {
 	if input.Pricing < 0 {
 		return ValidationError("pricing", "must be non-negative")
 	}
+	if input.Documentation != nil {
+		if err := validateDocumentationURL(*input.Documentation); err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
 func validateMCPUpdate(input MCPUpdateInput) error {
+	if input.CategoryID != nil && strings.TrimSpace(*input.CategoryID) == "" {
+		return ValidationError("categoryId", "required")
+	}
 	if input.Identifier != nil {
 		if err := validateIdentifier(*input.Identifier); err != nil {
 			return err
@@ -40,6 +49,11 @@ func validateMCPUpdate(input MCPUpdateInput) error {
 	}
 	if input.Pricing != nil && *input.Pricing < 0 {
 		return ValidationError("pricing", "must be non-negative")
+	}
+	if input.Documentation != nil {
+		if err := validateDocumentationURL(*input.Documentation); err != nil {
+			return err
+		}
 	}
 	return nil
 }
@@ -58,8 +72,21 @@ func validateMCPType(value string) error {
 	return nil
 }
 
+func validateDocumentationURL(value string) error {
+	value = strings.TrimSpace(value)
+	if value == "" {
+		return nil
+	}
+	parsed, err := url.ParseRequestURI(value)
+	if err != nil || parsed.Host == "" || (parsed.Scheme != "https" && parsed.Scheme != "http") {
+		return ValidationError("documentation", "must be an http or https URL")
+	}
+	return nil
+}
+
 func normalizeMCPListOptions(options MCPListOptions) MCPListOptions {
 	options.Type = strings.TrimSpace(options.Type)
+	options.CategoryID = strings.TrimSpace(options.CategoryID)
 	options.Search = strings.TrimSpace(options.Search)
 	options.Status = strings.ToLower(strings.TrimSpace(options.Status))
 	if strings.EqualFold(options.Type, "all") {

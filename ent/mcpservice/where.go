@@ -75,6 +75,21 @@ func Identifier(v string) predicate.McpService {
 	return predicate.McpService(sql.FieldEQ(FieldIdentifier, v))
 }
 
+// CategoryId applies equality check predicate on the "categoryId" field. It's identical to CategoryIdEQ.
+func CategoryId(v string) predicate.McpService {
+	return predicate.McpService(sql.FieldEQ(FieldCategoryId, v))
+}
+
+// Description applies equality check predicate on the "description" field. It's identical to DescriptionEQ.
+func Description(v string) predicate.McpService {
+	return predicate.McpService(sql.FieldEQ(FieldDescription, v))
+}
+
+// Documentation applies equality check predicate on the "documentation" field. It's identical to DocumentationEQ.
+func Documentation(v string) predicate.McpService {
+	return predicate.McpService(sql.FieldEQ(FieldDocumentation, v))
+}
+
 // Type applies equality check predicate on the "type" field. It's identical to TypeEQ.
 func Type(v string) predicate.McpService {
 	return predicate.McpService(sql.FieldEQ(FieldType, v))
@@ -248,6 +263,231 @@ func IdentifierEqualFold(v string) predicate.McpService {
 // IdentifierContainsFold applies the ContainsFold predicate on the "identifier" field.
 func IdentifierContainsFold(v string) predicate.McpService {
 	return predicate.McpService(sql.FieldContainsFold(FieldIdentifier, v))
+}
+
+// CategoryIdEQ applies the EQ predicate on the "categoryId" field.
+func CategoryIdEQ(v string) predicate.McpService {
+	return predicate.McpService(sql.FieldEQ(FieldCategoryId, v))
+}
+
+// CategoryIdNEQ applies the NEQ predicate on the "categoryId" field.
+func CategoryIdNEQ(v string) predicate.McpService {
+	return predicate.McpService(sql.FieldNEQ(FieldCategoryId, v))
+}
+
+// CategoryIdIn applies the In predicate on the "categoryId" field.
+func CategoryIdIn(vs ...string) predicate.McpService {
+	return predicate.McpService(sql.FieldIn(FieldCategoryId, vs...))
+}
+
+// CategoryIdNotIn applies the NotIn predicate on the "categoryId" field.
+func CategoryIdNotIn(vs ...string) predicate.McpService {
+	return predicate.McpService(sql.FieldNotIn(FieldCategoryId, vs...))
+}
+
+// CategoryIdGT applies the GT predicate on the "categoryId" field.
+func CategoryIdGT(v string) predicate.McpService {
+	return predicate.McpService(sql.FieldGT(FieldCategoryId, v))
+}
+
+// CategoryIdGTE applies the GTE predicate on the "categoryId" field.
+func CategoryIdGTE(v string) predicate.McpService {
+	return predicate.McpService(sql.FieldGTE(FieldCategoryId, v))
+}
+
+// CategoryIdLT applies the LT predicate on the "categoryId" field.
+func CategoryIdLT(v string) predicate.McpService {
+	return predicate.McpService(sql.FieldLT(FieldCategoryId, v))
+}
+
+// CategoryIdLTE applies the LTE predicate on the "categoryId" field.
+func CategoryIdLTE(v string) predicate.McpService {
+	return predicate.McpService(sql.FieldLTE(FieldCategoryId, v))
+}
+
+// CategoryIdContains applies the Contains predicate on the "categoryId" field.
+func CategoryIdContains(v string) predicate.McpService {
+	return predicate.McpService(sql.FieldContains(FieldCategoryId, v))
+}
+
+// CategoryIdHasPrefix applies the HasPrefix predicate on the "categoryId" field.
+func CategoryIdHasPrefix(v string) predicate.McpService {
+	return predicate.McpService(sql.FieldHasPrefix(FieldCategoryId, v))
+}
+
+// CategoryIdHasSuffix applies the HasSuffix predicate on the "categoryId" field.
+func CategoryIdHasSuffix(v string) predicate.McpService {
+	return predicate.McpService(sql.FieldHasSuffix(FieldCategoryId, v))
+}
+
+// CategoryIdIsNil applies the IsNil predicate on the "categoryId" field.
+func CategoryIdIsNil() predicate.McpService {
+	return predicate.McpService(sql.FieldIsNull(FieldCategoryId))
+}
+
+// CategoryIdNotNil applies the NotNil predicate on the "categoryId" field.
+func CategoryIdNotNil() predicate.McpService {
+	return predicate.McpService(sql.FieldNotNull(FieldCategoryId))
+}
+
+// CategoryIdEqualFold applies the EqualFold predicate on the "categoryId" field.
+func CategoryIdEqualFold(v string) predicate.McpService {
+	return predicate.McpService(sql.FieldEqualFold(FieldCategoryId, v))
+}
+
+// CategoryIdContainsFold applies the ContainsFold predicate on the "categoryId" field.
+func CategoryIdContainsFold(v string) predicate.McpService {
+	return predicate.McpService(sql.FieldContainsFold(FieldCategoryId, v))
+}
+
+// DescriptionEQ applies the EQ predicate on the "description" field.
+func DescriptionEQ(v string) predicate.McpService {
+	return predicate.McpService(sql.FieldEQ(FieldDescription, v))
+}
+
+// DescriptionNEQ applies the NEQ predicate on the "description" field.
+func DescriptionNEQ(v string) predicate.McpService {
+	return predicate.McpService(sql.FieldNEQ(FieldDescription, v))
+}
+
+// DescriptionIn applies the In predicate on the "description" field.
+func DescriptionIn(vs ...string) predicate.McpService {
+	return predicate.McpService(sql.FieldIn(FieldDescription, vs...))
+}
+
+// DescriptionNotIn applies the NotIn predicate on the "description" field.
+func DescriptionNotIn(vs ...string) predicate.McpService {
+	return predicate.McpService(sql.FieldNotIn(FieldDescription, vs...))
+}
+
+// DescriptionGT applies the GT predicate on the "description" field.
+func DescriptionGT(v string) predicate.McpService {
+	return predicate.McpService(sql.FieldGT(FieldDescription, v))
+}
+
+// DescriptionGTE applies the GTE predicate on the "description" field.
+func DescriptionGTE(v string) predicate.McpService {
+	return predicate.McpService(sql.FieldGTE(FieldDescription, v))
+}
+
+// DescriptionLT applies the LT predicate on the "description" field.
+func DescriptionLT(v string) predicate.McpService {
+	return predicate.McpService(sql.FieldLT(FieldDescription, v))
+}
+
+// DescriptionLTE applies the LTE predicate on the "description" field.
+func DescriptionLTE(v string) predicate.McpService {
+	return predicate.McpService(sql.FieldLTE(FieldDescription, v))
+}
+
+// DescriptionContains applies the Contains predicate on the "description" field.
+func DescriptionContains(v string) predicate.McpService {
+	return predicate.McpService(sql.FieldContains(FieldDescription, v))
+}
+
+// DescriptionHasPrefix applies the HasPrefix predicate on the "description" field.
+func DescriptionHasPrefix(v string) predicate.McpService {
+	return predicate.McpService(sql.FieldHasPrefix(FieldDescription, v))
+}
+
+// DescriptionHasSuffix applies the HasSuffix predicate on the "description" field.
+func DescriptionHasSuffix(v string) predicate.McpService {
+	return predicate.McpService(sql.FieldHasSuffix(FieldDescription, v))
+}
+
+// DescriptionIsNil applies the IsNil predicate on the "description" field.
+func DescriptionIsNil() predicate.McpService {
+	return predicate.McpService(sql.FieldIsNull(FieldDescription))
+}
+
+// DescriptionNotNil applies the NotNil predicate on the "description" field.
+func DescriptionNotNil() predicate.McpService {
+	return predicate.McpService(sql.FieldNotNull(FieldDescription))
+}
+
+// DescriptionEqualFold applies the EqualFold predicate on the "description" field.
+func DescriptionEqualFold(v string) predicate.McpService {
+	return predicate.McpService(sql.FieldEqualFold(FieldDescription, v))
+}
+
+// DescriptionContainsFold applies the ContainsFold predicate on the "description" field.
+func DescriptionContainsFold(v string) predicate.McpService {
+	return predicate.McpService(sql.FieldContainsFold(FieldDescription, v))
+}
+
+// DocumentationEQ applies the EQ predicate on the "documentation" field.
+func DocumentationEQ(v string) predicate.McpService {
+	return predicate.McpService(sql.FieldEQ(FieldDocumentation, v))
+}
+
+// DocumentationNEQ applies the NEQ predicate on the "documentation" field.
+func DocumentationNEQ(v string) predicate.McpService {
+	return predicate.McpService(sql.FieldNEQ(FieldDocumentation, v))
+}
+
+// DocumentationIn applies the In predicate on the "documentation" field.
+func DocumentationIn(vs ...string) predicate.McpService {
+	return predicate.McpService(sql.FieldIn(FieldDocumentation, vs...))
+}
+
+// DocumentationNotIn applies the NotIn predicate on the "documentation" field.
+func DocumentationNotIn(vs ...string) predicate.McpService {
+	return predicate.McpService(sql.FieldNotIn(FieldDocumentation, vs...))
+}
+
+// DocumentationGT applies the GT predicate on the "documentation" field.
+func DocumentationGT(v string) predicate.McpService {
+	return predicate.McpService(sql.FieldGT(FieldDocumentation, v))
+}
+
+// DocumentationGTE applies the GTE predicate on the "documentation" field.
+func DocumentationGTE(v string) predicate.McpService {
+	return predicate.McpService(sql.FieldGTE(FieldDocumentation, v))
+}
+
+// DocumentationLT applies the LT predicate on the "documentation" field.
+func DocumentationLT(v string) predicate.McpService {
+	return predicate.McpService(sql.FieldLT(FieldDocumentation, v))
+}
+
+// DocumentationLTE applies the LTE predicate on the "documentation" field.
+func DocumentationLTE(v string) predicate.McpService {
+	return predicate.McpService(sql.FieldLTE(FieldDocumentation, v))
+}
+
+// DocumentationContains applies the Contains predicate on the "documentation" field.
+func DocumentationContains(v string) predicate.McpService {
+	return predicate.McpService(sql.FieldContains(FieldDocumentation, v))
+}
+
+// DocumentationHasPrefix applies the HasPrefix predicate on the "documentation" field.
+func DocumentationHasPrefix(v string) predicate.McpService {
+	return predicate.McpService(sql.FieldHasPrefix(FieldDocumentation, v))
+}
+
+// DocumentationHasSuffix applies the HasSuffix predicate on the "documentation" field.
+func DocumentationHasSuffix(v string) predicate.McpService {
+	return predicate.McpService(sql.FieldHasSuffix(FieldDocumentation, v))
+}
+
+// DocumentationIsNil applies the IsNil predicate on the "documentation" field.
+func DocumentationIsNil() predicate.McpService {
+	return predicate.McpService(sql.FieldIsNull(FieldDocumentation))
+}
+
+// DocumentationNotNil applies the NotNil predicate on the "documentation" field.
+func DocumentationNotNil() predicate.McpService {
+	return predicate.McpService(sql.FieldNotNull(FieldDocumentation))
+}
+
+// DocumentationEqualFold applies the EqualFold predicate on the "documentation" field.
+func DocumentationEqualFold(v string) predicate.McpService {
+	return predicate.McpService(sql.FieldEqualFold(FieldDocumentation, v))
+}
+
+// DocumentationContainsFold applies the ContainsFold predicate on the "documentation" field.
+func DocumentationContainsFold(v string) predicate.McpService {
+	return predicate.McpService(sql.FieldContainsFold(FieldDocumentation, v))
 }
 
 // TypeEQ applies the EQ predicate on the "type" field.
@@ -708,6 +948,29 @@ func UpdatedAtLT(v time.Time) predicate.McpService {
 // UpdatedAtLTE applies the LTE predicate on the "updatedAt" field.
 func UpdatedAtLTE(v time.Time) predicate.McpService {
 	return predicate.McpService(sql.FieldLTE(FieldUpdatedAt, v))
+}
+
+// HasCategory applies the HasEdge predicate on the "category" edge.
+func HasCategory() predicate.McpService {
+	return predicate.McpService(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, CategoryTable, CategoryColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasCategoryWith applies the HasEdge predicate on the "category" edge with a given conditions (other predicates).
+func HasCategoryWith(preds ...predicate.ApiCategory) predicate.McpService {
+	return predicate.McpService(func(s *sql.Selector) {
+		step := newCategoryStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
 }
 
 // HasUsageRecords applies the HasEdge predicate on the "usageRecords" edge.

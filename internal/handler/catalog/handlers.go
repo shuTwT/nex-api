@@ -66,7 +66,7 @@ func parseMCPListOptions(r *http.Request) (servicecatalog.MCPListOptions, error)
 	if err != nil {
 		return servicecatalog.MCPListOptions{}, err
 	}
-	return servicecatalog.MCPListOptions{Type: r.URL.Query().Get("type"), Search: r.URL.Query().Get("search"), Status: r.URL.Query().Get("status"), Page: page, Limit: limit}, nil
+	return servicecatalog.MCPListOptions{Type: r.URL.Query().Get("type"), CategoryID: r.URL.Query().Get("category"), Search: r.URL.Query().Get("search"), Status: r.URL.Query().Get("status"), Page: page, Limit: limit}, nil
 }
 
 func parsePage(r *http.Request) (int, int, error) {

@@ -38,6 +38,10 @@ const publicRoutes: RouteObject[] = [
     ...lazyRoute(() => import("@/pages/mcp-market")),
   },
   {
+    path: "mcp-detail/:id",
+    ...lazyRoute(() => import("@/pages/mcp-detail")),
+  },
+  {
     path: "pricing",
     ...lazyRoute(() => import("@/pages/pricing")),
   },

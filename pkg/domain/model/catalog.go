@@ -37,24 +37,30 @@ type CatalogCategoryUpdateReq struct {
 	Icon        *string `json:"icon"`
 }
 type CatalogMCPCreateReq struct {
-	Name       string  `json:"name"`
-	Identifier string  `json:"identifier"`
-	Type       string  `json:"type"`
-	Command    *string `json:"command"`
-	Endpoint   *string `json:"endpoint"`
-	EnvVars    *string `json:"envVars"`
-	Pricing    *int    `json:"pricing"`
-	IsActive   *bool   `json:"isActive"`
+	Name          string  `json:"name"`
+	Identifier    string  `json:"identifier"`
+	CategoryID    string  `json:"categoryId"`
+	Description   *string `json:"description"`
+	Documentation *string `json:"documentation"`
+	Type          string  `json:"type"`
+	Command       *string `json:"command"`
+	Endpoint      *string `json:"endpoint"`
+	EnvVars       *string `json:"envVars"`
+	Pricing       *int    `json:"pricing"`
+	IsActive      *bool   `json:"isActive"`
 }
 type CatalogMCPUpdateReq struct {
-	Name       *string `json:"name"`
-	Identifier *string `json:"identifier"`
-	Type       *string `json:"type"`
-	Command    *string `json:"command"`
-	Endpoint   *string `json:"endpoint"`
-	EnvVars    *string `json:"envVars"`
-	Pricing    *int    `json:"pricing"`
-	IsActive   *bool   `json:"isActive"`
+	Name          *string `json:"name"`
+	Identifier    *string `json:"identifier"`
+	CategoryID    *string `json:"categoryId"`
+	Description   *string `json:"description"`
+	Documentation *string `json:"documentation"`
+	Type          *string `json:"type"`
+	Command       *string `json:"command"`
+	Endpoint      *string `json:"endpoint"`
+	EnvVars       *string `json:"envVars"`
+	Pricing       *int    `json:"pricing"`
+	IsActive      *bool   `json:"isActive"`
 }
 
 type CatalogCategoryDTO struct {
@@ -100,18 +106,22 @@ type CatalogAPIDTO struct {
 	Responses     []CatalogResponseDTO  `json:"responses,omitempty"`
 }
 type CatalogMCPDTO struct {
-	ID         string  `json:"id"`
-	Name       string  `json:"name"`
-	Identifier string  `json:"identifier"`
-	Type       string  `json:"type"`
-	Command    *string `json:"command"`
-	Endpoint   *string `json:"endpoint"`
-	EnvVars    *string `json:"envVars"`
-	Pricing    int     `json:"pricing"`
-	IsActive   bool    `json:"isActive"`
-	CallCount  int     `json:"callCount"`
-	CreatedAt  string  `json:"createdAt"`
-	UpdatedAt  string  `json:"updatedAt"`
+	ID            string              `json:"id"`
+	Name          string              `json:"name"`
+	Identifier    string              `json:"identifier"`
+	CategoryID    string              `json:"categoryId"`
+	Category      *CatalogCategoryDTO `json:"category,omitempty"`
+	Description   *string             `json:"description"`
+	Documentation *string             `json:"documentation"`
+	Type          string              `json:"type"`
+	Command       *string             `json:"command"`
+	Endpoint      *string             `json:"endpoint"`
+	EnvVars       *string             `json:"envVars"`
+	Pricing       int                 `json:"pricing"`
+	IsActive      bool                `json:"isActive"`
+	CallCount     int                 `json:"callCount"`
+	CreatedAt     string              `json:"createdAt"`
+	UpdatedAt     string              `json:"updatedAt"`
 }
 type CatalogCategoryListResp struct {
 	ID          string  `json:"id"`

@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/shuTwT/nex-api/ent/api"
 	"github.com/shuTwT/nex-api/ent/apicategory"
+	"github.com/shuTwT/nex-api/ent/mcpservice"
 )
 
 // ApiCategoryCreate is the builder for creating a ApiCategory entity.
@@ -73,6 +74,21 @@ func (_c *ApiCategoryCreate) AddApis(v ...*Api) *ApiCategoryCreate {
 		ids[i] = v[i].ID
 	}
 	return _c.AddAPIIDs(ids...)
+}
+
+// AddMcpServiceIDs adds the "mcpServices" edge to the McpService entity by IDs.
+func (_c *ApiCategoryCreate) AddMcpServiceIDs(ids ...string) *ApiCategoryCreate {
+	_c.mutation.AddMcpServiceIDs(ids...)
+	return _c
+}
+
+// AddMcpServices adds the "mcpServices" edges to the McpService entity.
+func (_c *ApiCategoryCreate) AddMcpServices(v ...*McpService) *ApiCategoryCreate {
+	ids := make([]string, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _c.AddMcpServiceIDs(ids...)
 }
 
 // Mutation returns the ApiCategoryMutation object of the builder.
@@ -180,6 +196,22 @@ func (_c *ApiCategoryCreate) createSpec() (*ApiCategory, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(api.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := _c.mutation.McpServicesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   apicategory.McpServicesTable,
+			Columns: []string{apicategory.McpServicesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(mcpservice.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {

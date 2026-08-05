@@ -10,6 +10,7 @@ import (
 	"github.com/shuTwT/nex-api/ent"
 	"github.com/shuTwT/nex-api/ent/api"
 	"github.com/shuTwT/nex-api/ent/mcpservice"
+	servicemcpgateway "github.com/shuTwT/nex-api/internal/service/mcpgateway"
 	"github.com/shuTwT/nex-api/internal/service/stats"
 	"github.com/shuTwT/nex-api/pkg/domain/model"
 )
@@ -28,15 +29,20 @@ type ListOptions struct {
 
 // Service owns marketplace queries; the handler only adapts HTTP.
 type Service struct {
-	db    *ent.Client
-	stats *stats.Store
+	db       *ent.Client
+	stats    *stats.Store
+	executor servicemcpgateway.Executor
 }
 
 func NewService(db *ent.Client, statStore *stats.Store) (*Service, error) {
 	if db == nil || statStore == nil {
 		return nil, fmt.Errorf("marketplace: database and stats store are required")
 	}
-	return &Service{db: db, stats: statStore}, nil
+	executor, err := servicemcpgateway.NewProxyExecutor(servicemcpgateway.StdioOptions{})
+	if err != nil {
+		return nil, fmt.Errorf("marketplace: create MCP tool discovery executor: %w", err)
+	}
+	return &Service{db: db, stats: statStore, executor: executor}, nil
 }
 
 // snapshot reads the global stats snapshot, degrading to an empty snapshot
@@ -111,7 +117,10 @@ func (s *Service) APIStats(ctx context.Context) (map[string]int64, error) {
 func (s *Service) ListMCP(ctx context.Context, options ListOptions) ([]MCPView, int, error) {
 	query := s.db.McpService.Query().Where(mcpservice.IsActive(true))
 	if options.Search != "" {
-		query = query.Where(mcpservice.Or(mcpservice.NameContainsFold(options.Search), mcpservice.IdentifierContainsFold(options.Search)))
+		query = query.Where(mcpservice.Or(mcpservice.NameContainsFold(options.Search), mcpservice.IdentifierContainsFold(options.Search), mcpservice.DescriptionContainsFold(options.Search)))
+	}
+	if options.Category != "" && options.Category != "all" {
+		query = query.Where(mcpservice.CategoryId(options.Category))
 	}
 	if options.Type != "" && options.Type != "all" {
 		query = query.Where(mcpservice.Type(options.Type))
@@ -120,7 +129,7 @@ func (s *Service) ListMCP(ctx context.Context, options ListOptions) ([]MCPView, 
 	if err != nil {
 		return nil, 0, fmt.Errorf("count marketplace MCP services: %w", err)
 	}
-	items, err := query.Order(mcpservice.ByCallCount(sql.OrderDesc())).Offset((options.Page - 1) * options.Limit).Limit(options.Limit).All(ctx)
+	items, err := query.WithCategory().Order(mcpservice.ByCallCount(sql.OrderDesc())).Offset((options.Page - 1) * options.Limit).Limit(options.Limit).All(ctx)
 	if err != nil {
 		return nil, 0, fmt.Errorf("list marketplace MCP services: %w", err)
 	}
@@ -134,7 +143,7 @@ func (s *Service) ListMCP(ctx context.Context, options ListOptions) ([]MCPView, 
 
 // GetMCP returns one active MCP service by ID.
 func (s *Service) GetMCP(ctx context.Context, id string) (MCPView, error) {
-	item, err := s.db.McpService.Query().Where(mcpservice.ID(id), mcpservice.IsActive(true)).Only(ctx)
+	item, err := s.db.McpService.Query().Where(mcpservice.ID(id), mcpservice.IsActive(true)).WithCategory().Only(ctx)
 	if err != nil {
 		return MCPView{}, err
 	}
@@ -169,7 +178,11 @@ func (s *Service) toAPIView(ctx context.Context, item *ent.Api, snapshot stats.S
 
 func (s *Service) toMCPView(ctx context.Context, item *ent.McpService, snapshot stats.Snapshot, detail bool) MCPView {
 	trend, _ := s.stats.MCPRequestTrend(ctx, item.Identifier, 24)
-	return MCPView{ID: item.ID, Name: item.Name, Identifier: item.Identifier, Type: item.Type, Pricing: item.Pricing, IsFree: item.Pricing == 0, IsActive: detail && item.IsActive, TodayCallCount: sumInt64(trend), UserCount: countMCPUsers(snapshot.UserMCPs, item.Identifier), TotalCallCount: canonicalOrDatabase(snapshot.MCPs, item.Identifier, int64(item.CallCount)), CreatedAt: item.CreatedAt.UTC().Format(timeFormat), UpdatedAt: item.UpdatedAt.UTC().Format(timeFormat)}
+	category := "未分类"
+	if item.Edges.Category != nil {
+		category = item.Edges.Category.Name
+	}
+	return MCPView{ID: item.ID, Name: item.Name, Identifier: item.Identifier, Category: category, Description: item.Description, Documentation: item.Documentation, Type: item.Type, Pricing: item.Pricing, IsFree: item.Pricing == 0, IsActive: detail && item.IsActive, TodayCallCount: sumInt64(trend), UserCount: countMCPUsers(snapshot.UserMCPs, item.Identifier), TotalCallCount: canonicalOrDatabase(snapshot.MCPs, item.Identifier, int64(item.CallCount)), CreatedAt: item.CreatedAt.UTC().Format(timeFormat), UpdatedAt: item.UpdatedAt.UTC().Format(timeFormat)}
 }
 
 const timeFormat = "2006-01-02T15:04:05.000Z"

@@ -3548,19 +3548,22 @@ func (m *APIMutation) ResetEdge(name string) error {
 // ApiCategoryMutation represents an operation that mutates the ApiCategory nodes in the graph.
 type ApiCategoryMutation struct {
 	config
-	op            Op
-	typ           string
-	id            *string
-	name          *string
-	description   *string
-	icon          *string
-	clearedFields map[string]struct{}
-	apis          map[string]struct{}
-	removedapis   map[string]struct{}
-	clearedapis   bool
-	done          bool
-	oldValue      func(context.Context) (*ApiCategory, error)
-	predicates    []predicate.ApiCategory
+	op                 Op
+	typ                string
+	id                 *string
+	name               *string
+	description        *string
+	icon               *string
+	clearedFields      map[string]struct{}
+	apis               map[string]struct{}
+	removedapis        map[string]struct{}
+	clearedapis        bool
+	mcpServices        map[string]struct{}
+	removedmcpServices map[string]struct{}
+	clearedmcpServices bool
+	done               bool
+	oldValue           func(context.Context) (*ApiCategory, error)
+	predicates         []predicate.ApiCategory
 }
 
 var _ ent.Mutation = (*ApiCategoryMutation)(nil)
@@ -3842,6 +3845,60 @@ func (m *ApiCategoryMutation) ResetApis() {
 	m.removedapis = nil
 }
 
+// AddMcpServiceIDs adds the "mcpServices" edge to the McpService entity by ids.
+func (m *ApiCategoryMutation) AddMcpServiceIDs(ids ...string) {
+	if m.mcpServices == nil {
+		m.mcpServices = make(map[string]struct{})
+	}
+	for i := range ids {
+		m.mcpServices[ids[i]] = struct{}{}
+	}
+}
+
+// ClearMcpServices clears the "mcpServices" edge to the McpService entity.
+func (m *ApiCategoryMutation) ClearMcpServices() {
+	m.clearedmcpServices = true
+}
+
+// McpServicesCleared reports if the "mcpServices" edge to the McpService entity was cleared.
+func (m *ApiCategoryMutation) McpServicesCleared() bool {
+	return m.clearedmcpServices
+}
+
+// RemoveMcpServiceIDs removes the "mcpServices" edge to the McpService entity by IDs.
+func (m *ApiCategoryMutation) RemoveMcpServiceIDs(ids ...string) {
+	if m.removedmcpServices == nil {
+		m.removedmcpServices = make(map[string]struct{})
+	}
+	for i := range ids {
+		delete(m.mcpServices, ids[i])
+		m.removedmcpServices[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedMcpServices returns the removed IDs of the "mcpServices" edge to the McpService entity.
+func (m *ApiCategoryMutation) RemovedMcpServicesIDs() (ids []string) {
+	for id := range m.removedmcpServices {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// McpServicesIDs returns the "mcpServices" edge IDs in the mutation.
+func (m *ApiCategoryMutation) McpServicesIDs() (ids []string) {
+	for id := range m.mcpServices {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetMcpServices resets all changes to the "mcpServices" edge.
+func (m *ApiCategoryMutation) ResetMcpServices() {
+	m.mcpServices = nil
+	m.clearedmcpServices = false
+	m.removedmcpServices = nil
+}
+
 // Where appends a list predicates to the ApiCategoryMutation builder.
 func (m *ApiCategoryMutation) Where(ps ...predicate.ApiCategory) {
 	m.predicates = append(m.predicates, ps...)
@@ -4018,9 +4075,12 @@ func (m *ApiCategoryMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *ApiCategoryMutation) AddedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
 	if m.apis != nil {
 		edges = append(edges, apicategory.EdgeApis)
+	}
+	if m.mcpServices != nil {
+		edges = append(edges, apicategory.EdgeMcpServices)
 	}
 	return edges
 }
@@ -4035,15 +4095,24 @@ func (m *ApiCategoryMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case apicategory.EdgeMcpServices:
+		ids := make([]ent.Value, 0, len(m.mcpServices))
+		for id := range m.mcpServices {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *ApiCategoryMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
 	if m.removedapis != nil {
 		edges = append(edges, apicategory.EdgeApis)
+	}
+	if m.removedmcpServices != nil {
+		edges = append(edges, apicategory.EdgeMcpServices)
 	}
 	return edges
 }
@@ -4058,15 +4127,24 @@ func (m *ApiCategoryMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case apicategory.EdgeMcpServices:
+		ids := make([]ent.Value, 0, len(m.removedmcpServices))
+		for id := range m.removedmcpServices {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *ApiCategoryMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
 	if m.clearedapis {
 		edges = append(edges, apicategory.EdgeApis)
+	}
+	if m.clearedmcpServices {
+		edges = append(edges, apicategory.EdgeMcpServices)
 	}
 	return edges
 }
@@ -4077,6 +4155,8 @@ func (m *ApiCategoryMutation) EdgeCleared(name string) bool {
 	switch name {
 	case apicategory.EdgeApis:
 		return m.clearedapis
+	case apicategory.EdgeMcpServices:
+		return m.clearedmcpServices
 	}
 	return false
 }
@@ -4095,6 +4175,9 @@ func (m *ApiCategoryMutation) ResetEdge(name string) error {
 	switch name {
 	case apicategory.EdgeApis:
 		m.ResetApis()
+		return nil
+	case apicategory.EdgeMcpServices:
+		m.ResetMcpServices()
 		return nil
 	}
 	return fmt.Errorf("unknown ApiCategory edge %s", name)
@@ -7925,6 +8008,8 @@ type McpServiceMutation struct {
 	id                  *string
 	name                *string
 	identifier          *string
+	description         *string
+	documentation       *string
 	_type               *string
 	command             *string
 	endpoint            *string
@@ -7937,6 +8022,8 @@ type McpServiceMutation struct {
 	createdAt           *time.Time
 	updatedAt           *time.Time
 	clearedFields       map[string]struct{}
+	category            *string
+	clearedcategory     bool
 	usageRecords        map[string]struct{}
 	removedusageRecords map[string]struct{}
 	clearedusageRecords bool
@@ -8119,6 +8206,153 @@ func (m *McpServiceMutation) OldIdentifier(ctx context.Context) (v string, err e
 // ResetIdentifier resets all changes to the "identifier" field.
 func (m *McpServiceMutation) ResetIdentifier() {
 	m.identifier = nil
+}
+
+// SetCategoryId sets the "categoryId" field.
+func (m *McpServiceMutation) SetCategoryId(s string) {
+	m.category = &s
+}
+
+// CategoryId returns the value of the "categoryId" field in the mutation.
+func (m *McpServiceMutation) CategoryId() (r string, exists bool) {
+	v := m.category
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCategoryId returns the old "categoryId" field's value of the McpService entity.
+// If the McpService object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *McpServiceMutation) OldCategoryId(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCategoryId is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCategoryId requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCategoryId: %w", err)
+	}
+	return oldValue.CategoryId, nil
+}
+
+// ClearCategoryId clears the value of the "categoryId" field.
+func (m *McpServiceMutation) ClearCategoryId() {
+	m.category = nil
+	m.clearedFields[mcpservice.FieldCategoryId] = struct{}{}
+}
+
+// CategoryIdCleared returns if the "categoryId" field was cleared in this mutation.
+func (m *McpServiceMutation) CategoryIdCleared() bool {
+	_, ok := m.clearedFields[mcpservice.FieldCategoryId]
+	return ok
+}
+
+// ResetCategoryId resets all changes to the "categoryId" field.
+func (m *McpServiceMutation) ResetCategoryId() {
+	m.category = nil
+	delete(m.clearedFields, mcpservice.FieldCategoryId)
+}
+
+// SetDescription sets the "description" field.
+func (m *McpServiceMutation) SetDescription(s string) {
+	m.description = &s
+}
+
+// Description returns the value of the "description" field in the mutation.
+func (m *McpServiceMutation) Description() (r string, exists bool) {
+	v := m.description
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDescription returns the old "description" field's value of the McpService entity.
+// If the McpService object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *McpServiceMutation) OldDescription(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDescription is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDescription requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDescription: %w", err)
+	}
+	return oldValue.Description, nil
+}
+
+// ClearDescription clears the value of the "description" field.
+func (m *McpServiceMutation) ClearDescription() {
+	m.description = nil
+	m.clearedFields[mcpservice.FieldDescription] = struct{}{}
+}
+
+// DescriptionCleared returns if the "description" field was cleared in this mutation.
+func (m *McpServiceMutation) DescriptionCleared() bool {
+	_, ok := m.clearedFields[mcpservice.FieldDescription]
+	return ok
+}
+
+// ResetDescription resets all changes to the "description" field.
+func (m *McpServiceMutation) ResetDescription() {
+	m.description = nil
+	delete(m.clearedFields, mcpservice.FieldDescription)
+}
+
+// SetDocumentation sets the "documentation" field.
+func (m *McpServiceMutation) SetDocumentation(s string) {
+	m.documentation = &s
+}
+
+// Documentation returns the value of the "documentation" field in the mutation.
+func (m *McpServiceMutation) Documentation() (r string, exists bool) {
+	v := m.documentation
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDocumentation returns the old "documentation" field's value of the McpService entity.
+// If the McpService object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *McpServiceMutation) OldDocumentation(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDocumentation is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDocumentation requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDocumentation: %w", err)
+	}
+	return oldValue.Documentation, nil
+}
+
+// ClearDocumentation clears the value of the "documentation" field.
+func (m *McpServiceMutation) ClearDocumentation() {
+	m.documentation = nil
+	m.clearedFields[mcpservice.FieldDocumentation] = struct{}{}
+}
+
+// DocumentationCleared returns if the "documentation" field was cleared in this mutation.
+func (m *McpServiceMutation) DocumentationCleared() bool {
+	_, ok := m.clearedFields[mcpservice.FieldDocumentation]
+	return ok
+}
+
+// ResetDocumentation resets all changes to the "documentation" field.
+func (m *McpServiceMutation) ResetDocumentation() {
+	m.documentation = nil
+	delete(m.clearedFields, mcpservice.FieldDocumentation)
 }
 
 // SetType sets the "type" field.
@@ -8524,6 +8758,46 @@ func (m *McpServiceMutation) ResetUpdatedAt() {
 	m.updatedAt = nil
 }
 
+// SetCategoryID sets the "category" edge to the ApiCategory entity by id.
+func (m *McpServiceMutation) SetCategoryID(id string) {
+	m.category = &id
+}
+
+// ClearCategory clears the "category" edge to the ApiCategory entity.
+func (m *McpServiceMutation) ClearCategory() {
+	m.clearedcategory = true
+	m.clearedFields[mcpservice.FieldCategoryId] = struct{}{}
+}
+
+// CategoryCleared reports if the "category" edge to the ApiCategory entity was cleared.
+func (m *McpServiceMutation) CategoryCleared() bool {
+	return m.CategoryIdCleared() || m.clearedcategory
+}
+
+// CategoryID returns the "category" edge ID in the mutation.
+func (m *McpServiceMutation) CategoryID() (id string, exists bool) {
+	if m.category != nil {
+		return *m.category, true
+	}
+	return
+}
+
+// CategoryIDs returns the "category" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// CategoryID instead. It exists only for internal usage by the builders.
+func (m *McpServiceMutation) CategoryIDs() (ids []string) {
+	if id := m.category; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetCategory resets all changes to the "category" edge.
+func (m *McpServiceMutation) ResetCategory() {
+	m.category = nil
+	m.clearedcategory = false
+}
+
 // AddUsageRecordIDs adds the "usageRecords" edge to the McpUsage entity by ids.
 func (m *McpServiceMutation) AddUsageRecordIDs(ids ...string) {
 	if m.usageRecords == nil {
@@ -8612,12 +8886,21 @@ func (m *McpServiceMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *McpServiceMutation) Fields() []string {
-	fields := make([]string, 0, 11)
+	fields := make([]string, 0, 14)
 	if m.name != nil {
 		fields = append(fields, mcpservice.FieldName)
 	}
 	if m.identifier != nil {
 		fields = append(fields, mcpservice.FieldIdentifier)
+	}
+	if m.category != nil {
+		fields = append(fields, mcpservice.FieldCategoryId)
+	}
+	if m.description != nil {
+		fields = append(fields, mcpservice.FieldDescription)
+	}
+	if m.documentation != nil {
+		fields = append(fields, mcpservice.FieldDocumentation)
 	}
 	if m._type != nil {
 		fields = append(fields, mcpservice.FieldType)
@@ -8658,6 +8941,12 @@ func (m *McpServiceMutation) Field(name string) (ent.Value, bool) {
 		return m.Name()
 	case mcpservice.FieldIdentifier:
 		return m.Identifier()
+	case mcpservice.FieldCategoryId:
+		return m.CategoryId()
+	case mcpservice.FieldDescription:
+		return m.Description()
+	case mcpservice.FieldDocumentation:
+		return m.Documentation()
 	case mcpservice.FieldType:
 		return m.GetType()
 	case mcpservice.FieldCommand:
@@ -8689,6 +8978,12 @@ func (m *McpServiceMutation) OldField(ctx context.Context, name string) (ent.Val
 		return m.OldName(ctx)
 	case mcpservice.FieldIdentifier:
 		return m.OldIdentifier(ctx)
+	case mcpservice.FieldCategoryId:
+		return m.OldCategoryId(ctx)
+	case mcpservice.FieldDescription:
+		return m.OldDescription(ctx)
+	case mcpservice.FieldDocumentation:
+		return m.OldDocumentation(ctx)
 	case mcpservice.FieldType:
 		return m.OldType(ctx)
 	case mcpservice.FieldCommand:
@@ -8729,6 +9024,27 @@ func (m *McpServiceMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetIdentifier(v)
+		return nil
+	case mcpservice.FieldCategoryId:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCategoryId(v)
+		return nil
+	case mcpservice.FieldDescription:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDescription(v)
+		return nil
+	case mcpservice.FieldDocumentation:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDocumentation(v)
 		return nil
 	case mcpservice.FieldType:
 		v, ok := value.(string)
@@ -8850,6 +9166,15 @@ func (m *McpServiceMutation) AddField(name string, value ent.Value) error {
 // mutation.
 func (m *McpServiceMutation) ClearedFields() []string {
 	var fields []string
+	if m.FieldCleared(mcpservice.FieldCategoryId) {
+		fields = append(fields, mcpservice.FieldCategoryId)
+	}
+	if m.FieldCleared(mcpservice.FieldDescription) {
+		fields = append(fields, mcpservice.FieldDescription)
+	}
+	if m.FieldCleared(mcpservice.FieldDocumentation) {
+		fields = append(fields, mcpservice.FieldDocumentation)
+	}
 	if m.FieldCleared(mcpservice.FieldCommand) {
 		fields = append(fields, mcpservice.FieldCommand)
 	}
@@ -8873,6 +9198,15 @@ func (m *McpServiceMutation) FieldCleared(name string) bool {
 // error if the field is not defined in the schema.
 func (m *McpServiceMutation) ClearField(name string) error {
 	switch name {
+	case mcpservice.FieldCategoryId:
+		m.ClearCategoryId()
+		return nil
+	case mcpservice.FieldDescription:
+		m.ClearDescription()
+		return nil
+	case mcpservice.FieldDocumentation:
+		m.ClearDocumentation()
+		return nil
 	case mcpservice.FieldCommand:
 		m.ClearCommand()
 		return nil
@@ -8895,6 +9229,15 @@ func (m *McpServiceMutation) ResetField(name string) error {
 		return nil
 	case mcpservice.FieldIdentifier:
 		m.ResetIdentifier()
+		return nil
+	case mcpservice.FieldCategoryId:
+		m.ResetCategoryId()
+		return nil
+	case mcpservice.FieldDescription:
+		m.ResetDescription()
+		return nil
+	case mcpservice.FieldDocumentation:
+		m.ResetDocumentation()
 		return nil
 	case mcpservice.FieldType:
 		m.ResetType()
@@ -8929,7 +9272,10 @@ func (m *McpServiceMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *McpServiceMutation) AddedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
+	if m.category != nil {
+		edges = append(edges, mcpservice.EdgeCategory)
+	}
 	if m.usageRecords != nil {
 		edges = append(edges, mcpservice.EdgeUsageRecords)
 	}
@@ -8940,6 +9286,10 @@ func (m *McpServiceMutation) AddedEdges() []string {
 // name in this mutation.
 func (m *McpServiceMutation) AddedIDs(name string) []ent.Value {
 	switch name {
+	case mcpservice.EdgeCategory:
+		if id := m.category; id != nil {
+			return []ent.Value{*id}
+		}
 	case mcpservice.EdgeUsageRecords:
 		ids := make([]ent.Value, 0, len(m.usageRecords))
 		for id := range m.usageRecords {
@@ -8952,7 +9302,7 @@ func (m *McpServiceMutation) AddedIDs(name string) []ent.Value {
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *McpServiceMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
 	if m.removedusageRecords != nil {
 		edges = append(edges, mcpservice.EdgeUsageRecords)
 	}
@@ -8975,7 +9325,10 @@ func (m *McpServiceMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *McpServiceMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
+	if m.clearedcategory {
+		edges = append(edges, mcpservice.EdgeCategory)
+	}
 	if m.clearedusageRecords {
 		edges = append(edges, mcpservice.EdgeUsageRecords)
 	}
@@ -8986,6 +9339,8 @@ func (m *McpServiceMutation) ClearedEdges() []string {
 // was cleared in this mutation.
 func (m *McpServiceMutation) EdgeCleared(name string) bool {
 	switch name {
+	case mcpservice.EdgeCategory:
+		return m.clearedcategory
 	case mcpservice.EdgeUsageRecords:
 		return m.clearedusageRecords
 	}
@@ -8996,6 +9351,9 @@ func (m *McpServiceMutation) EdgeCleared(name string) bool {
 // if that edge is not defined in the schema.
 func (m *McpServiceMutation) ClearEdge(name string) error {
 	switch name {
+	case mcpservice.EdgeCategory:
+		m.ClearCategory()
+		return nil
 	}
 	return fmt.Errorf("unknown McpService unique edge %s", name)
 }
@@ -9004,6 +9362,9 @@ func (m *McpServiceMutation) ClearEdge(name string) error {
 // It returns an error if the edge is not defined in the schema.
 func (m *McpServiceMutation) ResetEdge(name string) error {
 	switch name {
+	case mcpservice.EdgeCategory:
+		m.ResetCategory()
+		return nil
 	case mcpservice.EdgeUsageRecords:
 		m.ResetUsageRecords()
 		return nil

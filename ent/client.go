@@ -966,6 +966,22 @@ func (c *ApiCategoryClient) QueryApis(_m *ApiCategory) *APIQuery {
 	return query
 }
 
+// QueryMcpServices queries the mcpServices edge of a ApiCategory.
+func (c *ApiCategoryClient) QueryMcpServices(_m *ApiCategory) *McpServiceQuery {
+	query := (&McpServiceClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(apicategory.Table, apicategory.FieldID, id),
+			sqlgraph.To(mcpservice.Table, mcpservice.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, apicategory.McpServicesTable, apicategory.McpServicesColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *ApiCategoryClient) Hooks() []Hook {
 	return c.hooks.ApiCategory
@@ -1858,6 +1874,22 @@ func (c *McpServiceClient) GetX(ctx context.Context, id string) *McpService {
 		panic(err)
 	}
 	return obj
+}
+
+// QueryCategory queries the category edge of a McpService.
+func (c *McpServiceClient) QueryCategory(_m *McpService) *ApiCategoryQuery {
+	query := (&ApiCategoryClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(mcpservice.Table, mcpservice.FieldID, id),
+			sqlgraph.To(apicategory.Table, apicategory.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, mcpservice.CategoryTable, mcpservice.CategoryColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
 }
 
 // QueryUsageRecords queries the usageRecords edge of a McpService.

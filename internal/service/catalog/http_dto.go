@@ -35,7 +35,12 @@ func APIDTOFromEntity(value any, relations bool) APIDTO {
 }
 func MCPDTOFromEntity(value any) MCPDTO {
 	item := value.(*ent.McpService)
-	return MCPDTO{ID: item.ID, Name: item.Name, Identifier: item.Identifier, Type: item.Type, Command: optionalDTO(item.Command), Endpoint: optionalDTO(item.Endpoint), EnvVars: optionalDTO(item.EnvVars), Pricing: item.Pricing, IsActive: item.IsActive, CallCount: item.CallCount, CreatedAt: item.CreatedAt.UTC().Format("2006-01-02T15:04:05.000Z"), UpdatedAt: item.UpdatedAt.UTC().Format("2006-01-02T15:04:05.000Z")}
+	data := MCPDTO{ID: item.ID, Name: item.Name, Identifier: item.Identifier, CategoryID: item.CategoryId, Description: optionalDTO(item.Description), Documentation: optionalDTO(item.Documentation), Type: item.Type, Command: optionalDTO(item.Command), Endpoint: optionalDTO(item.Endpoint), EnvVars: optionalDTO(item.EnvVars), Pricing: item.Pricing, IsActive: item.IsActive, CallCount: item.CallCount, CreatedAt: item.CreatedAt.UTC().Format("2006-01-02T15:04:05.000Z"), UpdatedAt: item.UpdatedAt.UTC().Format("2006-01-02T15:04:05.000Z")}
+	if item.Edges.Category != nil {
+		category := CategoryDTOFromEntity(item.Edges.Category)
+		data.Category = &category
+	}
+	return data
 }
 func optionalDTO(value string) *string {
 	if strings.TrimSpace(value) == "" {

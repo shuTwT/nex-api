@@ -9,6 +9,7 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
+	"github.com/shuTwT/nex-api/ent/apicategory"
 	"github.com/shuTwT/nex-api/ent/mcpservice"
 )
 
@@ -21,6 +22,12 @@ type McpService struct {
 	Name string `json:"name,omitempty"`
 	// Identifier holds the value of the "identifier" field.
 	Identifier string `json:"identifier,omitempty"`
+	// CategoryId holds the value of the "categoryId" field.
+	CategoryId string `json:"categoryId,omitempty"`
+	// Description holds the value of the "description" field.
+	Description string `json:"description,omitempty"`
+	// Documentation holds the value of the "documentation" field.
+	Documentation string `json:"documentation,omitempty"`
 	// Type holds the value of the "type" field.
 	Type string `json:"type,omitempty"`
 	// Command holds the value of the "command" field.
@@ -47,17 +54,30 @@ type McpService struct {
 
 // McpServiceEdges holds the relations/edges for other nodes in the graph.
 type McpServiceEdges struct {
+	// Category holds the value of the category edge.
+	Category *ApiCategory `json:"category,omitempty"`
 	// UsageRecords holds the value of the usageRecords edge.
 	UsageRecords []*McpUsage `json:"usageRecords,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [1]bool
+	loadedTypes [2]bool
+}
+
+// CategoryOrErr returns the Category value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e McpServiceEdges) CategoryOrErr() (*ApiCategory, error) {
+	if e.Category != nil {
+		return e.Category, nil
+	} else if e.loadedTypes[0] {
+		return nil, &NotFoundError{label: apicategory.Label}
+	}
+	return nil, &NotLoadedError{edge: "category"}
 }
 
 // UsageRecordsOrErr returns the UsageRecords value or an error if the edge
 // was not loaded in eager-loading.
 func (e McpServiceEdges) UsageRecordsOrErr() ([]*McpUsage, error) {
-	if e.loadedTypes[0] {
+	if e.loadedTypes[1] {
 		return e.UsageRecords, nil
 	}
 	return nil, &NotLoadedError{edge: "usageRecords"}
@@ -72,7 +92,7 @@ func (*McpService) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullBool)
 		case mcpservice.FieldPricing, mcpservice.FieldCallCount:
 			values[i] = new(sql.NullInt64)
-		case mcpservice.FieldID, mcpservice.FieldName, mcpservice.FieldIdentifier, mcpservice.FieldType, mcpservice.FieldCommand, mcpservice.FieldEndpoint, mcpservice.FieldEnvVars:
+		case mcpservice.FieldID, mcpservice.FieldName, mcpservice.FieldIdentifier, mcpservice.FieldCategoryId, mcpservice.FieldDescription, mcpservice.FieldDocumentation, mcpservice.FieldType, mcpservice.FieldCommand, mcpservice.FieldEndpoint, mcpservice.FieldEnvVars:
 			values[i] = new(sql.NullString)
 		case mcpservice.FieldCreatedAt, mcpservice.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -108,6 +128,24 @@ func (_m *McpService) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field identifier", values[i])
 			} else if value.Valid {
 				_m.Identifier = value.String
+			}
+		case mcpservice.FieldCategoryId:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field categoryId", values[i])
+			} else if value.Valid {
+				_m.CategoryId = value.String
+			}
+		case mcpservice.FieldDescription:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field description", values[i])
+			} else if value.Valid {
+				_m.Description = value.String
+			}
+		case mcpservice.FieldDocumentation:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field documentation", values[i])
+			} else if value.Valid {
+				_m.Documentation = value.String
 			}
 		case mcpservice.FieldType:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -176,6 +214,11 @@ func (_m *McpService) Value(name string) (ent.Value, error) {
 	return _m.selectValues.Get(name)
 }
 
+// QueryCategory queries the "category" edge of the McpService entity.
+func (_m *McpService) QueryCategory() *ApiCategoryQuery {
+	return NewMcpServiceClient(_m.config).QueryCategory(_m)
+}
+
 // QueryUsageRecords queries the "usageRecords" edge of the McpService entity.
 func (_m *McpService) QueryUsageRecords() *McpUsageQuery {
 	return NewMcpServiceClient(_m.config).QueryUsageRecords(_m)
@@ -209,6 +252,15 @@ func (_m *McpService) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("identifier=")
 	builder.WriteString(_m.Identifier)
+	builder.WriteString(", ")
+	builder.WriteString("categoryId=")
+	builder.WriteString(_m.CategoryId)
+	builder.WriteString(", ")
+	builder.WriteString("description=")
+	builder.WriteString(_m.Description)
+	builder.WriteString(", ")
+	builder.WriteString("documentation=")
+	builder.WriteString(_m.Documentation)
 	builder.WriteString(", ")
 	builder.WriteString("type=")
 	builder.WriteString(_m.Type)

@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback, useTransition } from "react";
-import { Badge, Button, Card, Input, Select, Typography } from "antd";
+import { Alert, Badge, Button, Card, Input, Select, Typography } from "antd";
 import {
   Search,
   Plus,
@@ -28,6 +28,12 @@ interface McpStats {
   totalCalls: number;
 }
 
+interface Category {
+  id: string;
+  name: string;
+  apiCount: number;
+}
+
 const TYPE_LABELS: Record<string, string> = {
   stdio: "stdio",
   sse: "SSE",
@@ -36,25 +42,32 @@ const TYPE_LABELS: Record<string, string> = {
 
 export default function McpServicesPage() {
   const [services, setServices] = useState<McpServiceData[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [stats, setStats] = useState<McpStats | null>(null);
   const [pagination, setPagination] = useState<PaginationInfo | null>(null);
   const [searchInput, setSearchInput] = useState("");
   const [typeFilter, setTypeFilter] = useState("all");
+  const [categoryFilter, setCategoryFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
   const [appliedSearch, setAppliedSearch] = useState("");
   const [appliedType, setAppliedType] = useState("all");
+  const [appliedCategory, setAppliedCategory] = useState("all");
   const [appliedStatus, setAppliedStatus] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [isLoading, setIsLoading] = useState(true);
+  const [categoriesLoading, setCategoriesLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
   const [showForm, setShowForm] = useState(false);
   const [editingService, setEditingService] = useState<McpServiceData | null>(null);
 
   const loadServices = useCallback(async () => {
     setIsLoading(true);
+    setLoadError(null);
     const query: Record<string, string | number | boolean> = {
       type: appliedType,
+      category: appliedCategory,
       search: appliedSearch,
       status: appliedStatus,
       page: currentPage,
@@ -68,9 +81,13 @@ export default function McpServicesPage() {
       if (result.pagination) {
         setPagination(result.pagination);
       }
+    } else {
+      setServices([]);
+      setPagination(null);
+      setLoadError(result.error || "MCP 服务列表加载失败");
     }
     setIsLoading(false);
-  }, [currentPage, pageSize, appliedSearch, appliedType, appliedStatus]);
+  }, [currentPage, pageSize, appliedSearch, appliedType, appliedCategory, appliedStatus]);
 
   useEffect(() => {
     loadServices();
@@ -82,7 +99,16 @@ export default function McpServicesPage() {
     if (data) setStats(data);
   }
 
+  async function loadCategories() {
+    setCategoriesLoading(true);
+    const result = await api.categories_route_get();
+    const data = responseData<Category[]>(result);
+    if (data) setCategories(data);
+    setCategoriesLoading(false);
+  }
+
   useEffect(() => {
+    loadCategories();
     loadStats();
   }, []);
 
@@ -98,6 +124,7 @@ export default function McpServicesPage() {
   function handleQuery() {
     setAppliedSearch(searchInput);
     setAppliedType(typeFilter);
+    setAppliedCategory(categoryFilter);
     setAppliedStatus(statusFilter);
     setCurrentPage(1);
   }
@@ -105,9 +132,11 @@ export default function McpServicesPage() {
   function handleReset() {
     setSearchInput("");
     setTypeFilter("all");
+    setCategoryFilter("all");
     setStatusFilter("all");
     setAppliedSearch("");
     setAppliedType("all");
+    setAppliedCategory("all");
     setAppliedStatus("all");
     setCurrentPage(1);
   }
@@ -182,6 +211,11 @@ export default function McpServicesPage() {
     },
   ];
 
+  const categoryOptions = [
+    { value: "all", label: "全部分类" },
+    ...categories.map((category) => ({ value: category.id, label: category.name })),
+  ];
+
   void isPending;
 
   return (
@@ -245,6 +279,7 @@ export default function McpServicesPage() {
               />
             </div>
             <Select value={typeFilter} onChange={setTypeFilter} className="w-[160px]" options={[{ value: "all", label: "全部类型" }, { value: "stdio", label: "stdio" }, { value: "sse", label: "SSE" }, { value: "streamableHttp", label: "Streamable HTTP" }]} />
+            <Select value={categoryFilter} onChange={setCategoryFilter} className="w-[140px]" options={categoryOptions} />
             <Select value={statusFilter} onChange={setStatusFilter} className="w-[130px]" options={[{ value: "all", label: "全部" }, { value: "active", label: "已启用" }, { value: "inactive", label: "已停用" }]} />
             <Button size="medium" onClick={handleQuery} className="cursor-pointer">
               查询
@@ -267,6 +302,14 @@ export default function McpServicesPage() {
             <div className="flex items-center justify-center py-12">
               <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-600 border-t-transparent" />
             </div>
+          ) : loadError ? (
+            <Alert
+              type="error"
+              showIcon
+              message="服务列表加载失败"
+              description={loadError}
+              action={<Button size="small" onClick={() => void loadServices()}>重试</Button>}
+            />
           ) : services.length === 0 ? (
             <div className="text-center py-12">
               <Plug className="h-12 w-12 text-slate-300 mx-auto mb-4" />
@@ -297,6 +340,9 @@ export default function McpServicesPage() {
                         类型
                       </th>
                       <th className="text-left py-3 px-4 text-sm font-medium text-slate-600">
+                        分类
+                      </th>
+                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-600">
                         端点
                       </th>
                       <th className="text-left py-3 px-4 text-sm font-medium text-slate-600">
@@ -324,6 +370,11 @@ export default function McpServicesPage() {
                             <p className="text-sm font-medium text-slate-900">
                               {svc.name}
                             </p>
+                            {svc.description && (
+                              <p className="mt-1 max-w-[260px] truncate text-xs text-slate-500" title={svc.description}>
+                                {svc.description}
+                              </p>
+                            )}
                           </div>
                         </td>
                         <td className="py-3 px-4">
@@ -344,6 +395,7 @@ export default function McpServicesPage() {
                             {TYPE_LABELS[svc.type] || svc.type}
                           </Badge>
                         </td>
+                        <td className="py-3 px-4 text-sm text-slate-600">{svc.category?.name || "未分类"}</td>
                         <td className="py-3 px-4">
                           <span
                             className="text-xs text-slate-500 font-mono truncate max-w-[200px] block"
@@ -419,6 +471,8 @@ export default function McpServicesPage() {
         open={showForm}
         onOpenChange={setShowForm}
         service={editingService}
+        categories={categories.map((category) => ({ id: category.id, name: category.name }))}
+        categoriesLoading={categoriesLoading}
         onSuccess={handleFormSuccess}
       />
     </div>

@@ -164,23 +164,23 @@ func init() {
 	mcpserviceFields := schema.McpService{}.Fields()
 	_ = mcpserviceFields
 	// mcpserviceDescPricing is the schema descriptor for pricing field.
-	mcpserviceDescPricing := mcpserviceFields[7].Descriptor()
+	mcpserviceDescPricing := mcpserviceFields[10].Descriptor()
 	// mcpservice.DefaultPricing holds the default value on creation for the pricing field.
 	mcpservice.DefaultPricing = mcpserviceDescPricing.Default.(int)
 	// mcpserviceDescIsActive is the schema descriptor for isActive field.
-	mcpserviceDescIsActive := mcpserviceFields[8].Descriptor()
+	mcpserviceDescIsActive := mcpserviceFields[11].Descriptor()
 	// mcpservice.DefaultIsActive holds the default value on creation for the isActive field.
 	mcpservice.DefaultIsActive = mcpserviceDescIsActive.Default.(bool)
 	// mcpserviceDescCallCount is the schema descriptor for callCount field.
-	mcpserviceDescCallCount := mcpserviceFields[9].Descriptor()
+	mcpserviceDescCallCount := mcpserviceFields[12].Descriptor()
 	// mcpservice.DefaultCallCount holds the default value on creation for the callCount field.
 	mcpservice.DefaultCallCount = mcpserviceDescCallCount.Default.(int)
 	// mcpserviceDescCreatedAt is the schema descriptor for createdAt field.
-	mcpserviceDescCreatedAt := mcpserviceFields[10].Descriptor()
+	mcpserviceDescCreatedAt := mcpserviceFields[13].Descriptor()
 	// mcpservice.DefaultCreatedAt holds the default value on creation for the createdAt field.
 	mcpservice.DefaultCreatedAt = mcpserviceDescCreatedAt.Default.(func() time.Time)
 	// mcpserviceDescUpdatedAt is the schema descriptor for updatedAt field.
-	mcpserviceDescUpdatedAt := mcpserviceFields[11].Descriptor()
+	mcpserviceDescUpdatedAt := mcpserviceFields[14].Descriptor()
 	// mcpservice.DefaultUpdatedAt holds the default value on creation for the updatedAt field.
 	mcpservice.DefaultUpdatedAt = mcpserviceDescUpdatedAt.Default.(func() time.Time)
 	// mcpservice.UpdateDefaultUpdatedAt holds the default value on update for the updatedAt field.

@@ -325,6 +325,8 @@ var (
 		{Name: "id", Type: field.TypeString},
 		{Name: "name", Type: field.TypeString},
 		{Name: "identifier", Type: field.TypeString},
+		{Name: "description", Type: field.TypeString, Nullable: true},
+		{Name: "documentation", Type: field.TypeString, Nullable: true},
 		{Name: "type", Type: field.TypeString},
 		{Name: "command", Type: field.TypeString, Nullable: true},
 		{Name: "endpoint", Type: field.TypeString, Nullable: true},
@@ -334,12 +336,21 @@ var (
 		{Name: "callCount", Type: field.TypeInt, Default: 0},
 		{Name: "createdAt", Type: field.TypeTime, Default: "CURRENT_TIMESTAMP"},
 		{Name: "updatedAt", Type: field.TypeTime},
+		{Name: "categoryId", Type: field.TypeString, Nullable: true},
 	}
 	// McpServiceTable holds the schema information for the "McpService" table.
 	McpServiceTable = &schema.Table{
 		Name:       "McpService",
 		Columns:    McpServiceColumns,
 		PrimaryKey: []*schema.Column{McpServiceColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "McpService_categoryId_fkey",
+				Columns:    []*schema.Column{McpServiceColumns[14]},
+				RefColumns: []*schema.Column{ApiCategoryColumns[0]},
+				OnDelete:   schema.Restrict,
+			},
+		},
 		Indexes: []*schema.Index{
 			{
 				Name:    "McpService_identifier_key",
@@ -347,14 +358,19 @@ var (
 				Columns: []*schema.Column{McpServiceColumns[2]},
 			},
 			{
+				Name:    "McpService_categoryId_idx",
+				Unique:  false,
+				Columns: []*schema.Column{McpServiceColumns[14]},
+			},
+			{
 				Name:    "McpService_type_idx",
 				Unique:  false,
-				Columns: []*schema.Column{McpServiceColumns[3]},
+				Columns: []*schema.Column{McpServiceColumns[5]},
 			},
 			{
 				Name:    "McpService_isActive_idx",
 				Unique:  false,
-				Columns: []*schema.Column{McpServiceColumns[8]},
+				Columns: []*schema.Column{McpServiceColumns[10]},
 			},
 		},
 	}
@@ -841,6 +857,7 @@ func init() {
 	AuditLogTable.Annotation = &entsql.Annotation{
 		Table: "AuditLog",
 	}
+	McpServiceTable.ForeignKeys[0].RefTable = ApiCategoryTable
 	McpServiceTable.Annotation = &entsql.Annotation{
 		Table: "McpService",
 	}

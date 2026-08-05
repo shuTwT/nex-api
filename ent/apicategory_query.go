@@ -14,17 +14,19 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/shuTwT/nex-api/ent/api"
 	"github.com/shuTwT/nex-api/ent/apicategory"
+	"github.com/shuTwT/nex-api/ent/mcpservice"
 	"github.com/shuTwT/nex-api/ent/predicate"
 )
 
 // ApiCategoryQuery is the builder for querying ApiCategory entities.
 type ApiCategoryQuery struct {
 	config
-	ctx        *QueryContext
-	order      []apicategory.OrderOption
-	inters     []Interceptor
-	predicates []predicate.ApiCategory
-	withApis   *APIQuery
+	ctx             *QueryContext
+	order           []apicategory.OrderOption
+	inters          []Interceptor
+	predicates      []predicate.ApiCategory
+	withApis        *APIQuery
+	withMcpServices *McpServiceQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -76,6 +78,28 @@ func (_q *ApiCategoryQuery) QueryApis() *APIQuery {
 			sqlgraph.From(apicategory.Table, apicategory.FieldID, selector),
 			sqlgraph.To(api.Table, api.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, apicategory.ApisTable, apicategory.ApisColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryMcpServices chains the current query on the "mcpServices" edge.
+func (_q *ApiCategoryQuery) QueryMcpServices() *McpServiceQuery {
+	query := (&McpServiceClient{config: _q.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := _q.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := _q.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(apicategory.Table, apicategory.FieldID, selector),
+			sqlgraph.To(mcpservice.Table, mcpservice.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, apicategory.McpServicesTable, apicategory.McpServicesColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
 		return fromU, nil
@@ -270,12 +294,13 @@ func (_q *ApiCategoryQuery) Clone() *ApiCategoryQuery {
 		return nil
 	}
 	return &ApiCategoryQuery{
-		config:     _q.config,
-		ctx:        _q.ctx.Clone(),
-		order:      append([]apicategory.OrderOption{}, _q.order...),
-		inters:     append([]Interceptor{}, _q.inters...),
-		predicates: append([]predicate.ApiCategory{}, _q.predicates...),
-		withApis:   _q.withApis.Clone(),
+		config:          _q.config,
+		ctx:             _q.ctx.Clone(),
+		order:           append([]apicategory.OrderOption{}, _q.order...),
+		inters:          append([]Interceptor{}, _q.inters...),
+		predicates:      append([]predicate.ApiCategory{}, _q.predicates...),
+		withApis:        _q.withApis.Clone(),
+		withMcpServices: _q.withMcpServices.Clone(),
 		// clone intermediate query.
 		sql:  _q.sql.Clone(),
 		path: _q.path,
@@ -290,6 +315,17 @@ func (_q *ApiCategoryQuery) WithApis(opts ...func(*APIQuery)) *ApiCategoryQuery 
 		opt(query)
 	}
 	_q.withApis = query
+	return _q
+}
+
+// WithMcpServices tells the query-builder to eager-load the nodes that are connected to
+// the "mcpServices" edge. The optional arguments are used to configure the query builder of the edge.
+func (_q *ApiCategoryQuery) WithMcpServices(opts ...func(*McpServiceQuery)) *ApiCategoryQuery {
+	query := (&McpServiceClient{config: _q.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	_q.withMcpServices = query
 	return _q
 }
 
@@ -371,8 +407,9 @@ func (_q *ApiCategoryQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*
 	var (
 		nodes       = []*ApiCategory{}
 		_spec       = _q.querySpec()
-		loadedTypes = [1]bool{
+		loadedTypes = [2]bool{
 			_q.withApis != nil,
+			_q.withMcpServices != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -400,6 +437,13 @@ func (_q *ApiCategoryQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*
 			return nil, err
 		}
 	}
+	if query := _q.withMcpServices; query != nil {
+		if err := _q.loadMcpServices(ctx, query, nodes,
+			func(n *ApiCategory) { n.Edges.McpServices = []*McpService{} },
+			func(n *ApiCategory, e *McpService) { n.Edges.McpServices = append(n.Edges.McpServices, e) }); err != nil {
+			return nil, err
+		}
+	}
 	return nodes, nil
 }
 
@@ -418,6 +462,36 @@ func (_q *ApiCategoryQuery) loadApis(ctx context.Context, query *APIQuery, nodes
 	}
 	query.Where(predicate.Api(func(s *sql.Selector) {
 		s.Where(sql.InValues(s.C(apicategory.ApisColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.CategoryId
+		node, ok := nodeids[fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "categoryId" returned %v for node %v`, fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (_q *ApiCategoryQuery) loadMcpServices(ctx context.Context, query *McpServiceQuery, nodes []*ApiCategory, init func(*ApiCategory), assign func(*ApiCategory, *McpService)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[string]*ApiCategory)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(mcpservice.FieldCategoryId)
+	}
+	query.Where(predicate.McpService(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(apicategory.McpServicesColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {

@@ -18,6 +18,12 @@ const (
 	FieldName = "name"
 	// FieldIdentifier holds the string denoting the identifier field in the database.
 	FieldIdentifier = "identifier"
+	// FieldCategoryId holds the string denoting the categoryid field in the database.
+	FieldCategoryId = "categoryId"
+	// FieldDescription holds the string denoting the description field in the database.
+	FieldDescription = "description"
+	// FieldDocumentation holds the string denoting the documentation field in the database.
+	FieldDocumentation = "documentation"
 	// FieldType holds the string denoting the type field in the database.
 	FieldType = "type"
 	// FieldCommand holds the string denoting the command field in the database.
@@ -36,10 +42,19 @@ const (
 	FieldCreatedAt = "createdAt"
 	// FieldUpdatedAt holds the string denoting the updatedat field in the database.
 	FieldUpdatedAt = "updatedAt"
+	// EdgeCategory holds the string denoting the category edge name in mutations.
+	EdgeCategory = "category"
 	// EdgeUsageRecords holds the string denoting the usagerecords edge name in mutations.
 	EdgeUsageRecords = "usageRecords"
 	// Table holds the table name of the mcpservice in the database.
 	Table = "McpService"
+	// CategoryTable is the table that holds the category relation/edge.
+	CategoryTable = "McpService"
+	// CategoryInverseTable is the table name for the ApiCategory entity.
+	// It exists in this package in order to avoid circular dependency with the "apicategory" package.
+	CategoryInverseTable = "ApiCategory"
+	// CategoryColumn is the table column denoting the category relation/edge.
+	CategoryColumn = "categoryId"
 	// UsageRecordsTable is the table that holds the usageRecords relation/edge.
 	UsageRecordsTable = "McpUsage"
 	// UsageRecordsInverseTable is the table name for the McpUsage entity.
@@ -54,6 +69,9 @@ var Columns = []string{
 	FieldID,
 	FieldName,
 	FieldIdentifier,
+	FieldCategoryId,
+	FieldDescription,
+	FieldDocumentation,
 	FieldType,
 	FieldCommand,
 	FieldEndpoint,
@@ -110,6 +128,21 @@ func ByIdentifier(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldIdentifier, opts...).ToFunc()
 }
 
+// ByCategoryId orders the results by the categoryId field.
+func ByCategoryId(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldCategoryId, opts...).ToFunc()
+}
+
+// ByDescription orders the results by the description field.
+func ByDescription(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldDescription, opts...).ToFunc()
+}
+
+// ByDocumentation orders the results by the documentation field.
+func ByDocumentation(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldDocumentation, opts...).ToFunc()
+}
+
 // ByType orders the results by the type field.
 func ByType(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldType, opts...).ToFunc()
@@ -155,6 +188,13 @@ func ByUpdatedAt(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldUpdatedAt, opts...).ToFunc()
 }
 
+// ByCategoryField orders the results by category field.
+func ByCategoryField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newCategoryStep(), sql.OrderByField(field, opts...))
+	}
+}
+
 // ByUsageRecordsCount orders the results by usageRecords count.
 func ByUsageRecordsCount(opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
@@ -167,6 +207,13 @@ func ByUsageRecords(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 	return func(s *sql.Selector) {
 		sqlgraph.OrderByNeighborTerms(s, newUsageRecordsStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
+}
+func newCategoryStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(CategoryInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, true, CategoryTable, CategoryColumn),
+	)
 }
 func newUsageRecordsStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(

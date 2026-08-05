@@ -10,6 +10,7 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/shuTwT/nex-api/ent/apicategory"
 	"github.com/shuTwT/nex-api/ent/mcpservice"
 	"github.com/shuTwT/nex-api/ent/mcpusage"
 )
@@ -30,6 +31,48 @@ func (_c *McpServiceCreate) SetName(v string) *McpServiceCreate {
 // SetIdentifier sets the "identifier" field.
 func (_c *McpServiceCreate) SetIdentifier(v string) *McpServiceCreate {
 	_c.mutation.SetIdentifier(v)
+	return _c
+}
+
+// SetCategoryId sets the "categoryId" field.
+func (_c *McpServiceCreate) SetCategoryId(v string) *McpServiceCreate {
+	_c.mutation.SetCategoryId(v)
+	return _c
+}
+
+// SetNillableCategoryId sets the "categoryId" field if the given value is not nil.
+func (_c *McpServiceCreate) SetNillableCategoryId(v *string) *McpServiceCreate {
+	if v != nil {
+		_c.SetCategoryId(*v)
+	}
+	return _c
+}
+
+// SetDescription sets the "description" field.
+func (_c *McpServiceCreate) SetDescription(v string) *McpServiceCreate {
+	_c.mutation.SetDescription(v)
+	return _c
+}
+
+// SetNillableDescription sets the "description" field if the given value is not nil.
+func (_c *McpServiceCreate) SetNillableDescription(v *string) *McpServiceCreate {
+	if v != nil {
+		_c.SetDescription(*v)
+	}
+	return _c
+}
+
+// SetDocumentation sets the "documentation" field.
+func (_c *McpServiceCreate) SetDocumentation(v string) *McpServiceCreate {
+	_c.mutation.SetDocumentation(v)
+	return _c
+}
+
+// SetNillableDocumentation sets the "documentation" field if the given value is not nil.
+func (_c *McpServiceCreate) SetNillableDocumentation(v *string) *McpServiceCreate {
+	if v != nil {
+		_c.SetDocumentation(*v)
+	}
 	return _c
 }
 
@@ -163,6 +206,25 @@ func (_c *McpServiceCreate) SetNillableID(v *string) *McpServiceCreate {
 		_c.SetID(*v)
 	}
 	return _c
+}
+
+// SetCategoryID sets the "category" edge to the ApiCategory entity by ID.
+func (_c *McpServiceCreate) SetCategoryID(id string) *McpServiceCreate {
+	_c.mutation.SetCategoryID(id)
+	return _c
+}
+
+// SetNillableCategoryID sets the "category" edge to the ApiCategory entity by ID if the given value is not nil.
+func (_c *McpServiceCreate) SetNillableCategoryID(id *string) *McpServiceCreate {
+	if id != nil {
+		_c = _c.SetCategoryID(*id)
+	}
+	return _c
+}
+
+// SetCategory sets the "category" edge to the ApiCategory entity.
+func (_c *McpServiceCreate) SetCategory(v *ApiCategory) *McpServiceCreate {
+	return _c.SetCategoryID(v.ID)
 }
 
 // AddUsageRecordIDs adds the "usageRecords" edge to the McpUsage entity by IDs.
@@ -310,6 +372,14 @@ func (_c *McpServiceCreate) createSpec() (*McpService, *sqlgraph.CreateSpec) {
 		_spec.SetField(mcpservice.FieldIdentifier, field.TypeString, value)
 		_node.Identifier = value
 	}
+	if value, ok := _c.mutation.Description(); ok {
+		_spec.SetField(mcpservice.FieldDescription, field.TypeString, value)
+		_node.Description = value
+	}
+	if value, ok := _c.mutation.Documentation(); ok {
+		_spec.SetField(mcpservice.FieldDocumentation, field.TypeString, value)
+		_node.Documentation = value
+	}
 	if value, ok := _c.mutation.GetType(); ok {
 		_spec.SetField(mcpservice.FieldType, field.TypeString, value)
 		_node.Type = value
@@ -345,6 +415,23 @@ func (_c *McpServiceCreate) createSpec() (*McpService, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.UpdatedAt(); ok {
 		_spec.SetField(mcpservice.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = value
+	}
+	if nodes := _c.mutation.CategoryIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   mcpservice.CategoryTable,
+			Columns: []string{mcpservice.CategoryColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(apicategory.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.CategoryId = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := _c.mutation.UsageRecordsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{

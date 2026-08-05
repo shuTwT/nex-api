@@ -25,6 +25,9 @@ func (McpService) Fields() []ent.Field {
 		field.String("id").StorageKey("id").DefaultFunc(NewCUID),
 		field.String("name").StorageKey("name"),
 		field.String("identifier").StorageKey("identifier"),
+		field.String("categoryId").StorageKey("categoryId").Optional(),
+		field.String("description").StorageKey("description").Optional(),
+		field.String("documentation").StorageKey("documentation").Optional(),
 		field.String("type").StorageKey("type"),
 		field.String("command").StorageKey("command").Optional(),
 		field.String("endpoint").StorageKey("endpoint").Optional(),
@@ -39,6 +42,10 @@ func (McpService) Fields() []ent.Field {
 
 func (McpService) Edges() []ent.Edge {
 	return []ent.Edge{
+		edge.From("category", ApiCategory.Type).
+			Ref("mcpServices").
+			Field("categoryId").
+			Unique(),
 		edge.To("usageRecords", McpUsage.Type).
 			StorageKey(edge.Symbol("McpUsage_mcpId_fkey")).
 			Annotations(entsql.OnDelete(entsql.Restrict)),
@@ -48,6 +55,7 @@ func (McpService) Edges() []ent.Edge {
 func (McpService) Indexes() []ent.Index {
 	return []ent.Index{
 		index.Fields("identifier").Unique().StorageKey("McpService_identifier_key"),
+		index.Fields("categoryId").StorageKey("McpService_categoryId_idx"),
 		index.Fields("type").StorageKey("McpService_type_idx"),
 		index.Fields("isActive").StorageKey("McpService_isActive_idx"),
 	}
