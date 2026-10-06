@@ -1,6 +1,7 @@
 package httpkit
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
 	"net/http"
@@ -8,7 +9,9 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/shuTwT/nex-api/internal/infra/config"
 	"github.com/shuTwT/nex-api/internal/infra/logger"
+	"github.com/shuTwT/nex-api/internal/middleware"
 )
 
 func TestWriteData_writes_contract_success_response(t *testing.T) {
@@ -104,5 +107,44 @@ func TestWriteError_preserves_validation_status_and_contract_shape(t *testing.T)
 	}
 	if rec.Code != http.StatusBadRequest || payload.Success || message != "request validation failed" {
 		t.Fatalf("unexpected validation response: %d %s", rec.Code, rec.Body.String())
+	}
+}
+
+func TestWriteError_logsInternalCauseWithRequestID(t *testing.T) {
+	var buffer bytes.Buffer
+	testLogger, err := logger.NewLoggerWithWriter(config.Log{Level: "info", Format: "text"}, &buffer)
+	if err != nil {
+		t.Fatal(err)
+	}
+	req := httptest.NewRequest(http.MethodGet, "/api/payment/methods", nil)
+	req = req.WithContext(middleware.WithLogger(logger.WithRequestID(req.Context(), "req-500"), testLogger))
+	cause := errors.New("get payment settings: database is locked")
+	rec := httptest.NewRecorder()
+	if err := WriteError(rec, req, cause); err != nil {
+		t.Fatal(err)
+	}
+	if rec.Code != http.StatusInternalServerError {
+		t.Fatalf("status = %d", rec.Code)
+	}
+	logged := buffer.String()
+	if !strings.Contains(logged, "request failed") || !strings.Contains(logged, cause.Error()) || !strings.Contains(logged, "req-500") || !strings.Contains(logged, "/api/payment/methods") {
+		t.Fatalf("expected cause chain in log, got %q", logged)
+	}
+}
+
+func TestWriteError_doesNotLogBusinessErrors(t *testing.T) {
+	var buffer bytes.Buffer
+	testLogger, err := logger.NewLoggerWithWriter(config.Log{Level: "info", Format: "text"}, &buffer)
+	if err != nil {
+		t.Fatal(err)
+	}
+	req := httptest.NewRequest(http.MethodGet, "/resource", nil)
+	req = req.WithContext(middleware.WithLogger(req.Context(), testLogger))
+	rec := httptest.NewRecorder()
+	if err := WriteError(rec, req, NewAPIError(http.StatusNotFound, "not_found", "resource not found", errors.New("hidden detail"))); err != nil {
+		t.Fatal(err)
+	}
+	if buffer.Len() != 0 {
+		t.Fatalf("business errors must not be logged, got %q", buffer.String())
 	}
 }

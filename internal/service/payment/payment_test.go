@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"net/url"
+	"strings"
 	"sync"
 	"testing"
 	"time"
@@ -18,7 +19,7 @@ import (
 
 func TestServiceCreatePaymentReadsCurrentNotifyURLFromDatabase(t *testing.T) {
 	client := newPaymentTestClient(t)
-	for key, value := range map[string]string{"wechatPayAppId": "app-id", "wechatPayMchId": "merchant-id", "wechatPayApiKey": "01234567890123456789012345678901", "wechatPayPrivateKey": "private-key", "wechatPayPublicKey": "public-key", "wechatPayNotifyUrl": "https://example.com/first-callback"} {
+	for key, value := range map[string]string{"wechatPayAppId": "app-id", "wechatPayMchId": "merchant-id", "wechatPayApiKey": "01234567890123456789012345678901", "wechatPayPrivateKey": "private-key", "wechatPayPublicKey": "public-key", "wechatPayNotifyUrl": "https://example.com/first-callback", "wechatEnabled": "true"} {
 		if _, err := client.SystemSetting.Create().SetKey(key).SetValue(value).SetCategory("payment").Save(context.Background()); err != nil {
 			t.Fatal(err)
 		}
@@ -29,11 +30,14 @@ func TestServiceCreatePaymentReadsCurrentNotifyURLFromDatabase(t *testing.T) {
 	}
 	provider := &recordingProvider{method: pay.PaymentMethodWeChat}
 	service.providerFactory = func(pay.PaymentMethod, pay.PaymentConfiguration) pay.Provider { return provider }
-	if _, err := service.createPayment(context.Background(), createPaymentInput{UserID: "u-1", Amount: 10, Currency: "CNY", Method: pay.PaymentMethodWeChat}); err != nil {
+	if _, err := service.createPayment(context.Background(), createPaymentInput{UserID: "u-1", Amount: 10, Currency: "CNY", Method: pay.PaymentMethodWeChat, ClientIP: "203.0.113.9"}); err != nil {
 		t.Fatal(err)
 	}
 	if provider.createRequest.NotifyURL != "https://example.com/first-callback" {
 		t.Fatalf("notify URL = %q", provider.createRequest.NotifyURL)
+	}
+	if provider.createRequest.ClientIP != "203.0.113.9" {
+		t.Fatalf("client IP = %q", provider.createRequest.ClientIP)
 	}
 	setting, err := client.SystemSetting.Query().Where(systemsetting.Key("wechatPayNotifyUrl")).Only(context.Background())
 	if err != nil {
@@ -218,4 +222,117 @@ func newPaymentTestClient(t *testing.T) *ent.Client {
 		t.Fatal(err)
 	}
 	return client
+}
+
+func createEpaySettings(t *testing.T, client *ent.Client, version string) {
+	t.Helper()
+	for key, value := range map[string]string{"epayEnabled": "true", "epayApiUrl": "https://epay.example.com", "epayPid": "1001", "epayKey": "merchant-key", "epayVersion": version} {
+		if _, err := client.SystemSetting.Create().SetKey(key).SetValue(value).SetCategory("payment").Save(context.Background()); err != nil {
+			t.Fatal(err)
+		}
+	}
+}
+
+func containsMethod(methods []pay.PaymentMethod, target pay.PaymentMethod) bool {
+	for _, method := range methods {
+		if method == target {
+			return true
+		}
+	}
+	return false
+}
+
+func TestEpayGatewayServesAlipayAndWechatMethodsWhenEnabled(t *testing.T) {
+	client := newPaymentTestClient(t)
+	createEpaySettings(t, client, "v1")
+	service, err := NewService(client, "https://app.example.com")
+	if err != nil {
+		t.Fatal(err)
+	}
+	methods, err := service.AvailableMethods(context.Background())
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !containsMethod(methods, pay.PaymentMethodAlipay) || !containsMethod(methods, pay.PaymentMethodWeChat) {
+		t.Fatalf("methods = %v, want alipay and wechat served by epay", methods)
+	}
+	settings, err := service.Settings(context.Background())
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !settings.AlipayEnabled || !settings.WeChatEnabled {
+		t.Fatalf("settings = %+v, want both channels reported available via epay", settings)
+	}
+	provider, notifyURL, err := service.resolveProvider(context.Background(), pay.PaymentMethodAlipay)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, ok := provider.(*pay.EpayProvider); !ok {
+		t.Fatalf("alipay provider = %T, want *pay.EpayProvider", provider)
+	}
+	if notifyURL != "https://app.example.com/api/payment/callback/alipay" {
+		t.Fatalf("notify URL = %q", notifyURL)
+	}
+	provider, notifyURL, err = service.resolveProvider(context.Background(), pay.PaymentMethodWeChat)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, ok := provider.(*pay.EpayProvider); !ok {
+		t.Fatalf("wechat provider = %T, want *pay.EpayProvider", provider)
+	}
+	if notifyURL != "https://app.example.com/api/payment/callback/wechat" {
+		t.Fatalf("notify URL = %q", notifyURL)
+	}
+}
+
+func TestDisabledDirectChannelsHiddenWhenEpayOff(t *testing.T) {
+	client := newPaymentTestClient(t)
+	for key, value := range map[string]string{"alipayAppId": "app-id", "alipayPrivateKey": "private-key", "alipayPublicKey": "public-key"} {
+		if _, err := client.SystemSetting.Create().SetKey(key).SetValue(value).SetCategory("payment").Save(context.Background()); err != nil {
+			t.Fatal(err)
+		}
+	}
+	service, err := NewService(client, "https://app.example.com")
+	if err != nil {
+		t.Fatal(err)
+	}
+	methods, err := service.AvailableMethods(context.Background())
+	if err != nil {
+		t.Fatal(err)
+	}
+	if containsMethod(methods, pay.PaymentMethodAlipay) {
+		t.Fatalf("methods = %v, alipay is configured but disabled", methods)
+	}
+	if _, _, err := service.resolveProvider(context.Background(), pay.PaymentMethodAlipay); err == nil {
+		t.Fatal("expected disabled alipay to be rejected")
+	}
+}
+
+func TestEpayOrderUsesGatewayMetadataAndShortTradeNo(t *testing.T) {
+	client := newPaymentTestClient(t)
+	service, err := NewServiceWithProviders(client, []pay.Provider{pay.NewEpayProvider(pay.EpayConfiguration{Enabled: true, APIURL: "https://epay.example.com", PID: "1001", Key: "merchant-key", Version: pay.EpayVersionV1, ReturnURL: "https://app.example.com/payment/result"}, pay.PaymentMethodAlipay, nil)})
+	if err != nil {
+		t.Fatal(err)
+	}
+	created, err := service.createPayment(context.Background(), createPaymentInput{UserID: "u-1", Amount: 10, Currency: "CNY", Method: pay.PaymentMethodAlipay, Subject: "积分充值", Metadata: map[string]json.RawMessage{"type": json.RawMessage(`"recharge"`), "credits": json.RawMessage("10")}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(created.OutTradeNo) != 32 || !strings.HasPrefix(created.OutTradeNo, "PAY-") {
+		t.Fatalf("out trade no = %q, must be PAY- prefixed and within 32 characters", created.OutTradeNo)
+	}
+	if !strings.HasPrefix(created.PayURL, "https://epay.example.com/submit.php?") {
+		t.Fatalf("pay URL = %q", created.PayURL)
+	}
+	record, err := client.Payment.Query().Where(payment.OutTradeNo(created.OutTradeNo)).Only(context.Background())
+	if err != nil {
+		t.Fatal(err)
+	}
+	var metadata map[string]any
+	if err := json.Unmarshal([]byte(record.Metadata), &metadata); err != nil {
+		t.Fatal(err)
+	}
+	if metadata["gateway"] != "epay" || metadata["type"] != "recharge" || metadata["credits"] != float64(10) {
+		t.Fatalf("metadata = %v", metadata)
+	}
 }

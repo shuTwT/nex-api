@@ -18,6 +18,8 @@ export default defineConfig({
       "/api/": {
         target: "http://localhost:8080",
         changeOrigin: true,
+        // 转发 X-Forwarded-For，支付下单需要真实客户端 IP（易支付 clientip）
+        xfwd: true,
       },
     },
   },

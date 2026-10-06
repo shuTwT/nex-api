@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"log/slog"
 	"net/http"
 
 	"github.com/shuTwT/nex-api/internal/middleware"
@@ -165,11 +166,22 @@ func WriteData[T any](w http.ResponseWriter, status int, data T) error {
 	return WriteEnvelope(w, status, NewSuccessEnvelope(data))
 }
 
-// WriteError maps err to a compatible error envelope and writes it.
+// WriteError maps err to a compatible error envelope and writes it. Errors
+// mapped to a 5xx response are logged with their full cause chain — without
+// this the client only sees "internal server error" and the root cause is
+// lost.
 func WriteError(w http.ResponseWriter, r *http.Request, err error) error {
 	apiError := FromError(err)
 	if apiError == nil {
 		apiError = NewAPIError(http.StatusInternalServerError, "internal_error", "internal server error", nil)
+	}
+	if apiError.StatusCode >= http.StatusInternalServerError {
+		middleware.LoggerFrom(r.Context()).ErrorContext(r.Context(), "request failed",
+			slog.String("method", r.Method),
+			slog.String("path", r.URL.Path),
+			slog.Int("status", apiError.StatusCode),
+			slog.Any("error", err),
+		)
 	}
 	envelope := NewErrorEnvelope(apiError)
 	if requestID := middleware.RequestID(r.Context()); requestID != "" {

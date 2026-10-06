@@ -104,7 +104,7 @@ func (s *Service) Announcement(ctx context.Context) (map[string]any, error) {
 // CategoryForKey derives the setting category from its key prefix.
 func CategoryForKey(key string) string {
 	switch {
-	case strings.HasPrefix(key, "alipay"), strings.HasPrefix(key, "wechat"), strings.HasPrefix(key, "credit"), strings.HasPrefix(key, "minRecharge"), strings.HasPrefix(key, "mockPayment"):
+	case strings.HasPrefix(key, "alipay"), strings.HasPrefix(key, "wechat"), strings.HasPrefix(key, "credit"), strings.HasPrefix(key, "minRecharge"), strings.HasPrefix(key, "mockPayment"), strings.HasPrefix(key, "epay"):
 		return "payment"
 	case strings.HasPrefix(key, "oauth"), strings.HasPrefix(key, "githubOAuth"), strings.HasPrefix(key, "oidc"):
 		return "oauth"

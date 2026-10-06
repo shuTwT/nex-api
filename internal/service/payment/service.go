@@ -91,14 +91,25 @@ func (s *Service) createPayment(ctx context.Context, input createPaymentInput) (
 	if strings.TrimSpace(input.NotifyURL) == "" {
 		input.NotifyURL = notifyURL
 	}
-	outTradeNo := "PAY-" + strings.ToUpper(uuid.NewString())
+	if strings.TrimSpace(input.ReturnURL) == "" {
+		input.ReturnURL = strings.TrimRight(s.appURL, "/") + "/payment/result"
+	}
+	// The epay aggregator caps out_trade_no at 32 characters (and WeChat at 32
+	// bytes), so the order number is 28 hex digits after the PAY- prefix.
+	outTradeNo := "PAY-" + strings.ToUpper(strings.ReplaceAll(uuid.NewString(), "-", ""))[:28]
 	createdAt := s.clock.Now().UTC()
 	expiredAt := createdAt.Add(2 * time.Hour)
+	if _, isEpay := provider.(*pay.EpayProvider); isEpay {
+		if input.Metadata == nil {
+			input.Metadata = make(map[string]json.RawMessage)
+		}
+		input.Metadata["gateway"] = json.RawMessage(`"epay"`)
+	}
 	metadata, err := json.Marshal(input.Metadata)
 	if err != nil {
 		return CreatePaymentResult{}, fmt.Errorf("marshal payment metadata: %w", err)
 	}
-	providerResult, err := provider.Create(ctx, pay.ProviderCreateRequest{OutTradeNo: outTradeNo, Amount: input.Amount, Currency: input.Currency, NotifyURL: input.NotifyURL})
+	providerResult, err := provider.Create(ctx, pay.ProviderCreateRequest{OutTradeNo: outTradeNo, Amount: input.Amount, Currency: input.Currency, Subject: input.Subject, ClientIP: input.ClientIP, NotifyURL: input.NotifyURL, ReturnURL: input.ReturnURL})
 	if err != nil {
 		return CreatePaymentResult{}, fmt.Errorf("create %s payment: %w", input.Method, err)
 	}
@@ -114,7 +125,7 @@ func (s *Service) createPayment(ctx context.Context, input createPaymentInput) (
 	return CreatePaymentResult{Success: true, PaymentID: created.ID, OutTradeNo: created.OutTradeNo, QRCodeURL: created.QrcodeUrl, PayURL: created.PayUrl}, nil
 }
 
-func (s *Service) CreateSubscriptionPayment(ctx context.Context, userID, planID string, method pay.PaymentMethod) (CreatePaymentResult, error) {
+func (s *Service) CreateSubscriptionPayment(ctx context.Context, userID, planID string, method pay.PaymentMethod, clientIP string) (CreatePaymentResult, error) {
 	plan, err := s.client.SubscriptionPlan.Get(ctx, planID)
 	if ent.IsNotFound(err) {
 		return CreatePaymentResult{}, fmt.Errorf("subscription plan %q: %w", planID, appRuntime.ErrNotFound)
@@ -125,11 +136,11 @@ func (s *Service) CreateSubscriptionPayment(ctx context.Context, userID, planID 
 	if !plan.IsActive {
 		return CreatePaymentResult{}, appRuntime.NewError(appRuntime.KindInvalidInput, "plan_inactive", "subscription plan is inactive", appRuntime.ErrConflict)
 	}
-	return s.createPayment(ctx, createPaymentInput{UserID: userID, Amount: plan.Price, Currency: "CNY", Method: method, PlanID: plan.ID, Metadata: map[string]json.RawMessage{"type": json.RawMessage(`"subscription"`), "planId": json.RawMessage(fmt.Sprintf("%q", plan.ID))}})
+	return s.createPayment(ctx, createPaymentInput{UserID: userID, Amount: plan.Price, Currency: "CNY", Method: method, PlanID: plan.ID, Subject: plan.Title, ClientIP: clientIP, Metadata: map[string]json.RawMessage{"type": json.RawMessage(`"subscription"`), "planId": json.RawMessage(fmt.Sprintf("%q", plan.ID))}})
 }
 
-func (s *Service) CreateSubscriptionPaymentByMethod(ctx context.Context, userID, planID, method string) (CreatePaymentResult, error) {
-	return s.CreateSubscriptionPayment(ctx, userID, planID, pay.PaymentMethod(method))
+func (s *Service) CreateSubscriptionPaymentByMethod(ctx context.Context, userID, planID, method, clientIP string) (CreatePaymentResult, error) {
+	return s.CreateSubscriptionPayment(ctx, userID, planID, pay.PaymentMethod(method), clientIP)
 }
 
 func (s *Service) GetPayment(ctx context.Context, outTradeNo string) (PaymentView, error) {
@@ -258,12 +269,24 @@ func (s *Service) AvailableMethods(ctx context.Context) ([]pay.PaymentMethod, er
 	if err != nil {
 		return nil, err
 	}
+	// When the epay aggregator is active it serves the alipay and wechat
+	// methods, so both stay listed regardless of the direct-channel switches.
+	epayReady := epayActive(configuration)
 	methods := make([]pay.PaymentMethod, 0, 3)
 	for _, method := range []pay.PaymentMethod{pay.PaymentMethodWeChat, pay.PaymentMethodAlipay, pay.PaymentMethodMock} {
-		if method == pay.PaymentMethodWeChat && pay.WechatConfigured(configuration.WeChat) ||
-			method == pay.PaymentMethodAlipay && pay.AlipayConfigured(configuration.Alipay) ||
-			method == pay.PaymentMethodMock && configuration.Mock.Enabled {
-			methods = append(methods, method)
+		switch method {
+		case pay.PaymentMethodWeChat:
+			if epayReady || configuration.WeChatEnabled && pay.WechatConfigured(configuration.WeChat) {
+				methods = append(methods, method)
+			}
+		case pay.PaymentMethodAlipay:
+			if epayReady || configuration.AlipayEnabled && pay.AlipayConfigured(configuration.Alipay) {
+				methods = append(methods, method)
+			}
+		case pay.PaymentMethodMock:
+			if configuration.Mock.Enabled {
+				methods = append(methods, method)
+			}
 		}
 	}
 	return methods, nil
@@ -274,7 +297,10 @@ func (s *Service) Settings(ctx context.Context) (PaymentSettings, error) {
 	if err != nil {
 		return PaymentSettings{}, err
 	}
-	return PaymentSettings{CreditPrice: configuration.CreditPrice, MinRecharge: configuration.MinRecharge, AlipayEnabled: configuration.AlipayEnabled, WeChatEnabled: configuration.WeChatEnabled, MockEnabled: configuration.Mock.Enabled}, nil
+	// The checkout UI filters the alipay/wechat options by these flags, so an
+	// active epay gateway reports both as available.
+	epayReady := epayActive(configuration)
+	return PaymentSettings{CreditPrice: configuration.CreditPrice, MinRecharge: configuration.MinRecharge, AlipayEnabled: epayReady || configuration.AlipayEnabled, WeChatEnabled: epayReady || configuration.WeChatEnabled, MockEnabled: configuration.Mock.Enabled}, nil
 }
 
 func paymentView(record *ent.Payment) PaymentView {
@@ -304,7 +330,7 @@ func validateContext(ctx context.Context) error {
 // CreateRechargePayment validates the recharge amount against the minimum and
 // the credit conversion, then creates the payment order. Business rules for
 // pricing live here; the handler only adapts the request.
-func (s *Service) CreateRechargePayment(ctx context.Context, userID string, amount float64, credits int, method pay.PaymentMethod) (CreatePaymentResult, error) {
+func (s *Service) CreateRechargePayment(ctx context.Context, userID string, amount float64, credits int, method pay.PaymentMethod, clientIP string) (CreatePaymentResult, error) {
 	settings, err := s.Settings(ctx)
 	if err != nil {
 		return CreatePaymentResult{}, err
@@ -321,9 +347,9 @@ func (s *Service) CreateRechargePayment(ctx context.Context, userID string, amou
 		"credits":     json.RawMessage(strconv.Itoa(credits)),
 		"creditPrice": json.RawMessage(strconv.FormatFloat(settings.CreditPrice, 'f', 2, 64)),
 	}
-	return s.createPayment(ctx, createPaymentInput{UserID: userID, Amount: amount, Currency: "CNY", Method: method, Metadata: metadata})
+	return s.createPayment(ctx, createPaymentInput{UserID: userID, Amount: amount, Currency: "CNY", Method: method, Subject: "积分充值", ClientIP: clientIP, Metadata: metadata})
 }
 
-func (s *Service) CreateRechargePaymentByMethod(ctx context.Context, userID string, amount float64, credits int, method string) (CreatePaymentResult, error) {
-	return s.CreateRechargePayment(ctx, userID, amount, credits, pay.PaymentMethod(method))
+func (s *Service) CreateRechargePaymentByMethod(ctx context.Context, userID string, amount float64, credits int, method, clientIP string) (CreatePaymentResult, error) {
+	return s.CreateRechargePayment(ctx, userID, amount, credits, pay.PaymentMethod(method), clientIP)
 }

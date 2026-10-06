@@ -13,7 +13,10 @@ type createPaymentInput struct {
 	Currency  string
 	Method    pay.PaymentMethod
 	PlanID    string
+	Subject   string
+	ClientIP  string
 	NotifyURL string
+	ReturnURL string
 	Metadata  map[string]json.RawMessage
 }
 

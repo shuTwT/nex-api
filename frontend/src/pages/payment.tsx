@@ -192,6 +192,21 @@ export default function PaymentPage() {
                 </div>
               )}
 
+              {/* 易支付代收时微信渠道返回跳转链接而非二维码 */}
+              {payment.method === "wechat" && !payment.qrcodeUrl && payment.payUrl && (
+                <div className="text-center space-y-4">
+                  <p className="text-sm text-slate-600">点击下方按钮跳转到微信支付完成付款</p>
+                  <Button
+                    onClick={() => window.open(payment.payUrl, "_blank")}
+                    className="w-full"
+                    size="lg"
+                  >
+                    <ExternalLink className="mr-2 h-4 w-4" />
+                    前往微信支付
+                  </Button>
+                </div>
+              )}
+
               {payment.method === "alipay" && payment.payUrl && (
                 <div className="text-center space-y-4">
                   <p className="text-sm text-slate-600">点击下方按钮跳转到支付宝完成支付</p>

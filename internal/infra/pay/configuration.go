@@ -42,6 +42,7 @@ type PaymentConfiguration struct {
 	WeChat        WeChatConfiguration
 	Alipay        AlipayConfiguration
 	Mock          MockPaymentConfiguration
+	Epay          EpayConfiguration
 	CreditPrice   float64
 	MinRecharge   float64
 	AlipayEnabled bool

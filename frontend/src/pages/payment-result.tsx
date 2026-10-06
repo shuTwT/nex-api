@@ -15,7 +15,8 @@ interface PaymentInfo {
 export default function PaymentResultPage() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const outTradeNo = searchParams.get("outTradeNo");
+  // 易支付同步回跳使用下划线参数名 out_trade_no，与站内跳转的 outTradeNo 兼容
+  const outTradeNo = searchParams.get("outTradeNo") ?? searchParams.get("out_trade_no");
   const status = searchParams.get("status");
 
   const [loading, setLoading] = useState(true);

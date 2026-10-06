@@ -43,6 +43,23 @@ func RequestIDMiddleware(next http.Handler) http.Handler {
 // RequestIDHandler is an alias for RequestIDMiddleware.
 func RequestIDHandler(next http.Handler) http.Handler { return RequestIDMiddleware(next) }
 
+type loggerContextKey struct{}
+
+// WithLogger stores the server logger in the request context so downstream
+// helpers emit through the same output, level and format.
+func WithLogger(ctx context.Context, loggerInstance *slog.Logger) context.Context {
+	return context.WithValue(ctx, loggerContextKey{}, loggerInstance)
+}
+
+// LoggerFrom returns the request logger, falling back to slog.Default() when
+// no middleware injected one (e.g. bare routers in tests).
+func LoggerFrom(ctx context.Context) *slog.Logger {
+	if loggerInstance, ok := ctx.Value(loggerContextKey{}).(*slog.Logger); ok && loggerInstance != nil {
+		return loggerInstance
+	}
+	return slog.Default()
+}
+
 // Recovery converts panics into a 500 error envelope and logs the stack.
 func Recovery(loggerInstance *slog.Logger) func(http.Handler) http.Handler {
 	loggerInstance = loggerOrDiscard(loggerInstance)
@@ -57,7 +74,7 @@ func Recovery(loggerInstance *slog.Logger) func(http.Handler) http.Handler {
 					writeErrorResponse(w, r, http.StatusInternalServerError, "internal server error")
 				}
 			}()
-			next.ServeHTTP(w, r)
+			next.ServeHTTP(w, r.WithContext(WithLogger(r.Context(), loggerInstance)))
 		})
 	}
 }

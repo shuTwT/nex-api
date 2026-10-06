@@ -44,11 +44,27 @@ func (s *Service) loadConfiguration(ctx context.Context) (pay.PaymentConfigurati
 			AutoSuccess: pay.SettingBool(values, "mockPaymentAutoSuccess", true),
 			Delay:       time.Duration(pay.SettingInt(values, "mockPaymentDelay", 2000)) * time.Millisecond,
 		},
+		Epay: pay.EpayConfiguration{
+			Enabled:            pay.SettingBool(values, "epayEnabled", false),
+			APIURL:             values["epayApiUrl"],
+			PID:                values["epayPid"],
+			Key:                values["epayKey"],
+			Version:            pay.EpayVersion(values["epayVersion"]),
+			MerchantPrivateKey: values["epayMerchantPrivateKey"],
+			PlatformPublicKey:  values["epayPlatformPublicKey"],
+			ReturnURL:          pay.SettingURL("", s.appURL, "/payment/result"),
+		},
 		CreditPrice:   parseSettingFloat(values, "creditPrice", 1),
 		MinRecharge:   parseSettingFloat(values, "minRecharge", 10),
 		AlipayEnabled: pay.SettingBool(values, "alipayEnabled", false),
 		WeChatEnabled: pay.SettingBool(values, "wechatEnabled", false),
 	}, nil
+}
+
+// epayActive reports whether the epay aggregator should serve the alipay and
+// wechat methods instead of the direct channels.
+func epayActive(configuration pay.PaymentConfiguration) bool {
+	return configuration.Epay.Enabled && pay.EpayConfigured(configuration.Epay)
 }
 
 func (s *Service) resolveProvider(ctx context.Context, method pay.PaymentMethod) (pay.Provider, string, error) {
@@ -66,15 +82,21 @@ func (s *Service) resolveProvider(ctx context.Context, method pay.PaymentMethod)
 	}
 	switch method {
 	case pay.PaymentMethodWeChat:
-		if !pay.WechatConfigured(configuration.WeChat) {
-			return nil, "", fmt.Errorf("wechat: %w", pay.ErrProviderUnavailable)
+		if epayActive(configuration) {
+			return s.buildProvider(method, configuration), configuration.WeChat.NotifyURL, nil
 		}
-		return s.buildProvider(method, configuration), configuration.WeChat.NotifyURL, nil
+		if configuration.WeChatEnabled && pay.WechatConfigured(configuration.WeChat) {
+			return s.buildProvider(method, configuration), configuration.WeChat.NotifyURL, nil
+		}
+		return nil, "", fmt.Errorf("wechat: %w", pay.ErrProviderUnavailable)
 	case pay.PaymentMethodAlipay:
-		if !pay.AlipayConfigured(configuration.Alipay) {
-			return nil, "", fmt.Errorf("alipay: %w", pay.ErrProviderUnavailable)
+		if epayActive(configuration) {
+			return s.buildProvider(method, configuration), configuration.Alipay.NotifyURL, nil
 		}
-		return s.buildProvider(method, configuration), configuration.Alipay.NotifyURL, nil
+		if configuration.AlipayEnabled && pay.AlipayConfigured(configuration.Alipay) {
+			return s.buildProvider(method, configuration), configuration.Alipay.NotifyURL, nil
+		}
+		return nil, "", fmt.Errorf("alipay: %w", pay.ErrProviderUnavailable)
 	case pay.PaymentMethodMock:
 		if !configuration.Mock.Enabled {
 			return nil, "", fmt.Errorf("mock: %w", pay.ErrProviderUnavailable)
@@ -91,8 +113,14 @@ func (s *Service) buildProvider(method pay.PaymentMethod, configuration pay.Paym
 	}
 	switch method {
 	case pay.PaymentMethodWeChat:
+		if epayActive(configuration) {
+			return pay.NewEpayProvider(configuration.Epay, method, nil)
+		}
 		return pay.NewWeChatProvider(configuration.WeChat, nil)
 	case pay.PaymentMethodAlipay:
+		if epayActive(configuration) {
+			return pay.NewEpayProvider(configuration.Epay, method, nil)
+		}
 		return pay.NewAlipayProvider(configuration.Alipay, nil)
 	case pay.PaymentMethodMock:
 		return pay.NewMockProvider(configuration.Mock)

@@ -2,7 +2,9 @@ package payment
 
 import (
 	"errors"
+	"net"
 	"net/http"
+	"strings"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/shuTwT/nex-api/internal/middleware"
@@ -36,8 +38,12 @@ func RegisterRoutes(r chi.Router, handler *Handler) error {
 	r.Method(http.MethodGet, "/api/payment/{outTradeNo}", user(http.HandlerFunc(handler.get)))
 	r.Method(http.MethodPost, "/api/payment/{outTradeNo}/cancel", user(http.HandlerFunc(handler.cancel)))
 	r.Method(http.MethodPost, "/api/recharge", user(http.HandlerFunc(handler.recharge)))
+	// Epay gateways notify via POST form or GET query depending on the
+	// implementation, so both methods hit the same handlers.
 	r.Post("/api/payment/callback/wechat", handler.wechatCallback)
+	r.Get("/api/payment/callback/wechat", handler.wechatCallback)
 	r.Post("/api/payment/callback/alipay", handler.alipayCallback)
+	r.Get("/api/payment/callback/alipay", handler.alipayCallback)
 	r.Post("/api/payment/callback/mock", handler.mockCallback)
 	return nil
 }
@@ -48,6 +54,21 @@ func RegisterServiceRoutes(r chi.Router, service *servicepayment.Service) error 
 		return err
 	}
 	return RegisterRoutes(r, handler)
+}
+
+// clientIP returns the payer IP for the epay clientip field: the first
+// X-Forwarded-For hop when a proxy supplied one, otherwise the remote address
+// without its port.
+func clientIP(r *http.Request) string {
+	if forwarded := r.Header.Get("X-Forwarded-For"); forwarded != "" {
+		if first := strings.TrimSpace(strings.Split(forwarded, ",")[0]); first != "" {
+			return first
+		}
+	}
+	if host, _, err := net.SplitHostPort(r.RemoteAddr); err == nil {
+		return host
+	}
+	return r.RemoteAddr
 }
 
 func (h *Handler) methods(w http.ResponseWriter, r *http.Request) {
@@ -70,7 +91,7 @@ func (h *Handler) createSubscription(w http.ResponseWriter, r *http.Request) {
 		handlerutils.WriteError(w, r, err)
 		return
 	}
-	result, err := h.service.CreateSubscriptionPaymentByMethod(r.Context(), principal.UserID, request.PlanID, request.Method)
+	result, err := h.service.CreateSubscriptionPaymentByMethod(r.Context(), principal.UserID, request.PlanID, request.Method, clientIP(r))
 	if err != nil {
 		handlerutils.WriteError(w, r, err)
 		return
@@ -89,7 +110,7 @@ func (h *Handler) recharge(w http.ResponseWriter, r *http.Request) {
 		handlerutils.WriteError(w, r, err)
 		return
 	}
-	result, err := h.service.CreateRechargePaymentByMethod(r.Context(), principal.UserID, request.Amount, request.Credits, request.Method)
+	result, err := h.service.CreateRechargePaymentByMethod(r.Context(), principal.UserID, request.Amount, request.Credits, request.Method, clientIP(r))
 	if err != nil {
 		handlerutils.WriteError(w, r, err)
 		return

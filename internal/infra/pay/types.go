@@ -54,7 +54,10 @@ type ProviderCreateRequest struct {
 	OutTradeNo string
 	Amount     float64
 	Currency   string
+	Subject    string
+	ClientIP   string
 	NotifyURL  string
+	ReturnURL  string
 }
 
 type ProviderCreateResult struct {
