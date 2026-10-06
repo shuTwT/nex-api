@@ -202,7 +202,7 @@ func (p *ConfiguredProvider) validate() error {
 	}
 	if p.Kind == providerKindOIDC {
 		issuer, err := infraoauth.ParseHTTPURL(p.Issuer)
-		if err != nil || issuer.Scheme != "https" || issuer.RawQuery != "" || issuer.Fragment != "" {
+		if err != nil || !validOIDCIssuerScheme(issuer) || issuer.RawQuery != "" || issuer.Fragment != "" {
 			return errOAuthProviderInvalid
 		}
 		return nil
@@ -220,6 +220,19 @@ func (p *ConfiguredProvider) validate() error {
 		}
 	}
 	return nil
+}
+
+// Local Easy1Auth development instances run over plain HTTP. Keep HTTPS as
+// the production default while allowing only loopback HTTP issuers locally.
+func validOIDCIssuerScheme(issuer *url.URL) bool {
+	if issuer.Scheme == "https" {
+		return true
+	}
+	if issuer.Scheme != "http" {
+		return false
+	}
+	host := strings.ToLower(issuer.Hostname())
+	return host == "localhost" || host == "127.0.0.1" || host == "::1"
 }
 
 func (p *ConfiguredProvider) DisplayName() string {

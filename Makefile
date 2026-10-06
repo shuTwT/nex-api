@@ -1,4 +1,11 @@
-.PHONY: doctor test-bootstrap generate openapi-lint build test clean frontend-install frontend-typecheck
+GO ?= go
+NPM ?= npm
+BIN_DIR ?= bin
+PLATFORMS ?= linux/amd64 linux/arm64 darwin/amd64 darwin/arm64
+GOAMD64 ?= v1
+GOARM64 ?= v8.0
+
+.PHONY: doctor test-bootstrap generate openapi-lint build build-backend build-linux-amd64 build-current frontend-build test clean frontend-install frontend-typecheck
 
 doctor:
 	@command -v go >/dev/null || { printf '%s\n' 'go is required'; exit 1; }
@@ -37,10 +44,36 @@ frontend-typecheck:
 	npm --prefix frontend run typecheck
 
 build:
-	mkdir -p bin
-	go build -trimpath -o bin/server ./cmd/server
-	go build -trimpath -o bin/script-worker ./cmd/script-worker
-	npm --prefix frontend run build
+	$(MAKE) build-backend
+	$(MAKE) frontend-build
+
+build-backend:
+	@set -eu; \
+	for platform in $(PLATFORMS); do \
+		case "$$platform" in \
+			*/*) ;; \
+			*) printf 'invalid platform %s; expected GOOS/GOARCH\n' "$$platform" >&2; exit 1 ;; \
+		esac; \
+		os="$${platform%/*}"; \
+		arch="$${platform#*/}"; \
+		output_dir="$(BIN_DIR)/$${os}_$${arch}"; \
+		mkdir -p "$$output_dir"; \
+		printf 'Building server and script-worker for %s/%s\n' "$$os" "$$arch"; \
+		CGO_ENABLED=0 GOOS="$$os" GOARCH="$$arch" GOAMD64="$(GOAMD64)" GOARM64="$(GOARM64)" \
+			$(GO) build -trimpath -o "$$output_dir/server" ./cmd/server; \
+		CGO_ENABLED=0 GOOS="$$os" GOARCH="$$arch" GOAMD64="$(GOAMD64)" GOARM64="$(GOARM64)" \
+			$(GO) build -trimpath -o "$$output_dir/script-worker" ./cmd/script-worker; \
+	done
+
+build-linux-amd64:
+	$(MAKE) build-backend PLATFORMS=linux/amd64
+
+build-current:
+	$(MAKE) build-backend PLATFORMS="$$($(GO) env GOOS)/$$($(GO) env GOARCH)"
+	$(MAKE) frontend-build
+
+frontend-build:
+	$(NPM) --prefix frontend run build
 
 test:
 	go test -race -shuffle=on -count=1 ./...

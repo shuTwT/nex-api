@@ -20,6 +20,7 @@ const (
 	ErrorCodeTimeout      ErrorCode    = "timeout"
 	ErrorCodeOutputLimit  ErrorCode    = "output_limit"
 	ErrorCodeFrameLimit   ErrorCode    = "frame_limit"
+	ErrorCodeMemoryLimit  ErrorCode    = "memory_limit"
 	ErrorCodeWorkerExit   ErrorCode    = "worker_exit"
 	ErrorCodeProtocol     ErrorCode    = "protocol_error"
 	ErrorCodePoolClosed   ErrorCode    = "pool_closed"

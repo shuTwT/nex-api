@@ -9,7 +9,6 @@ import (
 	"io"
 	"os"
 	"runtime/debug"
-	"syscall"
 	"time"
 
 	"github.com/shuTwT/nex-api/internal/infra/worker"
@@ -52,9 +51,7 @@ func run() error {
 	if err != nil {
 		return err
 	}
-	if err := setMemoryLimit(limits.maxMemory); err != nil {
-		return err
-	}
+	setMemoryLimit(limits.maxMemory)
 	engine := worker.NewEngine(worker.EngineOptions{MaxOutputBytes: limits.maxOutput})
 	inputs := make(chan inputEvent, 1)
 	go readInputs(inputs, limits.maxFrame)
@@ -128,7 +125,7 @@ func run() error {
 
 func parseLimits() (workerLimits, error) {
 	var limits workerLimits
-	flag.Int64Var(&limits.maxMemory, "max-memory-bytes", 256<<20, "maximum worker address space")
+	flag.Int64Var(&limits.maxMemory, "max-memory-bytes", 256<<20, "maximum worker resident memory")
 	flag.IntVar(&limits.maxOutput, "max-output-bytes", 1<<20, "maximum transform output")
 	flag.IntVar(&limits.maxFrame, "max-frame-bytes", worker.DefaultMaxFrameBytes, "maximum IPC frame")
 	flag.IntVar(&limits.maxJobs, "max-jobs", 100, "jobs before worker recycling")
@@ -140,17 +137,17 @@ func parseLimits() (workerLimits, error) {
 	return limits, nil
 }
 
-func setMemoryLimit(bytes int64) error {
-	limit := uint64(bytes)
-	rl := &syscall.Rlimit{Cur: limit, Max: limit}
-	if err := syscall.Setrlimit(syscall.RLIMIT_AS, rl); err == nil {
-		return nil
-	}
-	if err := syscall.Setrlimit(syscall.RLIMIT_DATA, rl); err == nil {
-		return nil
-	}
-	debug.SetMemoryLimit(bytes)
-	return nil
+func setMemoryLimit(maxResidentBytes int64) {
+	// RLIMIT_AS is intentionally not used here. It limits virtual address
+	// space, including space reserved by the Go runtime, and can make small
+	// allocations fail even while the process RSS is below its budget. The
+	// parent process enforces the RSS ceiling; leave headroom for the binary
+	// and memory that is not managed by the Go runtime.
+	debug.SetMemoryLimit(runtimeMemoryLimit(maxResidentBytes))
+}
+
+func runtimeMemoryLimit(maxResidentBytes int64) int64 {
+	return maxResidentBytes - maxResidentBytes/10
 }
 
 func readInputs(inputs chan<- inputEvent, maxFrame int) {

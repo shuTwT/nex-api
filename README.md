@@ -44,7 +44,15 @@ Vite 在 `http://localhost:3000` 运行，并将 `/api` 请求代理到 Go 后�
 ```bash
 make generate  # 从 Swaggo 注释生成 OpenAPI 与前端 TypeScript 类型
 make test      # Go 测试和 Vite 类型检查
-make build     # 构建 Go 二进制与 Vite 静态资源
+make build     # 构建多平台 Go 二进制与 Vite 静态资源
+```
+
+`make build` 默认产出 Linux 和 macOS 的 amd64/arm64 后端二进制，保存到 `bin/<os>_<arch>/`。交叉编译使用 `CGO_ENABLED=0`，amd64 默认以 `GOAMD64=v1` 构建，以便在通用 x86-64 CPU 上运行。
+
+```bash
+make build-linux-amd64                         # 仅构建 Linux amd64 后端
+make build-current                             # 仅构建当前平台后端和前端
+make build-backend PLATFORMS="linux/amd64"    # 自定义后端构建矩阵
 ```
 
 HTTP 文档源位于 `cmd/server/swagger.go` 的 Swaggo 注释。`make generate` 使用 Swaggo 生成 Swagger 2 文档，通过 `swagger2openapi` 转换为 `openapi/openapi.yaml`，再由 `openapi-typescript` 生成 `frontend/src/api/generated/schema.ts`；运行时使用 `openapi-fetch`。`test/contract/manifest.json` 仅用于回归校验已记录的接口覆盖范围。

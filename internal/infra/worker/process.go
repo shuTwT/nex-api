@@ -9,20 +9,24 @@ import (
 	"os/exec"
 	"strconv"
 	"sync"
+	"sync/atomic"
 	"time"
 )
 
 type processWorker struct {
-	command   *exec.Cmd
-	stdin     io.WriteCloser
-	stdout    io.ReadCloser
-	responses chan responseEvent
-	done      chan struct{}
-	maxFrame  int
-	writeMu   sync.Mutex
-	waitOnce  sync.Once
-	stopOnce  sync.Once
-	waitErr   error
+	command            *exec.Cmd
+	stdin              io.WriteCloser
+	stdout             io.ReadCloser
+	responses          chan responseEvent
+	done               chan struct{}
+	maxFrame           int
+	writeMu            sync.Mutex
+	waitOnce           sync.Once
+	stopOnce           sync.Once
+	waitErr            error
+	stopMemoryWatchdog func()
+	memoryExceeded     atomic.Bool
+	memoryWatchFailed  atomic.Bool
 }
 
 type responseEvent struct {
@@ -62,6 +66,16 @@ func startProcessWorker(options PoolOptions) (*processWorker, error) {
 		done:      make(chan struct{}),
 		maxFrame:  options.MaxFrameBytes,
 	}
+	worker.stopMemoryWatchdog = startMemoryWatchdog(command.Process.Pid, options.MaxMemoryBytes,
+		func() {
+			worker.memoryExceeded.Store(true)
+			_ = command.Process.Kill()
+		},
+		func() {
+			worker.memoryWatchFailed.Store(true)
+			_ = command.Process.Kill()
+		},
+	)
 	go worker.readLoop()
 	return worker, nil
 }
@@ -71,15 +85,18 @@ func (w *processWorker) execute(ctx context.Context, job Job, options PoolOption
 	err := WriteMessage(w.stdin, Message{Type: MessageExecute, JobID: job.ID, Job: &job}, options.MaxFrameBytes)
 	w.writeMu.Unlock()
 	if err != nil {
-		return Response{}, &WorkerError{Code: ErrorCodeWorkerExit, Message: err.Error(), Retryable: true}
+		return Response{}, w.exitError(err.Error())
 	}
 	for {
 		select {
 		case event, ok := <-w.responses:
 			if !ok {
-				return Response{}, &WorkerError{Code: ErrorCodeWorkerExit, Message: "worker exited before responding", Retryable: true}
+				return Response{}, w.exitError("worker exited before responding")
 			}
 			if event.err != nil {
+				if w.memoryExceeded.Load() || w.memoryWatchFailed.Load() {
+					return Response{}, w.exitError(event.err.Error())
+				}
 				return Response{}, &WorkerError{Code: ErrorCodeProtocol, Message: event.err.Error(), Retryable: true}
 			}
 			if event.response.JobID != job.ID {
@@ -89,7 +106,7 @@ func (w *processWorker) execute(ctx context.Context, job Job, options PoolOption
 		case <-ctx.Done():
 			return w.cancel(ctx, job.ID, options)
 		case <-w.done:
-			return Response{}, &WorkerError{Code: ErrorCodeWorkerExit, Message: "worker process exited", Retryable: true}
+			return Response{}, w.exitError("worker process exited")
 		}
 	}
 }
@@ -118,6 +135,7 @@ func (w *processWorker) cancel(ctx context.Context, jobID string, options PoolOp
 }
 
 func (w *processWorker) readLoop() {
+	defer w.stopMemoryWatchdog()
 	for {
 		response, err := ReadResponse(w.stdout, w.maxFrame)
 		if err != nil {
@@ -142,6 +160,7 @@ func (w *processWorker) wait() error {
 
 func (w *processWorker) stop() {
 	w.stopOnce.Do(func() {
+		w.stopMemoryWatchdog()
 		_ = w.stdin.Close()
 		if w.command.Process != nil {
 			_ = w.command.Process.Kill()
@@ -149,4 +168,14 @@ func (w *processWorker) stop() {
 		_ = w.stdout.Close()
 		_ = w.wait()
 	})
+}
+
+func (w *processWorker) exitError(message string) *WorkerError {
+	if w.memoryExceeded.Load() {
+		return &WorkerError{Code: ErrorCodeMemoryLimit, Message: "worker exceeded memory limit"}
+	}
+	if w.memoryWatchFailed.Load() {
+		return &WorkerError{Code: ErrorCodeWorkerExit, Message: "worker memory watchdog failed", Retryable: true}
+	}
+	return &WorkerError{Code: ErrorCodeWorkerExit, Message: message, Retryable: true}
 }

@@ -8,6 +8,7 @@ import (
 	"crypto/rand"
 	"errors"
 	"fmt"
+	"log/slog"
 	"net/http"
 	"net/url"
 	"reflect"
@@ -29,6 +30,7 @@ type SessionIssuer interface {
 type Config struct {
 	AppURL        string
 	SessionSecret []byte
+	Logger        *slog.Logger
 }
 
 type Handler struct {
@@ -37,6 +39,7 @@ type Handler struct {
 	baseURL  *url.URL
 	state    *serviceoauth.StateManager
 	mux      chi.Router
+	logger   *slog.Logger
 }
 
 func New(service *serviceoauth.Service, sessions SessionIssuer, value any) (*Handler, error) {
@@ -84,6 +87,10 @@ func newHandler(mux chi.Router, service *serviceoauth.Service, sessions SessionI
 		baseURL:  baseURL,
 		state:    state,
 		mux:      mux,
+		logger:   cfg.Logger,
+	}
+	if handler.logger == nil {
+		handler.logger = slog.Default()
 	}
 	handler.registerRoutes()
 	return handler, nil
@@ -168,6 +175,7 @@ func (h *Handler) callback(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) authorizeProvider(w http.ResponseWriter, r *http.Request, providerID string) {
 	provider, err := h.service.Provider(r.Context(), providerID)
 	if err != nil {
+		h.logger.ErrorContext(r.Context(), "oauth provider lookup failed", slog.String("provider", providerID), slog.Any("err", err))
 		status := http.StatusServiceUnavailable
 		if serviceoauth.ProviderUnavailable(err) {
 			status = http.StatusNotFound
@@ -187,6 +195,7 @@ func (h *Handler) authorizeProvider(w http.ResponseWriter, r *http.Request, prov
 	}
 	authorizationURL, err := provider.BuildAuthorizationURL(r.Context(), state, h.callbackURL(provider.ID))
 	if err != nil {
+		h.logger.ErrorContext(r.Context(), "oauth authorization URL build failed", slog.String("provider", provider.ID), slog.String("issuer", provider.Issuer), slog.Any("err", err))
 		h.writeOAuthError(w, http.StatusBadGateway, "oauth_provider_unavailable")
 		return
 	}
@@ -213,6 +222,7 @@ func (h *Handler) callbackProvider(w http.ResponseWriter, r *http.Request, provi
 	}
 	provider, err := h.service.Provider(r.Context(), providerID)
 	if err != nil {
+		h.logger.ErrorContext(r.Context(), "oauth callback provider lookup failed", slog.String("provider", providerID), slog.Any("err", err))
 		h.redirectError(w, r, state.ReturnURL, "oauth_provider_unavailable")
 		return
 	}

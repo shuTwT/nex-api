@@ -132,7 +132,7 @@ func TestEngine_returnsStructuredCancellationAndOutputErrors(t *testing.T) {
 func TestPool_recyclesWorkerAndCancelsLongRunningJob(t *testing.T) {
 	// Given
 	if runtime.GOOS == "windows" {
-		t.Skip("the worker process uses Unix resource limits")
+		t.Skip("the worker process uses Unix memory monitoring")
 	}
 	workerPath := buildWorker(t)
 	pool, err := NewPool(context.Background(), PoolOptions{
@@ -180,8 +180,54 @@ func TestPool_recyclesWorkerAndCancelsLongRunningJob(t *testing.T) {
 	}
 }
 
+func TestPool_recyclesWorkerAfterMemoryLimit(t *testing.T) {
+	if runtime.GOOS == "windows" {
+		t.Skip("the worker process uses Unix memory monitoring")
+	}
+	workerPath := buildWorker(t)
+	pool, err := NewPool(context.Background(), PoolOptions{
+		Executable:     workerPath,
+		WorkerCount:    1,
+		JobTimeout:     15 * time.Second,
+		CancelGrace:    500 * time.Millisecond,
+		MaxMemoryBytes: 64 << 20,
+		MaxOutputBytes: 64 * 1024,
+		MaxFrameBytes:  256 * 1024,
+	})
+	if err != nil {
+		t.Fatalf("new pool: %v", err)
+	}
+	defer pool.Close()
+
+	_, limitErr := pool.Execute(context.Background(), Job{
+		Kind: ScriptKindPre,
+		Script: `const chunks = [];
+			while (true) {
+				chunks.push("x".repeat(1024 * 1024) + chunks.length);
+			}`,
+	})
+	var memoryErr *WorkerError
+	if !errors.As(limitErr, &memoryErr) || memoryErr.Code != ErrorCodeMemoryLimit {
+		t.Fatalf("memory limit error = %v, want memory_limit", limitErr)
+	}
+
+	result, err := pool.Execute(context.Background(), Job{
+		Kind:   ScriptKindPre,
+		Script: `headers["x-recycled"] = "yes";`,
+	})
+	if err != nil {
+		t.Fatalf("execute with replacement worker: %v", err)
+	}
+	if result.Headers["x-recycled"] != "yes" {
+		t.Fatalf("replacement result = %#v, want recycled worker output", result)
+	}
+}
+
 func buildWorker(t *testing.T) string {
 	t.Helper()
+	if path := strings.TrimSpace(os.Getenv("NEX_TEST_WORKER_EXECUTABLE")); path != "" {
+		return path
+	}
 	root, err := os.Getwd()
 	if err != nil {
 		t.Fatalf("get working directory: %v", err)

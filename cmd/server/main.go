@@ -99,6 +99,7 @@ func run(ctx context.Context, cfg config.Config, loggerInstance *slog.Logger) er
 		OAuth: oauth.Config{
 			AppURL:        cfg.AppURL,
 			SessionSecret: []byte(cfg.Auth.SessionSecret),
+			Logger:        loggerInstance,
 		},
 	}
 	handler, err := router.BuildRouter(runCtx, routerConfig, deps.Dependencies)
