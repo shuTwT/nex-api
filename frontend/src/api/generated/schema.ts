@@ -1526,6 +1526,37 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        "accounts.AuditEntry": {
+            action?: string;
+            details?: string;
+            ipaddress?: string;
+            level?: string;
+            metadata?: string;
+            resource?: string;
+            status?: string;
+            userAgent?: string;
+            userID?: string;
+        };
+        "auth.User": {
+            credits?: number;
+            email?: string;
+            id?: string;
+            role?: string;
+            username?: string;
+        };
+        "catalog.APIStats": {
+            activeApis?: number;
+            categoriesCount?: number;
+            inactiveApis?: number;
+            totalApis?: number;
+            totalCalls?: number;
+        };
+        "catalog.MCPStats": {
+            activeServices?: number;
+            inactiveServices?: number;
+            totalCalls?: number;
+            totalServices?: number;
+        };
         "main.SwaggerEnvelope": {
             data?: unknown;
             error?: string;
@@ -1541,23 +1572,613 @@ export interface components {
         "main.SwaggerRequest": {
             [key: string]: unknown;
         };
+        "membership.PlanUpdateInput": {
+            creditResetCycle?: string;
+            isActive?: boolean;
+            price?: number;
+            sortOrder?: number;
+            title?: string;
+            totalCredits?: number;
+            validityDuration?: number;
+            validityUnit?: string;
+        };
+        "model.AdvertisementCreateReq": {
+            image?: string;
+            imageHeight?: number;
+            imageWidth?: number;
+            isActive?: boolean;
+            link?: string;
+            position?: string;
+            title?: string;
+        };
+        "model.AdvertisementPositionDTO": {
+            _count?: {
+                [key: string]: number;
+            };
+            position?: string;
+        };
+        "model.AdvertisementResp": {
+            createdAt?: string;
+            id?: string;
+            image?: string;
+            imageHeight?: number;
+            imageWidth?: number;
+            isActive?: boolean;
+            link?: string;
+            position?: string;
+            title?: string;
+            updatedAt?: string;
+        };
+        "model.AdvertisementStatsResp": {
+            activeAds?: number;
+            inactiveAds?: number;
+            positionStats?: components["schemas"]["model.AdvertisementPositionDTO"][];
+            totalAds?: number;
+        };
+        "model.AdvertisementUpdateReq": {
+            image?: string;
+            imageHeight?: number;
+            imageWidth?: number;
+            isActive?: boolean;
+            link?: string;
+            position?: string;
+            title?: string;
+        };
+        "model.AuditResp": {
+            action?: string;
+            createdAt?: string;
+            details?: string;
+            id?: string;
+            ipAddress?: string;
+            level?: string;
+            metadata?: string;
+            resource?: string;
+            status?: string;
+            user?: components["schemas"]["model.AuditUserDTO"];
+            userAgent?: string;
+            userId?: string;
+        };
+        "model.AuditStatsResp": {
+            errorLogs?: number;
+            failedLogs?: number;
+            infoLogs?: number;
+            successLogs?: number;
+            totalLogs?: number;
+            warningLogs?: number;
+        };
+        "model.AuditUserDTO": {
+            email?: string;
+            id?: string;
+            name?: string;
+        };
+        "model.CatalogAPICreateReq": {
+            alias?: string;
+            categoryId?: string;
+            description?: string;
+            documentation?: string;
+            endpoint?: string;
+            isActive?: boolean;
+            method?: string;
+            name?: string;
+            postScript?: string;
+            preScript?: string;
+            pricing?: number;
+        };
+        "model.CatalogAPIDTO": {
+            alias?: string;
+            callCount?: number;
+            category?: components["schemas"]["model.CatalogCategoryDTO"];
+            categoryId?: string;
+            createdAt?: string;
+            description?: string;
+            documentation?: string;
+            endpoint?: string;
+            id?: string;
+            isActive?: boolean;
+            method?: string;
+            name?: string;
+            parameters?: components["schemas"]["model.CatalogParameterDTO"][];
+            postScript?: string;
+            preScript?: string;
+            pricing?: number;
+            responses?: components["schemas"]["model.CatalogResponseDTO"][];
+            updatedAt?: string;
+        };
+        "model.CatalogAPIUpdateReq": {
+            alias?: string;
+            categoryId?: string;
+            description?: string;
+            documentation?: string;
+            endpoint?: string;
+            isActive?: boolean;
+            method?: string;
+            name?: string;
+            postScript?: string;
+            preScript?: string;
+            pricing?: number;
+        };
+        "model.CatalogCategoryCreateReq": {
+            description?: string;
+            icon?: string;
+            name?: string;
+        };
+        "model.CatalogCategoryDTO": {
+            description?: string;
+            icon?: string;
+            id?: string;
+            name?: string;
+        };
+        "model.CatalogCategoryListResp": {
+            apiCount?: number;
+            description?: string;
+            icon?: string;
+            id?: string;
+            name?: string;
+        };
+        "model.CatalogCategoryUpdateReq": {
+            description?: string;
+            icon?: string;
+            name?: string;
+        };
+        "model.CatalogMCPCreateReq": {
+            categoryId?: string;
+            command?: string;
+            description?: string;
+            documentation?: string;
+            endpoint?: string;
+            envVars?: string;
+            identifier?: string;
+            isActive?: boolean;
+            name?: string;
+            pricing?: number;
+            type?: string;
+        };
+        "model.CatalogMCPDTO": {
+            callCount?: number;
+            category?: components["schemas"]["model.CatalogCategoryDTO"];
+            categoryId?: string;
+            command?: string;
+            createdAt?: string;
+            description?: string;
+            documentation?: string;
+            endpoint?: string;
+            envVars?: string;
+            id?: string;
+            identifier?: string;
+            isActive?: boolean;
+            name?: string;
+            pricing?: number;
+            type?: string;
+            updatedAt?: string;
+        };
+        "model.CatalogMCPUpdateReq": {
+            categoryId?: string;
+            command?: string;
+            description?: string;
+            documentation?: string;
+            endpoint?: string;
+            envVars?: string;
+            identifier?: string;
+            isActive?: boolean;
+            name?: string;
+            pricing?: number;
+            type?: string;
+        };
+        "model.CatalogParameterDTO": {
+            apiId?: string;
+            defaultValue?: string;
+            description?: string;
+            id?: string;
+            name?: string;
+            required?: boolean;
+            type?: string;
+        };
+        "model.CatalogResponseDTO": {
+            apiId?: string;
+            description?: string;
+            id?: string;
+            name?: string;
+            type?: string;
+        };
+        "model.DashboardActivityResp": {
+            apiAlias?: string;
+            apiName?: string;
+            createdAt?: string;
+            credits?: number;
+            id?: string;
+            status?: string;
+        };
+        "model.DashboardTopAPIResp": {
+            calls?: number;
+            name?: string;
+            percentage?: number;
+        };
+        "model.MarketplaceAPIResp": {
+            alias?: string;
+            category?: string;
+            createdAt?: string;
+            description?: string;
+            endpoint?: string;
+            id?: string;
+            isActive?: boolean;
+            isFree?: boolean;
+            method?: string;
+            name?: string;
+            pricing?: number;
+            todayCallCount?: number;
+            totalCallCount?: number;
+            updatedAt?: string;
+            userCount?: number;
+        };
+        "model.MarketplaceMCPResp": {
+            category?: string;
+            createdAt?: string;
+            description?: string;
+            documentation?: string;
+            id?: string;
+            identifier?: string;
+            isActive?: boolean;
+            isFree?: boolean;
+            name?: string;
+            pricing?: number;
+            todayCallCount?: number;
+            totalCallCount?: number;
+            type?: string;
+            updatedAt?: string;
+            userCount?: number;
+        };
+        "model.MarketplaceMCPTool": {
+            description?: string;
+            inputSchema?: {
+                [key: string]: unknown;
+            };
+            name?: string;
+            title?: string;
+        };
+        "model.MembershipSubscribeReq": {
+            planId?: string;
+        };
+        "model.PaymentCreateResp": {
+            outTradeNo?: string;
+            payUrl?: string;
+            paymentId?: string;
+            qrcodeUrl?: string;
+            success?: boolean;
+        };
+        "model.PaymentResp": {
+            amount?: number;
+            cancelledAt?: string;
+            createdAt?: string;
+            currency?: string;
+            expiredAt?: string;
+            id?: string;
+            method?: components["schemas"]["pay.PaymentMethod"];
+            outTradeNo?: string;
+            paidAt?: string;
+            payUrl?: string;
+            qrcodeUrl?: string;
+            status?: components["schemas"]["pay.PaymentState"];
+            transactionId?: string;
+            userId?: string;
+        };
+        "model.PaymentSettingsResp": {
+            alipayEnabled?: boolean;
+            creditPrice?: number;
+            minRecharge?: number;
+            mockEnabled?: boolean;
+            wechatEnabled?: boolean;
+        };
+        "model.ProfileResp": {
+            createdAt?: string;
+            credits?: number;
+            email?: string;
+            id?: string;
+            image?: string;
+            name?: string;
+            role?: string;
+            totalCreditsSpent?: number;
+            totalRequests?: number;
+            username?: string;
+        };
+        "model.RechargePaymentCreateReq": {
+            amount?: number;
+            credits?: number;
+            method?: string;
+        };
+        "model.RedemptionBatchResp": {
+            batchId?: string;
+            count?: number;
+        };
+        "model.RedemptionCodeCreateReq": {
+            count?: number;
+            credits?: number;
+            expiresAt?: string;
+            planId?: string;
+            type?: string;
+        };
+        "model.RedemptionCodeReq": {
+            code?: string;
+        };
+        "model.RedemptionCodeResp": {
+            batchId?: string;
+            code?: string;
+            createdAt?: string;
+            createdBy?: string;
+            credits?: number;
+            expiresAt?: string;
+            id?: string;
+            isUsed?: boolean;
+            planId?: string;
+            planName?: string;
+            type?: string;
+            updatedAt?: string;
+            usedAt?: string;
+            usedBy?: string;
+        };
+        "model.RedemptionLookupResp": {
+            credits?: number;
+            planName?: string;
+            type?: string;
+        };
+        "model.RedemptionResp": {
+            credits?: number;
+            message?: string;
+            type?: string;
+        };
+        "model.ScheduleJobResp": {
+            createdAt?: string;
+            description?: string;
+            enabled?: boolean;
+            expression?: string;
+            id?: string;
+            lastError?: string;
+            lastRunAt?: string;
+            lastStatus?: string;
+            name?: string;
+            runtime?: components["schemas"]["model.ScheduleRuntimeInfo"];
+            scheduleType?: string;
+            taskKey?: string;
+            updatedAt?: string;
+        };
+        "model.ScheduleRuntimeInfo": {
+            nextRun?: string;
+            running?: boolean;
+            scheduled?: boolean;
+        };
+        "model.SubscriptionDTO": {
+            credits?: number;
+            endDate?: string;
+            id?: string;
+            isActive?: boolean;
+            planName?: string;
+            price?: number;
+            startDate?: string;
+        };
+        "model.SubscriptionPaymentCreateReq": {
+            method?: string;
+            planId?: string;
+        };
+        "model.SubscriptionPlanCreateReq": {
+            creditResetCycle?: string;
+            isActive?: boolean;
+            price?: number;
+            sortOrder?: number;
+            title?: string;
+            totalCredits?: number;
+            validityDuration?: number;
+            validityUnit?: string;
+        };
+        "model.SubscriptionPlanResp": {
+            createdAt?: string;
+            creditResetCycle?: string;
+            id?: string;
+            isActive?: boolean;
+            price?: number;
+            sortOrder?: number;
+            title?: string;
+            totalCredits?: number;
+            updatedAt?: string;
+            validityDuration?: number;
+            validityUnit?: string;
+        };
+        "model.SubscriptionResp": {
+            createdAt?: string;
+            credits?: number;
+            endDate?: string;
+            id?: string;
+            isActive?: boolean;
+            paymentId?: string;
+            planId?: string;
+            planName?: string;
+            price?: number;
+            startDate?: string;
+            updatedAt?: string;
+            userId?: string;
+        };
+        "model.SystemInitializeReq": {
+            confirmPassword?: string;
+            email?: string;
+            password?: string;
+            username?: string;
+        };
+        "model.SystemInitializeResp": {
+            credits?: number;
+            email?: string;
+            id?: string;
+            password?: string;
+            role?: string;
+            username?: string;
+        };
+        "model.SystemSettingDefaultDTO": {
+            category?: string;
+            description?: string;
+            key?: string;
+            value?: string;
+        };
+        "model.SystemSettingDefaultGroupsDTO": {
+            alipay?: components["schemas"]["model.SystemSettingDefaultDTO"][];
+            announcement?: components["schemas"]["model.SystemSettingDefaultDTO"][];
+            basic?: components["schemas"]["model.SystemSettingDefaultDTO"][];
+            epay?: components["schemas"]["model.SystemSettingDefaultDTO"][];
+            wechat?: components["schemas"]["model.SystemSettingDefaultDTO"][];
+        };
+        "model.SystemSettingResp": {
+            category?: string;
+            createdAt?: string;
+            description?: string;
+            id?: string;
+            key?: string;
+            updatedAt?: string;
+            value?: string;
+        };
+        "model.SystemSettingUpdateDTO": {
+            key?: string;
+            value?: string;
+        };
+        "model.SystemSettingsDefaultsResp": {
+            general?: components["schemas"]["model.SystemSettingDefaultDTO"][];
+            oauth?: components["schemas"]["model.SystemSettingDefaultGroupsDTO"];
+            operation?: components["schemas"]["model.SystemSettingDefaultGroupsDTO"];
+            payment?: components["schemas"]["model.SystemSettingDefaultGroupsDTO"];
+        };
+        "model.SystemSettingsUpdateReq": {
+            settings?: components["schemas"]["model.SystemSettingUpdateDTO"][];
+        };
+        "model.TokenCreateReq": {
+            expiresAt?: string;
+            name?: string;
+            permissions?: string;
+        };
+        "model.TokenCreateResp": {
+            createdAt?: string;
+            expiresAt?: string;
+            id?: string;
+            isActive?: boolean;
+            lastUsedAt?: string;
+            name?: string;
+            permissions?: string;
+            token?: string;
+            tokenMasked?: string;
+            updatedAt?: string;
+        };
+        "model.TokenResp": {
+            createdAt?: string;
+            expiresAt?: string;
+            id?: string;
+            isActive?: boolean;
+            lastUsedAt?: string;
+            name?: string;
+            permissions?: string;
+            tokenMasked?: string;
+            updatedAt?: string;
+        };
+        "model.TokenStatsResp": {
+            activeTokens?: number;
+            expiredTokens?: number;
+            inactiveTokens?: number;
+            totalTokens?: number;
+        };
+        "model.TokenUpdateReq": {
+            expiresAt?: string;
+            isActive?: boolean;
+            name?: string;
+            permissions?: string;
+        };
+        "model.UsageAPIDTO": {
+            endpoint?: string;
+            name?: string;
+        };
+        "model.UsageDTO": {
+            api?: components["schemas"]["model.UsageAPIDTO"];
+            createdAt?: string;
+            credits?: number;
+            id?: string;
+            status?: string;
+        };
+        "model.UserCreateReq": {
+            credits?: number;
+            email?: string;
+            password?: string;
+            role?: string;
+            username?: string;
+        };
+        "model.UserResp": {
+            apiUsage?: components["schemas"]["model.UsageDTO"][];
+            createdAt?: string;
+            credits?: number;
+            email?: string;
+            id?: string;
+            name?: string;
+            role?: string;
+            subscription?: components["schemas"]["model.SubscriptionDTO"];
+            updatedAt?: string;
+            username?: string;
+        };
+        "model.UserStatsResp": {
+            activeUsers?: number;
+            adminUsers?: number;
+            newUsersThisMonth?: number;
+            totalUsers?: number;
+        };
+        "model.UserUpdateReq": {
+            credits?: number;
+            email?: string;
+            role?: string;
+            username?: string;
+        };
+        "oauth.ConfiguredProvider": {
+            authorizationUrl?: string;
+            clientId?: string;
+            clientSecret?: string;
+            emailField?: string;
+            id?: string;
+            issuer?: string;
+            kind?: string;
+            name?: string;
+            roleField?: string;
+            scopes?: string;
+            tokenUrl?: string;
+            userIdField?: string;
+            userInfoUrl?: string;
+            usernameField?: string;
+        };
+        /** @enum {string} */
+        "pay.PaymentMethod": "wechat" | "alipay" | "mock";
+        /** @enum {string} */
+        "pay.PaymentState": "pending" | "paid" | "cancelled" | "failed" | "expired";
+        "schedule.TaskDescriptor": {
+            description?: string;
+            key?: string;
+        };
+        "upload.Metadata": {
+            filename?: string;
+            size?: number;
+            type?: string;
+            url?: string;
+        };
     };
     responses: never;
     parameters: never;
     requestBodies: {
+        /** @description request payload */
+        "model.RedemptionCodeReq": {
+            content: {
+                "application/json": components["schemas"]["model.RedemptionCodeReq"];
+            };
+        };
         /** @description JSON request payload */
         "main.SwaggerRequest": {
             content: {
                 "application/json": components["schemas"]["main.SwaggerRequest"];
             };
         };
-        /** @description JSON request payload */
+        /** @description Gateway notification parameters */
         "main.SwaggerRequest2": {
             content: {
                 "application/json": components["schemas"]["main.SwaggerRequest"];
             };
         };
-        /** @description Gateway notification parameters */
+        /** @description JSON request payload */
         "main.SwaggerRequest3": {
             content: {
                 "application/json": components["schemas"]["main.SwaggerRequest"];
@@ -1571,7 +2192,18 @@ export type $defs = Record<string, never>;
 export interface operations {
     advertisements_route_get: {
         parameters: {
-            query?: never;
+            query?: {
+                /** @description page */
+                page?: number;
+                /** @description limit */
+                limit?: number;
+                /** @description search */
+                search?: string;
+                /** @description position */
+                position?: string;
+                /** @description isActive */
+                isActive?: string;
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -1584,7 +2216,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"] & {
+                        data?: components["schemas"]["model.AdvertisementResp"][];
+                    };
                 };
             };
             /** @description Bad Request */
@@ -1598,6 +2232,15 @@ export interface operations {
             };
             /** @description Unauthorized */
             401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -1623,7 +2266,12 @@ export interface operations {
             path?: never;
             cookie?: never;
         };
-        requestBody?: components["requestBodies"]["main.SwaggerRequest2"];
+        /** @description request payload */
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["model.AdvertisementCreateReq"];
+            };
+        };
         responses: {
             /** @description OK */
             200: {
@@ -1631,7 +2279,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"] & {
+                        data?: components["schemas"]["model.AdvertisementResp"];
+                    };
                 };
             };
             /** @description Bad Request */
@@ -1645,6 +2295,15 @@ export interface operations {
             };
             /** @description Unauthorized */
             401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -1681,7 +2340,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"] & {
+                        data?: components["schemas"]["model.AdvertisementResp"];
+                    };
                 };
             };
             /** @description Bad Request */
@@ -1695,6 +2356,15 @@ export interface operations {
             };
             /** @description Unauthorized */
             401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -1723,7 +2393,12 @@ export interface operations {
             };
             cookie?: never;
         };
-        requestBody?: components["requestBodies"]["main.SwaggerRequest2"];
+        /** @description request payload */
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["model.AdvertisementUpdateReq"];
+            };
+        };
         responses: {
             /** @description OK */
             200: {
@@ -1731,7 +2406,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"] & {
+                        data?: components["schemas"]["model.AdvertisementResp"];
+                    };
                 };
             };
             /** @description Bad Request */
@@ -1745,6 +2422,15 @@ export interface operations {
             };
             /** @description Unauthorized */
             401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -1781,7 +2467,11 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"] & {
+                        data?: {
+                            [key: string]: string;
+                        };
+                    };
                 };
             };
             /** @description Bad Request */
@@ -1795,6 +2485,15 @@ export interface operations {
             };
             /** @description Unauthorized */
             401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -1823,7 +2522,7 @@ export interface operations {
             };
             cookie?: never;
         };
-        requestBody?: components["requestBodies"]["main.SwaggerRequest2"];
+        requestBody?: never;
         responses: {
             /** @description OK */
             200: {
@@ -1831,7 +2530,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"] & {
+                        data?: components["schemas"]["model.AdvertisementResp"];
+                    };
                 };
             };
             /** @description Bad Request */
@@ -1845,6 +2546,15 @@ export interface operations {
             };
             /** @description Unauthorized */
             401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -1881,7 +2591,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"] & {
+                        data?: components["schemas"]["model.AdvertisementResp"];
+                    };
                 };
             };
             /** @description Bad Request */
@@ -1895,6 +2607,15 @@ export interface operations {
             };
             /** @description Unauthorized */
             401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -1928,7 +2649,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"] & {
+                        data?: components["schemas"]["model.AdvertisementStatsResp"];
+                    };
                 };
             };
             /** @description Bad Request */
@@ -1949,6 +2672,15 @@ export interface operations {
                     "application/json": components["schemas"]["main.SwaggerEnvelope"];
                 };
             };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
             /** @description Internal Server Error */
             500: {
                 headers: {
@@ -1962,7 +2694,12 @@ export interface operations {
     };
     apis_route_get: {
         parameters: {
-            query?: never;
+            query?: {
+                /** @description page */
+                page?: number;
+                /** @description limit */
+                limit?: number;
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -1975,7 +2712,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"] & {
+                        data?: components["schemas"]["model.CatalogAPIDTO"][];
+                    };
                 };
             };
             /** @description Bad Request */
@@ -2014,7 +2753,12 @@ export interface operations {
             path?: never;
             cookie?: never;
         };
-        requestBody?: components["requestBodies"]["main.SwaggerRequest2"];
+        /** @description request payload */
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["model.CatalogAPICreateReq"];
+            };
+        };
         responses: {
             /** @description OK */
             200: {
@@ -2022,7 +2766,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"] & {
+                        data?: components["schemas"]["model.CatalogAPIDTO"];
+                    };
                 };
             };
             /** @description Bad Request */
@@ -2072,7 +2818,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"] & {
+                        data?: components["schemas"]["model.CatalogAPIDTO"];
+                    };
                 };
             };
             /** @description Bad Request */
@@ -2114,7 +2862,12 @@ export interface operations {
             };
             cookie?: never;
         };
-        requestBody?: components["requestBodies"]["main.SwaggerRequest2"];
+        /** @description request payload */
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["model.CatalogAPIUpdateReq"];
+            };
+        };
         responses: {
             /** @description OK */
             200: {
@@ -2122,7 +2875,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"] & {
+                        data?: components["schemas"]["model.CatalogAPIDTO"];
+                    };
                 };
             };
             /** @description Bad Request */
@@ -2172,7 +2927,11 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"] & {
+                        data?: {
+                            [key: string]: string;
+                        };
+                    };
                 };
             };
             /** @description Bad Request */
@@ -2214,7 +2973,7 @@ export interface operations {
             };
             cookie?: never;
         };
-        requestBody?: components["requestBodies"]["main.SwaggerRequest2"];
+        requestBody?: never;
         responses: {
             /** @description OK */
             200: {
@@ -2222,7 +2981,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"] & {
+                        data?: components["schemas"]["model.CatalogAPIDTO"];
+                    };
                 };
             };
             /** @description Bad Request */
@@ -2269,7 +3030,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"] & {
+                        data?: components["schemas"]["catalog.APIStats"];
+                    };
                 };
             };
             /** @description Bad Request */
@@ -2303,7 +3066,12 @@ export interface operations {
     };
     audit_logs_route_get: {
         parameters: {
-            query?: never;
+            query?: {
+                /** @description page */
+                page?: number;
+                /** @description limit */
+                limit?: number;
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -2316,7 +3084,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"] & {
+                        data?: components["schemas"]["model.AuditResp"][];
+                    };
                 };
             };
             /** @description Bad Request */
@@ -2355,7 +3125,12 @@ export interface operations {
             path?: never;
             cookie?: never;
         };
-        requestBody?: components["requestBodies"]["main.SwaggerRequest2"];
+        /** @description request payload */
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["accounts.AuditEntry"];
+            };
+        };
         responses: {
             /** @description OK */
             200: {
@@ -2363,7 +3138,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"] & {
+                        data?: components["schemas"]["model.AuditResp"];
+                    };
                 };
             };
             /** @description Bad Request */
@@ -2413,7 +3190,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"] & {
+                        data?: components["schemas"]["model.AuditResp"];
+                    };
                 };
             };
             /** @description Bad Request */
@@ -2472,7 +3251,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"] & {
+                        data?: components["schemas"]["model.AuditResp"];
+                    };
                 };
             };
             /** @description Bad Request */
@@ -2531,7 +3312,11 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"] & {
+                        data?: {
+                            [key: string]: string;
+                        };
+                    };
                 };
             };
             /** @description Bad Request */
@@ -2574,7 +3359,10 @@ export interface operations {
     };
     audit_logs_export_route_get: {
         parameters: {
-            query?: never;
+            query?: {
+                /** @description ids */
+                ids?: string;
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -2587,7 +3375,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"] & {
+                        data?: string;
+                    };
                 };
             };
             /** @description Bad Request */
@@ -2634,7 +3424,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"] & {
+                        data?: components["schemas"]["model.AuditStatsResp"];
+                    };
                 };
             };
             /** @description Bad Request */
@@ -2786,7 +3578,11 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"] & {
+                        data?: {
+                            [key: string]: string;
+                        };
+                    };
                 };
             };
             /** @description Bad Request */
@@ -2842,7 +3638,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"] & {
+                        data?: components["schemas"]["auth.User"];
+                    };
                 };
             };
             /** @description Bad Request */
@@ -2898,7 +3696,11 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"] & {
+                        data?: {
+                            [key: string]: string;
+                        };
+                    };
                 };
             };
             /** @description Bad Request */
@@ -2954,7 +3756,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"] & {
+                        data?: components["schemas"]["auth.User"];
+                    };
                 };
             };
             /** @description Bad Request */
@@ -3010,7 +3814,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"] & {
+                        data?: components["schemas"]["oauth.ConfiguredProvider"][];
+                    };
                 };
             };
             /** @description Bad Request */
@@ -3125,7 +3931,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"] & {
+                        data?: components["schemas"]["model.CatalogCategoryListResp"][];
+                    };
                 };
             };
             /** @description Bad Request */
@@ -3139,6 +3947,15 @@ export interface operations {
             };
             /** @description Unauthorized */
             401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -3164,7 +3981,12 @@ export interface operations {
             path?: never;
             cookie?: never;
         };
-        requestBody?: components["requestBodies"]["main.SwaggerRequest2"];
+        /** @description request payload */
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["model.CatalogCategoryCreateReq"];
+            };
+        };
         responses: {
             /** @description OK */
             200: {
@@ -3172,7 +3994,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"] & {
+                        data?: components["schemas"]["model.CatalogCategoryDTO"];
+                    };
                 };
             };
             /** @description Bad Request */
@@ -3186,6 +4010,15 @@ export interface operations {
             };
             /** @description Unauthorized */
             401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -3222,7 +4055,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"] & {
+                        data?: components["schemas"]["model.CatalogCategoryDTO"];
+                    };
                 };
             };
             /** @description Bad Request */
@@ -3273,7 +4108,12 @@ export interface operations {
             };
             cookie?: never;
         };
-        requestBody?: components["requestBodies"]["main.SwaggerRequest2"];
+        /** @description request payload */
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["model.CatalogCategoryUpdateReq"];
+            };
+        };
         responses: {
             /** @description OK */
             200: {
@@ -3281,7 +4121,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"] & {
+                        data?: components["schemas"]["model.CatalogCategoryDTO"];
+                    };
                 };
             };
             /** @description Bad Request */
@@ -3295,6 +4137,15 @@ export interface operations {
             };
             /** @description Unauthorized */
             401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -3331,7 +4182,11 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"] & {
+                        data?: {
+                            [key: string]: string;
+                        };
+                    };
                 };
             };
             /** @description Bad Request */
@@ -3345,6 +4200,15 @@ export interface operations {
             };
             /** @description Unauthorized */
             401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -3370,7 +4234,7 @@ export interface operations {
             path?: never;
             cookie?: never;
         };
-        requestBody?: components["requestBodies"]["main.SwaggerRequest2"];
+        requestBody?: never;
         responses: {
             /** @description OK */
             200: {
@@ -3425,7 +4289,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"] & {
+                        data?: components["schemas"]["model.DashboardActivityResp"][];
+                    };
                 };
             };
             /** @description Bad Request */
@@ -3472,7 +4338,11 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"] & {
+                        data?: {
+                            [key: string]: number;
+                        };
+                    };
                 };
             };
             /** @description Bad Request */
@@ -3519,7 +4389,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"] & {
+                        data?: components["schemas"]["model.DashboardTopAPIResp"][];
+                    };
                 };
             };
             /** @description Bad Request */
@@ -3566,7 +4438,11 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"] & {
+                        data?: {
+                            [key: string]: unknown;
+                        };
+                    };
                 };
             };
             /** @description Bad Request */
@@ -3600,7 +4476,16 @@ export interface operations {
     };
     marketplace_apis_route_get: {
         parameters: {
-            query?: never;
+            query?: {
+                /** @description page */
+                page?: number;
+                /** @description limit */
+                limit?: number;
+                /** @description search */
+                search?: string;
+                /** @description category */
+                category?: string;
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -3613,7 +4498,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"] & {
+                        data?: components["schemas"]["model.MarketplaceAPIResp"][];
+                    };
                 };
             };
             /** @description Bad Request */
@@ -3663,7 +4550,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"] & {
+                        data?: components["schemas"]["model.MarketplaceAPIResp"];
+                    };
                 };
             };
             /** @description Bad Request */
@@ -3697,7 +4586,16 @@ export interface operations {
     };
     marketplace_mcp_services_route_get: {
         parameters: {
-            query?: never;
+            query?: {
+                /** @description page */
+                page?: number;
+                /** @description limit */
+                limit?: number;
+                /** @description category */
+                category?: string;
+                /** @description type */
+                type?: string;
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -3710,7 +4608,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"] & {
+                        data?: components["schemas"]["model.MarketplaceMCPResp"][];
+                    };
                 };
             };
             /** @description Bad Request */
@@ -3760,7 +4660,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"] & {
+                        data?: components["schemas"]["model.MarketplaceMCPResp"];
+                    };
                 };
             };
             /** @description Not Found */
@@ -3801,7 +4703,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"] & {
+                        data?: components["schemas"]["model.MarketplaceMCPTool"][];
+                    };
                 };
             };
             /** @description Not Found */
@@ -3839,7 +4743,11 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"] & {
+                        data?: {
+                            [key: string]: number;
+                        };
+                    };
                 };
             };
             /** @description Bad Request */
@@ -3886,7 +4794,11 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"] & {
+                        data?: {
+                            [key: string]: number;
+                        };
+                    };
                 };
             };
             /** @description Bad Request */
@@ -3920,7 +4832,20 @@ export interface operations {
     };
     mcp_services_route_get: {
         parameters: {
-            query?: never;
+            query?: {
+                /** @description page */
+                page?: number;
+                /** @description limit */
+                limit?: number;
+                /** @description search */
+                search?: string;
+                /** @description type */
+                type?: string;
+                /** @description category */
+                category?: string;
+                /** @description status */
+                status?: string;
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -3933,7 +4858,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"] & {
+                        data?: components["schemas"]["model.CatalogMCPDTO"][];
+                    };
                 };
             };
             /** @description Bad Request */
@@ -3972,7 +4899,12 @@ export interface operations {
             path?: never;
             cookie?: never;
         };
-        requestBody?: components["requestBodies"]["main.SwaggerRequest2"];
+        /** @description request payload */
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["model.CatalogMCPCreateReq"];
+            };
+        };
         responses: {
             /** @description OK */
             200: {
@@ -3980,7 +4912,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"] & {
+                        data?: components["schemas"]["model.CatalogMCPDTO"];
+                    };
                 };
             };
             /** @description Bad Request */
@@ -4030,7 +4964,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"] & {
+                        data?: components["schemas"]["model.CatalogMCPDTO"];
+                    };
                 };
             };
             /** @description Bad Request */
@@ -4081,7 +5017,12 @@ export interface operations {
             };
             cookie?: never;
         };
-        requestBody?: components["requestBodies"]["main.SwaggerRequest2"];
+        /** @description request payload */
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["model.CatalogMCPUpdateReq"];
+            };
+        };
         responses: {
             /** @description OK */
             200: {
@@ -4089,7 +5030,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"] & {
+                        data?: components["schemas"]["model.CatalogMCPDTO"];
+                    };
                 };
             };
             /** @description Bad Request */
@@ -4139,7 +5082,11 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"] & {
+                        data?: {
+                            [key: string]: string;
+                        };
+                    };
                 };
             };
             /** @description Bad Request */
@@ -4181,7 +5128,7 @@ export interface operations {
             };
             cookie?: never;
         };
-        requestBody?: components["requestBodies"]["main.SwaggerRequest2"];
+        requestBody?: never;
         responses: {
             /** @description OK */
             200: {
@@ -4189,7 +5136,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"] & {
+                        data?: components["schemas"]["model.CatalogMCPDTO"];
+                    };
                 };
             };
             /** @description Bad Request */
@@ -4236,7 +5185,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"] & {
+                        data?: components["schemas"]["catalog.MCPStats"];
+                    };
                 };
             };
             /** @description Bad Request */
@@ -4283,7 +5234,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"] & {
+                        data?: components["schemas"]["model.SubscriptionResp"];
+                    };
                 };
             };
             /** @description Bad Request */
@@ -4330,7 +5283,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"] & {
+                        data?: components["schemas"]["model.SubscriptionPlanResp"][];
+                    };
                 };
             };
             /** @description Bad Request */
@@ -4369,7 +5324,12 @@ export interface operations {
             path?: never;
             cookie?: never;
         };
-        requestBody?: components["requestBodies"]["main.SwaggerRequest2"];
+        /** @description request payload */
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["model.MembershipSubscribeReq"];
+            };
+        };
         responses: {
             /** @description OK */
             200: {
@@ -4377,7 +5337,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"] & {
+                        data?: components["schemas"]["model.SubscriptionResp"];
+                    };
                 };
             };
             /** @description Bad Request */
@@ -4427,7 +5389,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"] & {
+                        data?: components["schemas"]["model.PaymentResp"];
+                    };
                 };
             };
             /** @description Bad Request */
@@ -4441,6 +5405,15 @@ export interface operations {
             };
             /** @description Unauthorized */
             401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -4469,7 +5442,7 @@ export interface operations {
             };
             cookie?: never;
         };
-        requestBody?: components["requestBodies"]["main.SwaggerRequest2"];
+        requestBody?: never;
         responses: {
             /** @description OK */
             200: {
@@ -4477,7 +5450,11 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"] & {
+                        data?: {
+                            [key: string]: string;
+                        };
+                    };
                 };
             };
             /** @description Bad Request */
@@ -4491,6 +5468,15 @@ export interface operations {
             };
             /** @description Unauthorized */
             401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -4527,7 +5513,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"] & {
+                        data?: components["schemas"]["model.PaymentResp"];
+                    };
                 };
             };
             /** @description Bad Request */
@@ -4541,6 +5529,15 @@ export interface operations {
             };
             /** @description Unauthorized */
             401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -4566,7 +5563,7 @@ export interface operations {
             path?: never;
             cookie?: never;
         };
-        requestBody?: components["requestBodies"]["main.SwaggerRequest3"];
+        requestBody?: components["requestBodies"]["main.SwaggerRequest2"];
         responses: {
             /** @description OK */
             200: {
@@ -4622,15 +5619,15 @@ export interface operations {
             path?: never;
             cookie?: never;
         };
-        requestBody?: components["requestBodies"]["main.SwaggerRequest2"];
+        requestBody?: never;
         responses: {
-            /** @description OK */
+            /** @description gateway notification result */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                    "application/json": string;
                 };
             };
             /** @description Bad Request */
@@ -4644,6 +5641,15 @@ export interface operations {
             };
             /** @description Unauthorized */
             401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -4669,15 +5675,15 @@ export interface operations {
             path?: never;
             cookie?: never;
         };
-        requestBody?: components["requestBodies"]["main.SwaggerRequest2"];
+        requestBody?: never;
         responses: {
-            /** @description OK */
+            /** @description gateway notification result */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                    "application/json": string;
                 };
             };
             /** @description Bad Request */
@@ -4691,6 +5697,15 @@ export interface operations {
             };
             /** @description Unauthorized */
             401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -4716,7 +5731,7 @@ export interface operations {
             path?: never;
             cookie?: never;
         };
-        requestBody?: components["requestBodies"]["main.SwaggerRequest3"];
+        requestBody?: components["requestBodies"]["main.SwaggerRequest2"];
         responses: {
             /** @description OK */
             200: {
@@ -4772,15 +5787,15 @@ export interface operations {
             path?: never;
             cookie?: never;
         };
-        requestBody?: components["requestBodies"]["main.SwaggerRequest2"];
+        requestBody?: never;
         responses: {
-            /** @description OK */
+            /** @description gateway notification result */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                    "application/json": string;
                 };
             };
             /** @description Bad Request */
@@ -4794,6 +5809,15 @@ export interface operations {
             };
             /** @description Unauthorized */
             401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -4827,7 +5851,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"] & {
+                        data?: string[];
+                    };
                 };
             };
             /** @description Bad Request */
@@ -4841,6 +5867,15 @@ export interface operations {
             };
             /** @description Unauthorized */
             401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -4866,7 +5901,12 @@ export interface operations {
             path?: never;
             cookie?: never;
         };
-        requestBody?: components["requestBodies"]["main.SwaggerRequest2"];
+        /** @description request payload */
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["model.SubscriptionPaymentCreateReq"];
+            };
+        };
         responses: {
             /** @description OK */
             200: {
@@ -4874,7 +5914,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"] & {
+                        data?: components["schemas"]["model.PaymentCreateResp"];
+                    };
                 };
             };
             /** @description Bad Request */
@@ -4888,6 +5930,15 @@ export interface operations {
             };
             /** @description Unauthorized */
             401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -4921,7 +5972,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"] & {
+                        data?: components["schemas"]["model.PaymentSettingsResp"];
+                    };
                 };
             };
             /** @description Bad Request */
@@ -4935,6 +5988,15 @@ export interface operations {
             };
             /** @description Unauthorized */
             401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -4968,7 +6030,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"] & {
+                        data?: components["schemas"]["model.PaymentResp"][];
+                    };
                 };
             };
             /** @description Bad Request */
@@ -4982,6 +6046,15 @@ export interface operations {
             };
             /** @description Unauthorized */
             401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -5015,7 +6088,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"] & {
+                        data?: components["schemas"]["model.ProfileResp"];
+                    };
                 };
             };
             /** @description Bad Request */
@@ -5062,7 +6137,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"] & {
+                        data?: components["schemas"]["model.ProfileResp"];
+                    };
                 };
             };
             /** @description Bad Request */
@@ -5118,7 +6195,11 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"] & {
+                        data?: {
+                            [key: string]: string;
+                        };
+                    };
                 };
             };
             /** @description Bad Request */
@@ -5166,7 +6247,7 @@ export interface operations {
             path?: never;
             cookie?: never;
         };
-        requestBody?: components["requestBodies"]["main.SwaggerRequest2"];
+        requestBody: components["requestBodies"]["model.RedemptionCodeReq"];
         responses: {
             /** @description OK */
             200: {
@@ -5174,7 +6255,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"] & {
+                        data?: components["schemas"]["model.RedemptionResp"];
+                    };
                 };
             };
             /** @description Bad Request */
@@ -5188,6 +6271,15 @@ export interface operations {
             };
             /** @description Unauthorized */
             401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -5213,7 +6305,7 @@ export interface operations {
             path?: never;
             cookie?: never;
         };
-        requestBody?: components["requestBodies"]["main.SwaggerRequest2"];
+        requestBody: components["requestBodies"]["model.RedemptionCodeReq"];
         responses: {
             /** @description OK */
             200: {
@@ -5221,7 +6313,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"] & {
+                        data?: components["schemas"]["model.RedemptionLookupResp"];
+                    };
                 };
             };
             /** @description Bad Request */
@@ -5235,6 +6329,15 @@ export interface operations {
             };
             /** @description Unauthorized */
             401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -5260,7 +6363,12 @@ export interface operations {
             path?: never;
             cookie?: never;
         };
-        requestBody?: components["requestBodies"]["main.SwaggerRequest2"];
+        /** @description request payload */
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["model.RechargePaymentCreateReq"];
+            };
+        };
         responses: {
             /** @description OK */
             200: {
@@ -5268,7 +6376,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"] & {
+                        data?: components["schemas"]["model.PaymentCreateResp"];
+                    };
                 };
             };
             /** @description Bad Request */
@@ -5282,6 +6392,15 @@ export interface operations {
             };
             /** @description Unauthorized */
             401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -5302,7 +6421,12 @@ export interface operations {
     };
     redemption_codes_route_get: {
         parameters: {
-            query?: never;
+            query?: {
+                /** @description page */
+                page?: number;
+                /** @description limit */
+                limit?: number;
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -5315,7 +6439,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"] & {
+                        data?: components["schemas"]["model.RedemptionCodeResp"][];
+                    };
                 };
             };
             /** @description Bad Request */
@@ -5329,6 +6455,15 @@ export interface operations {
             };
             /** @description Unauthorized */
             401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -5354,7 +6489,12 @@ export interface operations {
             path?: never;
             cookie?: never;
         };
-        requestBody?: components["requestBodies"]["main.SwaggerRequest2"];
+        /** @description request payload */
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["model.RedemptionCodeCreateReq"];
+            };
+        };
         responses: {
             /** @description OK */
             200: {
@@ -5362,7 +6502,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"] & {
+                        data?: components["schemas"]["model.RedemptionBatchResp"];
+                    };
                 };
             };
             /** @description Bad Request */
@@ -5376,6 +6518,15 @@ export interface operations {
             };
             /** @description Unauthorized */
             401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -5412,7 +6563,11 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"] & {
+                        data?: {
+                            [key: string]: string;
+                        };
+                    };
                 };
             };
             /** @description Bad Request */
@@ -5426,6 +6581,15 @@ export interface operations {
             };
             /** @description Unauthorized */
             401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -5451,7 +6615,7 @@ export interface operations {
             path?: never;
             cookie?: never;
         };
-        requestBody?: components["requestBodies"]["main.SwaggerRequest2"];
+        requestBody?: components["requestBodies"]["main.SwaggerRequest3"];
         responses: {
             /** @description OK */
             200: {
@@ -5493,7 +6657,10 @@ export interface operations {
     };
     redemption_codes_batch_route_delete: {
         parameters: {
-            query?: never;
+            query?: {
+                /** @description batchId */
+                batchId?: string;
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -5506,7 +6673,11 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"] & {
+                        data?: {
+                            [key: string]: number;
+                        };
+                    };
                 };
             };
             /** @description Bad Request */
@@ -5520,6 +6691,15 @@ export interface operations {
             };
             /** @description Unauthorized */
             401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -5540,7 +6720,10 @@ export interface operations {
     };
     redemption_codes_export_route_get: {
         parameters: {
-            query?: never;
+            query?: {
+                /** @description ids */
+                ids?: string;
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -5553,7 +6736,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"] & {
+                        data?: string;
+                    };
                 };
             };
             /** @description Bad Request */
@@ -5567,6 +6752,15 @@ export interface operations {
             };
             /** @description Unauthorized */
             401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -5647,7 +6841,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"] & {
+                        data?: components["schemas"]["model.ScheduleJobResp"][];
+                    };
                 };
             };
             /** @description Bad Request */
@@ -5703,7 +6899,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"] & {
+                        data?: components["schemas"]["model.ScheduleJobResp"];
+                    };
                 };
             };
             /** @description Bad Request */
@@ -5762,7 +6960,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"] & {
+                        data?: components["schemas"]["model.ScheduleJobResp"];
+                    };
                 };
             };
             /** @description Bad Request */
@@ -5821,7 +7021,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"] & {
+                        data?: components["schemas"]["model.ScheduleJobResp"];
+                    };
                 };
             };
             /** @description Bad Request */
@@ -5880,7 +7082,11 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"] & {
+                        data?: {
+                            [key: string]: string;
+                        };
+                    };
                 };
             };
             /** @description Bad Request */
@@ -5939,7 +7145,11 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"] & {
+                        data?: {
+                            [key: string]: string;
+                        };
+                    };
                 };
             };
             /** @description Bad Request */
@@ -5995,7 +7205,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"] & {
+                        data?: components["schemas"]["schedule.TaskDescriptor"][];
+                    };
                 };
             };
             /** @description Bad Request */
@@ -6038,7 +7250,10 @@ export interface operations {
     };
     stats_route_get: {
         parameters: {
-            query?: never;
+            query?: {
+                /** @description type */
+                type?: string;
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -6085,7 +7300,10 @@ export interface operations {
     };
     stats_alias_route_get: {
         parameters: {
-            query?: never;
+            query?: {
+                /** @description user */
+                user?: string;
+            };
             header?: never;
             path: {
                 /** @description alias */
@@ -6101,7 +7319,11 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"] & {
+                        data?: {
+                            [key: string]: number;
+                        };
+                    };
                 };
             };
             /** @description Bad Request */
@@ -6135,7 +7357,12 @@ export interface operations {
     };
     subscription_plans_route_get: {
         parameters: {
-            query?: never;
+            query?: {
+                /** @description page */
+                page?: number;
+                /** @description limit */
+                limit?: number;
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -6148,7 +7375,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"] & {
+                        data?: components["schemas"]["model.SubscriptionPlanResp"][];
+                    };
                 };
             };
             /** @description Bad Request */
@@ -6162,6 +7391,15 @@ export interface operations {
             };
             /** @description Unauthorized */
             401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -6187,7 +7425,12 @@ export interface operations {
             path?: never;
             cookie?: never;
         };
-        requestBody?: components["requestBodies"]["main.SwaggerRequest2"];
+        /** @description request payload */
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["model.SubscriptionPlanCreateReq"];
+            };
+        };
         responses: {
             /** @description OK */
             200: {
@@ -6195,7 +7438,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"] & {
+                        data?: components["schemas"]["model.SubscriptionPlanResp"];
+                    };
                 };
             };
             /** @description Bad Request */
@@ -6209,6 +7454,15 @@ export interface operations {
             };
             /** @description Unauthorized */
             401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -6245,7 +7499,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"] & {
+                        data?: components["schemas"]["model.SubscriptionPlanResp"];
+                    };
                 };
             };
             /** @description Bad Request */
@@ -6259,6 +7515,15 @@ export interface operations {
             };
             /** @description Unauthorized */
             401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -6287,7 +7552,12 @@ export interface operations {
             };
             cookie?: never;
         };
-        requestBody?: components["requestBodies"]["main.SwaggerRequest2"];
+        /** @description request payload */
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["membership.PlanUpdateInput"];
+            };
+        };
         responses: {
             /** @description OK */
             200: {
@@ -6295,7 +7565,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"] & {
+                        data?: components["schemas"]["model.SubscriptionPlanResp"];
+                    };
                 };
             };
             /** @description Bad Request */
@@ -6309,6 +7581,15 @@ export interface operations {
             };
             /** @description Unauthorized */
             401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -6345,7 +7626,11 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"] & {
+                        data?: {
+                            [key: string]: string;
+                        };
+                    };
                 };
             };
             /** @description Bad Request */
@@ -6366,6 +7651,15 @@ export interface operations {
                     "application/json": components["schemas"]["main.SwaggerEnvelope"];
                 };
             };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
             /** @description Internal Server Error */
             500: {
                 headers: {
@@ -6379,7 +7673,14 @@ export interface operations {
     };
     system_settings_route_get: {
         parameters: {
-            query?: never;
+            query?: {
+                /** @description page */
+                page?: number;
+                /** @description limit */
+                limit?: number;
+                /** @description category */
+                category?: string;
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -6392,7 +7693,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"] & {
+                        data?: components["schemas"]["model.SystemSettingResp"][];
+                    };
                 };
             };
             /** @description Bad Request */
@@ -6431,7 +7734,12 @@ export interface operations {
             path?: never;
             cookie?: never;
         };
-        requestBody?: components["requestBodies"]["main.SwaggerRequest2"];
+        /** @description request payload */
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["model.SystemSettingsUpdateReq"];
+            };
+        };
         responses: {
             /** @description OK */
             200: {
@@ -6439,7 +7747,11 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"] & {
+                        data?: {
+                            [key: string]: string;
+                        };
+                    };
                 };
             };
             /** @description Bad Request */
@@ -6486,7 +7798,11 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"] & {
+                        data?: {
+                            [key: string]: unknown;
+                        };
+                    };
                 };
             };
             /** @description Bad Request */
@@ -6533,7 +7849,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"] & {
+                        data?: components["schemas"]["model.SystemSettingsDefaultsResp"];
+                    };
                 };
             };
             /** @description Bad Request */
@@ -6572,7 +7890,12 @@ export interface operations {
             path?: never;
             cookie?: never;
         };
-        requestBody?: components["requestBodies"]["main.SwaggerRequest2"];
+        /** @description request payload */
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["model.SystemInitializeReq"];
+            };
+        };
         responses: {
             /** @description OK */
             200: {
@@ -6580,7 +7903,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"] & {
+                        data?: components["schemas"]["model.SystemInitializeResp"];
+                    };
                 };
             };
             /** @description Bad Request */
@@ -6627,7 +7952,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"] & {
+                        data?: boolean;
+                    };
                 };
             };
             /** @description Bad Request */
@@ -6661,7 +7988,16 @@ export interface operations {
     };
     tokens_route_get: {
         parameters: {
-            query?: never;
+            query?: {
+                /** @description page */
+                page?: number;
+                /** @description limit */
+                limit?: number;
+                /** @description search */
+                search?: string;
+                /** @description status */
+                status?: string;
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -6674,7 +8010,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"] & {
+                        data?: components["schemas"]["model.TokenResp"][];
+                    };
                 };
             };
             /** @description Bad Request */
@@ -6688,6 +8026,15 @@ export interface operations {
             };
             /** @description Unauthorized */
             401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -6713,7 +8060,12 @@ export interface operations {
             path?: never;
             cookie?: never;
         };
-        requestBody?: components["requestBodies"]["main.SwaggerRequest2"];
+        /** @description request payload */
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["model.TokenCreateReq"];
+            };
+        };
         responses: {
             /** @description OK */
             200: {
@@ -6721,7 +8073,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"] & {
+                        data?: components["schemas"]["model.TokenCreateResp"];
+                    };
                 };
             };
             /** @description Bad Request */
@@ -6735,6 +8089,15 @@ export interface operations {
             };
             /** @description Unauthorized */
             401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -6771,7 +8134,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"] & {
+                        data?: components["schemas"]["model.TokenResp"];
+                    };
                 };
             };
             /** @description Bad Request */
@@ -6822,7 +8187,12 @@ export interface operations {
             };
             cookie?: never;
         };
-        requestBody?: components["requestBodies"]["main.SwaggerRequest2"];
+        /** @description request payload */
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["model.TokenUpdateReq"];
+            };
+        };
         responses: {
             /** @description OK */
             200: {
@@ -6830,7 +8200,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"] & {
+                        data?: components["schemas"]["model.TokenResp"];
+                    };
                 };
             };
             /** @description Bad Request */
@@ -6844,6 +8216,15 @@ export interface operations {
             };
             /** @description Unauthorized */
             401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -6880,7 +8261,11 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"] & {
+                        data?: {
+                            [key: string]: string;
+                        };
+                    };
                 };
             };
             /** @description Bad Request */
@@ -6894,6 +8279,15 @@ export interface operations {
             };
             /** @description Unauthorized */
             401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -6922,7 +8316,7 @@ export interface operations {
             };
             cookie?: never;
         };
-        requestBody?: components["requestBodies"]["main.SwaggerRequest2"];
+        requestBody?: never;
         responses: {
             /** @description OK */
             200: {
@@ -6930,7 +8324,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"] & {
+                        data?: components["schemas"]["model.TokenResp"];
+                    };
                 };
             };
             /** @description Bad Request */
@@ -6944,6 +8340,15 @@ export interface operations {
             };
             /** @description Unauthorized */
             401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -6977,7 +8382,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"] & {
+                        data?: components["schemas"]["model.TokenStatsResp"];
+                    };
                 };
             };
             /** @description Bad Request */
@@ -6991,6 +8398,15 @@ export interface operations {
             };
             /** @description Unauthorized */
             401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -7016,7 +8432,17 @@ export interface operations {
             path?: never;
             cookie?: never;
         };
-        requestBody?: components["requestBodies"]["main.SwaggerRequest2"];
+        requestBody: {
+            content: {
+                "multipart/form-data": {
+                    /**
+                     * Format: binary
+                     * @description uploaded file
+                     */
+                    file: string;
+                };
+            };
+        };
         responses: {
             /** @description OK */
             200: {
@@ -7024,7 +8450,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"] & {
+                        data?: components["schemas"]["upload.Metadata"];
+                    };
                 };
             };
             /** @description Bad Request */
@@ -7038,6 +8466,15 @@ export interface operations {
             };
             /** @description Unauthorized */
             401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -7074,7 +8511,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                    "application/json": string;
                 };
             };
             /** @description Bad Request */
@@ -7088,6 +8525,15 @@ export interface operations {
             };
             /** @description Unauthorized */
             401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -7121,7 +8567,11 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"] & {
+                        data?: {
+                            [key: string]: unknown;
+                        };
+                    };
                 };
             };
             /** @description Bad Request */
@@ -7155,7 +8605,16 @@ export interface operations {
     };
     users_route_get: {
         parameters: {
-            query?: never;
+            query?: {
+                /** @description page */
+                page?: number;
+                /** @description limit */
+                limit?: number;
+                /** @description search */
+                search?: string;
+                /** @description role */
+                role?: string;
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -7168,7 +8627,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"] & {
+                        data?: components["schemas"]["model.UserResp"][];
+                    };
                 };
             };
             /** @description Bad Request */
@@ -7182,6 +8643,15 @@ export interface operations {
             };
             /** @description Unauthorized */
             401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -7207,7 +8677,12 @@ export interface operations {
             path?: never;
             cookie?: never;
         };
-        requestBody?: components["requestBodies"]["main.SwaggerRequest2"];
+        /** @description request payload */
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["model.UserCreateReq"];
+            };
+        };
         responses: {
             /** @description OK */
             200: {
@@ -7215,7 +8690,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"] & {
+                        data?: components["schemas"]["model.UserResp"];
+                    };
                 };
             };
             /** @description Bad Request */
@@ -7229,6 +8706,15 @@ export interface operations {
             };
             /** @description Unauthorized */
             401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -7265,7 +8751,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"] & {
+                        data?: components["schemas"]["model.UserResp"];
+                    };
                 };
             };
             /** @description Bad Request */
@@ -7279,6 +8767,15 @@ export interface operations {
             };
             /** @description Unauthorized */
             401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -7307,7 +8804,12 @@ export interface operations {
             };
             cookie?: never;
         };
-        requestBody?: components["requestBodies"]["main.SwaggerRequest2"];
+        /** @description request payload */
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["model.UserUpdateReq"];
+            };
+        };
         responses: {
             /** @description OK */
             200: {
@@ -7315,7 +8817,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"] & {
+                        data?: components["schemas"]["model.UserResp"];
+                    };
                 };
             };
             /** @description Bad Request */
@@ -7329,6 +8833,15 @@ export interface operations {
             };
             /** @description Unauthorized */
             401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -7365,7 +8878,11 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"] & {
+                        data?: {
+                            [key: string]: string;
+                        };
+                    };
                 };
             };
             /** @description Bad Request */
@@ -7379,6 +8896,15 @@ export interface operations {
             };
             /** @description Unauthorized */
             401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -7412,7 +8938,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"] & {
+                        data?: components["schemas"]["model.UserStatsResp"];
+                    };
                 };
             };
             /** @description Bad Request */
@@ -7426,6 +8954,15 @@ export interface operations {
             };
             /** @description Unauthorized */
             401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -7504,7 +9041,7 @@ export interface operations {
             };
             cookie?: never;
         };
-        requestBody?: components["requestBodies"]["main.SwaggerRequest2"];
+        requestBody?: components["requestBodies"]["main.SwaggerRequest3"];
         responses: {
             /** @description OK */
             200: {
@@ -7554,7 +9091,7 @@ export interface operations {
             };
             cookie?: never;
         };
-        requestBody?: components["requestBodies"]["main.SwaggerRequest2"];
+        requestBody?: components["requestBodies"]["main.SwaggerRequest3"];
         responses: {
             /** @description OK */
             200: {
@@ -7654,7 +9191,7 @@ export interface operations {
             };
             cookie?: never;
         };
-        requestBody?: components["requestBodies"]["main.SwaggerRequest2"];
+        requestBody?: components["requestBodies"]["main.SwaggerRequest3"];
         responses: {
             /** @description OK */
             200: {
@@ -7704,7 +9241,7 @@ export interface operations {
             };
             cookie?: never;
         };
-        requestBody?: components["requestBodies"]["main.SwaggerRequest2"];
+        requestBody?: components["requestBodies"]["main.SwaggerRequest3"];
         responses: {
             /** @description OK */
             200: {

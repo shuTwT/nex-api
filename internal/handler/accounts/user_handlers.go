@@ -13,10 +13,15 @@ import (
 // @ID users_route_get
 // @Tags users
 // @Produce json
+// @Param page query integer false "page"
+// @Param limit query integer false "limit"
+// @Param search query string false "search"
+// @Param role query string false "role"
 // @Security SessionCookie
-// @Success 200 {object} main.SwaggerEnvelope
+// @Success 200 {object} main.SwaggerEnvelope{data=[]model.UserResp}
 // @Failure 400 {object} main.SwaggerEnvelope
 // @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 403 {object} main.SwaggerEnvelope
 // @Failure 500 {object} main.SwaggerEnvelope
 // @Router /api/users [get]
 func (h *Handler) listUsers(w http.ResponseWriter, r *http.Request) {
@@ -44,11 +49,12 @@ func (h *Handler) listUsers(w http.ResponseWriter, r *http.Request) {
 // @Tags users
 // @Accept json
 // @Produce json
-// @Param body body main.SwaggerRequest false "JSON request payload"
+// @Param body body model.UserCreateReq true "request payload"
 // @Security SessionCookie
-// @Success 200 {object} main.SwaggerEnvelope
+// @Success 200 {object} main.SwaggerEnvelope{data=model.UserResp}
 // @Failure 400 {object} main.SwaggerEnvelope
 // @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 403 {object} main.SwaggerEnvelope
 // @Failure 500 {object} main.SwaggerEnvelope
 // @Router /api/users [post]
 func (h *Handler) createUser(w http.ResponseWriter, r *http.Request) {
@@ -76,9 +82,10 @@ func (h *Handler) createUser(w http.ResponseWriter, r *http.Request) {
 // @Tags users
 // @Produce json
 // @Security SessionCookie
-// @Success 200 {object} main.SwaggerEnvelope
+// @Success 200 {object} main.SwaggerEnvelope{data=model.UserStatsResp}
 // @Failure 400 {object} main.SwaggerEnvelope
 // @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 403 {object} main.SwaggerEnvelope
 // @Failure 500 {object} main.SwaggerEnvelope
 // @Router /api/users/stats [get]
 func (h *Handler) userStats(w http.ResponseWriter, r *http.Request) {
@@ -102,9 +109,10 @@ func (h *Handler) userStats(w http.ResponseWriter, r *http.Request) {
 // @Produce json
 // @Param id path string true "id"
 // @Security SessionCookie
-// @Success 200 {object} main.SwaggerEnvelope
+// @Success 200 {object} main.SwaggerEnvelope{data=model.UserResp}
 // @Failure 400 {object} main.SwaggerEnvelope
 // @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 403 {object} main.SwaggerEnvelope
 // @Failure 500 {object} main.SwaggerEnvelope
 // @Router /api/users/{id} [get]
 func (h *Handler) getUser(w http.ResponseWriter, r *http.Request) {
@@ -128,11 +136,12 @@ func (h *Handler) getUser(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce json
 // @Param id path string true "id"
-// @Param body body main.SwaggerRequest false "JSON request payload"
+// @Param body body model.UserUpdateReq true "request payload"
 // @Security SessionCookie
-// @Success 200 {object} main.SwaggerEnvelope
+// @Success 200 {object} main.SwaggerEnvelope{data=model.UserResp}
 // @Failure 400 {object} main.SwaggerEnvelope
 // @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 403 {object} main.SwaggerEnvelope
 // @Failure 500 {object} main.SwaggerEnvelope
 // @Router /api/users/{id} [put]
 func (h *Handler) updateUser(w http.ResponseWriter, r *http.Request) {
@@ -161,9 +170,10 @@ func (h *Handler) updateUser(w http.ResponseWriter, r *http.Request) {
 // @Produce json
 // @Param id path string true "id"
 // @Security SessionCookie
-// @Success 200 {object} main.SwaggerEnvelope
+// @Success 200 {object} main.SwaggerEnvelope{data=map[string]string}
 // @Failure 400 {object} main.SwaggerEnvelope
 // @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 403 {object} main.SwaggerEnvelope
 // @Failure 500 {object} main.SwaggerEnvelope
 // @Router /api/users/{id} [delete]
 func (h *Handler) deleteUser(w http.ResponseWriter, r *http.Request) {

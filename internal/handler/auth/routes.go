@@ -81,7 +81,7 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 // @ID auth_csrf_route_get
 // @Tags auth
 // @Produce json
-// @Success 200 {object} main.SwaggerEnvelope
+// @Success 200 {object} main.SwaggerEnvelope{data=map[string]string}
 // @Failure 400 {object} main.SwaggerEnvelope
 // @Failure 401 {object} main.SwaggerEnvelope
 // @Failure 403 {object} main.SwaggerEnvelope
@@ -108,7 +108,7 @@ func (h *Handler) csrfToken(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce json
 // @Param body body main.SwaggerRequest true "JSON request payload"
-// @Success 200 {object} main.SwaggerEnvelope
+// @Success 200 {object} main.SwaggerEnvelope{data=auth.User}
 // @Failure 400 {object} main.SwaggerEnvelope
 // @Failure 401 {object} main.SwaggerEnvelope
 // @Failure 403 {object} main.SwaggerEnvelope
@@ -164,7 +164,7 @@ func (h *Handler) login(w http.ResponseWriter, r *http.Request) {
 // @Tags auth
 // @Produce json
 // @Security SessionCookie
-// @Success 200 {object} main.SwaggerEnvelope
+// @Success 200 {object} main.SwaggerEnvelope{data=auth.User}
 // @Failure 400 {object} main.SwaggerEnvelope
 // @Failure 401 {object} main.SwaggerEnvelope
 // @Failure 403 {object} main.SwaggerEnvelope
@@ -191,7 +191,7 @@ func (h *Handler) me(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce json
 // @Security SessionCookie
-// @Success 200 {object} main.SwaggerEnvelope
+// @Success 200 {object} main.SwaggerEnvelope{data=map[string]string}
 // @Failure 400 {object} main.SwaggerEnvelope
 // @Failure 401 {object} main.SwaggerEnvelope
 // @Failure 403 {object} main.SwaggerEnvelope

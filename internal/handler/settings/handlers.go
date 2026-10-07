@@ -37,7 +37,10 @@ func RegisterRoutes(mux chi.Router, handler *Handler) error {
 // @Tags system-settings
 // @Produce json
 // @Security SessionCookie
-// @Success 200 {object} main.SwaggerEnvelope
+// @Param page query integer false "page"
+// @Param limit query integer false "limit"
+// @Param category query string false "category"
+// @Success 200 {object} main.SwaggerEnvelope{data=[]model.SystemSettingResp}
 // @Failure 400 {object} main.SwaggerEnvelope
 // @Failure 401 {object} main.SwaggerEnvelope
 // @Failure 500 {object} main.SwaggerEnvelope
@@ -61,9 +64,9 @@ func (h *Handler) list(w http.ResponseWriter, r *http.Request) {
 // @Tags system-settings
 // @Accept json
 // @Produce json
-// @Param body body main.SwaggerRequest false "JSON request payload"
+// @Param body body model.SystemSettingsUpdateReq true "request payload"
 // @Security SessionCookie
-// @Success 200 {object} main.SwaggerEnvelope
+// @Success 200 {object} main.SwaggerEnvelope{data=map[string]string}
 // @Failure 400 {object} main.SwaggerEnvelope
 // @Failure 401 {object} main.SwaggerEnvelope
 // @Failure 500 {object} main.SwaggerEnvelope
@@ -90,7 +93,7 @@ func (h *Handler) update(w http.ResponseWriter, r *http.Request) {
 // @ID system_settings_defaults_route_get
 // @Tags system-settings
 // @Produce json
-// @Success 200 {object} main.SwaggerEnvelope
+// @Success 200 {object} main.SwaggerEnvelope{data=model.SystemSettingsDefaultsResp}
 // @Failure 400 {object} main.SwaggerEnvelope
 // @Failure 401 {object} main.SwaggerEnvelope
 // @Failure 500 {object} main.SwaggerEnvelope
@@ -105,7 +108,7 @@ func (h *Handler) defaults(w http.ResponseWriter, _ *http.Request) {
 // @ID system_settings_announcement_route_get
 // @Tags system-settings
 // @Produce json
-// @Success 200 {object} main.SwaggerEnvelope
+// @Success 200 {object} main.SwaggerEnvelope{data=map[string]any}
 // @Failure 400 {object} main.SwaggerEnvelope
 // @Failure 401 {object} main.SwaggerEnvelope
 // @Failure 500 {object} main.SwaggerEnvelope

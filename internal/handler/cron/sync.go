@@ -65,7 +65,6 @@ func normalizeConfig(value any) (Config, error) {
 // @Tags cron
 // @Accept json
 // @Produce json
-// @Param body body main.SwaggerRequest false "JSON request payload"
 // @Security CronSecretAuth
 // @Success 200 {object} main.SwaggerEnvelope
 // @Failure 400 {object} main.SwaggerEnvelope

@@ -17,7 +17,7 @@ type publicProvider struct {
 // @ID auth_providers_route_get
 // @Tags oauth
 // @Produce json
-// @Success 200 {object} main.SwaggerEnvelope
+// @Success 200 {object} main.SwaggerEnvelope{data=[]oauth.ConfiguredProvider}
 // @Failure 400 {object} main.SwaggerEnvelope
 // @Failure 401 {object} main.SwaggerEnvelope
 // @Failure 403 {object} main.SwaggerEnvelope

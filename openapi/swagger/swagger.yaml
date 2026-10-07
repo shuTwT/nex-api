@@ -1,5 +1,63 @@
 basePath: /
 definitions:
+  accounts.AuditEntry:
+    properties:
+      action:
+        type: string
+      details:
+        type: string
+      ipaddress:
+        type: string
+      level:
+        type: string
+      metadata:
+        type: string
+      resource:
+        type: string
+      status:
+        type: string
+      userAgent:
+        type: string
+      userID:
+        type: string
+    type: object
+  auth.User:
+    properties:
+      credits:
+        type: integer
+      email:
+        type: string
+      id:
+        type: string
+      role:
+        type: string
+      username:
+        type: string
+    type: object
+  catalog.APIStats:
+    properties:
+      activeApis:
+        type: integer
+      categoriesCount:
+        type: integer
+      inactiveApis:
+        type: integer
+      totalApis:
+        type: integer
+      totalCalls:
+        type: integer
+    type: object
+  catalog.MCPStats:
+    properties:
+      activeServices:
+        type: integer
+      inactiveServices:
+        type: integer
+      totalCalls:
+        type: integer
+      totalServices:
+        type: integer
+    type: object
   main.SwaggerEnvelope:
     properties:
       data: {}
@@ -24,6 +82,1140 @@ definitions:
   main.SwaggerRequest:
     additionalProperties: {}
     type: object
+  membership.PlanUpdateInput:
+    properties:
+      creditResetCycle:
+        type: string
+      isActive:
+        type: boolean
+      price:
+        type: number
+      sortOrder:
+        type: integer
+      title:
+        type: string
+      totalCredits:
+        type: integer
+      validityDuration:
+        type: integer
+      validityUnit:
+        type: string
+    type: object
+  model.AdvertisementCreateReq:
+    properties:
+      image:
+        type: string
+      imageHeight:
+        type: integer
+      imageWidth:
+        type: integer
+      isActive:
+        type: boolean
+      link:
+        type: string
+      position:
+        type: string
+      title:
+        type: string
+    type: object
+  model.AdvertisementPositionDTO:
+    properties:
+      _count:
+        additionalProperties:
+          type: integer
+        type: object
+      position:
+        type: string
+    type: object
+  model.AdvertisementResp:
+    properties:
+      createdAt:
+        type: string
+      id:
+        type: string
+      image:
+        type: string
+      imageHeight:
+        type: integer
+      imageWidth:
+        type: integer
+      isActive:
+        type: boolean
+      link:
+        type: string
+      position:
+        type: string
+      title:
+        type: string
+      updatedAt:
+        type: string
+    type: object
+  model.AdvertisementStatsResp:
+    properties:
+      activeAds:
+        type: integer
+      inactiveAds:
+        type: integer
+      positionStats:
+        items:
+          $ref: '#/definitions/model.AdvertisementPositionDTO'
+        type: array
+      totalAds:
+        type: integer
+    type: object
+  model.AdvertisementUpdateReq:
+    properties:
+      image:
+        type: string
+      imageHeight:
+        type: integer
+      imageWidth:
+        type: integer
+      isActive:
+        type: boolean
+      link:
+        type: string
+      position:
+        type: string
+      title:
+        type: string
+    type: object
+  model.AuditResp:
+    properties:
+      action:
+        type: string
+      createdAt:
+        type: string
+      details:
+        type: string
+      id:
+        type: string
+      ipAddress:
+        type: string
+      level:
+        type: string
+      metadata:
+        type: string
+      resource:
+        type: string
+      status:
+        type: string
+      user:
+        $ref: '#/definitions/model.AuditUserDTO'
+      userAgent:
+        type: string
+      userId:
+        type: string
+    type: object
+  model.AuditStatsResp:
+    properties:
+      errorLogs:
+        type: integer
+      failedLogs:
+        type: integer
+      infoLogs:
+        type: integer
+      successLogs:
+        type: integer
+      totalLogs:
+        type: integer
+      warningLogs:
+        type: integer
+    type: object
+  model.AuditUserDTO:
+    properties:
+      email:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+    type: object
+  model.CatalogAPICreateReq:
+    properties:
+      alias:
+        type: string
+      categoryId:
+        type: string
+      description:
+        type: string
+      documentation:
+        type: string
+      endpoint:
+        type: string
+      isActive:
+        type: boolean
+      method:
+        type: string
+      name:
+        type: string
+      postScript:
+        type: string
+      preScript:
+        type: string
+      pricing:
+        type: integer
+    type: object
+  model.CatalogAPIDTO:
+    properties:
+      alias:
+        type: string
+      callCount:
+        type: integer
+      category:
+        $ref: '#/definitions/model.CatalogCategoryDTO'
+      categoryId:
+        type: string
+      createdAt:
+        type: string
+      description:
+        type: string
+      documentation:
+        type: string
+      endpoint:
+        type: string
+      id:
+        type: string
+      isActive:
+        type: boolean
+      method:
+        type: string
+      name:
+        type: string
+      parameters:
+        items:
+          $ref: '#/definitions/model.CatalogParameterDTO'
+        type: array
+      postScript:
+        type: string
+      preScript:
+        type: string
+      pricing:
+        type: integer
+      responses:
+        items:
+          $ref: '#/definitions/model.CatalogResponseDTO'
+        type: array
+      updatedAt:
+        type: string
+    type: object
+  model.CatalogAPIUpdateReq:
+    properties:
+      alias:
+        type: string
+      categoryId:
+        type: string
+      description:
+        type: string
+      documentation:
+        type: string
+      endpoint:
+        type: string
+      isActive:
+        type: boolean
+      method:
+        type: string
+      name:
+        type: string
+      postScript:
+        type: string
+      preScript:
+        type: string
+      pricing:
+        type: integer
+    type: object
+  model.CatalogCategoryCreateReq:
+    properties:
+      description:
+        type: string
+      icon:
+        type: string
+      name:
+        type: string
+    type: object
+  model.CatalogCategoryDTO:
+    properties:
+      description:
+        type: string
+      icon:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+    type: object
+  model.CatalogCategoryListResp:
+    properties:
+      apiCount:
+        type: integer
+      description:
+        type: string
+      icon:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+    type: object
+  model.CatalogCategoryUpdateReq:
+    properties:
+      description:
+        type: string
+      icon:
+        type: string
+      name:
+        type: string
+    type: object
+  model.CatalogMCPCreateReq:
+    properties:
+      categoryId:
+        type: string
+      command:
+        type: string
+      description:
+        type: string
+      documentation:
+        type: string
+      endpoint:
+        type: string
+      envVars:
+        type: string
+      identifier:
+        type: string
+      isActive:
+        type: boolean
+      name:
+        type: string
+      pricing:
+        type: integer
+      type:
+        type: string
+    type: object
+  model.CatalogMCPDTO:
+    properties:
+      callCount:
+        type: integer
+      category:
+        $ref: '#/definitions/model.CatalogCategoryDTO'
+      categoryId:
+        type: string
+      command:
+        type: string
+      createdAt:
+        type: string
+      description:
+        type: string
+      documentation:
+        type: string
+      endpoint:
+        type: string
+      envVars:
+        type: string
+      id:
+        type: string
+      identifier:
+        type: string
+      isActive:
+        type: boolean
+      name:
+        type: string
+      pricing:
+        type: integer
+      type:
+        type: string
+      updatedAt:
+        type: string
+    type: object
+  model.CatalogMCPUpdateReq:
+    properties:
+      categoryId:
+        type: string
+      command:
+        type: string
+      description:
+        type: string
+      documentation:
+        type: string
+      endpoint:
+        type: string
+      envVars:
+        type: string
+      identifier:
+        type: string
+      isActive:
+        type: boolean
+      name:
+        type: string
+      pricing:
+        type: integer
+      type:
+        type: string
+    type: object
+  model.CatalogParameterDTO:
+    properties:
+      apiId:
+        type: string
+      defaultValue:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      required:
+        type: boolean
+      type:
+        type: string
+    type: object
+  model.CatalogResponseDTO:
+    properties:
+      apiId:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      type:
+        type: string
+    type: object
+  model.DashboardActivityResp:
+    properties:
+      apiAlias:
+        type: string
+      apiName:
+        type: string
+      createdAt:
+        type: string
+      credits:
+        type: integer
+      id:
+        type: string
+      status:
+        type: string
+    type: object
+  model.DashboardTopAPIResp:
+    properties:
+      calls:
+        type: integer
+      name:
+        type: string
+      percentage:
+        type: integer
+    type: object
+  model.MarketplaceAPIResp:
+    properties:
+      alias:
+        type: string
+      category:
+        type: string
+      createdAt:
+        type: string
+      description:
+        type: string
+      endpoint:
+        type: string
+      id:
+        type: string
+      isActive:
+        type: boolean
+      isFree:
+        type: boolean
+      method:
+        type: string
+      name:
+        type: string
+      pricing:
+        type: integer
+      todayCallCount:
+        type: integer
+      totalCallCount:
+        type: integer
+      updatedAt:
+        type: string
+      userCount:
+        type: integer
+    type: object
+  model.MarketplaceMCPResp:
+    properties:
+      category:
+        type: string
+      createdAt:
+        type: string
+      description:
+        type: string
+      documentation:
+        type: string
+      id:
+        type: string
+      identifier:
+        type: string
+      isActive:
+        type: boolean
+      isFree:
+        type: boolean
+      name:
+        type: string
+      pricing:
+        type: integer
+      todayCallCount:
+        type: integer
+      totalCallCount:
+        type: integer
+      type:
+        type: string
+      updatedAt:
+        type: string
+      userCount:
+        type: integer
+    type: object
+  model.MarketplaceMCPTool:
+    properties:
+      description:
+        type: string
+      inputSchema:
+        additionalProperties: {}
+        type: object
+      name:
+        type: string
+      title:
+        type: string
+    type: object
+  model.MembershipSubscribeReq:
+    properties:
+      planId:
+        type: string
+    type: object
+  model.PaymentCreateResp:
+    properties:
+      outTradeNo:
+        type: string
+      payUrl:
+        type: string
+      paymentId:
+        type: string
+      qrcodeUrl:
+        type: string
+      success:
+        type: boolean
+    type: object
+  model.PaymentResp:
+    properties:
+      amount:
+        type: number
+      cancelledAt:
+        type: string
+      createdAt:
+        type: string
+      currency:
+        type: string
+      expiredAt:
+        type: string
+      id:
+        type: string
+      method:
+        $ref: '#/definitions/pay.PaymentMethod'
+      outTradeNo:
+        type: string
+      paidAt:
+        type: string
+      payUrl:
+        type: string
+      qrcodeUrl:
+        type: string
+      status:
+        $ref: '#/definitions/pay.PaymentState'
+      transactionId:
+        type: string
+      userId:
+        type: string
+    type: object
+  model.PaymentSettingsResp:
+    properties:
+      alipayEnabled:
+        type: boolean
+      creditPrice:
+        type: number
+      minRecharge:
+        type: number
+      mockEnabled:
+        type: boolean
+      wechatEnabled:
+        type: boolean
+    type: object
+  model.ProfileResp:
+    properties:
+      createdAt:
+        type: string
+      credits:
+        type: integer
+      email:
+        type: string
+      id:
+        type: string
+      image:
+        type: string
+      name:
+        type: string
+      role:
+        type: string
+      totalCreditsSpent:
+        type: integer
+      totalRequests:
+        type: integer
+      username:
+        type: string
+    type: object
+  model.RechargePaymentCreateReq:
+    properties:
+      amount:
+        type: number
+      credits:
+        type: integer
+      method:
+        type: string
+    type: object
+  model.RedemptionBatchResp:
+    properties:
+      batchId:
+        type: string
+      count:
+        type: integer
+    type: object
+  model.RedemptionCodeCreateReq:
+    properties:
+      count:
+        type: integer
+      credits:
+        type: integer
+      expiresAt:
+        type: string
+      planId:
+        type: string
+      type:
+        type: string
+    type: object
+  model.RedemptionCodeReq:
+    properties:
+      code:
+        type: string
+    type: object
+  model.RedemptionCodeResp:
+    properties:
+      batchId:
+        type: string
+      code:
+        type: string
+      createdAt:
+        type: string
+      createdBy:
+        type: string
+      credits:
+        type: integer
+      expiresAt:
+        type: string
+      id:
+        type: string
+      isUsed:
+        type: boolean
+      planId:
+        type: string
+      planName:
+        type: string
+      type:
+        type: string
+      updatedAt:
+        type: string
+      usedAt:
+        type: string
+      usedBy:
+        type: string
+    type: object
+  model.RedemptionLookupResp:
+    properties:
+      credits:
+        type: integer
+      planName:
+        type: string
+      type:
+        type: string
+    type: object
+  model.RedemptionResp:
+    properties:
+      credits:
+        type: integer
+      message:
+        type: string
+      type:
+        type: string
+    type: object
+  model.ScheduleJobResp:
+    properties:
+      createdAt:
+        type: string
+      description:
+        type: string
+      enabled:
+        type: boolean
+      expression:
+        type: string
+      id:
+        type: string
+      lastError:
+        type: string
+      lastRunAt:
+        type: string
+      lastStatus:
+        type: string
+      name:
+        type: string
+      runtime:
+        $ref: '#/definitions/model.ScheduleRuntimeInfo'
+      scheduleType:
+        type: string
+      taskKey:
+        type: string
+      updatedAt:
+        type: string
+    type: object
+  model.ScheduleRuntimeInfo:
+    properties:
+      nextRun:
+        type: string
+      running:
+        type: boolean
+      scheduled:
+        type: boolean
+    type: object
+  model.SubscriptionDTO:
+    properties:
+      credits:
+        type: integer
+      endDate:
+        type: string
+      id:
+        type: string
+      isActive:
+        type: boolean
+      planName:
+        type: string
+      price:
+        type: number
+      startDate:
+        type: string
+    type: object
+  model.SubscriptionPaymentCreateReq:
+    properties:
+      method:
+        type: string
+      planId:
+        type: string
+    type: object
+  model.SubscriptionPlanCreateReq:
+    properties:
+      creditResetCycle:
+        type: string
+      isActive:
+        type: boolean
+      price:
+        type: number
+      sortOrder:
+        type: integer
+      title:
+        type: string
+      totalCredits:
+        type: integer
+      validityDuration:
+        type: integer
+      validityUnit:
+        type: string
+    type: object
+  model.SubscriptionPlanResp:
+    properties:
+      createdAt:
+        type: string
+      creditResetCycle:
+        type: string
+      id:
+        type: string
+      isActive:
+        type: boolean
+      price:
+        type: number
+      sortOrder:
+        type: integer
+      title:
+        type: string
+      totalCredits:
+        type: integer
+      updatedAt:
+        type: string
+      validityDuration:
+        type: integer
+      validityUnit:
+        type: string
+    type: object
+  model.SubscriptionResp:
+    properties:
+      createdAt:
+        type: string
+      credits:
+        type: integer
+      endDate:
+        type: string
+      id:
+        type: string
+      isActive:
+        type: boolean
+      paymentId:
+        type: string
+      planId:
+        type: string
+      planName:
+        type: string
+      price:
+        type: number
+      startDate:
+        type: string
+      updatedAt:
+        type: string
+      userId:
+        type: string
+    type: object
+  model.SystemInitializeReq:
+    properties:
+      confirmPassword:
+        type: string
+      email:
+        type: string
+      password:
+        type: string
+      username:
+        type: string
+    type: object
+  model.SystemInitializeResp:
+    properties:
+      credits:
+        type: integer
+      email:
+        type: string
+      id:
+        type: string
+      password:
+        type: string
+      role:
+        type: string
+      username:
+        type: string
+    type: object
+  model.SystemSettingDefaultDTO:
+    properties:
+      category:
+        type: string
+      description:
+        type: string
+      key:
+        type: string
+      value:
+        type: string
+    type: object
+  model.SystemSettingDefaultGroupsDTO:
+    properties:
+      alipay:
+        items:
+          $ref: '#/definitions/model.SystemSettingDefaultDTO'
+        type: array
+      announcement:
+        items:
+          $ref: '#/definitions/model.SystemSettingDefaultDTO'
+        type: array
+      basic:
+        items:
+          $ref: '#/definitions/model.SystemSettingDefaultDTO'
+        type: array
+      epay:
+        items:
+          $ref: '#/definitions/model.SystemSettingDefaultDTO'
+        type: array
+      wechat:
+        items:
+          $ref: '#/definitions/model.SystemSettingDefaultDTO'
+        type: array
+    type: object
+  model.SystemSettingResp:
+    properties:
+      category:
+        type: string
+      createdAt:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      key:
+        type: string
+      updatedAt:
+        type: string
+      value:
+        type: string
+    type: object
+  model.SystemSettingUpdateDTO:
+    properties:
+      key:
+        type: string
+      value:
+        type: string
+    type: object
+  model.SystemSettingsDefaultsResp:
+    properties:
+      general:
+        items:
+          $ref: '#/definitions/model.SystemSettingDefaultDTO'
+        type: array
+      oauth:
+        $ref: '#/definitions/model.SystemSettingDefaultGroupsDTO'
+      operation:
+        $ref: '#/definitions/model.SystemSettingDefaultGroupsDTO'
+      payment:
+        $ref: '#/definitions/model.SystemSettingDefaultGroupsDTO'
+    type: object
+  model.SystemSettingsUpdateReq:
+    properties:
+      settings:
+        items:
+          $ref: '#/definitions/model.SystemSettingUpdateDTO'
+        type: array
+    type: object
+  model.TokenCreateReq:
+    properties:
+      expiresAt:
+        type: string
+      name:
+        type: string
+      permissions:
+        type: string
+    type: object
+  model.TokenCreateResp:
+    properties:
+      createdAt:
+        type: string
+      expiresAt:
+        type: string
+      id:
+        type: string
+      isActive:
+        type: boolean
+      lastUsedAt:
+        type: string
+      name:
+        type: string
+      permissions:
+        type: string
+      token:
+        type: string
+      tokenMasked:
+        type: string
+      updatedAt:
+        type: string
+    type: object
+  model.TokenResp:
+    properties:
+      createdAt:
+        type: string
+      expiresAt:
+        type: string
+      id:
+        type: string
+      isActive:
+        type: boolean
+      lastUsedAt:
+        type: string
+      name:
+        type: string
+      permissions:
+        type: string
+      tokenMasked:
+        type: string
+      updatedAt:
+        type: string
+    type: object
+  model.TokenStatsResp:
+    properties:
+      activeTokens:
+        type: integer
+      expiredTokens:
+        type: integer
+      inactiveTokens:
+        type: integer
+      totalTokens:
+        type: integer
+    type: object
+  model.TokenUpdateReq:
+    properties:
+      expiresAt:
+        type: string
+      isActive:
+        type: boolean
+      name:
+        type: string
+      permissions:
+        type: string
+    type: object
+  model.UsageAPIDTO:
+    properties:
+      endpoint:
+        type: string
+      name:
+        type: string
+    type: object
+  model.UsageDTO:
+    properties:
+      api:
+        $ref: '#/definitions/model.UsageAPIDTO'
+      createdAt:
+        type: string
+      credits:
+        type: integer
+      id:
+        type: string
+      status:
+        type: string
+    type: object
+  model.UserCreateReq:
+    properties:
+      credits:
+        type: integer
+      email:
+        type: string
+      password:
+        type: string
+      role:
+        type: string
+      username:
+        type: string
+    type: object
+  model.UserResp:
+    properties:
+      apiUsage:
+        items:
+          $ref: '#/definitions/model.UsageDTO'
+        type: array
+      createdAt:
+        type: string
+      credits:
+        type: integer
+      email:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      role:
+        type: string
+      subscription:
+        $ref: '#/definitions/model.SubscriptionDTO'
+      updatedAt:
+        type: string
+      username:
+        type: string
+    type: object
+  model.UserStatsResp:
+    properties:
+      activeUsers:
+        type: integer
+      adminUsers:
+        type: integer
+      newUsersThisMonth:
+        type: integer
+      totalUsers:
+        type: integer
+    type: object
+  model.UserUpdateReq:
+    properties:
+      credits:
+        type: integer
+      email:
+        type: string
+      role:
+        type: string
+      username:
+        type: string
+    type: object
+  oauth.ConfiguredProvider:
+    properties:
+      authorizationUrl:
+        type: string
+      clientId:
+        type: string
+      clientSecret:
+        type: string
+      emailField:
+        type: string
+      id:
+        type: string
+      issuer:
+        type: string
+      kind:
+        type: string
+      name:
+        type: string
+      roleField:
+        type: string
+      scopes:
+        type: string
+      tokenUrl:
+        type: string
+      userIdField:
+        type: string
+      userInfoUrl:
+        type: string
+      usernameField:
+        type: string
+    type: object
+  pay.PaymentMethod:
+    enum:
+    - wechat
+    - alipay
+    - mock
+    type: string
+    x-enum-varnames:
+    - PaymentMethodWeChat
+    - PaymentMethodAlipay
+    - PaymentMethodMock
+  pay.PaymentState:
+    enum:
+    - pending
+    - paid
+    - cancelled
+    - failed
+    - expired
+    type: string
+    x-enum-varnames:
+    - PaymentStatePending
+    - PaymentStatePaid
+    - PaymentStateCancelled
+    - PaymentStateFailed
+    - PaymentStateExpired
+  schedule.TaskDescriptor:
+    properties:
+      description:
+        type: string
+      key:
+        type: string
+    type: object
+  upload.Metadata:
+    properties:
+      filename:
+        type: string
+      size:
+        type: integer
+      type:
+        type: string
+      url:
+        type: string
+    type: object
 info:
   contact: {}
   description: Contract for the Nex HTTP API.
@@ -36,19 +1228,51 @@ paths:
   /api/advertisements:
     get:
       operationId: advertisements_route_get
+      parameters:
+      - description: page
+        in: query
+        name: page
+        type: integer
+      - description: limit
+        in: query
+        name: limit
+        type: integer
+      - description: search
+        in: query
+        name: search
+        type: string
+      - description: position
+        in: query
+        name: position
+        type: string
+      - description: isActive
+        in: query
+        name: isActive
+        type: string
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/main.SwaggerEnvelope'
+            allOf:
+            - $ref: '#/definitions/main.SwaggerEnvelope'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/model.AdvertisementResp'
+                  type: array
+              type: object
         "400":
           description: Bad Request
           schema:
             $ref: '#/definitions/main.SwaggerEnvelope'
         "401":
           description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "403":
+          description: Forbidden
           schema:
             $ref: '#/definitions/main.SwaggerEnvelope'
         "500":
@@ -65,24 +1289,34 @@ paths:
       - application/json
       operationId: advertisements_route_post
       parameters:
-      - description: JSON request payload
+      - description: request payload
         in: body
         name: body
+        required: true
         schema:
-          $ref: '#/definitions/main.SwaggerRequest'
+          $ref: '#/definitions/model.AdvertisementCreateReq'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/main.SwaggerEnvelope'
+            allOf:
+            - $ref: '#/definitions/main.SwaggerEnvelope'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.AdvertisementResp'
+              type: object
         "400":
           description: Bad Request
           schema:
             $ref: '#/definitions/main.SwaggerEnvelope'
         "401":
           description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "403":
+          description: Forbidden
           schema:
             $ref: '#/definitions/main.SwaggerEnvelope'
         "500":
@@ -109,13 +1343,24 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/main.SwaggerEnvelope'
+            allOf:
+            - $ref: '#/definitions/main.SwaggerEnvelope'
+            - properties:
+                data:
+                  additionalProperties:
+                    type: string
+                  type: object
+              type: object
         "400":
           description: Bad Request
           schema:
             $ref: '#/definitions/main.SwaggerEnvelope'
         "401":
           description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "403":
+          description: Forbidden
           schema:
             $ref: '#/definitions/main.SwaggerEnvelope'
         "500":
@@ -141,13 +1386,22 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/main.SwaggerEnvelope'
+            allOf:
+            - $ref: '#/definitions/main.SwaggerEnvelope'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.AdvertisementResp'
+              type: object
         "400":
           description: Bad Request
           schema:
             $ref: '#/definitions/main.SwaggerEnvelope'
         "401":
           description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "403":
+          description: Forbidden
           schema:
             $ref: '#/definitions/main.SwaggerEnvelope'
         "500":
@@ -169,24 +1423,34 @@ paths:
         name: id
         required: true
         type: string
-      - description: JSON request payload
+      - description: request payload
         in: body
         name: body
+        required: true
         schema:
-          $ref: '#/definitions/main.SwaggerRequest'
+          $ref: '#/definitions/model.AdvertisementUpdateReq'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/main.SwaggerEnvelope'
+            allOf:
+            - $ref: '#/definitions/main.SwaggerEnvelope'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.AdvertisementResp'
+              type: object
         "400":
           description: Bad Request
           schema:
             $ref: '#/definitions/main.SwaggerEnvelope'
         "401":
           description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "403":
+          description: Forbidden
           schema:
             $ref: '#/definitions/main.SwaggerEnvelope'
         "500":
@@ -200,8 +1464,6 @@ paths:
       - advertisements
   /api/advertisements/{id}/toggle:
     put:
-      consumes:
-      - application/json
       operationId: advertisements_id_toggle_route_put
       parameters:
       - description: id
@@ -209,24 +1471,28 @@ paths:
         name: id
         required: true
         type: string
-      - description: JSON request payload
-        in: body
-        name: body
-        schema:
-          $ref: '#/definitions/main.SwaggerRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/main.SwaggerEnvelope'
+            allOf:
+            - $ref: '#/definitions/main.SwaggerEnvelope'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.AdvertisementResp'
+              type: object
         "400":
           description: Bad Request
           schema:
             $ref: '#/definitions/main.SwaggerEnvelope'
         "401":
           description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "403":
+          description: Forbidden
           schema:
             $ref: '#/definitions/main.SwaggerEnvelope'
         "500":
@@ -253,13 +1519,22 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/main.SwaggerEnvelope'
+            allOf:
+            - $ref: '#/definitions/main.SwaggerEnvelope'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.AdvertisementResp'
+              type: object
         "400":
           description: Bad Request
           schema:
             $ref: '#/definitions/main.SwaggerEnvelope'
         "401":
           description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "403":
+          description: Forbidden
           schema:
             $ref: '#/definitions/main.SwaggerEnvelope'
         "500":
@@ -278,7 +1553,12 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/main.SwaggerEnvelope'
+            allOf:
+            - $ref: '#/definitions/main.SwaggerEnvelope'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.AdvertisementStatsResp'
+              type: object
         "400":
           description: Bad Request
           schema:
@@ -287,23 +1567,45 @@ paths:
           description: Unauthorized
           schema:
             $ref: '#/definitions/main.SwaggerEnvelope'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
         "500":
           description: Internal Server Error
           schema:
             $ref: '#/definitions/main.SwaggerEnvelope'
+      security:
+      - SessionCookie: []
       summary: GET /api/advertisements/stats
       tags:
       - advertisements
   /api/apis:
     get:
       operationId: apis_route_get
+      parameters:
+      - description: page
+        in: query
+        name: page
+        type: integer
+      - description: limit
+        in: query
+        name: limit
+        type: integer
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/main.SwaggerEnvelope'
+            allOf:
+            - $ref: '#/definitions/main.SwaggerEnvelope'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/model.CatalogAPIDTO'
+                  type: array
+              type: object
         "400":
           description: Bad Request
           schema:
@@ -326,18 +1628,24 @@ paths:
       - application/json
       operationId: apis_route_post
       parameters:
-      - description: JSON request payload
+      - description: request payload
         in: body
         name: body
+        required: true
         schema:
-          $ref: '#/definitions/main.SwaggerRequest'
+          $ref: '#/definitions/model.CatalogAPICreateReq'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/main.SwaggerEnvelope'
+            allOf:
+            - $ref: '#/definitions/main.SwaggerEnvelope'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.CatalogAPIDTO'
+              type: object
         "400":
           description: Bad Request
           schema:
@@ -370,7 +1678,14 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/main.SwaggerEnvelope'
+            allOf:
+            - $ref: '#/definitions/main.SwaggerEnvelope'
+            - properties:
+                data:
+                  additionalProperties:
+                    type: string
+                  type: object
+              type: object
         "400":
           description: Bad Request
           schema:
@@ -402,7 +1717,12 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/main.SwaggerEnvelope'
+            allOf:
+            - $ref: '#/definitions/main.SwaggerEnvelope'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.CatalogAPIDTO'
+              type: object
         "400":
           description: Bad Request
           schema:
@@ -430,18 +1750,24 @@ paths:
         name: id
         required: true
         type: string
-      - description: JSON request payload
+      - description: request payload
         in: body
         name: body
+        required: true
         schema:
-          $ref: '#/definitions/main.SwaggerRequest'
+          $ref: '#/definitions/model.CatalogAPIUpdateReq'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/main.SwaggerEnvelope'
+            allOf:
+            - $ref: '#/definitions/main.SwaggerEnvelope'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.CatalogAPIDTO'
+              type: object
         "400":
           description: Bad Request
           schema:
@@ -470,18 +1796,18 @@ paths:
         name: id
         required: true
         type: string
-      - description: JSON request payload
-        in: body
-        name: body
-        schema:
-          $ref: '#/definitions/main.SwaggerRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/main.SwaggerEnvelope'
+            allOf:
+            - $ref: '#/definitions/main.SwaggerEnvelope'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.CatalogAPIDTO'
+              type: object
         "400":
           description: Bad Request
           schema:
@@ -508,7 +1834,12 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/main.SwaggerEnvelope'
+            allOf:
+            - $ref: '#/definitions/main.SwaggerEnvelope'
+            - properties:
+                data:
+                  $ref: '#/definitions/catalog.APIStats'
+              type: object
         "400":
           description: Bad Request
           schema:
@@ -529,13 +1860,29 @@ paths:
   /api/audit-logs:
     get:
       operationId: audit_logs_route_get
+      parameters:
+      - description: page
+        in: query
+        name: page
+        type: integer
+      - description: limit
+        in: query
+        name: limit
+        type: integer
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/main.SwaggerEnvelope'
+            allOf:
+            - $ref: '#/definitions/main.SwaggerEnvelope'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/model.AuditResp'
+                  type: array
+              type: object
         "400":
           description: Bad Request
           schema:
@@ -558,18 +1905,24 @@ paths:
       - application/json
       operationId: audit_logs_route_post
       parameters:
-      - description: JSON request payload
+      - description: request payload
         in: body
         name: body
+        required: true
         schema:
-          $ref: '#/definitions/main.SwaggerRequest'
+          $ref: '#/definitions/accounts.AuditEntry'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/main.SwaggerEnvelope'
+            allOf:
+            - $ref: '#/definitions/main.SwaggerEnvelope'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.AuditResp'
+              type: object
         "400":
           description: Bad Request
           schema:
@@ -602,7 +1955,14 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/main.SwaggerEnvelope'
+            allOf:
+            - $ref: '#/definitions/main.SwaggerEnvelope'
+            - properties:
+                data:
+                  additionalProperties:
+                    type: string
+                  type: object
+              type: object
         "400":
           description: Bad Request
           schema:
@@ -638,7 +1998,12 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/main.SwaggerEnvelope'
+            allOf:
+            - $ref: '#/definitions/main.SwaggerEnvelope'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.AuditResp'
+              type: object
         "400":
           description: Bad Request
           schema:
@@ -682,7 +2047,12 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/main.SwaggerEnvelope'
+            allOf:
+            - $ref: '#/definitions/main.SwaggerEnvelope'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.AuditResp'
+              type: object
         "400":
           description: Bad Request
           schema:
@@ -707,13 +2077,23 @@ paths:
   /api/audit-logs/export:
     get:
       operationId: audit_logs_export_route_get
+      parameters:
+      - description: ids
+        in: query
+        name: ids
+        type: string
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/main.SwaggerEnvelope'
+            allOf:
+            - $ref: '#/definitions/main.SwaggerEnvelope'
+            - properties:
+                data:
+                  type: string
+              type: object
         "400":
           description: Bad Request
           schema:
@@ -740,7 +2120,12 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/main.SwaggerEnvelope'
+            allOf:
+            - $ref: '#/definitions/main.SwaggerEnvelope'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.AuditStatsResp'
+              type: object
         "400":
           description: Bad Request
           schema:
@@ -840,7 +2225,14 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/main.SwaggerEnvelope'
+            allOf:
+            - $ref: '#/definitions/main.SwaggerEnvelope'
+            - properties:
+                data:
+                  additionalProperties:
+                    type: string
+                  type: object
+              type: object
         "400":
           description: Bad Request
           schema:
@@ -878,7 +2270,12 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/main.SwaggerEnvelope'
+            allOf:
+            - $ref: '#/definitions/main.SwaggerEnvelope'
+            - properties:
+                data:
+                  $ref: '#/definitions/auth.User'
+              type: object
         "400":
           description: Bad Request
           schema:
@@ -909,7 +2306,14 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/main.SwaggerEnvelope'
+            allOf:
+            - $ref: '#/definitions/main.SwaggerEnvelope'
+            - properties:
+                data:
+                  additionalProperties:
+                    type: string
+                  type: object
+              type: object
         "400":
           description: Bad Request
           schema:
@@ -940,7 +2344,12 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/main.SwaggerEnvelope'
+            allOf:
+            - $ref: '#/definitions/main.SwaggerEnvelope'
+            - properties:
+                data:
+                  $ref: '#/definitions/auth.User'
+              type: object
         "400":
           description: Bad Request
           schema:
@@ -971,7 +2380,14 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/main.SwaggerEnvelope'
+            allOf:
+            - $ref: '#/definitions/main.SwaggerEnvelope'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/oauth.ConfiguredProvider'
+                  type: array
+              type: object
         "400":
           description: Bad Request
           schema:
@@ -1035,13 +2451,24 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/main.SwaggerEnvelope'
+            allOf:
+            - $ref: '#/definitions/main.SwaggerEnvelope'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/model.CatalogCategoryListResp'
+                  type: array
+              type: object
         "400":
           description: Bad Request
           schema:
             $ref: '#/definitions/main.SwaggerEnvelope'
         "401":
           description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "403":
+          description: Forbidden
           schema:
             $ref: '#/definitions/main.SwaggerEnvelope'
         "500":
@@ -1058,24 +2485,34 @@ paths:
       - application/json
       operationId: categories_route_post
       parameters:
-      - description: JSON request payload
+      - description: request payload
         in: body
         name: body
+        required: true
         schema:
-          $ref: '#/definitions/main.SwaggerRequest'
+          $ref: '#/definitions/model.CatalogCategoryCreateReq'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/main.SwaggerEnvelope'
+            allOf:
+            - $ref: '#/definitions/main.SwaggerEnvelope'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.CatalogCategoryDTO'
+              type: object
         "400":
           description: Bad Request
           schema:
             $ref: '#/definitions/main.SwaggerEnvelope'
         "401":
           description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "403":
+          description: Forbidden
           schema:
             $ref: '#/definitions/main.SwaggerEnvelope'
         "500":
@@ -1102,13 +2539,24 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/main.SwaggerEnvelope'
+            allOf:
+            - $ref: '#/definitions/main.SwaggerEnvelope'
+            - properties:
+                data:
+                  additionalProperties:
+                    type: string
+                  type: object
+              type: object
         "400":
           description: Bad Request
           schema:
             $ref: '#/definitions/main.SwaggerEnvelope'
         "401":
           description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "403":
+          description: Forbidden
           schema:
             $ref: '#/definitions/main.SwaggerEnvelope'
         "500":
@@ -1134,7 +2582,12 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/main.SwaggerEnvelope'
+            allOf:
+            - $ref: '#/definitions/main.SwaggerEnvelope'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.CatalogCategoryDTO'
+              type: object
         "400":
           description: Bad Request
           schema:
@@ -1155,7 +2608,7 @@ paths:
       - SessionCookie: []
       summary: GET /api/categories/{id}
       tags:
-      - catalog
+      - categories
     put:
       consumes:
       - application/json
@@ -1166,24 +2619,34 @@ paths:
         name: id
         required: true
         type: string
-      - description: JSON request payload
+      - description: request payload
         in: body
         name: body
+        required: true
         schema:
-          $ref: '#/definitions/main.SwaggerRequest'
+          $ref: '#/definitions/model.CatalogCategoryUpdateReq'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/main.SwaggerEnvelope'
+            allOf:
+            - $ref: '#/definitions/main.SwaggerEnvelope'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.CatalogCategoryDTO'
+              type: object
         "400":
           description: Bad Request
           schema:
             $ref: '#/definitions/main.SwaggerEnvelope'
         "401":
           description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "403":
+          description: Forbidden
           schema:
             $ref: '#/definitions/main.SwaggerEnvelope'
         "500":
@@ -1200,12 +2663,6 @@ paths:
       consumes:
       - application/json
       operationId: cron_sync_stats_route_post
-      parameters:
-      - description: JSON request payload
-        in: body
-        name: body
-        schema:
-          $ref: '#/definitions/main.SwaggerRequest'
       produces:
       - application/json
       responses:
@@ -1239,7 +2696,14 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/main.SwaggerEnvelope'
+            allOf:
+            - $ref: '#/definitions/main.SwaggerEnvelope'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/model.DashboardActivityResp'
+                  type: array
+              type: object
         "400":
           description: Bad Request
           schema:
@@ -1266,7 +2730,15 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/main.SwaggerEnvelope'
+            allOf:
+            - $ref: '#/definitions/main.SwaggerEnvelope'
+            - properties:
+                data:
+                  additionalProperties:
+                    format: int64
+                    type: integer
+                  type: object
+              type: object
         "400":
           description: Bad Request
           schema:
@@ -1293,7 +2765,14 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/main.SwaggerEnvelope'
+            allOf:
+            - $ref: '#/definitions/main.SwaggerEnvelope'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/model.DashboardTopAPIResp'
+                  type: array
+              type: object
         "400":
           description: Bad Request
           schema:
@@ -1320,7 +2799,13 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/main.SwaggerEnvelope'
+            allOf:
+            - $ref: '#/definitions/main.SwaggerEnvelope'
+            - properties:
+                data:
+                  additionalProperties: true
+                  type: object
+              type: object
         "400":
           description: Bad Request
           schema:
@@ -1341,13 +2826,37 @@ paths:
   /api/marketplace/apis:
     get:
       operationId: marketplace_apis_route_get
+      parameters:
+      - description: page
+        in: query
+        name: page
+        type: integer
+      - description: limit
+        in: query
+        name: limit
+        type: integer
+      - description: search
+        in: query
+        name: search
+        type: string
+      - description: category
+        in: query
+        name: category
+        type: string
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/main.SwaggerEnvelope'
+            allOf:
+            - $ref: '#/definitions/main.SwaggerEnvelope'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/model.MarketplaceAPIResp'
+                  type: array
+              type: object
         "400":
           description: Bad Request
           schema:
@@ -1378,7 +2887,12 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/main.SwaggerEnvelope'
+            allOf:
+            - $ref: '#/definitions/main.SwaggerEnvelope'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.MarketplaceAPIResp'
+              type: object
         "400":
           description: Bad Request
           schema:
@@ -1397,13 +2911,37 @@ paths:
   /api/marketplace/mcp-services:
     get:
       operationId: marketplace_mcp_services_route_get
+      parameters:
+      - description: page
+        in: query
+        name: page
+        type: integer
+      - description: limit
+        in: query
+        name: limit
+        type: integer
+      - description: category
+        in: query
+        name: category
+        type: string
+      - description: type
+        in: query
+        name: type
+        type: string
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/main.SwaggerEnvelope'
+            allOf:
+            - $ref: '#/definitions/main.SwaggerEnvelope'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/model.MarketplaceMCPResp'
+                  type: array
+              type: object
         "400":
           description: Bad Request
           schema:
@@ -1434,7 +2972,12 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/main.SwaggerEnvelope'
+            allOf:
+            - $ref: '#/definitions/main.SwaggerEnvelope'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.MarketplaceMCPResp'
+              type: object
         "404":
           description: Not Found
           schema:
@@ -1461,7 +3004,14 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/main.SwaggerEnvelope'
+            allOf:
+            - $ref: '#/definitions/main.SwaggerEnvelope'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/model.MarketplaceMCPTool'
+                  type: array
+              type: object
         "404":
           description: Not Found
           schema:
@@ -1482,7 +3032,15 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/main.SwaggerEnvelope'
+            allOf:
+            - $ref: '#/definitions/main.SwaggerEnvelope'
+            - properties:
+                data:
+                  additionalProperties:
+                    format: int64
+                    type: integer
+                  type: object
+              type: object
         "400":
           description: Bad Request
           schema:
@@ -1507,7 +3065,15 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/main.SwaggerEnvelope'
+            allOf:
+            - $ref: '#/definitions/main.SwaggerEnvelope'
+            - properties:
+                data:
+                  additionalProperties:
+                    format: int64
+                    type: integer
+                  type: object
+              type: object
         "400":
           description: Bad Request
           schema:
@@ -1526,13 +3092,45 @@ paths:
   /api/mcp-services:
     get:
       operationId: mcp_services_route_get
+      parameters:
+      - description: page
+        in: query
+        name: page
+        type: integer
+      - description: limit
+        in: query
+        name: limit
+        type: integer
+      - description: search
+        in: query
+        name: search
+        type: string
+      - description: type
+        in: query
+        name: type
+        type: string
+      - description: category
+        in: query
+        name: category
+        type: string
+      - description: status
+        in: query
+        name: status
+        type: string
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/main.SwaggerEnvelope'
+            allOf:
+            - $ref: '#/definitions/main.SwaggerEnvelope'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/model.CatalogMCPDTO'
+                  type: array
+              type: object
         "400":
           description: Bad Request
           schema:
@@ -1555,18 +3153,24 @@ paths:
       - application/json
       operationId: mcp_services_route_post
       parameters:
-      - description: JSON request payload
+      - description: request payload
         in: body
         name: body
+        required: true
         schema:
-          $ref: '#/definitions/main.SwaggerRequest'
+          $ref: '#/definitions/model.CatalogMCPCreateReq'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/main.SwaggerEnvelope'
+            allOf:
+            - $ref: '#/definitions/main.SwaggerEnvelope'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.CatalogMCPDTO'
+              type: object
         "400":
           description: Bad Request
           schema:
@@ -1599,7 +3203,14 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/main.SwaggerEnvelope'
+            allOf:
+            - $ref: '#/definitions/main.SwaggerEnvelope'
+            - properties:
+                data:
+                  additionalProperties:
+                    type: string
+                  type: object
+              type: object
         "400":
           description: Bad Request
           schema:
@@ -1631,7 +3242,12 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/main.SwaggerEnvelope'
+            allOf:
+            - $ref: '#/definitions/main.SwaggerEnvelope'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.CatalogMCPDTO'
+              type: object
         "400":
           description: Bad Request
           schema:
@@ -1663,18 +3279,24 @@ paths:
         name: id
         required: true
         type: string
-      - description: JSON request payload
+      - description: request payload
         in: body
         name: body
+        required: true
         schema:
-          $ref: '#/definitions/main.SwaggerRequest'
+          $ref: '#/definitions/model.CatalogMCPUpdateReq'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/main.SwaggerEnvelope'
+            allOf:
+            - $ref: '#/definitions/main.SwaggerEnvelope'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.CatalogMCPDTO'
+              type: object
         "400":
           description: Bad Request
           schema:
@@ -1703,18 +3325,18 @@ paths:
         name: id
         required: true
         type: string
-      - description: JSON request payload
-        in: body
-        name: body
-        schema:
-          $ref: '#/definitions/main.SwaggerRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/main.SwaggerEnvelope'
+            allOf:
+            - $ref: '#/definitions/main.SwaggerEnvelope'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.CatalogMCPDTO'
+              type: object
         "400":
           description: Bad Request
           schema:
@@ -1741,7 +3363,12 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/main.SwaggerEnvelope'
+            allOf:
+            - $ref: '#/definitions/main.SwaggerEnvelope'
+            - properties:
+                data:
+                  $ref: '#/definitions/catalog.MCPStats'
+              type: object
         "400":
           description: Bad Request
           schema:
@@ -1768,7 +3395,12 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/main.SwaggerEnvelope'
+            allOf:
+            - $ref: '#/definitions/main.SwaggerEnvelope'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.SubscriptionResp'
+              type: object
         "400":
           description: Bad Request
           schema:
@@ -1795,7 +3427,14 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/main.SwaggerEnvelope'
+            allOf:
+            - $ref: '#/definitions/main.SwaggerEnvelope'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/model.SubscriptionPlanResp'
+                  type: array
+              type: object
         "400":
           description: Bad Request
           schema:
@@ -1817,18 +3456,24 @@ paths:
       - application/json
       operationId: membership_subscribe_route_post
       parameters:
-      - description: JSON request payload
+      - description: request payload
         in: body
         name: body
+        required: true
         schema:
-          $ref: '#/definitions/main.SwaggerRequest'
+          $ref: '#/definitions/model.MembershipSubscribeReq'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/main.SwaggerEnvelope'
+            allOf:
+            - $ref: '#/definitions/main.SwaggerEnvelope'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.SubscriptionResp'
+              type: object
         "400":
           description: Bad Request
           schema:
@@ -1861,13 +3506,22 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/main.SwaggerEnvelope'
+            allOf:
+            - $ref: '#/definitions/main.SwaggerEnvelope'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.PaymentResp'
+              type: object
         "400":
           description: Bad Request
           schema:
             $ref: '#/definitions/main.SwaggerEnvelope'
         "401":
           description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "403":
+          description: Forbidden
           schema:
             $ref: '#/definitions/main.SwaggerEnvelope'
         "500":
@@ -1881,8 +3535,6 @@ paths:
       - payment
   /api/payment/{outTradeNo}/cancel:
     post:
-      consumes:
-      - application/json
       operationId: payment_outtradeno_cancel_route_post
       parameters:
       - description: outTradeNo
@@ -1890,24 +3542,30 @@ paths:
         name: outTradeNo
         required: true
         type: string
-      - description: JSON request payload
-        in: body
-        name: body
-        schema:
-          $ref: '#/definitions/main.SwaggerRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/main.SwaggerEnvelope'
+            allOf:
+            - $ref: '#/definitions/main.SwaggerEnvelope'
+            - properties:
+                data:
+                  additionalProperties:
+                    type: string
+                  type: object
+              type: object
         "400":
           description: Bad Request
           schema:
             $ref: '#/definitions/main.SwaggerEnvelope'
         "401":
           description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "403":
+          description: Forbidden
           schema:
             $ref: '#/definitions/main.SwaggerEnvelope'
         "500":
@@ -1934,13 +3592,22 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/main.SwaggerEnvelope'
+            allOf:
+            - $ref: '#/definitions/main.SwaggerEnvelope'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.PaymentResp'
+              type: object
         "400":
           description: Bad Request
           schema:
             $ref: '#/definitions/main.SwaggerEnvelope'
         "401":
           description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "403":
+          description: Forbidden
           schema:
             $ref: '#/definitions/main.SwaggerEnvelope'
         "500":
@@ -1988,28 +3655,24 @@ paths:
       tags:
       - payment
     post:
-      consumes:
-      - application/json
       operationId: payment_callback_alipay_route_post
-      parameters:
-      - description: JSON request payload
-        in: body
-        name: body
-        schema:
-          $ref: '#/definitions/main.SwaggerRequest'
       produces:
       - application/json
       responses:
         "200":
-          description: OK
+          description: gateway notification result
           schema:
-            $ref: '#/definitions/main.SwaggerEnvelope'
+            type: string
         "400":
           description: Bad Request
           schema:
             $ref: '#/definitions/main.SwaggerEnvelope'
         "401":
           description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "403":
+          description: Forbidden
           schema:
             $ref: '#/definitions/main.SwaggerEnvelope'
         "500":
@@ -2021,28 +3684,24 @@ paths:
       - payment
   /api/payment/callback/mock:
     post:
-      consumes:
-      - application/json
       operationId: payment_callback_mock_route_post
-      parameters:
-      - description: JSON request payload
-        in: body
-        name: body
-        schema:
-          $ref: '#/definitions/main.SwaggerRequest'
       produces:
       - application/json
       responses:
         "200":
-          description: OK
+          description: gateway notification result
           schema:
-            $ref: '#/definitions/main.SwaggerEnvelope'
+            type: string
         "400":
           description: Bad Request
           schema:
             $ref: '#/definitions/main.SwaggerEnvelope'
         "401":
           description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "403":
+          description: Forbidden
           schema:
             $ref: '#/definitions/main.SwaggerEnvelope'
         "500":
@@ -2088,28 +3747,24 @@ paths:
       tags:
       - payment
     post:
-      consumes:
-      - application/json
       operationId: payment_callback_wechat_route_post
-      parameters:
-      - description: JSON request payload
-        in: body
-        name: body
-        schema:
-          $ref: '#/definitions/main.SwaggerRequest'
       produces:
       - application/json
       responses:
         "200":
-          description: OK
+          description: gateway notification result
           schema:
-            $ref: '#/definitions/main.SwaggerEnvelope'
+            type: string
         "400":
           description: Bad Request
           schema:
             $ref: '#/definitions/main.SwaggerEnvelope'
         "401":
           description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "403":
+          description: Forbidden
           schema:
             $ref: '#/definitions/main.SwaggerEnvelope'
         "500":
@@ -2128,7 +3783,14 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/main.SwaggerEnvelope'
+            allOf:
+            - $ref: '#/definitions/main.SwaggerEnvelope'
+            - properties:
+                data:
+                  items:
+                    type: string
+                  type: array
+              type: object
         "400":
           description: Bad Request
           schema:
@@ -2137,12 +3799,14 @@ paths:
           description: Unauthorized
           schema:
             $ref: '#/definitions/main.SwaggerEnvelope'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
         "500":
           description: Internal Server Error
           schema:
             $ref: '#/definitions/main.SwaggerEnvelope'
-      security:
-      - SessionCookie: []
       summary: GET /api/payment/methods
       tags:
       - payment
@@ -2151,24 +3815,34 @@ paths:
       - application/json
       operationId: payment_methods_route_post
       parameters:
-      - description: JSON request payload
+      - description: request payload
         in: body
         name: body
+        required: true
         schema:
-          $ref: '#/definitions/main.SwaggerRequest'
+          $ref: '#/definitions/model.SubscriptionPaymentCreateReq'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/main.SwaggerEnvelope'
+            allOf:
+            - $ref: '#/definitions/main.SwaggerEnvelope'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.PaymentCreateResp'
+              type: object
         "400":
           description: Bad Request
           schema:
             $ref: '#/definitions/main.SwaggerEnvelope'
         "401":
           description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "403":
+          description: Forbidden
           schema:
             $ref: '#/definitions/main.SwaggerEnvelope'
         "500":
@@ -2189,7 +3863,12 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/main.SwaggerEnvelope'
+            allOf:
+            - $ref: '#/definitions/main.SwaggerEnvelope'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.PaymentSettingsResp'
+              type: object
         "400":
           description: Bad Request
           schema:
@@ -2198,12 +3877,14 @@ paths:
           description: Unauthorized
           schema:
             $ref: '#/definitions/main.SwaggerEnvelope'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
         "500":
           description: Internal Server Error
           schema:
             $ref: '#/definitions/main.SwaggerEnvelope'
-      security:
-      - SessionCookie: []
       summary: GET /api/payment/settings
       tags:
       - payment
@@ -2216,13 +3897,24 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/main.SwaggerEnvelope'
+            allOf:
+            - $ref: '#/definitions/main.SwaggerEnvelope'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/model.PaymentResp'
+                  type: array
+              type: object
         "400":
           description: Bad Request
           schema:
             $ref: '#/definitions/main.SwaggerEnvelope'
         "401":
           description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "403":
+          description: Forbidden
           schema:
             $ref: '#/definitions/main.SwaggerEnvelope'
         "500":
@@ -2243,7 +3935,12 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/main.SwaggerEnvelope'
+            allOf:
+            - $ref: '#/definitions/main.SwaggerEnvelope'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.ProfileResp'
+              type: object
         "400":
           description: Bad Request
           schema:
@@ -2278,7 +3975,12 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/main.SwaggerEnvelope'
+            allOf:
+            - $ref: '#/definitions/main.SwaggerEnvelope'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.ProfileResp'
+              type: object
         "400":
           description: Bad Request
           schema:
@@ -2318,7 +4020,14 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/main.SwaggerEnvelope'
+            allOf:
+            - $ref: '#/definitions/main.SwaggerEnvelope'
+            - properties:
+                data:
+                  additionalProperties:
+                    type: string
+                  type: object
+              type: object
         "400":
           description: Bad Request
           schema:
@@ -2346,24 +4055,34 @@ paths:
       - application/json
       operationId: personal_redeem_route_post
       parameters:
-      - description: JSON request payload
+      - description: request payload
         in: body
         name: body
+        required: true
         schema:
-          $ref: '#/definitions/main.SwaggerRequest'
+          $ref: '#/definitions/model.RedemptionCodeReq'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/main.SwaggerEnvelope'
+            allOf:
+            - $ref: '#/definitions/main.SwaggerEnvelope'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.RedemptionResp'
+              type: object
         "400":
           description: Bad Request
           schema:
             $ref: '#/definitions/main.SwaggerEnvelope'
         "401":
           description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "403":
+          description: Forbidden
           schema:
             $ref: '#/definitions/main.SwaggerEnvelope'
         "500":
@@ -2381,24 +4100,34 @@ paths:
       - application/json
       operationId: personal_redeem_lookup_route_post
       parameters:
-      - description: JSON request payload
+      - description: request payload
         in: body
         name: body
+        required: true
         schema:
-          $ref: '#/definitions/main.SwaggerRequest'
+          $ref: '#/definitions/model.RedemptionCodeReq'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/main.SwaggerEnvelope'
+            allOf:
+            - $ref: '#/definitions/main.SwaggerEnvelope'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.RedemptionLookupResp'
+              type: object
         "400":
           description: Bad Request
           schema:
             $ref: '#/definitions/main.SwaggerEnvelope'
         "401":
           description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "403":
+          description: Forbidden
           schema:
             $ref: '#/definitions/main.SwaggerEnvelope'
         "500":
@@ -2416,24 +4145,34 @@ paths:
       - application/json
       operationId: recharge_route_post
       parameters:
-      - description: JSON request payload
+      - description: request payload
         in: body
         name: body
+        required: true
         schema:
-          $ref: '#/definitions/main.SwaggerRequest'
+          $ref: '#/definitions/model.RechargePaymentCreateReq'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/main.SwaggerEnvelope'
+            allOf:
+            - $ref: '#/definitions/main.SwaggerEnvelope'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.PaymentCreateResp'
+              type: object
         "400":
           description: Bad Request
           schema:
             $ref: '#/definitions/main.SwaggerEnvelope'
         "401":
           description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "403":
+          description: Forbidden
           schema:
             $ref: '#/definitions/main.SwaggerEnvelope'
         "500":
@@ -2444,23 +4183,43 @@ paths:
       - SessionCookie: []
       summary: POST /api/recharge
       tags:
-      - recharge
+      - payment
   /api/redemption-codes:
     get:
       operationId: redemption_codes_route_get
+      parameters:
+      - description: page
+        in: query
+        name: page
+        type: integer
+      - description: limit
+        in: query
+        name: limit
+        type: integer
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/main.SwaggerEnvelope'
+            allOf:
+            - $ref: '#/definitions/main.SwaggerEnvelope'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/model.RedemptionCodeResp'
+                  type: array
+              type: object
         "400":
           description: Bad Request
           schema:
             $ref: '#/definitions/main.SwaggerEnvelope'
         "401":
           description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "403":
+          description: Forbidden
           schema:
             $ref: '#/definitions/main.SwaggerEnvelope'
         "500":
@@ -2477,24 +4236,34 @@ paths:
       - application/json
       operationId: redemption_codes_route_post
       parameters:
-      - description: JSON request payload
+      - description: request payload
         in: body
         name: body
+        required: true
         schema:
-          $ref: '#/definitions/main.SwaggerRequest'
+          $ref: '#/definitions/model.RedemptionCodeCreateReq'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/main.SwaggerEnvelope'
+            allOf:
+            - $ref: '#/definitions/main.SwaggerEnvelope'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.RedemptionBatchResp'
+              type: object
         "400":
           description: Bad Request
           schema:
             $ref: '#/definitions/main.SwaggerEnvelope'
         "401":
           description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "403":
+          description: Forbidden
           schema:
             $ref: '#/definitions/main.SwaggerEnvelope'
         "500":
@@ -2521,13 +4290,24 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/main.SwaggerEnvelope'
+            allOf:
+            - $ref: '#/definitions/main.SwaggerEnvelope'
+            - properties:
+                data:
+                  additionalProperties:
+                    type: string
+                  type: object
+              type: object
         "400":
           description: Bad Request
           schema:
             $ref: '#/definitions/main.SwaggerEnvelope'
         "401":
           description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "403":
+          description: Forbidden
           schema:
             $ref: '#/definitions/main.SwaggerEnvelope'
         "500":
@@ -2542,19 +4322,35 @@ paths:
   /api/redemption-codes/batch:
     delete:
       operationId: redemption_codes_batch_route_delete
+      parameters:
+      - description: batchId
+        in: query
+        name: batchId
+        type: string
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/main.SwaggerEnvelope'
+            allOf:
+            - $ref: '#/definitions/main.SwaggerEnvelope'
+            - properties:
+                data:
+                  additionalProperties:
+                    type: integer
+                  type: object
+              type: object
         "400":
           description: Bad Request
           schema:
             $ref: '#/definitions/main.SwaggerEnvelope'
         "401":
           description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "403":
+          description: Forbidden
           schema:
             $ref: '#/definitions/main.SwaggerEnvelope'
         "500":
@@ -2603,19 +4399,33 @@ paths:
   /api/redemption-codes/export:
     get:
       operationId: redemption_codes_export_route_get
+      parameters:
+      - description: ids
+        in: query
+        name: ids
+        type: string
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/main.SwaggerEnvelope'
+            allOf:
+            - $ref: '#/definitions/main.SwaggerEnvelope'
+            - properties:
+                data:
+                  type: string
+              type: object
         "400":
           description: Bad Request
           schema:
             $ref: '#/definitions/main.SwaggerEnvelope'
         "401":
           description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "403":
+          description: Forbidden
           schema:
             $ref: '#/definitions/main.SwaggerEnvelope'
         "500":
@@ -2661,7 +4471,14 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/main.SwaggerEnvelope'
+            allOf:
+            - $ref: '#/definitions/main.SwaggerEnvelope'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/model.ScheduleJobResp'
+                  type: array
+              type: object
         "400":
           description: Bad Request
           schema:
@@ -2700,7 +4517,12 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/main.SwaggerEnvelope'
+            allOf:
+            - $ref: '#/definitions/main.SwaggerEnvelope'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.ScheduleJobResp'
+              type: object
         "400":
           description: Bad Request
           schema:
@@ -2737,7 +4559,14 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/main.SwaggerEnvelope'
+            allOf:
+            - $ref: '#/definitions/main.SwaggerEnvelope'
+            - properties:
+                data:
+                  additionalProperties:
+                    type: string
+                  type: object
+              type: object
         "400":
           description: Bad Request
           schema:
@@ -2773,7 +4602,12 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/main.SwaggerEnvelope'
+            allOf:
+            - $ref: '#/definitions/main.SwaggerEnvelope'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.ScheduleJobResp'
+              type: object
         "400":
           description: Bad Request
           schema:
@@ -2817,7 +4651,12 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/main.SwaggerEnvelope'
+            allOf:
+            - $ref: '#/definitions/main.SwaggerEnvelope'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.ScheduleJobResp'
+              type: object
         "400":
           description: Bad Request
           schema:
@@ -2856,7 +4695,14 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/main.SwaggerEnvelope'
+            allOf:
+            - $ref: '#/definitions/main.SwaggerEnvelope'
+            - properties:
+                data:
+                  additionalProperties:
+                    type: string
+                  type: object
+              type: object
         "400":
           description: Bad Request
           schema:
@@ -2887,7 +4733,14 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/main.SwaggerEnvelope'
+            allOf:
+            - $ref: '#/definitions/main.SwaggerEnvelope'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/schedule.TaskDescriptor'
+                  type: array
+              type: object
         "400":
           description: Bad Request
           schema:
@@ -2912,6 +4765,11 @@ paths:
   /api/stats:
     get:
       operationId: stats_route_get
+      parameters:
+      - description: type
+        in: query
+        name: type
+        type: string
       produces:
       - application/json
       responses:
@@ -2945,13 +4803,25 @@ paths:
         name: alias
         required: true
         type: string
+      - description: user
+        in: query
+        name: user
+        type: string
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/main.SwaggerEnvelope'
+            allOf:
+            - $ref: '#/definitions/main.SwaggerEnvelope'
+            - properties:
+                data:
+                  additionalProperties:
+                    format: int64
+                    type: integer
+                  type: object
+              type: object
         "400":
           description: Bad Request
           schema:
@@ -2972,19 +4842,39 @@ paths:
   /api/subscription-plans:
     get:
       operationId: subscription_plans_route_get
+      parameters:
+      - description: page
+        in: query
+        name: page
+        type: integer
+      - description: limit
+        in: query
+        name: limit
+        type: integer
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/main.SwaggerEnvelope'
+            allOf:
+            - $ref: '#/definitions/main.SwaggerEnvelope'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/model.SubscriptionPlanResp'
+                  type: array
+              type: object
         "400":
           description: Bad Request
           schema:
             $ref: '#/definitions/main.SwaggerEnvelope'
         "401":
           description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "403":
+          description: Forbidden
           schema:
             $ref: '#/definitions/main.SwaggerEnvelope'
         "500":
@@ -3001,24 +4891,34 @@ paths:
       - application/json
       operationId: subscription_plans_route_post
       parameters:
-      - description: JSON request payload
+      - description: request payload
         in: body
         name: body
+        required: true
         schema:
-          $ref: '#/definitions/main.SwaggerRequest'
+          $ref: '#/definitions/model.SubscriptionPlanCreateReq'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/main.SwaggerEnvelope'
+            allOf:
+            - $ref: '#/definitions/main.SwaggerEnvelope'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.SubscriptionPlanResp'
+              type: object
         "400":
           description: Bad Request
           schema:
             $ref: '#/definitions/main.SwaggerEnvelope'
         "401":
           description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "403":
+          description: Forbidden
           schema:
             $ref: '#/definitions/main.SwaggerEnvelope'
         "500":
@@ -3045,13 +4945,24 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/main.SwaggerEnvelope'
+            allOf:
+            - $ref: '#/definitions/main.SwaggerEnvelope'
+            - properties:
+                data:
+                  additionalProperties:
+                    type: string
+                  type: object
+              type: object
         "400":
           description: Bad Request
           schema:
             $ref: '#/definitions/main.SwaggerEnvelope'
         "401":
           description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "403":
+          description: Forbidden
           schema:
             $ref: '#/definitions/main.SwaggerEnvelope'
         "500":
@@ -3077,13 +4988,22 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/main.SwaggerEnvelope'
+            allOf:
+            - $ref: '#/definitions/main.SwaggerEnvelope'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.SubscriptionPlanResp'
+              type: object
         "400":
           description: Bad Request
           schema:
             $ref: '#/definitions/main.SwaggerEnvelope'
         "401":
           description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "403":
+          description: Forbidden
           schema:
             $ref: '#/definitions/main.SwaggerEnvelope'
         "500":
@@ -3105,24 +5025,34 @@ paths:
         name: id
         required: true
         type: string
-      - description: JSON request payload
+      - description: request payload
         in: body
         name: body
+        required: true
         schema:
-          $ref: '#/definitions/main.SwaggerRequest'
+          $ref: '#/definitions/membership.PlanUpdateInput'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/main.SwaggerEnvelope'
+            allOf:
+            - $ref: '#/definitions/main.SwaggerEnvelope'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.SubscriptionPlanResp'
+              type: object
         "400":
           description: Bad Request
           schema:
             $ref: '#/definitions/main.SwaggerEnvelope'
         "401":
           description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "403":
+          description: Forbidden
           schema:
             $ref: '#/definitions/main.SwaggerEnvelope'
         "500":
@@ -3137,13 +5067,33 @@ paths:
   /api/system-settings:
     get:
       operationId: system_settings_route_get
+      parameters:
+      - description: page
+        in: query
+        name: page
+        type: integer
+      - description: limit
+        in: query
+        name: limit
+        type: integer
+      - description: category
+        in: query
+        name: category
+        type: string
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/main.SwaggerEnvelope'
+            allOf:
+            - $ref: '#/definitions/main.SwaggerEnvelope'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/model.SystemSettingResp'
+                  type: array
+              type: object
         "400":
           description: Bad Request
           schema:
@@ -3166,18 +5116,26 @@ paths:
       - application/json
       operationId: system_settings_route_put
       parameters:
-      - description: JSON request payload
+      - description: request payload
         in: body
         name: body
+        required: true
         schema:
-          $ref: '#/definitions/main.SwaggerRequest'
+          $ref: '#/definitions/model.SystemSettingsUpdateReq'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/main.SwaggerEnvelope'
+            allOf:
+            - $ref: '#/definitions/main.SwaggerEnvelope'
+            - properties:
+                data:
+                  additionalProperties:
+                    type: string
+                  type: object
+              type: object
         "400":
           description: Bad Request
           schema:
@@ -3204,7 +5162,13 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/main.SwaggerEnvelope'
+            allOf:
+            - $ref: '#/definitions/main.SwaggerEnvelope'
+            - properties:
+                data:
+                  additionalProperties: true
+                  type: object
+              type: object
         "400":
           description: Bad Request
           schema:
@@ -3229,7 +5193,12 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/main.SwaggerEnvelope'
+            allOf:
+            - $ref: '#/definitions/main.SwaggerEnvelope'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.SystemSettingsDefaultsResp'
+              type: object
         "400":
           description: Bad Request
           schema:
@@ -3251,18 +5220,24 @@ paths:
       - application/json
       operationId: system_initialize_route_post
       parameters:
-      - description: JSON request payload
+      - description: request payload
         in: body
         name: body
+        required: true
         schema:
-          $ref: '#/definitions/main.SwaggerRequest'
+          $ref: '#/definitions/model.SystemInitializeReq'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/main.SwaggerEnvelope'
+            allOf:
+            - $ref: '#/definitions/main.SwaggerEnvelope'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.SystemInitializeResp'
+              type: object
         "400":
           description: Bad Request
           schema:
@@ -3287,7 +5262,12 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/main.SwaggerEnvelope'
+            allOf:
+            - $ref: '#/definitions/main.SwaggerEnvelope'
+            - properties:
+                data:
+                  type: boolean
+              type: object
         "400":
           description: Bad Request
           schema:
@@ -3306,19 +5286,47 @@ paths:
   /api/tokens:
     get:
       operationId: tokens_route_get
+      parameters:
+      - description: page
+        in: query
+        name: page
+        type: integer
+      - description: limit
+        in: query
+        name: limit
+        type: integer
+      - description: search
+        in: query
+        name: search
+        type: string
+      - description: status
+        in: query
+        name: status
+        type: string
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/main.SwaggerEnvelope'
+            allOf:
+            - $ref: '#/definitions/main.SwaggerEnvelope'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/model.TokenResp'
+                  type: array
+              type: object
         "400":
           description: Bad Request
           schema:
             $ref: '#/definitions/main.SwaggerEnvelope'
         "401":
           description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "403":
+          description: Forbidden
           schema:
             $ref: '#/definitions/main.SwaggerEnvelope'
         "500":
@@ -3335,24 +5343,34 @@ paths:
       - application/json
       operationId: tokens_route_post
       parameters:
-      - description: JSON request payload
+      - description: request payload
         in: body
         name: body
+        required: true
         schema:
-          $ref: '#/definitions/main.SwaggerRequest'
+          $ref: '#/definitions/model.TokenCreateReq'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/main.SwaggerEnvelope'
+            allOf:
+            - $ref: '#/definitions/main.SwaggerEnvelope'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.TokenCreateResp'
+              type: object
         "400":
           description: Bad Request
           schema:
             $ref: '#/definitions/main.SwaggerEnvelope'
         "401":
           description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "403":
+          description: Forbidden
           schema:
             $ref: '#/definitions/main.SwaggerEnvelope'
         "500":
@@ -3379,13 +5397,24 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/main.SwaggerEnvelope'
+            allOf:
+            - $ref: '#/definitions/main.SwaggerEnvelope'
+            - properties:
+                data:
+                  additionalProperties:
+                    type: string
+                  type: object
+              type: object
         "400":
           description: Bad Request
           schema:
             $ref: '#/definitions/main.SwaggerEnvelope'
         "401":
           description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "403":
+          description: Forbidden
           schema:
             $ref: '#/definitions/main.SwaggerEnvelope'
         "500":
@@ -3411,7 +5440,12 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/main.SwaggerEnvelope'
+            allOf:
+            - $ref: '#/definitions/main.SwaggerEnvelope'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.TokenResp'
+              type: object
         "400":
           description: Bad Request
           schema:
@@ -3443,24 +5477,34 @@ paths:
         name: id
         required: true
         type: string
-      - description: JSON request payload
+      - description: request payload
         in: body
         name: body
+        required: true
         schema:
-          $ref: '#/definitions/main.SwaggerRequest'
+          $ref: '#/definitions/model.TokenUpdateReq'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/main.SwaggerEnvelope'
+            allOf:
+            - $ref: '#/definitions/main.SwaggerEnvelope'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.TokenResp'
+              type: object
         "400":
           description: Bad Request
           schema:
             $ref: '#/definitions/main.SwaggerEnvelope'
         "401":
           description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "403":
+          description: Forbidden
           schema:
             $ref: '#/definitions/main.SwaggerEnvelope'
         "500":
@@ -3474,8 +5518,6 @@ paths:
       - tokens
   /api/tokens/{id}/toggle:
     put:
-      consumes:
-      - application/json
       operationId: tokens_id_toggle_route_put
       parameters:
       - description: id
@@ -3483,24 +5525,28 @@ paths:
         name: id
         required: true
         type: string
-      - description: JSON request payload
-        in: body
-        name: body
-        schema:
-          $ref: '#/definitions/main.SwaggerRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/main.SwaggerEnvelope'
+            allOf:
+            - $ref: '#/definitions/main.SwaggerEnvelope'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.TokenResp'
+              type: object
         "400":
           description: Bad Request
           schema:
             $ref: '#/definitions/main.SwaggerEnvelope'
         "401":
           description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "403":
+          description: Forbidden
           schema:
             $ref: '#/definitions/main.SwaggerEnvelope'
         "500":
@@ -3521,13 +5567,22 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/main.SwaggerEnvelope'
+            allOf:
+            - $ref: '#/definitions/main.SwaggerEnvelope'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.TokenStatsResp'
+              type: object
         "400":
           description: Bad Request
           schema:
             $ref: '#/definitions/main.SwaggerEnvelope'
         "401":
           description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "403":
+          description: Forbidden
           schema:
             $ref: '#/definitions/main.SwaggerEnvelope'
         "500":
@@ -3542,27 +5597,36 @@ paths:
   /api/upload:
     post:
       consumes:
-      - application/json
+      - multipart/form-data
       operationId: upload_route_post
       parameters:
-      - description: JSON request payload
-        in: body
-        name: body
-        schema:
-          $ref: '#/definitions/main.SwaggerRequest'
+      - description: uploaded file
+        in: formData
+        name: file
+        required: true
+        type: file
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/main.SwaggerEnvelope'
+            allOf:
+            - $ref: '#/definitions/main.SwaggerEnvelope'
+            - properties:
+                data:
+                  $ref: '#/definitions/upload.Metadata'
+              type: object
         "400":
           description: Bad Request
           schema:
             $ref: '#/definitions/main.SwaggerEnvelope'
         "401":
           description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "403":
+          description: Forbidden
           schema:
             $ref: '#/definitions/main.SwaggerEnvelope'
         "500":
@@ -3589,13 +5653,17 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/main.SwaggerEnvelope'
+            type: file
         "400":
           description: Bad Request
           schema:
             $ref: '#/definitions/main.SwaggerEnvelope'
         "401":
           description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "403":
+          description: Forbidden
           schema:
             $ref: '#/definitions/main.SwaggerEnvelope'
         "500":
@@ -3614,7 +5682,13 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/main.SwaggerEnvelope'
+            allOf:
+            - $ref: '#/definitions/main.SwaggerEnvelope'
+            - properties:
+                data:
+                  additionalProperties: true
+                  type: object
+              type: object
         "400":
           description: Bad Request
           schema:
@@ -3635,19 +5709,47 @@ paths:
   /api/users:
     get:
       operationId: users_route_get
+      parameters:
+      - description: page
+        in: query
+        name: page
+        type: integer
+      - description: limit
+        in: query
+        name: limit
+        type: integer
+      - description: search
+        in: query
+        name: search
+        type: string
+      - description: role
+        in: query
+        name: role
+        type: string
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/main.SwaggerEnvelope'
+            allOf:
+            - $ref: '#/definitions/main.SwaggerEnvelope'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/model.UserResp'
+                  type: array
+              type: object
         "400":
           description: Bad Request
           schema:
             $ref: '#/definitions/main.SwaggerEnvelope'
         "401":
           description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "403":
+          description: Forbidden
           schema:
             $ref: '#/definitions/main.SwaggerEnvelope'
         "500":
@@ -3664,24 +5766,34 @@ paths:
       - application/json
       operationId: users_route_post
       parameters:
-      - description: JSON request payload
+      - description: request payload
         in: body
         name: body
+        required: true
         schema:
-          $ref: '#/definitions/main.SwaggerRequest'
+          $ref: '#/definitions/model.UserCreateReq'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/main.SwaggerEnvelope'
+            allOf:
+            - $ref: '#/definitions/main.SwaggerEnvelope'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.UserResp'
+              type: object
         "400":
           description: Bad Request
           schema:
             $ref: '#/definitions/main.SwaggerEnvelope'
         "401":
           description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "403":
+          description: Forbidden
           schema:
             $ref: '#/definitions/main.SwaggerEnvelope'
         "500":
@@ -3708,13 +5820,24 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/main.SwaggerEnvelope'
+            allOf:
+            - $ref: '#/definitions/main.SwaggerEnvelope'
+            - properties:
+                data:
+                  additionalProperties:
+                    type: string
+                  type: object
+              type: object
         "400":
           description: Bad Request
           schema:
             $ref: '#/definitions/main.SwaggerEnvelope'
         "401":
           description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "403":
+          description: Forbidden
           schema:
             $ref: '#/definitions/main.SwaggerEnvelope'
         "500":
@@ -3740,13 +5863,22 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/main.SwaggerEnvelope'
+            allOf:
+            - $ref: '#/definitions/main.SwaggerEnvelope'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.UserResp'
+              type: object
         "400":
           description: Bad Request
           schema:
             $ref: '#/definitions/main.SwaggerEnvelope'
         "401":
           description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "403":
+          description: Forbidden
           schema:
             $ref: '#/definitions/main.SwaggerEnvelope'
         "500":
@@ -3768,24 +5900,34 @@ paths:
         name: id
         required: true
         type: string
-      - description: JSON request payload
+      - description: request payload
         in: body
         name: body
+        required: true
         schema:
-          $ref: '#/definitions/main.SwaggerRequest'
+          $ref: '#/definitions/model.UserUpdateReq'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/main.SwaggerEnvelope'
+            allOf:
+            - $ref: '#/definitions/main.SwaggerEnvelope'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.UserResp'
+              type: object
         "400":
           description: Bad Request
           schema:
             $ref: '#/definitions/main.SwaggerEnvelope'
         "401":
           description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "403":
+          description: Forbidden
           schema:
             $ref: '#/definitions/main.SwaggerEnvelope'
         "500":
@@ -3806,13 +5948,22 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/main.SwaggerEnvelope'
+            allOf:
+            - $ref: '#/definitions/main.SwaggerEnvelope'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.UserStatsResp'
+              type: object
         "400":
           description: Bad Request
           schema:
             $ref: '#/definitions/main.SwaggerEnvelope'
         "401":
           description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "403":
+          description: Forbidden
           schema:
             $ref: '#/definitions/main.SwaggerEnvelope'
         "500":

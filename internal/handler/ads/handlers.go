@@ -43,10 +43,16 @@ func RegisterRoutes(mux chi.Router, handler *Handler) error {
 // @ID advertisements_route_get
 // @Tags advertisements
 // @Produce json
+// @Param page query integer false "page"
+// @Param limit query integer false "limit"
+// @Param search query string false "search"
+// @Param position query string false "position"
+// @Param isActive query string false "isActive"
 // @Security SessionCookie
-// @Success 200 {object} main.SwaggerEnvelope
+// @Success 200 {object} main.SwaggerEnvelope{data=[]model.AdvertisementResp}
 // @Failure 400 {object} main.SwaggerEnvelope
 // @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 403 {object} main.SwaggerEnvelope
 // @Failure 500 {object} main.SwaggerEnvelope
 // @Router /api/advertisements [get]
 func (h *Handler) list(w http.ResponseWriter, r *http.Request) {
@@ -87,11 +93,12 @@ func (h *Handler) list(w http.ResponseWriter, r *http.Request) {
 // @Tags advertisements
 // @Accept json
 // @Produce json
-// @Param body body main.SwaggerRequest false "JSON request payload"
+// @Param body body model.AdvertisementCreateReq true "request payload"
 // @Security SessionCookie
-// @Success 200 {object} main.SwaggerEnvelope
+// @Success 200 {object} main.SwaggerEnvelope{data=model.AdvertisementResp}
 // @Failure 400 {object} main.SwaggerEnvelope
 // @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 403 {object} main.SwaggerEnvelope
 // @Failure 500 {object} main.SwaggerEnvelope
 // @Router /api/advertisements [post]
 func (h *Handler) create(w http.ResponseWriter, r *http.Request) {
@@ -123,9 +130,10 @@ func (h *Handler) create(w http.ResponseWriter, r *http.Request) {
 // @Produce json
 // @Param id path string true "id"
 // @Security SessionCookie
-// @Success 200 {object} main.SwaggerEnvelope
+// @Success 200 {object} main.SwaggerEnvelope{data=model.AdvertisementResp}
 // @Failure 400 {object} main.SwaggerEnvelope
 // @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 403 {object} main.SwaggerEnvelope
 // @Failure 500 {object} main.SwaggerEnvelope
 // @Router /api/advertisements/{id} [get]
 func (h *Handler) get(w http.ResponseWriter, r *http.Request) {
@@ -148,11 +156,12 @@ func (h *Handler) get(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce json
 // @Param id path string true "id"
-// @Param body body main.SwaggerRequest false "JSON request payload"
+// @Param body body model.AdvertisementUpdateReq true "request payload"
 // @Security SessionCookie
-// @Success 200 {object} main.SwaggerEnvelope
+// @Success 200 {object} main.SwaggerEnvelope{data=model.AdvertisementResp}
 // @Failure 400 {object} main.SwaggerEnvelope
 // @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 403 {object} main.SwaggerEnvelope
 // @Failure 500 {object} main.SwaggerEnvelope
 // @Router /api/advertisements/{id} [put]
 func (h *Handler) update(w http.ResponseWriter, r *http.Request) {
@@ -180,9 +189,10 @@ func (h *Handler) update(w http.ResponseWriter, r *http.Request) {
 // @Produce json
 // @Param id path string true "id"
 // @Security SessionCookie
-// @Success 200 {object} main.SwaggerEnvelope
+// @Success 200 {object} main.SwaggerEnvelope{data=map[string]string}
 // @Failure 400 {object} main.SwaggerEnvelope
 // @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 403 {object} main.SwaggerEnvelope
 // @Failure 500 {object} main.SwaggerEnvelope
 // @Router /api/advertisements/{id} [delete]
 func (h *Handler) delete(w http.ResponseWriter, r *http.Request) {
@@ -201,14 +211,13 @@ func (h *Handler) delete(w http.ResponseWriter, r *http.Request) {
 // @Summary PUT /api/advertisements/{id}/toggle
 // @ID advertisements_id_toggle_route_put
 // @Tags advertisements
-// @Accept json
 // @Produce json
 // @Param id path string true "id"
-// @Param body body main.SwaggerRequest false "JSON request payload"
 // @Security SessionCookie
-// @Success 200 {object} main.SwaggerEnvelope
+// @Success 200 {object} main.SwaggerEnvelope{data=model.AdvertisementResp}
 // @Failure 400 {object} main.SwaggerEnvelope
 // @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 403 {object} main.SwaggerEnvelope
 // @Failure 500 {object} main.SwaggerEnvelope
 // @Router /api/advertisements/{id}/toggle [put]
 func (h *Handler) toggle(w http.ResponseWriter, r *http.Request) {
@@ -230,9 +239,10 @@ func (h *Handler) toggle(w http.ResponseWriter, r *http.Request) {
 // @Tags advertisements
 // @Produce json
 // @Param position path string true "position"
-// @Success 200 {object} main.SwaggerEnvelope
+// @Success 200 {object} main.SwaggerEnvelope{data=model.AdvertisementResp}
 // @Failure 400 {object} main.SwaggerEnvelope
 // @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 403 {object} main.SwaggerEnvelope
 // @Failure 500 {object} main.SwaggerEnvelope
 // @Router /api/advertisements/by-position/{position} [get]
 func (h *Handler) byPosition(w http.ResponseWriter, r *http.Request) {
@@ -250,9 +260,11 @@ func (h *Handler) byPosition(w http.ResponseWriter, r *http.Request) {
 // @ID advertisements_stats_route_get
 // @Tags advertisements
 // @Produce json
-// @Success 200 {object} main.SwaggerEnvelope
+// @Security SessionCookie
+// @Success 200 {object} main.SwaggerEnvelope{data=model.AdvertisementStatsResp}
 // @Failure 400 {object} main.SwaggerEnvelope
 // @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 403 {object} main.SwaggerEnvelope
 // @Failure 500 {object} main.SwaggerEnvelope
 // @Router /api/advertisements/stats [get]
 func (h *Handler) stats(w http.ResponseWriter, r *http.Request) {

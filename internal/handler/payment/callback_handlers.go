@@ -29,12 +29,11 @@ func swaggerPaymentCallbackWechatGet() {}
 // @Summary POST /api/payment/callback/wechat
 // @ID payment_callback_wechat_route_post
 // @Tags payment
-// @Accept json
 // @Produce json
-// @Param body body main.SwaggerRequest false "JSON request payload"
-// @Success 200 {object} main.SwaggerEnvelope
+// @Success 200 {string} string "gateway notification result"
 // @Failure 400 {object} main.SwaggerEnvelope
 // @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 403 {object} main.SwaggerEnvelope
 // @Failure 500 {object} main.SwaggerEnvelope
 // @Router /api/payment/callback/wechat [post]
 func (h *Handler) wechatCallback(w http.ResponseWriter, r *http.Request) {
@@ -73,12 +72,11 @@ func swaggerPaymentCallbackAlipayGet() {}
 // @Summary POST /api/payment/callback/alipay
 // @ID payment_callback_alipay_route_post
 // @Tags payment
-// @Accept json
 // @Produce json
-// @Param body body main.SwaggerRequest false "JSON request payload"
-// @Success 200 {object} main.SwaggerEnvelope
+// @Success 200 {string} string "gateway notification result"
 // @Failure 400 {object} main.SwaggerEnvelope
 // @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 403 {object} main.SwaggerEnvelope
 // @Failure 500 {object} main.SwaggerEnvelope
 // @Router /api/payment/callback/alipay [post]
 func (h *Handler) alipayCallback(w http.ResponseWriter, r *http.Request) {
@@ -120,12 +118,11 @@ func callbackForm(r *http.Request, body []byte) map[string][]string {
 // @Summary POST /api/payment/callback/mock
 // @ID payment_callback_mock_route_post
 // @Tags payment
-// @Accept json
 // @Produce json
-// @Param body body main.SwaggerRequest false "JSON request payload"
-// @Success 200 {object} main.SwaggerEnvelope
+// @Success 200 {string} string "gateway notification result"
 // @Failure 400 {object} main.SwaggerEnvelope
 // @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 403 {object} main.SwaggerEnvelope
 // @Failure 500 {object} main.SwaggerEnvelope
 // @Router /api/payment/callback/mock [post]
 func (h *Handler) mockCallback(w http.ResponseWriter, r *http.Request) {

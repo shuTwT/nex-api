@@ -13,10 +13,15 @@ import (
 // @ID tokens_route_get
 // @Tags tokens
 // @Produce json
+// @Param page query integer false "page"
+// @Param limit query integer false "limit"
+// @Param search query string false "search"
+// @Param status query string false "status"
 // @Security SessionCookie
-// @Success 200 {object} main.SwaggerEnvelope
+// @Success 200 {object} main.SwaggerEnvelope{data=[]model.TokenResp}
 // @Failure 400 {object} main.SwaggerEnvelope
 // @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 403 {object} main.SwaggerEnvelope
 // @Failure 500 {object} main.SwaggerEnvelope
 // @Router /api/tokens [get]
 func (h *Handler) listTokens(w http.ResponseWriter, r *http.Request) {
@@ -45,11 +50,12 @@ func (h *Handler) listTokens(w http.ResponseWriter, r *http.Request) {
 // @Tags tokens
 // @Accept json
 // @Produce json
-// @Param body body main.SwaggerRequest false "JSON request payload"
+// @Param body body model.TokenCreateReq true "request payload"
 // @Security SessionCookie
-// @Success 200 {object} main.SwaggerEnvelope
+// @Success 200 {object} main.SwaggerEnvelope{data=model.TokenCreateResp}
 // @Failure 400 {object} main.SwaggerEnvelope
 // @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 403 {object} main.SwaggerEnvelope
 // @Failure 500 {object} main.SwaggerEnvelope
 // @Router /api/tokens [post]
 func (h *Handler) createToken(w http.ResponseWriter, r *http.Request) {
@@ -79,7 +85,7 @@ func (h *Handler) createToken(w http.ResponseWriter, r *http.Request) {
 // @Produce json
 // @Param id path string true "id"
 // @Security SessionCookie
-// @Success 200 {object} main.SwaggerEnvelope
+// @Success 200 {object} main.SwaggerEnvelope{data=model.TokenResp}
 // @Failure 400 {object} main.SwaggerEnvelope
 // @Failure 401 {object} main.SwaggerEnvelope
 // @Failure 403 {object} main.SwaggerEnvelope
@@ -107,11 +113,12 @@ func (h *Handler) getToken(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce json
 // @Param id path string true "id"
-// @Param body body main.SwaggerRequest false "JSON request payload"
+// @Param body body model.TokenUpdateReq true "request payload"
 // @Security SessionCookie
-// @Success 200 {object} main.SwaggerEnvelope
+// @Success 200 {object} main.SwaggerEnvelope{data=model.TokenResp}
 // @Failure 400 {object} main.SwaggerEnvelope
 // @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 403 {object} main.SwaggerEnvelope
 // @Failure 500 {object} main.SwaggerEnvelope
 // @Router /api/tokens/{id} [put]
 func (h *Handler) updateToken(w http.ResponseWriter, r *http.Request) {
@@ -138,14 +145,13 @@ func (h *Handler) updateToken(w http.ResponseWriter, r *http.Request) {
 // @Summary PUT /api/tokens/{id}/toggle
 // @ID tokens_id_toggle_route_put
 // @Tags tokens
-// @Accept json
 // @Produce json
 // @Param id path string true "id"
-// @Param body body main.SwaggerRequest false "JSON request payload"
 // @Security SessionCookie
-// @Success 200 {object} main.SwaggerEnvelope
+// @Success 200 {object} main.SwaggerEnvelope{data=model.TokenResp}
 // @Failure 400 {object} main.SwaggerEnvelope
 // @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 403 {object} main.SwaggerEnvelope
 // @Failure 500 {object} main.SwaggerEnvelope
 // @Router /api/tokens/{id}/toggle [put]
 func (h *Handler) toggleToken(w http.ResponseWriter, r *http.Request) {
@@ -170,9 +176,10 @@ func (h *Handler) toggleToken(w http.ResponseWriter, r *http.Request) {
 // @Produce json
 // @Param id path string true "id"
 // @Security SessionCookie
-// @Success 200 {object} main.SwaggerEnvelope
+// @Success 200 {object} main.SwaggerEnvelope{data=map[string]string}
 // @Failure 400 {object} main.SwaggerEnvelope
 // @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 403 {object} main.SwaggerEnvelope
 // @Failure 500 {object} main.SwaggerEnvelope
 // @Router /api/tokens/{id} [delete]
 func (h *Handler) deleteToken(w http.ResponseWriter, r *http.Request) {
@@ -195,9 +202,10 @@ func (h *Handler) deleteToken(w http.ResponseWriter, r *http.Request) {
 // @Tags tokens
 // @Produce json
 // @Security SessionCookie
-// @Success 200 {object} main.SwaggerEnvelope
+// @Success 200 {object} main.SwaggerEnvelope{data=model.TokenStatsResp}
 // @Failure 400 {object} main.SwaggerEnvelope
 // @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 403 {object} main.SwaggerEnvelope
 // @Failure 500 {object} main.SwaggerEnvelope
 // @Router /api/tokens/stats [get]
 func (h *Handler) tokenStats(w http.ResponseWriter, r *http.Request) {

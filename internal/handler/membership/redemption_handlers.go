@@ -16,10 +16,13 @@ import (
 // @ID redemption_codes_route_get
 // @Tags redemption-codes
 // @Produce json
+// @Param page query integer false "page"
+// @Param limit query integer false "limit"
 // @Security SessionCookie
-// @Success 200 {object} main.SwaggerEnvelope
+// @Success 200 {object} main.SwaggerEnvelope{data=[]model.RedemptionCodeResp}
 // @Failure 400 {object} main.SwaggerEnvelope
 // @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 403 {object} main.SwaggerEnvelope
 // @Failure 500 {object} main.SwaggerEnvelope
 // @Router /api/redemption-codes [get]
 func (h *Handler) listCodes(w http.ResponseWriter, r *http.Request) {
@@ -43,11 +46,12 @@ func (h *Handler) listCodes(w http.ResponseWriter, r *http.Request) {
 // @Tags redemption-codes
 // @Accept json
 // @Produce json
-// @Param body body main.SwaggerRequest false "JSON request payload"
+// @Param body body model.RedemptionCodeCreateReq true "request payload"
 // @Security SessionCookie
-// @Success 200 {object} main.SwaggerEnvelope
+// @Success 200 {object} main.SwaggerEnvelope{data=model.RedemptionBatchResp}
 // @Failure 400 {object} main.SwaggerEnvelope
 // @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 403 {object} main.SwaggerEnvelope
 // @Failure 500 {object} main.SwaggerEnvelope
 // @Router /api/redemption-codes [post]
 func (h *Handler) createCodes(w http.ResponseWriter, r *http.Request) {
@@ -85,9 +89,10 @@ func (h *Handler) createCodes(w http.ResponseWriter, r *http.Request) {
 // @Produce json
 // @Param id path string true "id"
 // @Security SessionCookie
-// @Success 200 {object} main.SwaggerEnvelope
+// @Success 200 {object} main.SwaggerEnvelope{data=map[string]string}
 // @Failure 400 {object} main.SwaggerEnvelope
 // @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 403 {object} main.SwaggerEnvelope
 // @Failure 500 {object} main.SwaggerEnvelope
 // @Router /api/redemption-codes/{id} [delete]
 func (h *Handler) deleteCode(w http.ResponseWriter, r *http.Request) {
@@ -109,10 +114,12 @@ func (h *Handler) deleteCode(w http.ResponseWriter, r *http.Request) {
 // @ID redemption_codes_batch_route_delete
 // @Tags redemption-codes
 // @Produce json
+// @Param batchId query string false "batchId"
 // @Security SessionCookie
-// @Success 200 {object} main.SwaggerEnvelope
+// @Success 200 {object} main.SwaggerEnvelope{data=map[string]int}
 // @Failure 400 {object} main.SwaggerEnvelope
 // @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 403 {object} main.SwaggerEnvelope
 // @Failure 500 {object} main.SwaggerEnvelope
 // @Router /api/redemption-codes/batch [delete]
 func (h *Handler) deleteBatch(w http.ResponseWriter, r *http.Request) {
@@ -168,10 +175,12 @@ func (h *Handler) deleteSelected(w http.ResponseWriter, r *http.Request) {
 // @ID redemption_codes_export_route_get
 // @Tags redemption-codes
 // @Produce json
+// @Param ids query string false "ids"
 // @Security SessionCookie
-// @Success 200 {object} main.SwaggerEnvelope
+// @Success 200 {object} main.SwaggerEnvelope{data=string}
 // @Failure 400 {object} main.SwaggerEnvelope
 // @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 403 {object} main.SwaggerEnvelope
 // @Failure 500 {object} main.SwaggerEnvelope
 // @Router /api/redemption-codes/export [get]
 func (h *Handler) exportCodes(w http.ResponseWriter, r *http.Request) {
@@ -210,11 +219,12 @@ func (h *Handler) redemptionPlans(w http.ResponseWriter, r *http.Request) {
 // @Tags personal
 // @Accept json
 // @Produce json
-// @Param body body main.SwaggerRequest false "JSON request payload"
+// @Param body body model.RedemptionCodeReq true "request payload"
 // @Security SessionCookie
-// @Success 200 {object} main.SwaggerEnvelope
+// @Success 200 {object} main.SwaggerEnvelope{data=model.RedemptionLookupResp}
 // @Failure 400 {object} main.SwaggerEnvelope
 // @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 403 {object} main.SwaggerEnvelope
 // @Failure 500 {object} main.SwaggerEnvelope
 // @Router /api/personal/redeem/lookup [post]
 func (h *Handler) lookupCode(w http.ResponseWriter, r *http.Request) {
@@ -238,11 +248,12 @@ func (h *Handler) lookupCode(w http.ResponseWriter, r *http.Request) {
 // @Tags personal
 // @Accept json
 // @Produce json
-// @Param body body main.SwaggerRequest false "JSON request payload"
+// @Param body body model.RedemptionCodeReq true "request payload"
 // @Security SessionCookie
-// @Success 200 {object} main.SwaggerEnvelope
+// @Success 200 {object} main.SwaggerEnvelope{data=model.RedemptionResp}
 // @Failure 400 {object} main.SwaggerEnvelope
 // @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 403 {object} main.SwaggerEnvelope
 // @Failure 500 {object} main.SwaggerEnvelope
 // @Router /api/personal/redeem [post]
 func (h *Handler) redeemCode(w http.ResponseWriter, r *http.Request) {

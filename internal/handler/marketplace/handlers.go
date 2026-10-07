@@ -40,7 +40,11 @@ func RegisterRoutes(mux chi.Router, handler *Handler) error {
 // @ID marketplace_apis_route_get
 // @Tags marketplace
 // @Produce json
-// @Success 200 {object} main.SwaggerEnvelope
+// @Success 200 {object} main.SwaggerEnvelope{data=[]model.MarketplaceAPIResp}
+// @Param page query integer false "page"
+// @Param limit query integer false "limit"
+// @Param search query string false "search"
+// @Param category query string false "category"
 // @Failure 400 {object} main.SwaggerEnvelope
 // @Failure 401 {object} main.SwaggerEnvelope
 // @Failure 500 {object} main.SwaggerEnvelope
@@ -69,7 +73,7 @@ func (h *Handler) listAPIs(w http.ResponseWriter, r *http.Request) {
 // @Tags marketplace
 // @Produce json
 // @Param id path string true "id"
-// @Success 200 {object} main.SwaggerEnvelope
+// @Success 200 {object} main.SwaggerEnvelope{data=model.MarketplaceAPIResp}
 // @Failure 400 {object} main.SwaggerEnvelope
 // @Failure 401 {object} main.SwaggerEnvelope
 // @Failure 500 {object} main.SwaggerEnvelope
@@ -89,7 +93,7 @@ func (h *Handler) getAPI(w http.ResponseWriter, r *http.Request) {
 // @ID marketplace_stats_route_get
 // @Tags marketplace
 // @Produce json
-// @Success 200 {object} main.SwaggerEnvelope
+// @Success 200 {object} main.SwaggerEnvelope{data=map[string]int64}
 // @Failure 400 {object} main.SwaggerEnvelope
 // @Failure 401 {object} main.SwaggerEnvelope
 // @Failure 500 {object} main.SwaggerEnvelope
@@ -109,7 +113,11 @@ func (h *Handler) apiStats(w http.ResponseWriter, r *http.Request) {
 // @ID marketplace_mcp_services_route_get
 // @Tags marketplace
 // @Produce json
-// @Success 200 {object} main.SwaggerEnvelope
+// @Success 200 {object} main.SwaggerEnvelope{data=[]model.MarketplaceMCPResp}
+// @Param page query integer false "page"
+// @Param limit query integer false "limit"
+// @Param category query string false "category"
+// @Param type query string false "type"
 // @Failure 400 {object} main.SwaggerEnvelope
 // @Failure 401 {object} main.SwaggerEnvelope
 // @Failure 500 {object} main.SwaggerEnvelope
@@ -138,7 +146,7 @@ func (h *Handler) listMCP(w http.ResponseWriter, r *http.Request) {
 // @Tags marketplace
 // @Produce json
 // @Param id path string true "id"
-// @Success 200 {object} main.SwaggerEnvelope
+// @Success 200 {object} main.SwaggerEnvelope{data=model.MarketplaceMCPResp}
 // @Failure 404 {object} main.SwaggerEnvelope
 // @Failure 500 {object} main.SwaggerEnvelope
 // @Router /api/marketplace/mcp-services/{id} [get]
@@ -158,7 +166,7 @@ func (h *Handler) getMCP(w http.ResponseWriter, r *http.Request) {
 // @Tags marketplace
 // @Produce json
 // @Param id path string true "id"
-// @Success 200 {object} main.SwaggerEnvelope
+// @Success 200 {object} main.SwaggerEnvelope{data=[]model.MarketplaceMCPTool}
 // @Failure 404 {object} main.SwaggerEnvelope
 // @Failure 502 {object} main.SwaggerEnvelope
 // @Router /api/marketplace/mcp-services/{id}/tools [get]
@@ -177,7 +185,7 @@ func (h *Handler) listMCPTools(w http.ResponseWriter, r *http.Request) {
 // @ID marketplace_mcp_stats_route_get
 // @Tags marketplace
 // @Produce json
-// @Success 200 {object} main.SwaggerEnvelope
+// @Success 200 {object} main.SwaggerEnvelope{data=map[string]int64}
 // @Failure 400 {object} main.SwaggerEnvelope
 // @Failure 401 {object} main.SwaggerEnvelope
 // @Failure 500 {object} main.SwaggerEnvelope

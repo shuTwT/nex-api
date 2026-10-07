@@ -15,10 +15,13 @@ import (
 // @ID subscription_plans_route_get
 // @Tags subscription-plans
 // @Produce json
+// @Param page query integer false "page"
+// @Param limit query integer false "limit"
 // @Security SessionCookie
-// @Success 200 {object} main.SwaggerEnvelope
+// @Success 200 {object} main.SwaggerEnvelope{data=[]model.SubscriptionPlanResp}
 // @Failure 400 {object} main.SwaggerEnvelope
 // @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 403 {object} main.SwaggerEnvelope
 // @Failure 500 {object} main.SwaggerEnvelope
 // @Router /api/subscription-plans [get]
 func (h *Handler) listPlans(w http.ResponseWriter, r *http.Request) {
@@ -43,9 +46,10 @@ func (h *Handler) listPlans(w http.ResponseWriter, r *http.Request) {
 // @Produce json
 // @Param id path string true "id"
 // @Security SessionCookie
-// @Success 200 {object} main.SwaggerEnvelope
+// @Success 200 {object} main.SwaggerEnvelope{data=model.SubscriptionPlanResp}
 // @Failure 400 {object} main.SwaggerEnvelope
 // @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 403 {object} main.SwaggerEnvelope
 // @Failure 500 {object} main.SwaggerEnvelope
 // @Router /api/subscription-plans/{id} [get]
 func (h *Handler) getPlan(w http.ResponseWriter, r *http.Request) {
@@ -64,11 +68,12 @@ func (h *Handler) getPlan(w http.ResponseWriter, r *http.Request) {
 // @Tags subscription-plans
 // @Accept json
 // @Produce json
-// @Param body body main.SwaggerRequest false "JSON request payload"
+// @Param body body model.SubscriptionPlanCreateReq true "request payload"
 // @Security SessionCookie
-// @Success 200 {object} main.SwaggerEnvelope
+// @Success 200 {object} main.SwaggerEnvelope{data=model.SubscriptionPlanResp}
 // @Failure 400 {object} main.SwaggerEnvelope
 // @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 403 {object} main.SwaggerEnvelope
 // @Failure 500 {object} main.SwaggerEnvelope
 // @Router /api/subscription-plans [post]
 func (h *Handler) createPlan(w http.ResponseWriter, r *http.Request) {
@@ -117,11 +122,12 @@ func (h *Handler) createPlan(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce json
 // @Param id path string true "id"
-// @Param body body main.SwaggerRequest false "JSON request payload"
+// @Param body body membership.PlanUpdateInput true "request payload"
 // @Security SessionCookie
-// @Success 200 {object} main.SwaggerEnvelope
+// @Success 200 {object} main.SwaggerEnvelope{data=model.SubscriptionPlanResp}
 // @Failure 400 {object} main.SwaggerEnvelope
 // @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 403 {object} main.SwaggerEnvelope
 // @Failure 500 {object} main.SwaggerEnvelope
 // @Router /api/subscription-plans/{id} [put]
 func (h *Handler) updatePlan(w http.ResponseWriter, r *http.Request) {
@@ -151,9 +157,10 @@ func (h *Handler) updatePlan(w http.ResponseWriter, r *http.Request) {
 // @Produce json
 // @Param id path string true "id"
 // @Security SessionCookie
-// @Success 200 {object} main.SwaggerEnvelope
+// @Success 200 {object} main.SwaggerEnvelope{data=map[string]string}
 // @Failure 400 {object} main.SwaggerEnvelope
 // @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 403 {object} main.SwaggerEnvelope
 // @Failure 500 {object} main.SwaggerEnvelope
 // @Router /api/subscription-plans/{id} [delete]
 func (h *Handler) deletePlan(w http.ResponseWriter, r *http.Request) {

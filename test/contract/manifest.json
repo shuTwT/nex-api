@@ -519,30 +519,6 @@
       "id": "payment/[outTradeNo]/status"
     },
     {
-      "path": "/api/payment/business/recharge",
-      "handlers": [
-        {
-          "method": "POST",
-          "auth": "none",
-          "mediaType": "application/json",
-          "responseClass": "json"
-        }
-      ],
-      "id": "payment/business/recharge"
-    },
-    {
-      "path": "/api/payment/business/subscription",
-      "handlers": [
-        {
-          "method": "POST",
-          "auth": "none",
-          "mediaType": "application/json",
-          "responseClass": "json"
-        }
-      ],
-      "id": "payment/business/subscription"
-    },
-    {
       "path": "/api/payment/callback/alipay",
       "handlers": [
         {

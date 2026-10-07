@@ -14,7 +14,13 @@ import (
 // @Tags mcp-services
 // @Produce json
 // @Security SessionCookie
-// @Success 200 {object} main.SwaggerEnvelope
+// @Param page query integer false "page"
+// @Param limit query integer false "limit"
+// @Param search query string false "search"
+// @Param type query string false "type"
+// @Param category query string false "category"
+// @Param status query string false "status"
+// @Success 200 {object} main.SwaggerEnvelope{data=[]model.CatalogMCPDTO}
 // @Failure 400 {object} main.SwaggerEnvelope
 // @Failure 401 {object} main.SwaggerEnvelope
 // @Failure 500 {object} main.SwaggerEnvelope
@@ -44,9 +50,9 @@ func (h *Handler) listMCP(w http.ResponseWriter, r *http.Request) {
 // @Tags mcp-services
 // @Accept json
 // @Produce json
-// @Param body body main.SwaggerRequest false "JSON request payload"
+// @Param body body model.CatalogMCPCreateReq true "request payload"
 // @Security SessionCookie
-// @Success 200 {object} main.SwaggerEnvelope
+// @Success 200 {object} main.SwaggerEnvelope{data=model.CatalogMCPDTO}
 // @Failure 400 {object} main.SwaggerEnvelope
 // @Failure 401 {object} main.SwaggerEnvelope
 // @Failure 500 {object} main.SwaggerEnvelope
@@ -73,7 +79,7 @@ func (h *Handler) createMCP(w http.ResponseWriter, r *http.Request) {
 // @Produce json
 // @Param id path string true "id"
 // @Security SessionCookie
-// @Success 200 {object} main.SwaggerEnvelope
+// @Success 200 {object} main.SwaggerEnvelope{data=model.CatalogMCPDTO}
 // @Failure 400 {object} main.SwaggerEnvelope
 // @Failure 401 {object} main.SwaggerEnvelope
 // @Failure 403 {object} main.SwaggerEnvelope
@@ -96,9 +102,9 @@ func (h *Handler) getMCP(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce json
 // @Param id path string true "id"
-// @Param body body main.SwaggerRequest false "JSON request payload"
+// @Param body body model.CatalogMCPUpdateReq true "request payload"
 // @Security SessionCookie
-// @Success 200 {object} main.SwaggerEnvelope
+// @Success 200 {object} main.SwaggerEnvelope{data=model.CatalogMCPDTO}
 // @Failure 400 {object} main.SwaggerEnvelope
 // @Failure 401 {object} main.SwaggerEnvelope
 // @Failure 500 {object} main.SwaggerEnvelope
@@ -125,7 +131,7 @@ func (h *Handler) updateMCP(w http.ResponseWriter, r *http.Request) {
 // @Produce json
 // @Param id path string true "id"
 // @Security SessionCookie
-// @Success 200 {object} main.SwaggerEnvelope
+// @Success 200 {object} main.SwaggerEnvelope{data=map[string]string}
 // @Failure 400 {object} main.SwaggerEnvelope
 // @Failure 401 {object} main.SwaggerEnvelope
 // @Failure 500 {object} main.SwaggerEnvelope
@@ -146,9 +152,8 @@ func (h *Handler) deleteMCP(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce json
 // @Param id path string true "id"
-// @Param body body main.SwaggerRequest false "JSON request payload"
 // @Security SessionCookie
-// @Success 200 {object} main.SwaggerEnvelope
+// @Success 200 {object} main.SwaggerEnvelope{data=model.CatalogMCPDTO}
 // @Failure 400 {object} main.SwaggerEnvelope
 // @Failure 401 {object} main.SwaggerEnvelope
 // @Failure 500 {object} main.SwaggerEnvelope
@@ -169,7 +174,7 @@ func (h *Handler) toggleMCP(w http.ResponseWriter, r *http.Request) {
 // @Tags mcp-services
 // @Produce json
 // @Security SessionCookie
-// @Success 200 {object} main.SwaggerEnvelope
+// @Success 200 {object} main.SwaggerEnvelope{data=catalog.MCPStats}
 // @Failure 400 {object} main.SwaggerEnvelope
 // @Failure 401 {object} main.SwaggerEnvelope
 // @Failure 500 {object} main.SwaggerEnvelope

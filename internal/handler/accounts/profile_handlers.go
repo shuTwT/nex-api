@@ -14,7 +14,7 @@ import (
 // @Tags personal
 // @Produce json
 // @Security SessionCookie
-// @Success 200 {object} main.SwaggerEnvelope
+// @Success 200 {object} main.SwaggerEnvelope{data=model.ProfileResp}
 // @Failure 400 {object} main.SwaggerEnvelope
 // @Failure 401 {object} main.SwaggerEnvelope
 // @Failure 500 {object} main.SwaggerEnvelope
@@ -42,7 +42,7 @@ func (h *Handler) getProfile(w http.ResponseWriter, r *http.Request) {
 // @Produce json
 // @Param body body main.SwaggerRequest true "JSON request payload"
 // @Security SessionCookie
-// @Success 200 {object} main.SwaggerEnvelope
+// @Success 200 {object} main.SwaggerEnvelope{data=model.ProfileResp}
 // @Failure 400 {object} main.SwaggerEnvelope
 // @Failure 401 {object} main.SwaggerEnvelope
 // @Failure 403 {object} main.SwaggerEnvelope
@@ -76,7 +76,7 @@ func (h *Handler) updateProfile(w http.ResponseWriter, r *http.Request) {
 // @Produce json
 // @Param body body main.SwaggerRequest true "JSON request payload"
 // @Security SessionCookie
-// @Success 200 {object} main.SwaggerEnvelope
+// @Success 200 {object} main.SwaggerEnvelope{data=map[string]string}
 // @Failure 400 {object} main.SwaggerEnvelope
 // @Failure 401 {object} main.SwaggerEnvelope
 // @Failure 403 {object} main.SwaggerEnvelope

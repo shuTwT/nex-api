@@ -77,10 +77,10 @@ func clientIP(r *http.Request) string {
 // @ID payment_methods_route_get
 // @Tags payment
 // @Produce json
-// @Security SessionCookie
-// @Success 200 {object} main.SwaggerEnvelope
+// @Success 200 {object} main.SwaggerEnvelope{data=[]string}
 // @Failure 400 {object} main.SwaggerEnvelope
 // @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 403 {object} main.SwaggerEnvelope
 // @Failure 500 {object} main.SwaggerEnvelope
 // @Router /api/payment/methods [get]
 func (h *Handler) methods(w http.ResponseWriter, r *http.Request) {
@@ -99,11 +99,12 @@ func (h *Handler) methods(w http.ResponseWriter, r *http.Request) {
 // @Tags payment
 // @Accept json
 // @Produce json
-// @Param body body main.SwaggerRequest false "JSON request payload"
+// @Param body body model.SubscriptionPaymentCreateReq true "request payload"
 // @Security SessionCookie
-// @Success 200 {object} main.SwaggerEnvelope
+// @Success 200 {object} main.SwaggerEnvelope{data=model.PaymentCreateResp}
 // @Failure 400 {object} main.SwaggerEnvelope
 // @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 403 {object} main.SwaggerEnvelope
 // @Failure 500 {object} main.SwaggerEnvelope
 // @Router /api/payment/methods [post]
 func (h *Handler) createSubscription(w http.ResponseWriter, r *http.Request) {
@@ -129,14 +130,15 @@ func (h *Handler) createSubscription(w http.ResponseWriter, r *http.Request) {
 //
 // @Summary POST /api/recharge
 // @ID recharge_route_post
-// @Tags recharge
+// @Tags payment
 // @Accept json
 // @Produce json
-// @Param body body main.SwaggerRequest false "JSON request payload"
+// @Param body body model.RechargePaymentCreateReq true "request payload"
 // @Security SessionCookie
-// @Success 200 {object} main.SwaggerEnvelope
+// @Success 200 {object} main.SwaggerEnvelope{data=model.PaymentCreateResp}
 // @Failure 400 {object} main.SwaggerEnvelope
 // @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 403 {object} main.SwaggerEnvelope
 // @Failure 500 {object} main.SwaggerEnvelope
 // @Router /api/recharge [post]
 func (h *Handler) recharge(w http.ResponseWriter, r *http.Request) {
@@ -165,9 +167,10 @@ func (h *Handler) recharge(w http.ResponseWriter, r *http.Request) {
 // @Tags payment
 // @Produce json
 // @Security SessionCookie
-// @Success 200 {object} main.SwaggerEnvelope
+// @Success 200 {object} main.SwaggerEnvelope{data=[]model.PaymentResp}
 // @Failure 400 {object} main.SwaggerEnvelope
 // @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 403 {object} main.SwaggerEnvelope
 // @Failure 500 {object} main.SwaggerEnvelope
 // @Router /api/payment/user [get]
 func (h *Handler) history(w http.ResponseWriter, r *http.Request) {
@@ -190,10 +193,10 @@ func (h *Handler) history(w http.ResponseWriter, r *http.Request) {
 // @ID payment_settings_route_get
 // @Tags payment
 // @Produce json
-// @Security SessionCookie
-// @Success 200 {object} main.SwaggerEnvelope
+// @Success 200 {object} main.SwaggerEnvelope{data=model.PaymentSettingsResp}
 // @Failure 400 {object} main.SwaggerEnvelope
 // @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 403 {object} main.SwaggerEnvelope
 // @Failure 500 {object} main.SwaggerEnvelope
 // @Router /api/payment/settings [get]
 func (h *Handler) settings(w http.ResponseWriter, r *http.Request) {
@@ -213,9 +216,10 @@ func (h *Handler) settings(w http.ResponseWriter, r *http.Request) {
 // @Produce json
 // @Param outTradeNo path string true "outTradeNo"
 // @Security SessionCookie
-// @Success 200 {object} main.SwaggerEnvelope
+// @Success 200 {object} main.SwaggerEnvelope{data=model.PaymentResp}
 // @Failure 400 {object} main.SwaggerEnvelope
 // @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 403 {object} main.SwaggerEnvelope
 // @Failure 500 {object} main.SwaggerEnvelope
 // @Router /api/payment/{outTradeNo} [get]
 func (h *Handler) get(w http.ResponseWriter, r *http.Request) {
@@ -232,9 +236,10 @@ func (h *Handler) get(w http.ResponseWriter, r *http.Request) {
 // @Produce json
 // @Param outTradeNo path string true "outTradeNo"
 // @Security SessionCookie
-// @Success 200 {object} main.SwaggerEnvelope
+// @Success 200 {object} main.SwaggerEnvelope{data=model.PaymentResp}
 // @Failure 400 {object} main.SwaggerEnvelope
 // @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 403 {object} main.SwaggerEnvelope
 // @Failure 500 {object} main.SwaggerEnvelope
 // @Router /api/payment/{outTradeNo}/status [get]
 func (h *Handler) status(w http.ResponseWriter, r *http.Request) {
@@ -267,14 +272,13 @@ func (h *Handler) respondOwnedPayment(w http.ResponseWriter, r *http.Request, lo
 // @Summary POST /api/payment/{outTradeNo}/cancel
 // @ID payment_outtradeno_cancel_route_post
 // @Tags payment
-// @Accept json
 // @Produce json
 // @Param outTradeNo path string true "outTradeNo"
-// @Param body body main.SwaggerRequest false "JSON request payload"
 // @Security SessionCookie
-// @Success 200 {object} main.SwaggerEnvelope
+// @Success 200 {object} main.SwaggerEnvelope{data=map[string]string}
 // @Failure 400 {object} main.SwaggerEnvelope
 // @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 403 {object} main.SwaggerEnvelope
 // @Failure 500 {object} main.SwaggerEnvelope
 // @Router /api/payment/{outTradeNo}/cancel [post]
 func (h *Handler) cancel(w http.ResponseWriter, r *http.Request) {

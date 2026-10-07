@@ -71,7 +71,7 @@ func RegisterServiceRoutes(r chi.Router, plans *servicemembership.PlanService, m
 // @ID membership_plans_route_get
 // @Tags membership
 // @Produce json
-// @Success 200 {object} main.SwaggerEnvelope
+// @Success 200 {object} main.SwaggerEnvelope{data=[]model.SubscriptionPlanResp}
 // @Failure 400 {object} main.SwaggerEnvelope
 // @Failure 401 {object} main.SwaggerEnvelope
 // @Failure 500 {object} main.SwaggerEnvelope
@@ -92,7 +92,7 @@ func (h *Handler) membershipPlans(w http.ResponseWriter, r *http.Request) {
 // @Tags membership
 // @Produce json
 // @Security SessionCookie
-// @Success 200 {object} main.SwaggerEnvelope
+// @Success 200 {object} main.SwaggerEnvelope{data=model.SubscriptionResp}
 // @Failure 400 {object} main.SwaggerEnvelope
 // @Failure 401 {object} main.SwaggerEnvelope
 // @Failure 500 {object} main.SwaggerEnvelope
@@ -118,9 +118,9 @@ func (h *Handler) currentMembership(w http.ResponseWriter, r *http.Request) {
 // @Tags membership
 // @Accept json
 // @Produce json
-// @Param body body main.SwaggerRequest false "JSON request payload"
+// @Param body body model.MembershipSubscribeReq true "request payload"
 // @Security SessionCookie
-// @Success 200 {object} main.SwaggerEnvelope
+// @Success 200 {object} main.SwaggerEnvelope{data=model.SubscriptionResp}
 // @Failure 400 {object} main.SwaggerEnvelope
 // @Failure 401 {object} main.SwaggerEnvelope
 // @Failure 500 {object} main.SwaggerEnvelope

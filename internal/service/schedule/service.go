@@ -247,11 +247,13 @@ func (s *Service) validateInput(id string, input UpsertInput) (infraschedule.Def
 }
 
 func (s *Service) view(item *ent.ScheduledJob) JobView {
+	runtime := s.manager.Runtime(item.ID)
 	view := JobView{
 		ID: item.ID, Name: item.Name, TaskKey: item.TaskKey, ScheduleType: item.ScheduleType,
 		Expression: item.Expression, Enabled: item.Enabled, Description: item.Description,
 		LastStatus: item.LastStatus, LastError: item.LastError,
-		CreatedAt: item.CreatedAt.UTC(), UpdatedAt: item.UpdatedAt.UTC(), Runtime: s.manager.Runtime(item.ID),
+		CreatedAt: item.CreatedAt.UTC(), UpdatedAt: item.UpdatedAt.UTC(),
+		Runtime: model.ScheduleRuntimeInfo{Scheduled: runtime.Scheduled, Running: runtime.Running, NextRun: runtime.NextRun},
 	}
 	if !item.LastRunAt.IsZero() {
 		lastRunAt := item.LastRunAt.UTC()

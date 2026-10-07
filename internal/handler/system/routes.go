@@ -54,7 +54,7 @@ func (h *Handler) registerRoutes(r chi.Router) {
 // @ID system_initialized_route_get
 // @Tags system
 // @Produce json
-// @Success 200 {object} main.SwaggerEnvelope
+// @Success 200 {object} main.SwaggerEnvelope{data=bool}
 // @Failure 400 {object} main.SwaggerEnvelope
 // @Failure 401 {object} main.SwaggerEnvelope
 // @Failure 500 {object} main.SwaggerEnvelope
@@ -78,8 +78,8 @@ func (h *Handler) initialized(w http.ResponseWriter, r *http.Request) {
 // @Tags system
 // @Accept json
 // @Produce json
-// @Param body body main.SwaggerRequest false "JSON request payload"
-// @Success 200 {object} main.SwaggerEnvelope
+// @Param body body model.SystemInitializeReq true "request payload"
+// @Success 200 {object} main.SwaggerEnvelope{data=model.SystemInitializeResp}
 // @Failure 400 {object} main.SwaggerEnvelope
 // @Failure 401 {object} main.SwaggerEnvelope
 // @Failure 500 {object} main.SwaggerEnvelope

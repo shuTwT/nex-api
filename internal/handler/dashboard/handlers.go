@@ -41,7 +41,7 @@ func RegisterRoutes(mux chi.Router, handler *Handler) error {
 // @Tags dashboard
 // @Produce json
 // @Security SessionCookie
-// @Success 200 {object} main.SwaggerEnvelope
+// @Success 200 {object} main.SwaggerEnvelope{data=map[string]int64}
 // @Failure 400 {object} main.SwaggerEnvelope
 // @Failure 401 {object} main.SwaggerEnvelope
 // @Failure 500 {object} main.SwaggerEnvelope
@@ -66,7 +66,7 @@ func (h *Handler) dashboardStats(w http.ResponseWriter, r *http.Request) {
 // @Tags dashboard
 // @Produce json
 // @Security SessionCookie
-// @Success 200 {object} main.SwaggerEnvelope
+// @Success 200 {object} main.SwaggerEnvelope{data=[]model.DashboardActivityResp}
 // @Failure 400 {object} main.SwaggerEnvelope
 // @Failure 401 {object} main.SwaggerEnvelope
 // @Failure 500 {object} main.SwaggerEnvelope
@@ -91,7 +91,7 @@ func (h *Handler) activity(w http.ResponseWriter, r *http.Request) {
 // @Tags dashboard
 // @Produce json
 // @Security SessionCookie
-// @Success 200 {object} main.SwaggerEnvelope
+// @Success 200 {object} main.SwaggerEnvelope{data=[]model.DashboardTopAPIResp}
 // @Failure 400 {object} main.SwaggerEnvelope
 // @Failure 401 {object} main.SwaggerEnvelope
 // @Failure 500 {object} main.SwaggerEnvelope
@@ -116,7 +116,7 @@ func (h *Handler) topAPIs(w http.ResponseWriter, r *http.Request) {
 // @Tags dashboard
 // @Produce json
 // @Security SessionCookie
-// @Success 200 {object} main.SwaggerEnvelope
+// @Success 200 {object} main.SwaggerEnvelope{data=map[string]any}
 // @Failure 400 {object} main.SwaggerEnvelope
 // @Failure 401 {object} main.SwaggerEnvelope
 // @Failure 500 {object} main.SwaggerEnvelope
@@ -141,7 +141,7 @@ func (h *Handler) usageTrend(w http.ResponseWriter, r *http.Request) {
 // @Tags usage
 // @Produce json
 // @Security SessionCookie
-// @Success 200 {object} main.SwaggerEnvelope
+// @Success 200 {object} main.SwaggerEnvelope{data=map[string]any}
 // @Failure 400 {object} main.SwaggerEnvelope
 // @Failure 401 {object} main.SwaggerEnvelope
 // @Failure 500 {object} main.SwaggerEnvelope
@@ -166,6 +166,7 @@ func (h *Handler) usage(w http.ResponseWriter, r *http.Request) {
 // @Tags stats
 // @Produce json
 // @Security SessionCookie
+// @Param type query string false "type"
 // @Success 200 {object} main.SwaggerEnvelope
 // @Failure 400 {object} main.SwaggerEnvelope
 // @Failure 401 {object} main.SwaggerEnvelope
@@ -190,8 +191,9 @@ func (h *Handler) globalStats(w http.ResponseWriter, r *http.Request) {
 // @Tags stats
 // @Produce json
 // @Param alias path string true "alias"
+// @Param user query string false "user"
 // @Security SessionCookie
-// @Success 200 {object} main.SwaggerEnvelope
+// @Success 200 {object} main.SwaggerEnvelope{data=map[string]int64}
 // @Failure 400 {object} main.SwaggerEnvelope
 // @Failure 401 {object} main.SwaggerEnvelope
 // @Failure 500 {object} main.SwaggerEnvelope

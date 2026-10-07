@@ -23,14 +23,14 @@ type PlanCreateInput struct {
 }
 
 type PlanUpdateInput struct {
-	Title            *string
-	Price            *float64
-	TotalCredits     *int
-	SortOrder        *int
-	ValidityDuration *int
-	ValidityUnit     *string
-	CreditResetCycle *string
-	IsActive         *bool
+	Title            *string  `json:"title"`
+	Price            *float64 `json:"price"`
+	TotalCredits     *int     `json:"totalCredits"`
+	SortOrder        *int     `json:"sortOrder"`
+	ValidityDuration *int     `json:"validityDuration"`
+	ValidityUnit     *string  `json:"validityUnit"`
+	CreditResetCycle *string  `json:"creditResetCycle"`
+	IsActive         *bool    `json:"isActive"`
 }
 
 type PlanListFilter struct {
