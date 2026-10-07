@@ -218,7 +218,6 @@ export default function RedemptionCodesPage() {
       </div>
 
       <Card>
-        <div className="p-4">
           <div className="flex flex-wrap items-end gap-3">
             <div className="relative flex-1 min-w-[200px]">
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
@@ -247,11 +246,9 @@ export default function RedemptionCodesPage() {
               重置
             </Button>
           </div>
-        </div>
       </Card>
 
       <Card>
-        <div className="p-4">
           <div className="flex items-center justify-between">
             <Typography.Title level={5}>兑换码列表</Typography.Title>
             <div className="flex items-center gap-2">
@@ -277,8 +274,7 @@ export default function RedemptionCodesPage() {
               </Button>
             </div>
           </div>
-        </div>
-        <div className="px-4 pb-4">
+
           {isLoading ? (
             <div className="flex items-center justify-center py-12">
               <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-600 border-t-transparent" />
@@ -483,7 +479,6 @@ export default function RedemptionCodesPage() {
               />
             </>
           )}
-        </div>
       </Card>
 
       <Modal open={showForm} title="生成兑换码" onCancel={() => setShowForm(false)} destroyOnHidden footer={[<Button key="cancel" onClick={() => setShowForm(false)}>取消</Button>, <Button key="submit" type="primary" htmlType="submit" form="redemption-code-form">生成</Button>]}>

@@ -100,7 +100,7 @@ export function ApiForm({
       layout="vertical"
       onFinish={handleFinish}
       disabled={isLoading}
-      className="space-y-4"
+      className="flex min-h-0 flex-1 flex-col space-y-4"
       initialValues={{
         name: apiItem?.name ?? "",
         alias: apiItem?.alias ?? "",
@@ -117,6 +117,7 @@ export function ApiForm({
     >
       <Tabs
         defaultActiveKey="basic"
+        className="min-h-0 [&_.ant-tabs-body-holder]:overflow-y-auto [&_.ant-tabs-body-holder]:pr-2"
         items={[
           {
             key: "basic",

@@ -9,6 +9,34 @@ import (
 	handlerutils "github.com/shuTwT/nex-api/internal/pkg/utils"
 )
 
+// wechatCallback handles GET /api/payment/callback/wechat.
+//
+// @Summary GET /api/payment/callback/wechat
+// @ID payment_callback_wechat_route_get
+// @Tags payment
+// @Produce json
+// @Param body body main.SwaggerRequest false "Gateway notification parameters"
+// @Success 200 {object} main.SwaggerEnvelope
+// @Failure 400 {object} main.SwaggerEnvelope
+// @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 403 {object} main.SwaggerEnvelope
+// @Failure 500 {object} main.SwaggerEnvelope
+// @Router /api/payment/callback/wechat [get]
+func swaggerPaymentCallbackWechatGet() {}
+
+// wechatCallback handles POST /api/payment/callback/wechat.
+//
+// @Summary POST /api/payment/callback/wechat
+// @ID payment_callback_wechat_route_post
+// @Tags payment
+// @Accept json
+// @Produce json
+// @Param body body main.SwaggerRequest false "JSON request payload"
+// @Success 200 {object} main.SwaggerEnvelope
+// @Failure 400 {object} main.SwaggerEnvelope
+// @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 500 {object} main.SwaggerEnvelope
+// @Router /api/payment/callback/wechat [post]
 func (h *Handler) wechatCallback(w http.ResponseWriter, r *http.Request) {
 	body, err := io.ReadAll(io.LimitReader(r.Body, 1<<20))
 	if err != nil {
@@ -25,6 +53,34 @@ func (h *Handler) wechatCallback(w http.ResponseWriter, r *http.Request) {
 	writeRawJSON(w, http.StatusOK, `{"code":"SUCCESS","message":"成功"}`)
 }
 
+// alipayCallback handles GET /api/payment/callback/alipay.
+//
+// @Summary GET /api/payment/callback/alipay
+// @ID payment_callback_alipay_route_get
+// @Tags payment
+// @Produce json
+// @Param body body main.SwaggerRequest false "Gateway notification parameters"
+// @Success 200 {object} main.SwaggerEnvelope
+// @Failure 400 {object} main.SwaggerEnvelope
+// @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 403 {object} main.SwaggerEnvelope
+// @Failure 500 {object} main.SwaggerEnvelope
+// @Router /api/payment/callback/alipay [get]
+func swaggerPaymentCallbackAlipayGet() {}
+
+// alipayCallback handles POST /api/payment/callback/alipay.
+//
+// @Summary POST /api/payment/callback/alipay
+// @ID payment_callback_alipay_route_post
+// @Tags payment
+// @Accept json
+// @Produce json
+// @Param body body main.SwaggerRequest false "JSON request payload"
+// @Success 200 {object} main.SwaggerEnvelope
+// @Failure 400 {object} main.SwaggerEnvelope
+// @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 500 {object} main.SwaggerEnvelope
+// @Router /api/payment/callback/alipay [post]
 func (h *Handler) alipayCallback(w http.ResponseWriter, r *http.Request) {
 	if err := r.ParseForm(); err != nil {
 		h.callbackError(w, r, err)
@@ -59,6 +115,19 @@ func callbackForm(r *http.Request, body []byte) map[string][]string {
 	return form
 }
 
+// mockCallback handles POST /api/payment/callback/mock.
+//
+// @Summary POST /api/payment/callback/mock
+// @ID payment_callback_mock_route_post
+// @Tags payment
+// @Accept json
+// @Produce json
+// @Param body body main.SwaggerRequest false "JSON request payload"
+// @Success 200 {object} main.SwaggerEnvelope
+// @Failure 400 {object} main.SwaggerEnvelope
+// @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 500 {object} main.SwaggerEnvelope
+// @Router /api/payment/callback/mock [post]
 func (h *Handler) mockCallback(w http.ResponseWriter, r *http.Request) {
 	body, err := io.ReadAll(io.LimitReader(r.Body, 1<<20))
 	if err != nil {

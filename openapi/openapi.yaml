@@ -44,7 +44,7 @@ paths:
     post:
       operationId: advertisements_route_post
       requestBody:
-        $ref: "#/components/requestBodies/main.SwaggerRequest"
+        $ref: "#/components/requestBodies/main.SwaggerRequest2"
       responses:
         "200":
           description: OK
@@ -164,7 +164,7 @@ paths:
           schema:
             type: string
       requestBody:
-        $ref: "#/components/requestBodies/main.SwaggerRequest"
+        $ref: "#/components/requestBodies/main.SwaggerRequest2"
       responses:
         "200":
           description: OK
@@ -206,7 +206,7 @@ paths:
           schema:
             type: string
       requestBody:
-        $ref: "#/components/requestBodies/main.SwaggerRequest"
+        $ref: "#/components/requestBodies/main.SwaggerRequest2"
       responses:
         "200":
           description: OK
@@ -342,7 +342,7 @@ paths:
     post:
       operationId: apis_route_post
       requestBody:
-        $ref: "#/components/requestBodies/main.SwaggerRequest"
+        $ref: "#/components/requestBodies/main.SwaggerRequest2"
       responses:
         "200":
           description: OK
@@ -462,7 +462,7 @@ paths:
           schema:
             type: string
       requestBody:
-        $ref: "#/components/requestBodies/main.SwaggerRequest"
+        $ref: "#/components/requestBodies/main.SwaggerRequest2"
       responses:
         "200":
           description: OK
@@ -504,7 +504,7 @@ paths:
           schema:
             type: string
       requestBody:
-        $ref: "#/components/requestBodies/main.SwaggerRequest"
+        $ref: "#/components/requestBodies/main.SwaggerRequest2"
       responses:
         "200":
           description: OK
@@ -604,7 +604,7 @@ paths:
     post:
       operationId: audit_logs_route_post
       requestBody:
-        $ref: "#/components/requestBodies/main.SwaggerRequest"
+        $ref: "#/components/requestBodies/main.SwaggerRequest2"
       responses:
         "200":
           description: OK
@@ -664,6 +664,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/main.SwaggerEnvelope"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/main.SwaggerEnvelope"
         "500":
           description: Internal Server Error
           content:
@@ -674,7 +680,52 @@ paths:
         - SessionCookie: []
       summary: DELETE /api/audit-logs/{id}
       tags:
-        - audit-logs
+        - audit
+    get:
+      operationId: audit_logs_id_route_get
+      parameters:
+        - description: id
+          in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/main.SwaggerEnvelope"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/main.SwaggerEnvelope"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/main.SwaggerEnvelope"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/main.SwaggerEnvelope"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/main.SwaggerEnvelope"
+      security:
+        - SessionCookie: []
+      summary: GET /api/audit-logs/{id}
+      tags:
+        - audit
     put:
       operationId: audit_logs_id_route_put
       parameters:
@@ -705,6 +756,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/main.SwaggerEnvelope"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/main.SwaggerEnvelope"
         "500":
           description: Internal Server Error
           content:
@@ -715,7 +772,7 @@ paths:
         - SessionCookie: []
       summary: PUT /api/audit-logs/{id}
       tags:
-        - audit-logs
+        - audit
   /api/audit-logs/export:
     get:
       operationId: audit_logs_export_route_get
@@ -782,9 +839,130 @@ paths:
       summary: GET /api/audit-logs/stats
       tags:
         - audit-logs
-  /api/auth/logout:
+  "/api/auth/{provider}":
+    get:
+      operationId: auth_provider_route_get
+      parameters:
+        - description: provider
+          in: path
+          name: provider
+          required: true
+          schema:
+            type: string
+      responses:
+        "302":
+          description: Found
+          content:
+            application/json:
+              schema:
+                type: string
+      summary: GET /api/auth/{provider}
+      tags:
+        - oauth
+  "/api/auth/{provider}/callback":
+    get:
+      operationId: auth_provider_callback_route_get
+      parameters:
+        - description: provider
+          in: path
+          name: provider
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/main.SwaggerEnvelope"
+      summary: GET /api/auth/{provider}/callback
+      tags:
+        - oauth
+  "/api/auth/callback/{provider}":
+    get:
+      operationId: auth_callback_provider_route_get
+      parameters:
+        - description: provider
+          in: path
+          name: provider
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/main.SwaggerEnvelope"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/main.SwaggerEnvelope"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/main.SwaggerEnvelope"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/main.SwaggerEnvelope"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/main.SwaggerEnvelope"
+      summary: GET /api/auth/callback/{provider}
+      tags:
+        - oauth
+  /api/auth/csrf:
+    get:
+      operationId: auth_csrf_route_get
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/main.SwaggerEnvelope"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/main.SwaggerEnvelope"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/main.SwaggerEnvelope"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/main.SwaggerEnvelope"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/main.SwaggerEnvelope"
+      summary: GET /api/auth/csrf
+      tags:
+        - auth
+  /api/auth/login:
     post:
-      operationId: auth_logout_route_post
+      operationId: auth_login_route_post
       requestBody:
         $ref: "#/components/requestBodies/main.SwaggerRequest"
       responses:
@@ -806,12 +984,57 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/main.SwaggerEnvelope"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/main.SwaggerEnvelope"
         "500":
           description: Internal Server Error
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/main.SwaggerEnvelope"
+      summary: POST /api/auth/login
+      tags:
+        - auth
+  /api/auth/logout:
+    post:
+      operationId: auth_logout_route_post
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/main.SwaggerEnvelope"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/main.SwaggerEnvelope"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/main.SwaggerEnvelope"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/main.SwaggerEnvelope"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/main.SwaggerEnvelope"
+      security:
+        - SessionCookie: []
       summary: POST /api/auth/logout
       tags:
         - auth
@@ -837,6 +1060,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/main.SwaggerEnvelope"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/main.SwaggerEnvelope"
         "500":
           description: Internal Server Error
           content:
@@ -848,6 +1077,87 @@ paths:
       summary: GET /api/auth/me
       tags:
         - auth
+  /api/auth/providers:
+    get:
+      operationId: auth_providers_route_get
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/main.SwaggerEnvelope"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/main.SwaggerEnvelope"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/main.SwaggerEnvelope"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/main.SwaggerEnvelope"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/main.SwaggerEnvelope"
+      summary: GET /api/auth/providers
+      tags:
+        - oauth
+  "/api/auth/signin/{provider}":
+    get:
+      operationId: auth_signin_provider_route_get
+      parameters:
+        - description: provider
+          in: path
+          name: provider
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/main.SwaggerEnvelope"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/main.SwaggerEnvelope"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/main.SwaggerEnvelope"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/main.SwaggerEnvelope"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/main.SwaggerEnvelope"
+      summary: GET /api/auth/signin/{provider}
+      tags:
+        - oauth
   /api/categories:
     get:
       operationId: categories_route_get
@@ -884,7 +1194,7 @@ paths:
     post:
       operationId: categories_route_post
       requestBody:
-        $ref: "#/components/requestBodies/main.SwaggerRequest"
+        $ref: "#/components/requestBodies/main.SwaggerRequest2"
       responses:
         "200":
           description: OK
@@ -955,6 +1265,51 @@ paths:
       summary: DELETE /api/categories/{id}
       tags:
         - categories
+    get:
+      operationId: categories_id_route_get
+      parameters:
+        - description: id
+          in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/main.SwaggerEnvelope"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/main.SwaggerEnvelope"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/main.SwaggerEnvelope"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/main.SwaggerEnvelope"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/main.SwaggerEnvelope"
+      security:
+        - SessionCookie: []
+      summary: GET /api/categories/{id}
+      tags:
+        - catalog
     put:
       operationId: categories_id_route_put
       parameters:
@@ -965,7 +1320,7 @@ paths:
           schema:
             type: string
       requestBody:
-        $ref: "#/components/requestBodies/main.SwaggerRequest"
+        $ref: "#/components/requestBodies/main.SwaggerRequest2"
       responses:
         "200":
           description: OK
@@ -1000,7 +1355,7 @@ paths:
     post:
       operationId: cron_sync_stats_route_post
       requestBody:
-        $ref: "#/components/requestBodies/main.SwaggerRequest"
+        $ref: "#/components/requestBodies/main.SwaggerRequest2"
       responses:
         "200":
           description: OK
@@ -1425,7 +1780,7 @@ paths:
     post:
       operationId: mcp_services_route_post
       requestBody:
-        $ref: "#/components/requestBodies/main.SwaggerRequest"
+        $ref: "#/components/requestBodies/main.SwaggerRequest2"
       responses:
         "200":
           description: OK
@@ -1496,6 +1851,51 @@ paths:
       summary: DELETE /api/mcp-services/{id}
       tags:
         - mcp-services
+    get:
+      operationId: mcp_services_id_route_get
+      parameters:
+        - description: id
+          in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/main.SwaggerEnvelope"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/main.SwaggerEnvelope"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/main.SwaggerEnvelope"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/main.SwaggerEnvelope"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/main.SwaggerEnvelope"
+      security:
+        - SessionCookie: []
+      summary: GET /api/mcp-services/{id}
+      tags:
+        - catalog
     put:
       operationId: mcp_services_id_route_put
       parameters:
@@ -1506,7 +1906,7 @@ paths:
           schema:
             type: string
       requestBody:
-        $ref: "#/components/requestBodies/main.SwaggerRequest"
+        $ref: "#/components/requestBodies/main.SwaggerRequest2"
       responses:
         "200":
           description: OK
@@ -1548,7 +1948,7 @@ paths:
           schema:
             type: string
       requestBody:
-        $ref: "#/components/requestBodies/main.SwaggerRequest"
+        $ref: "#/components/requestBodies/main.SwaggerRequest2"
       responses:
         "200":
           description: OK
@@ -1680,7 +2080,7 @@ paths:
     post:
       operationId: membership_subscribe_route_post
       requestBody:
-        $ref: "#/components/requestBodies/main.SwaggerRequest"
+        $ref: "#/components/requestBodies/main.SwaggerRequest2"
       responses:
         "200":
           description: OK
@@ -1762,7 +2162,7 @@ paths:
           schema:
             type: string
       requestBody:
-        $ref: "#/components/requestBodies/main.SwaggerRequest"
+        $ref: "#/components/requestBodies/main.SwaggerRequest2"
       responses:
         "200":
           description: OK
@@ -1833,77 +2233,49 @@ paths:
       summary: GET /api/payment/{outTradeNo}/status
       tags:
         - payment
-  /api/payment/business/recharge:
-    post:
-      operationId: payment_business_recharge_route_post
-      requestBody:
-        $ref: "#/components/requestBodies/main.SwaggerRequest"
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/main.SwaggerEnvelope"
-        "400":
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/main.SwaggerEnvelope"
-        "401":
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/main.SwaggerEnvelope"
-        "500":
-          description: Internal Server Error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/main.SwaggerEnvelope"
-      summary: POST /api/payment/business/recharge
-      tags:
-        - payment
-  /api/payment/business/subscription:
-    post:
-      operationId: payment_business_subscription_route_post
-      requestBody:
-        $ref: "#/components/requestBodies/main.SwaggerRequest"
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/main.SwaggerEnvelope"
-        "400":
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/main.SwaggerEnvelope"
-        "401":
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/main.SwaggerEnvelope"
-        "500":
-          description: Internal Server Error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/main.SwaggerEnvelope"
-      summary: POST /api/payment/business/subscription
-      tags:
-        - payment
   /api/payment/callback/alipay:
+    get:
+      operationId: payment_callback_alipay_route_get
+      requestBody:
+        $ref: "#/components/requestBodies/main.SwaggerRequest3"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/main.SwaggerEnvelope"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/main.SwaggerEnvelope"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/main.SwaggerEnvelope"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/main.SwaggerEnvelope"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/main.SwaggerEnvelope"
+      summary: GET /api/payment/callback/alipay
+      tags:
+        - payment
     post:
       operationId: payment_callback_alipay_route_post
       requestBody:
-        $ref: "#/components/requestBodies/main.SwaggerRequest"
+        $ref: "#/components/requestBodies/main.SwaggerRequest2"
       responses:
         "200":
           description: OK
@@ -1936,7 +2308,7 @@ paths:
     post:
       operationId: payment_callback_mock_route_post
       requestBody:
-        $ref: "#/components/requestBodies/main.SwaggerRequest"
+        $ref: "#/components/requestBodies/main.SwaggerRequest2"
       responses:
         "200":
           description: OK
@@ -1966,10 +2338,48 @@ paths:
       tags:
         - payment
   /api/payment/callback/wechat:
+    get:
+      operationId: payment_callback_wechat_route_get
+      requestBody:
+        $ref: "#/components/requestBodies/main.SwaggerRequest3"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/main.SwaggerEnvelope"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/main.SwaggerEnvelope"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/main.SwaggerEnvelope"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/main.SwaggerEnvelope"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/main.SwaggerEnvelope"
+      summary: GET /api/payment/callback/wechat
+      tags:
+        - payment
     post:
       operationId: payment_callback_wechat_route_post
       requestBody:
-        $ref: "#/components/requestBodies/main.SwaggerRequest"
+        $ref: "#/components/requestBodies/main.SwaggerRequest2"
       responses:
         "200":
           description: OK
@@ -2034,7 +2444,7 @@ paths:
     post:
       operationId: payment_methods_route_post
       requestBody:
-        $ref: "#/components/requestBodies/main.SwaggerRequest"
+        $ref: "#/components/requestBodies/main.SwaggerRequest2"
       responses:
         "200":
           description: OK
@@ -2164,11 +2574,92 @@ paths:
       summary: GET /api/personal/profile
       tags:
         - personal
+    put:
+      operationId: personal_profile_route_put
+      requestBody:
+        $ref: "#/components/requestBodies/main.SwaggerRequest"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/main.SwaggerEnvelope"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/main.SwaggerEnvelope"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/main.SwaggerEnvelope"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/main.SwaggerEnvelope"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/main.SwaggerEnvelope"
+      security:
+        - SessionCookie: []
+      summary: PUT /api/personal/profile
+      tags:
+        - personal
+  /api/personal/profile/password:
+    put:
+      operationId: personal_profile_password_route_put
+      requestBody:
+        $ref: "#/components/requestBodies/main.SwaggerRequest"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/main.SwaggerEnvelope"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/main.SwaggerEnvelope"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/main.SwaggerEnvelope"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/main.SwaggerEnvelope"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/main.SwaggerEnvelope"
+      security:
+        - SessionCookie: []
+      summary: PUT /api/personal/profile/password
+      tags:
+        - personal
   /api/personal/redeem:
     post:
       operationId: personal_redeem_route_post
       requestBody:
-        $ref: "#/components/requestBodies/main.SwaggerRequest"
+        $ref: "#/components/requestBodies/main.SwaggerRequest2"
       responses:
         "200":
           description: OK
@@ -2203,7 +2694,7 @@ paths:
     post:
       operationId: personal_redeem_lookup_route_post
       requestBody:
-        $ref: "#/components/requestBodies/main.SwaggerRequest"
+        $ref: "#/components/requestBodies/main.SwaggerRequest2"
       responses:
         "200":
           description: OK
@@ -2238,7 +2729,7 @@ paths:
     post:
       operationId: recharge_route_post
       requestBody:
-        $ref: "#/components/requestBodies/main.SwaggerRequest"
+        $ref: "#/components/requestBodies/main.SwaggerRequest2"
       responses:
         "200":
           description: OK
@@ -2305,7 +2796,7 @@ paths:
     post:
       operationId: redemption_codes_route_post
       requestBody:
-        $ref: "#/components/requestBodies/main.SwaggerRequest"
+        $ref: "#/components/requestBodies/main.SwaggerRequest2"
       responses:
         "200":
           description: OK
@@ -2412,7 +2903,7 @@ paths:
     post:
       operationId: redemption_codes_batch_route_post
       requestBody:
-        $ref: "#/components/requestBodies/main.SwaggerRequest"
+        $ref: "#/components/requestBodies/main.SwaggerRequest2"
       responses:
         "200":
           description: OK
@@ -2507,6 +2998,308 @@ paths:
       summary: GET /api/redemption-codes/plans
       tags:
         - redemption-codes
+  /api/scheduled-jobs:
+    get:
+      operationId: scheduled_jobs_route_get
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/main.SwaggerEnvelope"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/main.SwaggerEnvelope"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/main.SwaggerEnvelope"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/main.SwaggerEnvelope"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/main.SwaggerEnvelope"
+      security:
+        - SessionCookie: []
+      summary: GET /api/scheduled-jobs
+      tags:
+        - schedule
+    post:
+      operationId: scheduled_jobs_route_post
+      requestBody:
+        $ref: "#/components/requestBodies/main.SwaggerRequest"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/main.SwaggerEnvelope"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/main.SwaggerEnvelope"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/main.SwaggerEnvelope"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/main.SwaggerEnvelope"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/main.SwaggerEnvelope"
+      security:
+        - SessionCookie: []
+      summary: POST /api/scheduled-jobs
+      tags:
+        - schedule
+  "/api/scheduled-jobs/{id}":
+    delete:
+      operationId: scheduled_jobs_id_route_delete
+      parameters:
+        - description: id
+          in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/main.SwaggerEnvelope"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/main.SwaggerEnvelope"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/main.SwaggerEnvelope"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/main.SwaggerEnvelope"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/main.SwaggerEnvelope"
+      security:
+        - SessionCookie: []
+      summary: DELETE /api/scheduled-jobs/{id}
+      tags:
+        - schedule
+    get:
+      operationId: scheduled_jobs_id_route_get
+      parameters:
+        - description: id
+          in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/main.SwaggerEnvelope"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/main.SwaggerEnvelope"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/main.SwaggerEnvelope"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/main.SwaggerEnvelope"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/main.SwaggerEnvelope"
+      security:
+        - SessionCookie: []
+      summary: GET /api/scheduled-jobs/{id}
+      tags:
+        - schedule
+    put:
+      operationId: scheduled_jobs_id_route_put
+      parameters:
+        - description: id
+          in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        $ref: "#/components/requestBodies/main.SwaggerRequest"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/main.SwaggerEnvelope"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/main.SwaggerEnvelope"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/main.SwaggerEnvelope"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/main.SwaggerEnvelope"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/main.SwaggerEnvelope"
+      security:
+        - SessionCookie: []
+      summary: PUT /api/scheduled-jobs/{id}
+      tags:
+        - schedule
+  "/api/scheduled-jobs/{id}/run":
+    post:
+      operationId: scheduled_jobs_id_run_route_post
+      parameters:
+        - description: id
+          in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/main.SwaggerEnvelope"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/main.SwaggerEnvelope"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/main.SwaggerEnvelope"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/main.SwaggerEnvelope"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/main.SwaggerEnvelope"
+      security:
+        - SessionCookie: []
+      summary: POST /api/scheduled-jobs/{id}/run
+      tags:
+        - schedule
+  /api/scheduled-jobs/tasks:
+    get:
+      operationId: scheduled_jobs_tasks_route_get
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/main.SwaggerEnvelope"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/main.SwaggerEnvelope"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/main.SwaggerEnvelope"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/main.SwaggerEnvelope"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/main.SwaggerEnvelope"
+      security:
+        - SessionCookie: []
+      summary: GET /api/scheduled-jobs/tasks
+      tags:
+        - schedule
   /api/stats:
     get:
       operationId: stats_route_get
@@ -2616,7 +3409,7 @@ paths:
     post:
       operationId: subscription_plans_route_post
       requestBody:
-        $ref: "#/components/requestBodies/main.SwaggerRequest"
+        $ref: "#/components/requestBodies/main.SwaggerRequest2"
       responses:
         "200":
           description: OK
@@ -2736,7 +3529,7 @@ paths:
           schema:
             type: string
       requestBody:
-        $ref: "#/components/requestBodies/main.SwaggerRequest"
+        $ref: "#/components/requestBodies/main.SwaggerRequest2"
       responses:
         "200":
           description: OK
@@ -2803,7 +3596,7 @@ paths:
     put:
       operationId: system_settings_route_put
       requestBody:
-        $ref: "#/components/requestBodies/main.SwaggerRequest"
+        $ref: "#/components/requestBodies/main.SwaggerRequest2"
       responses:
         "200":
           description: OK
@@ -2900,7 +3693,7 @@ paths:
     post:
       operationId: system_initialize_route_post
       requestBody:
-        $ref: "#/components/requestBodies/main.SwaggerRequest"
+        $ref: "#/components/requestBodies/main.SwaggerRequest2"
       responses:
         "200":
           description: OK
@@ -2996,7 +3789,7 @@ paths:
     post:
       operationId: tokens_route_post
       requestBody:
-        $ref: "#/components/requestBodies/main.SwaggerRequest"
+        $ref: "#/components/requestBodies/main.SwaggerRequest2"
       responses:
         "200":
           description: OK
@@ -3067,6 +3860,51 @@ paths:
       summary: DELETE /api/tokens/{id}
       tags:
         - tokens
+    get:
+      operationId: tokens_id_route_get
+      parameters:
+        - description: id
+          in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/main.SwaggerEnvelope"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/main.SwaggerEnvelope"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/main.SwaggerEnvelope"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/main.SwaggerEnvelope"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/main.SwaggerEnvelope"
+      security:
+        - SessionCookie: []
+      summary: GET /api/tokens/{id}
+      tags:
+        - tokens
     put:
       operationId: tokens_id_route_put
       parameters:
@@ -3077,7 +3915,7 @@ paths:
           schema:
             type: string
       requestBody:
-        $ref: "#/components/requestBodies/main.SwaggerRequest"
+        $ref: "#/components/requestBodies/main.SwaggerRequest2"
       responses:
         "200":
           description: OK
@@ -3119,7 +3957,7 @@ paths:
           schema:
             type: string
       requestBody:
-        $ref: "#/components/requestBodies/main.SwaggerRequest"
+        $ref: "#/components/requestBodies/main.SwaggerRequest2"
       responses:
         "200":
           description: OK
@@ -3187,7 +4025,7 @@ paths:
     post:
       operationId: upload_route_post
       requestBody:
-        $ref: "#/components/requestBodies/main.SwaggerRequest"
+        $ref: "#/components/requestBodies/main.SwaggerRequest2"
       responses:
         "200":
           description: OK
@@ -3325,7 +4163,7 @@ paths:
     post:
       operationId: users_route_post
       requestBody:
-        $ref: "#/components/requestBodies/main.SwaggerRequest"
+        $ref: "#/components/requestBodies/main.SwaggerRequest2"
       responses:
         "200":
           description: OK
@@ -3445,7 +4283,7 @@ paths:
           schema:
             type: string
       requestBody:
-        $ref: "#/components/requestBodies/main.SwaggerRequest"
+        $ref: "#/components/requestBodies/main.SwaggerRequest2"
       responses:
         "200":
           description: OK
@@ -3598,7 +4436,7 @@ paths:
           schema:
             type: string
       requestBody:
-        $ref: "#/components/requestBodies/main.SwaggerRequest"
+        $ref: "#/components/requestBodies/main.SwaggerRequest2"
       responses:
         "200":
           description: OK
@@ -3639,7 +4477,7 @@ paths:
           schema:
             type: string
       requestBody:
-        $ref: "#/components/requestBodies/main.SwaggerRequest"
+        $ref: "#/components/requestBodies/main.SwaggerRequest2"
       responses:
         "200":
           description: OK
@@ -3680,7 +4518,7 @@ paths:
           schema:
             type: string
       requestBody:
-        $ref: "#/components/requestBodies/main.SwaggerRequest"
+        $ref: "#/components/requestBodies/main.SwaggerRequest2"
       responses:
         "200":
           description: OK
@@ -3761,7 +4599,7 @@ paths:
           schema:
             type: string
       requestBody:
-        $ref: "#/components/requestBodies/main.SwaggerRequest"
+        $ref: "#/components/requestBodies/main.SwaggerRequest2"
       responses:
         "200":
           description: OK
@@ -3802,6 +4640,19 @@ components:
           schema:
             $ref: "#/components/schemas/main.SwaggerRequest"
       description: JSON request payload
+      required: true
+    main.SwaggerRequest2:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/main.SwaggerRequest"
+      description: JSON request payload
+    main.SwaggerRequest3:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/main.SwaggerRequest"
+      description: Gateway notification parameters
   securitySchemes:
     ApiTokenAuth:
       in: header

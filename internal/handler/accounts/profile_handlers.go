@@ -7,6 +7,18 @@ import (
 	"net/http"
 )
 
+// getProfile handles GET /api/personal/profile.
+//
+// @Summary GET /api/personal/profile
+// @ID personal_profile_route_get
+// @Tags personal
+// @Produce json
+// @Security SessionCookie
+// @Success 200 {object} main.SwaggerEnvelope
+// @Failure 400 {object} main.SwaggerEnvelope
+// @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 500 {object} main.SwaggerEnvelope
+// @Router /api/personal/profile [get]
 func (h *Handler) getProfile(w http.ResponseWriter, r *http.Request) {
 	owner, err := principal(r.Context())
 	if err != nil {
@@ -21,6 +33,21 @@ func (h *Handler) getProfile(w http.ResponseWriter, r *http.Request) {
 	handlerutils.WriteData(w, http.StatusOK, view)
 }
 
+// updateProfile handles PUT /api/personal/profile.
+//
+// @Summary PUT /api/personal/profile
+// @ID personal_profile_route_put
+// @Tags personal
+// @Accept json
+// @Produce json
+// @Param body body main.SwaggerRequest true "JSON request payload"
+// @Security SessionCookie
+// @Success 200 {object} main.SwaggerEnvelope
+// @Failure 400 {object} main.SwaggerEnvelope
+// @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 403 {object} main.SwaggerEnvelope
+// @Failure 500 {object} main.SwaggerEnvelope
+// @Router /api/personal/profile [put]
 func (h *Handler) updateProfile(w http.ResponseWriter, r *http.Request) {
 	owner, err := principal(r.Context())
 	if err != nil {
@@ -40,6 +67,21 @@ func (h *Handler) updateProfile(w http.ResponseWriter, r *http.Request) {
 	handlerutils.WriteData(w, http.StatusOK, view)
 }
 
+// updatePassword handles PUT /api/personal/profile/password.
+//
+// @Summary PUT /api/personal/profile/password
+// @ID personal_profile_password_route_put
+// @Tags personal
+// @Accept json
+// @Produce json
+// @Param body body main.SwaggerRequest true "JSON request payload"
+// @Security SessionCookie
+// @Success 200 {object} main.SwaggerEnvelope
+// @Failure 400 {object} main.SwaggerEnvelope
+// @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 403 {object} main.SwaggerEnvelope
+// @Failure 500 {object} main.SwaggerEnvelope
+// @Router /api/personal/profile/password [put]
 func (h *Handler) updatePassword(w http.ResponseWriter, r *http.Request) {
 	owner, err := principal(r.Context())
 	if err != nil {

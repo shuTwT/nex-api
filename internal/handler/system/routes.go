@@ -48,6 +48,17 @@ func (h *Handler) registerRoutes(r chi.Router) {
 	r.Post("/api/system/initialize", h.initialize)
 }
 
+// initialized handles GET /api/system/initialized.
+//
+// @Summary GET /api/system/initialized
+// @ID system_initialized_route_get
+// @Tags system
+// @Produce json
+// @Success 200 {object} main.SwaggerEnvelope
+// @Failure 400 {object} main.SwaggerEnvelope
+// @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 500 {object} main.SwaggerEnvelope
+// @Router /api/system/initialized [get]
 func (h *Handler) initialized(w http.ResponseWriter, r *http.Request) {
 	initialized, err := h.service.Initialized(r.Context())
 	if err != nil {
@@ -60,6 +71,19 @@ func (h *Handler) initialized(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+// initialize handles POST /api/system/initialize.
+//
+// @Summary POST /api/system/initialize
+// @ID system_initialize_route_post
+// @Tags system
+// @Accept json
+// @Produce json
+// @Param body body main.SwaggerRequest false "JSON request payload"
+// @Success 200 {object} main.SwaggerEnvelope
+// @Failure 400 {object} main.SwaggerEnvelope
+// @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 500 {object} main.SwaggerEnvelope
+// @Router /api/system/initialize [post]
 func (h *Handler) initialize(w http.ResponseWriter, r *http.Request) {
 	var request model.SystemInitializeReq
 	if err := handlerutils.DecodeJSON(r, &request); err != nil {

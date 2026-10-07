@@ -9,6 +9,18 @@ import (
 	"github.com/shuTwT/nex-api/internal/service/authz"
 )
 
+// listPlans handles GET /api/subscription-plans.
+//
+// @Summary GET /api/subscription-plans
+// @ID subscription_plans_route_get
+// @Tags subscription-plans
+// @Produce json
+// @Security SessionCookie
+// @Success 200 {object} main.SwaggerEnvelope
+// @Failure 400 {object} main.SwaggerEnvelope
+// @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 500 {object} main.SwaggerEnvelope
+// @Router /api/subscription-plans [get]
 func (h *Handler) listPlans(w http.ResponseWriter, r *http.Request) {
 	filter, err := planFilter(r)
 	if err != nil {
@@ -23,6 +35,19 @@ func (h *Handler) listPlans(w http.ResponseWriter, r *http.Request) {
 	handlerutils.WritePaginated(w, page.Items, page.Page, page.PageSize, page.Total)
 }
 
+// getPlan handles GET /api/subscription-plans/{id}.
+//
+// @Summary GET /api/subscription-plans/{id}
+// @ID subscription_plans_id_route_get
+// @Tags subscription-plans
+// @Produce json
+// @Param id path string true "id"
+// @Security SessionCookie
+// @Success 200 {object} main.SwaggerEnvelope
+// @Failure 400 {object} main.SwaggerEnvelope
+// @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 500 {object} main.SwaggerEnvelope
+// @Router /api/subscription-plans/{id} [get]
 func (h *Handler) getPlan(w http.ResponseWriter, r *http.Request) {
 	plan, err := h.plans.Get(r.Context(), r.PathValue("id"))
 	if err != nil {
@@ -32,6 +57,20 @@ func (h *Handler) getPlan(w http.ResponseWriter, r *http.Request) {
 	handlerutils.WriteData(w, http.StatusOK, plan)
 }
 
+// createPlan handles POST /api/subscription-plans.
+//
+// @Summary POST /api/subscription-plans
+// @ID subscription_plans_route_post
+// @Tags subscription-plans
+// @Accept json
+// @Produce json
+// @Param body body main.SwaggerRequest false "JSON request payload"
+// @Security SessionCookie
+// @Success 200 {object} main.SwaggerEnvelope
+// @Failure 400 {object} main.SwaggerEnvelope
+// @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 500 {object} main.SwaggerEnvelope
+// @Router /api/subscription-plans [post]
 func (h *Handler) createPlan(w http.ResponseWriter, r *http.Request) {
 	body, err := handlerutils.DecodeJSONValue[model.SubscriptionPlanCreateReq](r)
 	if err != nil {
@@ -70,6 +109,21 @@ func (h *Handler) createPlan(w http.ResponseWriter, r *http.Request) {
 	handlerutils.WriteData(w, http.StatusCreated, plan)
 }
 
+// updatePlan handles PUT /api/subscription-plans/{id}.
+//
+// @Summary PUT /api/subscription-plans/{id}
+// @ID subscription_plans_id_route_put
+// @Tags subscription-plans
+// @Accept json
+// @Produce json
+// @Param id path string true "id"
+// @Param body body main.SwaggerRequest false "JSON request payload"
+// @Security SessionCookie
+// @Success 200 {object} main.SwaggerEnvelope
+// @Failure 400 {object} main.SwaggerEnvelope
+// @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 500 {object} main.SwaggerEnvelope
+// @Router /api/subscription-plans/{id} [put]
 func (h *Handler) updatePlan(w http.ResponseWriter, r *http.Request) {
 	input, err := handlerutils.DecodeJSONValue[servicemembership.PlanUpdateInput](r)
 	if err != nil {
@@ -89,6 +143,19 @@ func (h *Handler) updatePlan(w http.ResponseWriter, r *http.Request) {
 	handlerutils.WriteData(w, http.StatusOK, plan)
 }
 
+// deletePlan handles DELETE /api/subscription-plans/{id}.
+//
+// @Summary DELETE /api/subscription-plans/{id}
+// @ID subscription_plans_id_route_delete
+// @Tags subscription-plans
+// @Produce json
+// @Param id path string true "id"
+// @Security SessionCookie
+// @Success 200 {object} main.SwaggerEnvelope
+// @Failure 400 {object} main.SwaggerEnvelope
+// @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 500 {object} main.SwaggerEnvelope
+// @Router /api/subscription-plans/{id} [delete]
 func (h *Handler) deletePlan(w http.ResponseWriter, r *http.Request) {
 	principal, err := authz.RequestPrincipal(r.Context())
 	if err != nil {

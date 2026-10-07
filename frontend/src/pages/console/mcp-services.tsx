@@ -1,5 +1,19 @@
 import { useEffect, useState, useCallback, useTransition } from "react";
-import { Alert, Badge, Button, Card, Input, Select, Typography } from "antd";
+import {
+  Alert,
+  Button,
+  Card,
+  Input,
+  Popconfirm,
+  Select,
+  Space,
+  Switch,
+  Table,
+  Tag,
+  Tooltip,
+  Typography,
+  type TableColumnsType,
+} from "antd";
 import {
   Search,
   Plus,
@@ -10,8 +24,8 @@ import {
   Pause,
   Database,
 } from "lucide-react";
+import { toast } from "sonner";
 import { api, responseData } from "@/lib/api";
-import { Pagination } from "@/components/pagination";
 import { McpFormDialog, type McpServiceData } from "@/components/mcp-form-dialog";
 
 interface PaginationInfo {
@@ -40,6 +54,12 @@ const TYPE_LABELS: Record<string, string> = {
   streamableHttp: "Streamable HTTP",
 };
 
+const TYPE_TAG_COLORS: Record<string, string> = {
+  stdio: "default",
+  sse: "blue",
+  streamableHttp: "purple",
+};
+
 export default function McpServicesPage() {
   const [services, setServices] = useState<McpServiceData[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -59,6 +79,7 @@ export default function McpServicesPage() {
   const [categoriesLoading, setCategoriesLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
+  const [togglingId, setTogglingId] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [editingService, setEditingService] = useState<McpServiceData | null>(null);
 
@@ -141,30 +162,29 @@ export default function McpServicesPage() {
     setCurrentPage(1);
   }
 
-  async function handleToggleStatus(id: string) {
+  function handleToggleStatus(service: McpServiceData) {
+    setTogglingId(service.id);
     startTransition(async () => {
-      const result = await api.mcp_services_id_toggle_route_put({ id });
+      const result = await api.mcp_services_id_toggle_route_put({ id: service.id });
       if (result.success) {
         loadServices();
         loadStats();
       } else {
-        alert(result.error || "切换状态失败");
+        toast.error(result.error || "切换状态失败");
       }
+      setTogglingId(null);
     });
   }
 
-  async function handleDelete(id: string) {
-    if (!confirm("确定要删除这个 MCP 服务吗？此操作无法撤销。")) {
-      return;
-    }
-
+  function handleDelete(service: McpServiceData) {
     startTransition(async () => {
-      const result = await api.mcp_services_id_route_delete({ id });
+      const result = await api.mcp_services_id_route_delete({ id: service.id });
       if (result.success) {
+        toast.success("MCP 服务已删除");
         loadServices();
         loadStats();
       } else {
-        alert(result.error || "删除失败");
+        toast.error(result.error || "删除失败");
       }
     });
   }
@@ -216,6 +236,128 @@ export default function McpServicesPage() {
     ...categories.map((category) => ({ value: category.id, label: category.name })),
   ];
 
+  const columns: TableColumnsType<McpServiceData> = [
+    {
+      title: "服务信息",
+      dataIndex: "name",
+      key: "name",
+      width:120,
+      render: (_value, svc) => (
+        <div className="max-w-[280px]">
+          <Typography.Text strong ellipsis style={{ maxWidth: "100%" }} className="block">
+            {svc.name}
+          </Typography.Text>
+          {svc.description && (
+            <Tooltip title={svc.description}>
+              <Typography.Text type="secondary" ellipsis style={{ maxWidth: "100%" }} className="mt-1 block">
+                {svc.description}
+              </Typography.Text>
+            </Tooltip>
+          )}
+        </div>
+      ),
+    },
+    {
+      title: "标识",
+      dataIndex: "identifier",
+      key: "identifier",
+      width:120,
+      render: (identifier) => <Typography.Text code>{identifier}</Typography.Text>,
+    },
+    {
+      title: "类型",
+      dataIndex: "type",
+      key: "type",
+      width:220,
+      render: (type) => (
+        <Tag color={TYPE_TAG_COLORS[type] || "default"}>{TYPE_LABELS[type] || type}</Tag>
+      ),
+    },
+    {
+      title: "分类",
+      key: "category",
+      width:90,
+      render: (_value, svc) => svc.category?.name || "未分类",
+    },
+    {
+      title: "端点",
+      key: "endpoint",
+      width:280,
+      render: (_value, svc) => {
+        const target = svc.type === "stdio" ? svc.command : svc.endpoint;
+        if (!target) {
+          return <Typography.Text type="secondary">-</Typography.Text>;
+        }
+        return (
+          <Tooltip title={target}>
+            <Typography.Text type="secondary" code ellipsis style={{ maxWidth: 220 }}>
+              {target}
+            </Typography.Text>
+          </Tooltip>
+        );
+      },
+    },
+    {
+      title: "定价",
+      dataIndex: "pricing",
+      key: "pricing",
+      width:120
+    },
+    {
+      title: "状态",
+      dataIndex: "isActive",
+      key: "isActive",
+      width:120,
+      render: (isActive, svc) => (
+        <Switch
+          checked={isActive}
+          loading={togglingId === svc.id}
+          onChange={() => handleToggleStatus(svc)}
+        />
+      ),
+    },
+    {
+      title: "调用次数",
+      dataIndex: "callCount",
+      key: "callCount",
+      width:120,
+      render: (callCount) => callCount.toLocaleString(),
+    },
+    {
+      title: "操作",
+      key: "actions",
+      fixed: "right",
+      width:120,
+      render: (_value, svc) => (
+        <Space size="small">
+          <Button
+            type="text"
+            size="small"
+            icon={<Edit size={16} />}
+            aria-label={`编辑 ${svc.name}`}
+            onClick={() => handleEdit(svc)}
+          />
+          <Popconfirm
+            title="删除 MCP 服务"
+            description="确定要删除这个 MCP 服务吗？此操作无法撤销。"
+            okText="删除"
+            cancelText="取消"
+            okButtonProps={{ danger: true }}
+            onConfirm={() => handleDelete(svc)}
+          >
+            <Button
+              danger
+              type="text"
+              size="small"
+              icon={<Trash2 size={16} />}
+              aria-label={`删除 ${svc.name}`}
+            />
+          </Popconfirm>
+        </Space>
+      ),
+    },
+  ];
+
   void isPending;
 
   return (
@@ -246,7 +388,6 @@ export default function McpServicesPage() {
               key={stat.title}
               className="hover:shadow-md transition-shadow cursor-pointer"
             >
-              <div className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-slate-500">{stat.title}</p>
@@ -260,14 +401,13 @@ export default function McpServicesPage() {
                     <Icon className="h-5 w-5" />
                   </div>
                 </div>
-              </div>
             </Card>
           );
         })}
       </div>
 
       <Card>
-        <div className="p-4">
+
           <div className="flex flex-wrap items-end gap-3">
             <div className="relative flex-1 min-w-[200px]">
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
@@ -293,178 +433,59 @@ export default function McpServicesPage() {
               重置
             </Button>
           </div>
-        </div>
       </Card>
 
       <Card>
-        <div className="p-4"><Typography.Title level={5}>服务列表</Typography.Title>
-          {isLoading ? (
-            <div className="flex items-center justify-center py-12">
-              <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-600 border-t-transparent" />
-            </div>
-          ) : loadError ? (
+          <Typography.Title level={5}>服务列表</Typography.Title>
+          {loadError && (
             <Alert
               type="error"
               showIcon
+              className="mb-4"
               message="服务列表加载失败"
               description={loadError}
               action={<Button size="small" onClick={() => void loadServices()}>重试</Button>}
             />
-          ) : services.length === 0 ? (
-            <div className="text-center py-12">
-              <Plug className="h-12 w-12 text-slate-300 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-slate-900 mb-2">
-                没有找到 MCP 服务
-              </h3>
-              <p className="text-slate-500 mb-4">
-                尝试调整搜索条件或添加新服务
-              </p>
-              <Button className="gap-2 cursor-pointer" onClick={handleAdd}>
-                <Plus className="h-4 w-4" />
-                添加服务
-              </Button>
-            </div>
-          ) : (
-            <>
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead>
-                    <tr className="border-b border-slate-200">
-                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-600">
-                        服务信息
-                      </th>
-                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-600">
-                        标识
-                      </th>
-                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-600">
-                        类型
-                      </th>
-                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-600">
-                        分类
-                      </th>
-                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-600">
-                        端点
-                      </th>
-                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-600">
-                        定价
-                      </th>
-                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-600">
-                        状态
-                      </th>
-                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-600">
-                        调用次数
-                      </th>
-                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-600">
-                        操作
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {services.map((svc) => (
-                      <tr
-                        key={svc.id}
-                        className="border-b border-slate-100 hover:bg-slate-50 transition-colors"
-                      >
-                        <td className="py-3 px-4">
-                          <div>
-                            <p className="text-sm font-medium text-slate-900">
-                              {svc.name}
-                            </p>
-                            {svc.description && (
-                              <p className="mt-1 max-w-[260px] truncate text-xs text-slate-500" title={svc.description}>
-                                {svc.description}
-                              </p>
-                            )}
-                          </div>
-                        </td>
-                        <td className="py-3 px-4">
-                          <code className="text-xs bg-slate-100 px-2 py-1 rounded text-slate-700">
-                            {svc.identifier}
-                          </code>
-                        </td>
-                        <td className="py-3 px-4">
-                          <Badge
-                            className={
-                              svc.type === "stdio"
-                                ? "bg-gray-50 text-gray-700 border-gray-200"
-                                : svc.type === "sse"
-                                  ? "bg-blue-50 text-blue-700 border-blue-200"
-                                  : "bg-purple-50 text-purple-700 border-purple-200"
-                            }
-                          >
-                            {TYPE_LABELS[svc.type] || svc.type}
-                          </Badge>
-                        </td>
-                        <td className="py-3 px-4 text-sm text-slate-600">{svc.category?.name || "未分类"}</td>
-                        <td className="py-3 px-4">
-                          <span
-                            className="text-xs text-slate-500 font-mono truncate max-w-[200px] block"
-                            title={svc.command || svc.endpoint || "-"}
-                          >
-                            {svc.type === "stdio"
-                              ? svc.command || "-"
-                              : svc.endpoint || "-"}
-                          </span>
-                        </td>
-                        <td className="py-3 px-4 text-sm text-slate-600">
-                          {svc.pricing}
-                        </td>
-                        <td className="py-3 px-4">
-                          <Badge
-                            className={
-                              svc.isActive
-                                ? "bg-green-50 text-green-700 border-green-200 cursor-pointer"
-                                : "bg-gray-50 text-gray-700 border-gray-200 cursor-pointer"
-                            }
-                            onClick={() => handleToggleStatus(svc.id)}
-                          >
-                            {svc.isActive ? "已启用" : "已停用"}
-                          </Badge>
-                        </td>
-                        <td className="py-3 px-4 text-sm text-slate-600">
-                          {svc.callCount.toLocaleString()}
-                        </td>
-                        <td className="py-3 px-4">
-                          <div className="flex items-center gap-2">
-                            <Button
-                              type="text"
-                              size="small"
-                              className="h-8 w-8 p-0 cursor-pointer"
-                              onClick={() => handleEdit(svc)}
-                              title="编辑"
-                            >
-                              <Edit className="h-4 w-4" />
-                            </Button>
-                            <Button
-                              type="text"
-                              size="small"
-                              className="h-8 w-8 p-0 cursor-pointer text-red-600 hover:text-red-700 hover:bg-red-50"
-                              onClick={() => handleDelete(svc.id)}
-                              title="删除"
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-
-              <div className="mt-4">
-                <Pagination
-                  currentPage={pagination?.page ?? 1}
-                  totalPages={pagination?.totalPages ?? 1}
-                  total={pagination?.total ?? 0}
-                  pageSize={pagination?.limit ?? pageSize}
-                  onPageChange={handlePageChange}
-                  onPageSizeChange={handlePageSizeChange}
-                />
-              </div>
-            </>
           )}
-        </div>
+          <Table
+            rowKey="id"
+            columns={columns}
+            dataSource={services}
+            loading={isLoading}
+            scroll={{ x: 1100 }}
+            locale={{
+              emptyText: loadError ? (
+                "加载失败，请重试"
+              ) : (
+                <div className="py-8 text-center">
+                  <Plug className="mx-auto mb-4 h-12 w-12 text-slate-300" />
+                  <h3 className="mb-2 text-lg font-medium text-slate-900">
+                    没有找到 MCP 服务
+                  </h3>
+                  <p className="mb-4 text-slate-500">尝试调整搜索条件或添加新服务</p>
+                  <Button className="gap-2 cursor-pointer" onClick={handleAdd}>
+                    <Plus className="h-4 w-4" />
+                    添加服务
+                  </Button>
+                </div>
+              ),
+            }}
+            pagination={{
+              current: pagination?.page ?? currentPage,
+              pageSize: pagination?.limit ?? pageSize,
+              total: pagination?.total ?? 0,
+              showSizeChanger: true,
+              showTotal: (total) => `共 ${total} 条`,
+              onChange: (page, size) => {
+                if (size !== pageSize) {
+                  handlePageSizeChange(size);
+                } else if (page !== currentPage) {
+                  handlePageChange(page);
+                }
+              },
+            }}
+          />
+
       </Card>
 
       <McpFormDialog

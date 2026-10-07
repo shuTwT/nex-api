@@ -164,10 +164,62 @@ func (h *Handler) registerRoutes() {
 	}
 }
 
+// The stubs below are swag annotation anchors for the legacy provider aliases
+// registered in registerRoutes (one route per provider ID via a loop), kept in
+// this file so the documented paths cannot drift from the router.
+
+// swaggerAuthProviderIDGet documents GET /api/auth/{provider}.
+//
+// @Summary GET /api/auth/{provider}
+// @ID auth_provider_route_get
+// @Tags oauth
+// @Produce json
+// @Param provider path string true "provider"
+// @Success 302 {string} string ""
+// @Router /api/auth/{provider} [get]
+func swaggerAuthProviderIDGet() {}
+
+// swaggerAuthProviderIDCallbackGet documents GET /api/auth/{provider}/callback.
+//
+// @Summary GET /api/auth/{provider}/callback
+// @ID auth_provider_callback_route_get
+// @Tags oauth
+// @Produce json
+// @Param provider path string true "provider"
+// @Success 200 {object} main.SwaggerEnvelope
+// @Router /api/auth/{provider}/callback [get]
+func swaggerAuthProviderIDCallbackGet() {}
+
+// authorize handles GET /api/auth/signin/{provider}.
+//
+// @Summary GET /api/auth/signin/{provider}
+// @ID auth_signin_provider_route_get
+// @Tags oauth
+// @Produce json
+// @Param provider path string true "provider"
+// @Success 200 {object} main.SwaggerEnvelope
+// @Failure 400 {object} main.SwaggerEnvelope
+// @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 403 {object} main.SwaggerEnvelope
+// @Failure 500 {object} main.SwaggerEnvelope
+// @Router /api/auth/signin/{provider} [get]
 func (h *Handler) authorize(w http.ResponseWriter, r *http.Request) {
 	h.authorizeProvider(w, r, chi.URLParam(r, "provider"))
 }
 
+// callback handles GET /api/auth/callback/{provider}.
+//
+// @Summary GET /api/auth/callback/{provider}
+// @ID auth_callback_provider_route_get
+// @Tags oauth
+// @Produce json
+// @Param provider path string true "provider"
+// @Success 200 {object} main.SwaggerEnvelope
+// @Failure 400 {object} main.SwaggerEnvelope
+// @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 403 {object} main.SwaggerEnvelope
+// @Failure 500 {object} main.SwaggerEnvelope
+// @Router /api/auth/callback/{provider} [get]
 func (h *Handler) callback(w http.ResponseWriter, r *http.Request) {
 	h.callbackProvider(w, r, chi.URLParam(r, "provider"))
 }

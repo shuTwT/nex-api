@@ -7,6 +7,18 @@ import (
 	"net/http"
 )
 
+// listUsers handles GET /api/users.
+//
+// @Summary GET /api/users
+// @ID users_route_get
+// @Tags users
+// @Produce json
+// @Security SessionCookie
+// @Success 200 {object} main.SwaggerEnvelope
+// @Failure 400 {object} main.SwaggerEnvelope
+// @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 500 {object} main.SwaggerEnvelope
+// @Router /api/users [get]
 func (h *Handler) listUsers(w http.ResponseWriter, r *http.Request) {
 	if _, err := admin(r.Context()); err != nil {
 		writeServiceError(w, r, err)
@@ -25,6 +37,20 @@ func (h *Handler) listUsers(w http.ResponseWriter, r *http.Request) {
 	handlerutils.WritePaginated(w, views, info.Page, info.PageSize, info.Total)
 }
 
+// createUser handles POST /api/users.
+//
+// @Summary POST /api/users
+// @ID users_route_post
+// @Tags users
+// @Accept json
+// @Produce json
+// @Param body body main.SwaggerRequest false "JSON request payload"
+// @Security SessionCookie
+// @Success 200 {object} main.SwaggerEnvelope
+// @Failure 400 {object} main.SwaggerEnvelope
+// @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 500 {object} main.SwaggerEnvelope
+// @Router /api/users [post]
 func (h *Handler) createUser(w http.ResponseWriter, r *http.Request) {
 	if _, err := admin(r.Context()); err != nil {
 		writeServiceError(w, r, err)
@@ -43,6 +69,18 @@ func (h *Handler) createUser(w http.ResponseWriter, r *http.Request) {
 	handlerutils.WriteData(w, http.StatusCreated, view)
 }
 
+// userStats handles GET /api/users/stats.
+//
+// @Summary GET /api/users/stats
+// @ID users_stats_route_get
+// @Tags users
+// @Produce json
+// @Security SessionCookie
+// @Success 200 {object} main.SwaggerEnvelope
+// @Failure 400 {object} main.SwaggerEnvelope
+// @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 500 {object} main.SwaggerEnvelope
+// @Router /api/users/stats [get]
 func (h *Handler) userStats(w http.ResponseWriter, r *http.Request) {
 	if _, err := admin(r.Context()); err != nil {
 		writeServiceError(w, r, err)
@@ -56,6 +94,19 @@ func (h *Handler) userStats(w http.ResponseWriter, r *http.Request) {
 	handlerutils.WriteData(w, http.StatusOK, view)
 }
 
+// getUser handles GET /api/users/{id}.
+//
+// @Summary GET /api/users/{id}
+// @ID users_id_route_get
+// @Tags users
+// @Produce json
+// @Param id path string true "id"
+// @Security SessionCookie
+// @Success 200 {object} main.SwaggerEnvelope
+// @Failure 400 {object} main.SwaggerEnvelope
+// @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 500 {object} main.SwaggerEnvelope
+// @Router /api/users/{id} [get]
 func (h *Handler) getUser(w http.ResponseWriter, r *http.Request) {
 	if _, err := admin(r.Context()); err != nil {
 		writeServiceError(w, r, err)
@@ -69,6 +120,21 @@ func (h *Handler) getUser(w http.ResponseWriter, r *http.Request) {
 	handlerutils.WriteData(w, http.StatusOK, view)
 }
 
+// updateUser handles PUT /api/users/{id}.
+//
+// @Summary PUT /api/users/{id}
+// @ID users_id_route_put
+// @Tags users
+// @Accept json
+// @Produce json
+// @Param id path string true "id"
+// @Param body body main.SwaggerRequest false "JSON request payload"
+// @Security SessionCookie
+// @Success 200 {object} main.SwaggerEnvelope
+// @Failure 400 {object} main.SwaggerEnvelope
+// @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 500 {object} main.SwaggerEnvelope
+// @Router /api/users/{id} [put]
 func (h *Handler) updateUser(w http.ResponseWriter, r *http.Request) {
 	if _, err := admin(r.Context()); err != nil {
 		writeServiceError(w, r, err)
@@ -87,6 +153,19 @@ func (h *Handler) updateUser(w http.ResponseWriter, r *http.Request) {
 	handlerutils.WriteData(w, http.StatusOK, view)
 }
 
+// deleteUser handles DELETE /api/users/{id}.
+//
+// @Summary DELETE /api/users/{id}
+// @ID users_id_route_delete
+// @Tags users
+// @Produce json
+// @Param id path string true "id"
+// @Security SessionCookie
+// @Success 200 {object} main.SwaggerEnvelope
+// @Failure 400 {object} main.SwaggerEnvelope
+// @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 500 {object} main.SwaggerEnvelope
+// @Router /api/users/{id} [delete]
 func (h *Handler) deleteUser(w http.ResponseWriter, r *http.Request) {
 	if _, err := admin(r.Context()); err != nil {
 		writeServiceError(w, r, err)

@@ -11,6 +11,18 @@ type publicProvider struct {
 	Name string `json:"name"`
 }
 
+// providers handles GET /api/auth/providers.
+//
+// @Summary GET /api/auth/providers
+// @ID auth_providers_route_get
+// @Tags oauth
+// @Produce json
+// @Success 200 {object} main.SwaggerEnvelope
+// @Failure 400 {object} main.SwaggerEnvelope
+// @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 403 {object} main.SwaggerEnvelope
+// @Failure 500 {object} main.SwaggerEnvelope
+// @Router /api/auth/providers [get]
 func (h *Handler) providers(w http.ResponseWriter, r *http.Request) {
 	providers, err := h.service.Providers(r.Context())
 	if err != nil {

@@ -75,6 +75,18 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	h.csrf.Middleware(h.mux).ServeHTTP(w, r)
 }
 
+// csrfToken handles GET /api/auth/csrf.
+//
+// @Summary GET /api/auth/csrf
+// @ID auth_csrf_route_get
+// @Tags auth
+// @Produce json
+// @Success 200 {object} main.SwaggerEnvelope
+// @Failure 400 {object} main.SwaggerEnvelope
+// @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 403 {object} main.SwaggerEnvelope
+// @Failure 500 {object} main.SwaggerEnvelope
+// @Router /api/auth/csrf [get]
 func (h *Handler) csrfToken(w http.ResponseWriter, r *http.Request) {
 	token, err := h.csrf.EnsureToken(w, r)
 	if err != nil {
@@ -88,6 +100,20 @@ func (h *Handler) csrfToken(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// login handles POST /api/auth/login.
+//
+// @Summary POST /api/auth/login
+// @ID auth_login_route_post
+// @Tags auth
+// @Accept json
+// @Produce json
+// @Param body body main.SwaggerRequest true "JSON request payload"
+// @Success 200 {object} main.SwaggerEnvelope
+// @Failure 400 {object} main.SwaggerEnvelope
+// @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 403 {object} main.SwaggerEnvelope
+// @Failure 500 {object} main.SwaggerEnvelope
+// @Router /api/auth/login [post]
 func (h *Handler) login(w http.ResponseWriter, r *http.Request) {
 	var request model.AuthLoginReq
 	if err := handlerutils.DecodeJSON(r, &request); err != nil || strings.TrimSpace(request.Email) == "" || request.Password == "" {
@@ -131,6 +157,19 @@ func (h *Handler) login(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// me handles GET /api/auth/me.
+//
+// @Summary GET /api/auth/me
+// @ID auth_me_route_get
+// @Tags auth
+// @Produce json
+// @Security SessionCookie
+// @Success 200 {object} main.SwaggerEnvelope
+// @Failure 400 {object} main.SwaggerEnvelope
+// @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 403 {object} main.SwaggerEnvelope
+// @Failure 500 {object} main.SwaggerEnvelope
+// @Router /api/auth/me [get]
 func (h *Handler) me(w http.ResponseWriter, r *http.Request) {
 	authContext, err := h.service.Authenticate(r.Context(), h.tokenFromRequest(r))
 	if err != nil {
@@ -144,6 +183,20 @@ func (h *Handler) me(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// logout handles POST /api/auth/logout.
+//
+// @Summary POST /api/auth/logout
+// @ID auth_logout_route_post
+// @Tags auth
+// @Accept json
+// @Produce json
+// @Security SessionCookie
+// @Success 200 {object} main.SwaggerEnvelope
+// @Failure 400 {object} main.SwaggerEnvelope
+// @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 403 {object} main.SwaggerEnvelope
+// @Failure 500 {object} main.SwaggerEnvelope
+// @Router /api/auth/logout [post]
 func (h *Handler) logout(w http.ResponseWriter, r *http.Request) {
 	if err := h.service.Logout(r.Context(), h.tokenFromRequest(r)); err != nil {
 		if writeErr := writeError(w, http.StatusInternalServerError, "logout_failed"); writeErr != nil {

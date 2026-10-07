@@ -95,6 +95,92 @@ func New(options Options) (*Handler, error) {
 }
 
 // RegisterRoutes exposes the API gateway's method-agnostic proxy route.
+// The stubs below are swag annotation anchors for the gateway proxy routes registered in
+// RegisterRoutes. The route is registered once for five HTTP methods via a loop, and swag
+// supports a single @Router per operation, so each method needs its own anchor here.
+// Keeping them in this file prevents the documented paths from drifting from the router.
+
+// SwaggerV1AliasGET98 documents GET /api/v1/{alias}.
+//
+// @Summary GET /api/v1/{alias}
+// @ID v1_alias_route_get
+// @Tags gateway
+// @Produce json
+// @Param alias path string true "alias"
+// @Security ApiTokenAuth
+// @Success 200 {object} main.SwaggerEnvelope
+// @Failure 400 {object} main.SwaggerEnvelope
+// @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 500 {object} main.SwaggerEnvelope
+// @Router /api/v1/{alias} [get]
+func swaggerV1AliasGet() {}
+
+// SwaggerV1AliasPOST99 documents POST /api/v1/{alias}.
+//
+// @Summary POST /api/v1/{alias}
+// @ID v1_alias_route_post
+// @Tags gateway
+// @Accept json
+// @Produce json
+// @Param alias path string true "alias"
+// @Param body body main.SwaggerRequest false "JSON request payload"
+// @Security ApiTokenAuth
+// @Success 200 {object} main.SwaggerEnvelope
+// @Failure 400 {object} main.SwaggerEnvelope
+// @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 500 {object} main.SwaggerEnvelope
+// @Router /api/v1/{alias} [post]
+func swaggerV1AliasPost() {}
+
+// SwaggerV1AliasPUT100 documents PUT /api/v1/{alias}.
+//
+// @Summary PUT /api/v1/{alias}
+// @ID v1_alias_route_put
+// @Tags gateway
+// @Accept json
+// @Produce json
+// @Param alias path string true "alias"
+// @Param body body main.SwaggerRequest false "JSON request payload"
+// @Security ApiTokenAuth
+// @Success 200 {object} main.SwaggerEnvelope
+// @Failure 400 {object} main.SwaggerEnvelope
+// @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 500 {object} main.SwaggerEnvelope
+// @Router /api/v1/{alias} [put]
+func swaggerV1AliasPut() {}
+
+// SwaggerV1AliasPATCH102 documents PATCH /api/v1/{alias}.
+//
+// @Summary PATCH /api/v1/{alias}
+// @ID v1_alias_route_patch
+// @Tags gateway
+// @Accept json
+// @Produce json
+// @Param alias path string true "alias"
+// @Param body body main.SwaggerRequest false "JSON request payload"
+// @Security ApiTokenAuth
+// @Success 200 {object} main.SwaggerEnvelope
+// @Failure 400 {object} main.SwaggerEnvelope
+// @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 500 {object} main.SwaggerEnvelope
+// @Router /api/v1/{alias} [patch]
+func swaggerV1AliasPatch() {}
+
+// SwaggerV1AliasDELETE101 documents DELETE /api/v1/{alias}.
+//
+// @Summary DELETE /api/v1/{alias}
+// @ID v1_alias_route_delete
+// @Tags gateway
+// @Produce json
+// @Param alias path string true "alias"
+// @Security ApiTokenAuth
+// @Success 200 {object} main.SwaggerEnvelope
+// @Failure 400 {object} main.SwaggerEnvelope
+// @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 500 {object} main.SwaggerEnvelope
+// @Router /api/v1/{alias} [delete]
+func swaggerV1AliasDelete() {}
+
 func (h *Handler) RegisterRoutes(router chi.Router) error {
 	if router == nil {
 		return errors.New("gateway: route router is nil")

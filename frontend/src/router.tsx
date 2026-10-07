@@ -20,6 +20,14 @@ const lazyRoute = (
   },
 });
 
+// 首次水合期间 lazy 页面尚未加载完成，数据路由要求提供该回退 UI，
+// 否则开发环境会出现 No `HydrateFallback` 警告且渲染空白。
+const hydrateFallbackElement = (
+  <div className="flex min-h-screen items-center justify-center">
+    <div className="h-8 w-8 animate-spin rounded-full border-4 border-slate-300 border-t-slate-600" />
+  </div>
+);
+
 const publicRoutes: RouteObject[] = [
   {
     index: true,
@@ -157,6 +165,7 @@ const consoleRoutes: RouteObject[] = [
 export const router = createBrowserRouter([
   {
     element: <InitializationGuard />,
+    hydrateFallbackElement,
     children: [
       {
         path: "/",

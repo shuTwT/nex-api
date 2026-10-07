@@ -71,6 +71,18 @@ func clientIP(r *http.Request) string {
 	return r.RemoteAddr
 }
 
+// methods handles GET /api/payment/methods.
+//
+// @Summary GET /api/payment/methods
+// @ID payment_methods_route_get
+// @Tags payment
+// @Produce json
+// @Security SessionCookie
+// @Success 200 {object} main.SwaggerEnvelope
+// @Failure 400 {object} main.SwaggerEnvelope
+// @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 500 {object} main.SwaggerEnvelope
+// @Router /api/payment/methods [get]
 func (h *Handler) methods(w http.ResponseWriter, r *http.Request) {
 	methods, err := h.service.AvailableMethods(r.Context())
 	if err != nil {
@@ -80,6 +92,20 @@ func (h *Handler) methods(w http.ResponseWriter, r *http.Request) {
 	handlerutils.WriteData(w, http.StatusOK, methods)
 }
 
+// createSubscription handles POST /api/payment/methods.
+//
+// @Summary POST /api/payment/methods
+// @ID payment_methods_route_post
+// @Tags payment
+// @Accept json
+// @Produce json
+// @Param body body main.SwaggerRequest false "JSON request payload"
+// @Security SessionCookie
+// @Success 200 {object} main.SwaggerEnvelope
+// @Failure 400 {object} main.SwaggerEnvelope
+// @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 500 {object} main.SwaggerEnvelope
+// @Router /api/payment/methods [post]
 func (h *Handler) createSubscription(w http.ResponseWriter, r *http.Request) {
 	request, err := handlerutils.DecodeJSONValue[model.SubscriptionPaymentCreateReq](r)
 	if err != nil {
@@ -99,6 +125,20 @@ func (h *Handler) createSubscription(w http.ResponseWriter, r *http.Request) {
 	handlerutils.WriteData(w, http.StatusCreated, result)
 }
 
+// recharge handles POST /api/recharge.
+//
+// @Summary POST /api/recharge
+// @ID recharge_route_post
+// @Tags recharge
+// @Accept json
+// @Produce json
+// @Param body body main.SwaggerRequest false "JSON request payload"
+// @Security SessionCookie
+// @Success 200 {object} main.SwaggerEnvelope
+// @Failure 400 {object} main.SwaggerEnvelope
+// @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 500 {object} main.SwaggerEnvelope
+// @Router /api/recharge [post]
 func (h *Handler) recharge(w http.ResponseWriter, r *http.Request) {
 	request, err := handlerutils.DecodeJSONValue[model.RechargePaymentCreateReq](r)
 	if err != nil {
@@ -118,6 +158,18 @@ func (h *Handler) recharge(w http.ResponseWriter, r *http.Request) {
 	handlerutils.WriteData(w, http.StatusCreated, result)
 }
 
+// history handles GET /api/payment/user.
+//
+// @Summary GET /api/payment/user
+// @ID payment_user_route_get
+// @Tags payment
+// @Produce json
+// @Security SessionCookie
+// @Success 200 {object} main.SwaggerEnvelope
+// @Failure 400 {object} main.SwaggerEnvelope
+// @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 500 {object} main.SwaggerEnvelope
+// @Router /api/payment/user [get]
 func (h *Handler) history(w http.ResponseWriter, r *http.Request) {
 	principal, err := serviceauthz.RequestPrincipal(r.Context())
 	if err != nil {
@@ -132,6 +184,18 @@ func (h *Handler) history(w http.ResponseWriter, r *http.Request) {
 	handlerutils.WriteData(w, http.StatusOK, payments)
 }
 
+// settings handles GET /api/payment/settings.
+//
+// @Summary GET /api/payment/settings
+// @ID payment_settings_route_get
+// @Tags payment
+// @Produce json
+// @Security SessionCookie
+// @Success 200 {object} main.SwaggerEnvelope
+// @Failure 400 {object} main.SwaggerEnvelope
+// @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 500 {object} main.SwaggerEnvelope
+// @Router /api/payment/settings [get]
 func (h *Handler) settings(w http.ResponseWriter, r *http.Request) {
 	settings, err := h.service.Settings(r.Context())
 	if err != nil {
@@ -141,12 +205,38 @@ func (h *Handler) settings(w http.ResponseWriter, r *http.Request) {
 	handlerutils.WriteData(w, http.StatusOK, settings)
 }
 
+// get handles GET /api/payment/{outTradeNo}.
+//
+// @Summary GET /api/payment/{outTradeNo}
+// @ID payment_outtradeno_route_get
+// @Tags payment
+// @Produce json
+// @Param outTradeNo path string true "outTradeNo"
+// @Security SessionCookie
+// @Success 200 {object} main.SwaggerEnvelope
+// @Failure 400 {object} main.SwaggerEnvelope
+// @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 500 {object} main.SwaggerEnvelope
+// @Router /api/payment/{outTradeNo} [get]
 func (h *Handler) get(w http.ResponseWriter, r *http.Request) {
 	h.respondOwnedPayment(w, r, func(outTradeNo string) (servicepayment.PaymentView, error) {
 		return h.service.GetPayment(r.Context(), outTradeNo)
 	})
 }
 
+// status handles GET /api/payment/{outTradeNo}/status.
+//
+// @Summary GET /api/payment/{outTradeNo}/status
+// @ID payment_outtradeno_status_route_get
+// @Tags payment
+// @Produce json
+// @Param outTradeNo path string true "outTradeNo"
+// @Security SessionCookie
+// @Success 200 {object} main.SwaggerEnvelope
+// @Failure 400 {object} main.SwaggerEnvelope
+// @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 500 {object} main.SwaggerEnvelope
+// @Router /api/payment/{outTradeNo}/status [get]
 func (h *Handler) status(w http.ResponseWriter, r *http.Request) {
 	h.respondOwnedPayment(w, r, func(outTradeNo string) (servicepayment.PaymentView, error) {
 		return h.service.QueryPayment(r.Context(), outTradeNo)
@@ -172,6 +262,21 @@ func (h *Handler) respondOwnedPayment(w http.ResponseWriter, r *http.Request, lo
 	handlerutils.WriteData(w, http.StatusOK, view)
 }
 
+// cancel handles POST /api/payment/{outTradeNo}/cancel.
+//
+// @Summary POST /api/payment/{outTradeNo}/cancel
+// @ID payment_outtradeno_cancel_route_post
+// @Tags payment
+// @Accept json
+// @Produce json
+// @Param outTradeNo path string true "outTradeNo"
+// @Param body body main.SwaggerRequest false "JSON request payload"
+// @Security SessionCookie
+// @Success 200 {object} main.SwaggerEnvelope
+// @Failure 400 {object} main.SwaggerEnvelope
+// @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 500 {object} main.SwaggerEnvelope
+// @Router /api/payment/{outTradeNo}/cancel [post]
 func (h *Handler) cancel(w http.ResponseWriter, r *http.Request) {
 	outTradeNo := r.PathValue("outTradeNo")
 	view, err := h.service.GetPayment(r.Context(), outTradeNo)

@@ -58,6 +58,20 @@ func normalizeConfig(value any) (Config, error) {
 	return Config{Enabled: enabled.Bool(), Secret: secret.String()}, nil
 }
 
+// ServeHTTP handles POST /api/cron/sync-stats.
+//
+// @Summary POST /api/cron/sync-stats
+// @ID cron_sync_stats_route_post
+// @Tags cron
+// @Accept json
+// @Produce json
+// @Param body body main.SwaggerRequest false "JSON request payload"
+// @Security CronSecretAuth
+// @Success 200 {object} main.SwaggerEnvelope
+// @Failure 400 {object} main.SwaggerEnvelope
+// @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 500 {object} main.SwaggerEnvelope
+// @Router /api/cron/sync-stats [post]
 func (h *SyncStatsHandler) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
 	if request.Method != http.MethodPost || !h.enabled {
 		h.writeJSON(writer, http.StatusNotFound, false, "未找到")

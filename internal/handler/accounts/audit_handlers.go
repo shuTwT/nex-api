@@ -8,6 +8,18 @@ import (
 	"net/http"
 )
 
+// listAudits handles GET /api/audit-logs.
+//
+// @Summary GET /api/audit-logs
+// @ID audit_logs_route_get
+// @Tags audit-logs
+// @Produce json
+// @Security SessionCookie
+// @Success 200 {object} main.SwaggerEnvelope
+// @Failure 400 {object} main.SwaggerEnvelope
+// @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 500 {object} main.SwaggerEnvelope
+// @Router /api/audit-logs [get]
 func (h *Handler) listAudits(w http.ResponseWriter, r *http.Request) {
 	owner, err := principal(r.Context())
 	if err != nil {
@@ -35,6 +47,20 @@ func (h *Handler) listAudits(w http.ResponseWriter, r *http.Request) {
 	handlerutils.WritePaginated(w, views, info.Page, info.PageSize, info.Total)
 }
 
+// createAudit handles POST /api/audit-logs.
+//
+// @Summary POST /api/audit-logs
+// @ID audit_logs_route_post
+// @Tags audit-logs
+// @Accept json
+// @Produce json
+// @Param body body main.SwaggerRequest false "JSON request payload"
+// @Security SessionCookie
+// @Success 200 {object} main.SwaggerEnvelope
+// @Failure 400 {object} main.SwaggerEnvelope
+// @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 500 {object} main.SwaggerEnvelope
+// @Router /api/audit-logs [post]
 func (h *Handler) createAudit(w http.ResponseWriter, r *http.Request) {
 	owner, err := principal(r.Context())
 	if err != nil {
@@ -57,6 +83,20 @@ func (h *Handler) createAudit(w http.ResponseWriter, r *http.Request) {
 	handlerutils.WriteData(w, http.StatusCreated, view)
 }
 
+// getAudit handles GET /api/audit-logs/{id}.
+//
+// @Summary GET /api/audit-logs/{id}
+// @ID audit_logs_id_route_get
+// @Tags audit
+// @Produce json
+// @Param id path string true "id"
+// @Security SessionCookie
+// @Success 200 {object} main.SwaggerEnvelope
+// @Failure 400 {object} main.SwaggerEnvelope
+// @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 403 {object} main.SwaggerEnvelope
+// @Failure 500 {object} main.SwaggerEnvelope
+// @Router /api/audit-logs/{id} [get]
 func (h *Handler) getAudit(w http.ResponseWriter, r *http.Request) {
 	owner, err := principal(r.Context())
 	if err != nil {
@@ -75,6 +115,22 @@ func (h *Handler) getAudit(w http.ResponseWriter, r *http.Request) {
 	handlerutils.WriteData(w, http.StatusOK, view)
 }
 
+// updateAudit handles PUT /api/audit-logs/{id}.
+//
+// @Summary PUT /api/audit-logs/{id}
+// @ID audit_logs_id_route_put
+// @Tags audit
+// @Accept json
+// @Produce json
+// @Param id path string true "id"
+// @Param body body main.SwaggerRequest true "JSON request payload"
+// @Security SessionCookie
+// @Success 200 {object} main.SwaggerEnvelope
+// @Failure 400 {object} main.SwaggerEnvelope
+// @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 403 {object} main.SwaggerEnvelope
+// @Failure 500 {object} main.SwaggerEnvelope
+// @Router /api/audit-logs/{id} [put]
 func (h *Handler) updateAudit(w http.ResponseWriter, r *http.Request) {
 	owner, err := principal(r.Context())
 	if err != nil {
@@ -103,6 +159,20 @@ func (h *Handler) updateAudit(w http.ResponseWriter, r *http.Request) {
 	handlerutils.WriteData(w, http.StatusOK, view)
 }
 
+// deleteAudit handles DELETE /api/audit-logs/{id}.
+//
+// @Summary DELETE /api/audit-logs/{id}
+// @ID audit_logs_id_route_delete
+// @Tags audit
+// @Produce json
+// @Param id path string true "id"
+// @Security SessionCookie
+// @Success 200 {object} main.SwaggerEnvelope
+// @Failure 400 {object} main.SwaggerEnvelope
+// @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 403 {object} main.SwaggerEnvelope
+// @Failure 500 {object} main.SwaggerEnvelope
+// @Router /api/audit-logs/{id} [delete]
 func (h *Handler) deleteAudit(w http.ResponseWriter, r *http.Request) {
 	owner, err := principal(r.Context())
 	if err != nil {
@@ -125,6 +195,18 @@ func (h *Handler) deleteAudit(w http.ResponseWriter, r *http.Request) {
 	handlerutils.WriteData(w, http.StatusOK, map[string]string{"message": "审计日志已删除"})
 }
 
+// exportAudits handles GET /api/audit-logs/export.
+//
+// @Summary GET /api/audit-logs/export
+// @ID audit_logs_export_route_get
+// @Tags audit-logs
+// @Produce json
+// @Security SessionCookie
+// @Success 200 {object} main.SwaggerEnvelope
+// @Failure 400 {object} main.SwaggerEnvelope
+// @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 500 {object} main.SwaggerEnvelope
+// @Router /api/audit-logs/export [get]
 func (h *Handler) exportAudits(w http.ResponseWriter, r *http.Request) {
 	owner, err := principal(r.Context())
 	if err != nil {
@@ -149,6 +231,18 @@ func (h *Handler) exportAudits(w http.ResponseWriter, r *http.Request) {
 	_, _ = w.Write(document)
 }
 
+// auditStats handles GET /api/audit-logs/stats.
+//
+// @Summary GET /api/audit-logs/stats
+// @ID audit_logs_stats_route_get
+// @Tags audit-logs
+// @Produce json
+// @Security SessionCookie
+// @Success 200 {object} main.SwaggerEnvelope
+// @Failure 400 {object} main.SwaggerEnvelope
+// @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 500 {object} main.SwaggerEnvelope
+// @Router /api/audit-logs/stats [get]
 func (h *Handler) auditStats(w http.ResponseWriter, r *http.Request) {
 	owner, err := principal(r.Context())
 	if err != nil {

@@ -611,6 +611,10 @@ paths:
           description: Unauthorized
           schema:
             $ref: '#/definitions/main.SwaggerEnvelope'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
         "500":
           description: Internal Server Error
           schema:
@@ -619,7 +623,43 @@ paths:
       - SessionCookie: []
       summary: DELETE /api/audit-logs/{id}
       tags:
-      - audit-logs
+      - audit
+    get:
+      operationId: audit_logs_id_route_get
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+      security:
+      - SessionCookie: []
+      summary: GET /api/audit-logs/{id}
+      tags:
+      - audit
     put:
       consumes:
       - application/json
@@ -633,6 +673,7 @@ paths:
       - description: JSON request payload
         in: body
         name: body
+        required: true
         schema:
           $ref: '#/definitions/main.SwaggerRequest'
       produces:
@@ -650,6 +691,10 @@ paths:
           description: Unauthorized
           schema:
             $ref: '#/definitions/main.SwaggerEnvelope'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
         "500":
           description: Internal Server Error
           schema:
@@ -658,7 +703,7 @@ paths:
       - SessionCookie: []
       summary: PUT /api/audit-logs/{id}
       tags:
-      - audit-logs
+      - audit
   /api/audit-logs/export:
     get:
       operationId: audit_logs_export_route_get
@@ -713,15 +758,118 @@ paths:
       summary: GET /api/audit-logs/stats
       tags:
       - audit-logs
-  /api/auth/logout:
+  /api/auth/{provider}:
+    get:
+      operationId: auth_provider_route_get
+      parameters:
+      - description: provider
+        in: path
+        name: provider
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "302":
+          description: Found
+          schema:
+            type: string
+      summary: GET /api/auth/{provider}
+      tags:
+      - oauth
+  /api/auth/{provider}/callback:
+    get:
+      operationId: auth_provider_callback_route_get
+      parameters:
+      - description: provider
+        in: path
+        name: provider
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+      summary: GET /api/auth/{provider}/callback
+      tags:
+      - oauth
+  /api/auth/callback/{provider}:
+    get:
+      operationId: auth_callback_provider_route_get
+      parameters:
+      - description: provider
+        in: path
+        name: provider
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+      summary: GET /api/auth/callback/{provider}
+      tags:
+      - oauth
+  /api/auth/csrf:
+    get:
+      operationId: auth_csrf_route_get
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+      summary: GET /api/auth/csrf
+      tags:
+      - auth
+  /api/auth/login:
     post:
       consumes:
       - application/json
-      operationId: auth_logout_route_post
+      operationId: auth_login_route_post
       parameters:
       - description: JSON request payload
         in: body
         name: body
+        required: true
         schema:
           $ref: '#/definitions/main.SwaggerRequest'
       produces:
@@ -739,10 +887,47 @@ paths:
           description: Unauthorized
           schema:
             $ref: '#/definitions/main.SwaggerEnvelope'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
         "500":
           description: Internal Server Error
           schema:
             $ref: '#/definitions/main.SwaggerEnvelope'
+      summary: POST /api/auth/login
+      tags:
+      - auth
+  /api/auth/logout:
+    post:
+      consumes:
+      - application/json
+      operationId: auth_logout_route_post
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+      security:
+      - SessionCookie: []
       summary: POST /api/auth/logout
       tags:
       - auth
@@ -764,6 +949,10 @@ paths:
           description: Unauthorized
           schema:
             $ref: '#/definitions/main.SwaggerEnvelope'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
         "500":
           description: Internal Server Error
           schema:
@@ -773,6 +962,70 @@ paths:
       summary: GET /api/auth/me
       tags:
       - auth
+  /api/auth/providers:
+    get:
+      operationId: auth_providers_route_get
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+      summary: GET /api/auth/providers
+      tags:
+      - oauth
+  /api/auth/signin/{provider}:
+    get:
+      operationId: auth_signin_provider_route_get
+      parameters:
+      - description: provider
+        in: path
+        name: provider
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+      summary: GET /api/auth/signin/{provider}
+      tags:
+      - oauth
   /api/categories:
     get:
       operationId: categories_route_get
@@ -867,6 +1120,42 @@ paths:
       summary: DELETE /api/categories/{id}
       tags:
       - categories
+    get:
+      operationId: categories_id_route_get
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+      security:
+      - SessionCookie: []
+      summary: GET /api/categories/{id}
+      tags:
+      - catalog
     put:
       consumes:
       - application/json
@@ -1328,6 +1617,42 @@ paths:
       summary: DELETE /api/mcp-services/{id}
       tags:
       - mcp-services
+    get:
+      operationId: mcp_services_id_route_get
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+      security:
+      - SessionCookie: []
+      summary: GET /api/mcp-services/{id}
+      tags:
+      - catalog
     put:
       consumes:
       - application/json
@@ -1627,73 +1952,41 @@ paths:
       summary: GET /api/payment/{outTradeNo}/status
       tags:
       - payment
-  /api/payment/business/recharge:
-    post:
-      consumes:
-      - application/json
-      operationId: payment_business_recharge_route_post
-      parameters:
-      - description: JSON request payload
-        in: body
-        name: body
-        schema:
-          $ref: '#/definitions/main.SwaggerRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/main.SwaggerEnvelope'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/main.SwaggerEnvelope'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/main.SwaggerEnvelope'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/main.SwaggerEnvelope'
-      summary: POST /api/payment/business/recharge
-      tags:
-      - payment
-  /api/payment/business/subscription:
-    post:
-      consumes:
-      - application/json
-      operationId: payment_business_subscription_route_post
-      parameters:
-      - description: JSON request payload
-        in: body
-        name: body
-        schema:
-          $ref: '#/definitions/main.SwaggerRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/main.SwaggerEnvelope'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/main.SwaggerEnvelope'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/main.SwaggerEnvelope'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/main.SwaggerEnvelope'
-      summary: POST /api/payment/business/subscription
-      tags:
-      - payment
   /api/payment/callback/alipay:
+    get:
+      operationId: payment_callback_alipay_route_get
+      parameters:
+      - description: Gateway notification parameters
+        in: body
+        name: body
+        schema:
+          $ref: '#/definitions/main.SwaggerRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+      summary: GET /api/payment/callback/alipay
+      tags:
+      - payment
     post:
       consumes:
       - application/json
@@ -1760,6 +2053,40 @@ paths:
       tags:
       - payment
   /api/payment/callback/wechat:
+    get:
+      operationId: payment_callback_wechat_route_get
+      parameters:
+      - description: Gateway notification parameters
+        in: body
+        name: body
+        schema:
+          $ref: '#/definitions/main.SwaggerRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+      summary: GET /api/payment/callback/wechat
+      tags:
+      - payment
     post:
       consumes:
       - application/json
@@ -1932,6 +2259,85 @@ paths:
       security:
       - SessionCookie: []
       summary: GET /api/personal/profile
+      tags:
+      - personal
+    put:
+      consumes:
+      - application/json
+      operationId: personal_profile_route_put
+      parameters:
+      - description: JSON request payload
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/main.SwaggerRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+      security:
+      - SessionCookie: []
+      summary: PUT /api/personal/profile
+      tags:
+      - personal
+  /api/personal/profile/password:
+    put:
+      consumes:
+      - application/json
+      operationId: personal_profile_password_route_put
+      parameters:
+      - description: JSON request payload
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/main.SwaggerRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+      security:
+      - SessionCookie: []
+      summary: PUT /api/personal/profile/password
       tags:
       - personal
   /api/personal/redeem:
@@ -2246,6 +2652,263 @@ paths:
       summary: GET /api/redemption-codes/plans
       tags:
       - redemption-codes
+  /api/scheduled-jobs:
+    get:
+      operationId: scheduled_jobs_route_get
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+      security:
+      - SessionCookie: []
+      summary: GET /api/scheduled-jobs
+      tags:
+      - schedule
+    post:
+      consumes:
+      - application/json
+      operationId: scheduled_jobs_route_post
+      parameters:
+      - description: JSON request payload
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/main.SwaggerRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+      security:
+      - SessionCookie: []
+      summary: POST /api/scheduled-jobs
+      tags:
+      - schedule
+  /api/scheduled-jobs/{id}:
+    delete:
+      operationId: scheduled_jobs_id_route_delete
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+      security:
+      - SessionCookie: []
+      summary: DELETE /api/scheduled-jobs/{id}
+      tags:
+      - schedule
+    get:
+      operationId: scheduled_jobs_id_route_get
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+      security:
+      - SessionCookie: []
+      summary: GET /api/scheduled-jobs/{id}
+      tags:
+      - schedule
+    put:
+      consumes:
+      - application/json
+      operationId: scheduled_jobs_id_route_put
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: JSON request payload
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/main.SwaggerRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+      security:
+      - SessionCookie: []
+      summary: PUT /api/scheduled-jobs/{id}
+      tags:
+      - schedule
+  /api/scheduled-jobs/{id}/run:
+    post:
+      consumes:
+      - application/json
+      operationId: scheduled_jobs_id_run_route_post
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+      security:
+      - SessionCookie: []
+      summary: POST /api/scheduled-jobs/{id}/run
+      tags:
+      - schedule
+  /api/scheduled-jobs/tasks:
+    get:
+      operationId: scheduled_jobs_tasks_route_get
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+      security:
+      - SessionCookie: []
+      summary: GET /api/scheduled-jobs/tasks
+      tags:
+      - schedule
   /api/stats:
     get:
       operationId: stats_route_get
@@ -2732,6 +3395,42 @@ paths:
       security:
       - SessionCookie: []
       summary: DELETE /api/tokens/{id}
+      tags:
+      - tokens
+    get:
+      operationId: tokens_id_route_get
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.SwaggerEnvelope'
+      security:
+      - SessionCookie: []
+      summary: GET /api/tokens/{id}
       tags:
       - tokens
     put:

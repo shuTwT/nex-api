@@ -267,7 +267,6 @@ export default function APIManagementPage() {
               key={stat.title}
               className="hover:shadow-md transition-shadow cursor-pointer"
             >
-              <div className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-slate-500">{stat.title}</p>
@@ -281,14 +280,12 @@ export default function APIManagementPage() {
                     <Icon className="h-5 w-5" />
                   </div>
                 </div>
-              </div>
             </Card>
           );
         })}
       </div>
 
       <Card>
-        <div className="p-4">
           <div className="flex flex-wrap items-end gap-3">
             <div className="relative flex-1 min-w-[200px]">
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
@@ -317,11 +314,10 @@ export default function APIManagementPage() {
               重置
             </Button>
           </div>
-        </div>
       </Card>
 
       <Card>
-        <div className="p-4"><Typography.Title level={5}>接口列表</Typography.Title>
+        <Typography.Title level={5}>接口列表</Typography.Title>
           {isLoading ? (
             <div className="flex items-center justify-center py-12">
               <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-600 border-t-transparent" />
@@ -475,7 +471,7 @@ export default function APIManagementPage() {
               </div>
             </>
           )}
-        </div>
+       
       </Card>
 
       <Card>

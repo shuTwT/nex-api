@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { Button, Modal } from "antd";
 import { TokenForm } from "@/components/token-form";
 
@@ -17,12 +18,18 @@ interface TokenFormDialogProps {
 }
 
 export function TokenFormDialog({ open, onOpenChange, token, onSuccess }: TokenFormDialogProps) {
+  const [created, setCreated] = useState(false);
+
+  useEffect(() => {
+    if (!open) setCreated(false);
+  }, [open]);
+
   return (
     <Modal
       open={open}
       title={token ? "编辑令牌" : "创建令牌"}
       onCancel={() => onOpenChange(false)}
-      footer={[
+      footer={created ? null : [
         <Button key="cancel" onClick={() => onOpenChange(false)}>取消</Button>,
         <Button key="submit" type="primary" htmlType="submit" form="token-form">
           {token ? "保存" : "创建"}
@@ -30,7 +37,13 @@ export function TokenFormDialog({ open, onOpenChange, token, onSuccess }: TokenF
       ]}
       destroyOnHidden
     >
-      <TokenForm token={token || undefined} onClose={() => onOpenChange(false)} onSuccess={onSuccess} formId="token-form" />
+      <TokenForm
+        token={token || undefined}
+        onClose={() => onOpenChange(false)}
+        onSuccess={onSuccess}
+        onCreated={() => setCreated(true)}
+        formId="token-form"
+      />
     </Modal>
   );
 }

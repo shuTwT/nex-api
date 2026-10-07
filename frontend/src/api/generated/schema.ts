@@ -188,7 +188,8 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get?: never;
+        /** GET /api/audit-logs/{id} */
+        get: operations["audit_logs_id_route_get"];
         /** PUT /api/audit-logs/{id} */
         put: operations["audit_logs_id_route_put"];
         post?: never;
@@ -233,6 +234,91 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/auth/{provider}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** GET /api/auth/{provider} */
+        get: operations["auth_provider_route_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/auth/{provider}/callback": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** GET /api/auth/{provider}/callback */
+        get: operations["auth_provider_callback_route_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/auth/callback/{provider}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** GET /api/auth/callback/{provider} */
+        get: operations["auth_callback_provider_route_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/auth/csrf": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** GET /api/auth/csrf */
+        get: operations["auth_csrf_route_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/auth/login": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** POST /api/auth/login */
+        post: operations["auth_login_route_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/auth/logout": {
         parameters: {
             query?: never;
@@ -267,6 +353,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/auth/providers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** GET /api/auth/providers */
+        get: operations["auth_providers_route_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/auth/signin/{provider}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** GET /api/auth/signin/{provider} */
+        get: operations["auth_signin_provider_route_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/categories": {
         parameters: {
             query?: never;
@@ -292,7 +412,8 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get?: never;
+        /** GET /api/categories/{id} */
+        get: operations["categories_id_route_get"];
         /** PUT /api/categories/{id} */
         put: operations["categories_id_route_put"];
         post?: never;
@@ -532,7 +653,8 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get?: never;
+        /** GET /api/mcp-services/{id} */
+        get: operations["mcp_services_id_route_get"];
         /** PUT /api/mcp-services/{id} */
         put: operations["mcp_services_id_route_put"];
         post?: never;
@@ -679,40 +801,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/payment/business/recharge": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** POST /api/payment/business/recharge */
-        post: operations["payment_business_recharge_route_post"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/payment/business/subscription": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** POST /api/payment/business/subscription */
-        post: operations["payment_business_subscription_route_post"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/payment/callback/alipay": {
         parameters: {
             query?: never;
@@ -720,7 +808,8 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get?: never;
+        /** GET /api/payment/callback/alipay */
+        get: operations["payment_callback_alipay_route_get"];
         put?: never;
         /** POST /api/payment/callback/alipay */
         post: operations["payment_callback_alipay_route_post"];
@@ -754,7 +843,8 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get?: never;
+        /** GET /api/payment/callback/wechat */
+        get: operations["payment_callback_wechat_route_get"];
         put?: never;
         /** POST /api/payment/callback/wechat */
         post: operations["payment_callback_wechat_route_post"];
@@ -825,7 +915,25 @@ export interface paths {
         };
         /** GET /api/personal/profile */
         get: operations["personal_profile_route_get"];
-        put?: never;
+        /** PUT /api/personal/profile */
+        put: operations["personal_profile_route_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/personal/profile/password": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** PUT /api/personal/profile/password */
+        put: operations["personal_profile_password_route_put"];
         post?: never;
         delete?: never;
         options?: never;
@@ -963,6 +1071,77 @@ export interface paths {
         };
         /** GET /api/redemption-codes/plans */
         get: operations["redemption_codes_plans_route_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/scheduled-jobs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** GET /api/scheduled-jobs */
+        get: operations["scheduled_jobs_route_get"];
+        put?: never;
+        /** POST /api/scheduled-jobs */
+        post: operations["scheduled_jobs_route_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/scheduled-jobs/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** GET /api/scheduled-jobs/{id} */
+        get: operations["scheduled_jobs_id_route_get"];
+        /** PUT /api/scheduled-jobs/{id} */
+        put: operations["scheduled_jobs_id_route_put"];
+        post?: never;
+        /** DELETE /api/scheduled-jobs/{id} */
+        delete: operations["scheduled_jobs_id_route_delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/scheduled-jobs/{id}/run": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** POST /api/scheduled-jobs/{id}/run */
+        post: operations["scheduled_jobs_id_run_route_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/scheduled-jobs/tasks": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** GET /api/scheduled-jobs/tasks */
+        get: operations["scheduled_jobs_tasks_route_get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1153,7 +1332,8 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get?: never;
+        /** GET /api/tokens/{id} */
+        get: operations["tokens_id_route_get"];
         /** PUT /api/tokens/{id} */
         put: operations["tokens_id_route_put"];
         post?: never;
@@ -1371,6 +1551,18 @@ export interface components {
                 "application/json": components["schemas"]["main.SwaggerRequest"];
             };
         };
+        /** @description JSON request payload */
+        "main.SwaggerRequest2": {
+            content: {
+                "application/json": components["schemas"]["main.SwaggerRequest"];
+            };
+        };
+        /** @description Gateway notification parameters */
+        "main.SwaggerRequest3": {
+            content: {
+                "application/json": components["schemas"]["main.SwaggerRequest"];
+            };
+        };
     };
     headers: never;
     pathItems: never;
@@ -1431,7 +1623,7 @@ export interface operations {
             path?: never;
             cookie?: never;
         };
-        requestBody?: components["requestBodies"]["main.SwaggerRequest"];
+        requestBody?: components["requestBodies"]["main.SwaggerRequest2"];
         responses: {
             /** @description OK */
             200: {
@@ -1531,7 +1723,7 @@ export interface operations {
             };
             cookie?: never;
         };
-        requestBody?: components["requestBodies"]["main.SwaggerRequest"];
+        requestBody?: components["requestBodies"]["main.SwaggerRequest2"];
         responses: {
             /** @description OK */
             200: {
@@ -1631,7 +1823,7 @@ export interface operations {
             };
             cookie?: never;
         };
-        requestBody?: components["requestBodies"]["main.SwaggerRequest"];
+        requestBody?: components["requestBodies"]["main.SwaggerRequest2"];
         responses: {
             /** @description OK */
             200: {
@@ -1822,7 +2014,7 @@ export interface operations {
             path?: never;
             cookie?: never;
         };
-        requestBody?: components["requestBodies"]["main.SwaggerRequest"];
+        requestBody?: components["requestBodies"]["main.SwaggerRequest2"];
         responses: {
             /** @description OK */
             200: {
@@ -1922,7 +2114,7 @@ export interface operations {
             };
             cookie?: never;
         };
-        requestBody?: components["requestBodies"]["main.SwaggerRequest"];
+        requestBody?: components["requestBodies"]["main.SwaggerRequest2"];
         responses: {
             /** @description OK */
             200: {
@@ -2022,7 +2214,7 @@ export interface operations {
             };
             cookie?: never;
         };
-        requestBody?: components["requestBodies"]["main.SwaggerRequest"];
+        requestBody?: components["requestBodies"]["main.SwaggerRequest2"];
         responses: {
             /** @description OK */
             200: {
@@ -2163,7 +2355,7 @@ export interface operations {
             path?: never;
             cookie?: never;
         };
-        requestBody?: components["requestBodies"]["main.SwaggerRequest"];
+        requestBody?: components["requestBodies"]["main.SwaggerRequest2"];
         responses: {
             /** @description OK */
             200: {
@@ -2203,7 +2395,7 @@ export interface operations {
             };
         };
     };
-    audit_logs_id_route_put: {
+    audit_logs_id_route_get: {
         parameters: {
             query?: never;
             header?: never;
@@ -2213,7 +2405,7 @@ export interface operations {
             };
             cookie?: never;
         };
-        requestBody?: components["requestBodies"]["main.SwaggerRequest"];
+        requestBody?: never;
         responses: {
             /** @description OK */
             200: {
@@ -2235,6 +2427,74 @@ export interface operations {
             };
             /** @description Unauthorized */
             401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+        };
+    };
+    audit_logs_id_route_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description id */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: components["requestBodies"]["main.SwaggerRequest"];
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -2285,6 +2545,15 @@ export interface operations {
             };
             /** @description Unauthorized */
             401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -2397,14 +2666,63 @@ export interface operations {
             };
         };
     };
-    auth_logout_route_post: {
+    auth_provider_route_get: {
         parameters: {
             query?: never;
             header?: never;
-            path?: never;
+            path: {
+                /** @description provider */
+                provider: string;
+            };
             cookie?: never;
         };
-        requestBody?: components["requestBodies"]["main.SwaggerRequest"];
+        requestBody?: never;
+        responses: {
+            /** @description Found */
+            302: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": string;
+                };
+            };
+        };
+    };
+    auth_provider_callback_route_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description provider */
+                provider: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+        };
+    };
+    auth_callback_provider_route_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description provider */
+                provider: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
         responses: {
             /** @description OK */
             200: {
@@ -2426,6 +2744,183 @@ export interface operations {
             };
             /** @description Unauthorized */
             401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+        };
+    };
+    auth_csrf_route_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+        };
+    };
+    auth_login_route_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: components["requestBodies"]["main.SwaggerRequest"];
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+        };
+    };
+    auth_logout_route_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -2473,6 +2968,130 @@ export interface operations {
             };
             /** @description Unauthorized */
             401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+        };
+    };
+    auth_providers_route_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+        };
+    };
+    auth_signin_provider_route_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description provider */
+                provider: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -2545,7 +3164,7 @@ export interface operations {
             path?: never;
             cookie?: never;
         };
-        requestBody?: components["requestBodies"]["main.SwaggerRequest"];
+        requestBody?: components["requestBodies"]["main.SwaggerRequest2"];
         responses: {
             /** @description OK */
             200: {
@@ -2585,6 +3204,65 @@ export interface operations {
             };
         };
     };
+    categories_id_route_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description id */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+        };
+    };
     categories_id_route_put: {
         parameters: {
             query?: never;
@@ -2595,7 +3273,7 @@ export interface operations {
             };
             cookie?: never;
         };
-        requestBody?: components["requestBodies"]["main.SwaggerRequest"];
+        requestBody?: components["requestBodies"]["main.SwaggerRequest2"];
         responses: {
             /** @description OK */
             200: {
@@ -2692,7 +3370,7 @@ export interface operations {
             path?: never;
             cookie?: never;
         };
-        requestBody?: components["requestBodies"]["main.SwaggerRequest"];
+        requestBody?: components["requestBodies"]["main.SwaggerRequest2"];
         responses: {
             /** @description OK */
             200: {
@@ -3294,7 +3972,7 @@ export interface operations {
             path?: never;
             cookie?: never;
         };
-        requestBody?: components["requestBodies"]["main.SwaggerRequest"];
+        requestBody?: components["requestBodies"]["main.SwaggerRequest2"];
         responses: {
             /** @description OK */
             200: {
@@ -3334,6 +4012,65 @@ export interface operations {
             };
         };
     };
+    mcp_services_id_route_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description id */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+        };
+    };
     mcp_services_id_route_put: {
         parameters: {
             query?: never;
@@ -3344,7 +4081,7 @@ export interface operations {
             };
             cookie?: never;
         };
-        requestBody?: components["requestBodies"]["main.SwaggerRequest"];
+        requestBody?: components["requestBodies"]["main.SwaggerRequest2"];
         responses: {
             /** @description OK */
             200: {
@@ -3444,7 +4181,7 @@ export interface operations {
             };
             cookie?: never;
         };
-        requestBody?: components["requestBodies"]["main.SwaggerRequest"];
+        requestBody?: components["requestBodies"]["main.SwaggerRequest2"];
         responses: {
             /** @description OK */
             200: {
@@ -3632,7 +4369,7 @@ export interface operations {
             path?: never;
             cookie?: never;
         };
-        requestBody?: components["requestBodies"]["main.SwaggerRequest"];
+        requestBody?: components["requestBodies"]["main.SwaggerRequest2"];
         responses: {
             /** @description OK */
             200: {
@@ -3732,7 +4469,7 @@ export interface operations {
             };
             cookie?: never;
         };
-        requestBody?: components["requestBodies"]["main.SwaggerRequest"];
+        requestBody?: components["requestBodies"]["main.SwaggerRequest2"];
         responses: {
             /** @description OK */
             200: {
@@ -3822,14 +4559,14 @@ export interface operations {
             };
         };
     };
-    payment_business_recharge_route_post: {
+    payment_callback_alipay_route_get: {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        requestBody?: components["requestBodies"]["main.SwaggerRequest"];
+        requestBody?: components["requestBodies"]["main.SwaggerRequest3"];
         responses: {
             /** @description OK */
             200: {
@@ -3858,46 +4595,8 @@ export interface operations {
                     "application/json": components["schemas"]["main.SwaggerEnvelope"];
                 };
             };
-            /** @description Internal Server Error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
-                };
-            };
-        };
-    };
-    payment_business_subscription_route_post: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: components["requestBodies"]["main.SwaggerRequest"];
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
-                };
-            };
-            /** @description Bad Request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
-                };
-            };
-            /** @description Unauthorized */
-            401: {
+            /** @description Forbidden */
+            403: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -3923,7 +4622,7 @@ export interface operations {
             path?: never;
             cookie?: never;
         };
-        requestBody?: components["requestBodies"]["main.SwaggerRequest"];
+        requestBody?: components["requestBodies"]["main.SwaggerRequest2"];
         responses: {
             /** @description OK */
             200: {
@@ -3970,7 +4669,7 @@ export interface operations {
             path?: never;
             cookie?: never;
         };
-        requestBody?: components["requestBodies"]["main.SwaggerRequest"];
+        requestBody?: components["requestBodies"]["main.SwaggerRequest2"];
         responses: {
             /** @description OK */
             200: {
@@ -4010,6 +4709,62 @@ export interface operations {
             };
         };
     };
+    payment_callback_wechat_route_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: components["requestBodies"]["main.SwaggerRequest3"];
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+        };
+    };
     payment_callback_wechat_route_post: {
         parameters: {
             query?: never;
@@ -4017,7 +4772,7 @@ export interface operations {
             path?: never;
             cookie?: never;
         };
-        requestBody?: components["requestBodies"]["main.SwaggerRequest"];
+        requestBody?: components["requestBodies"]["main.SwaggerRequest2"];
         responses: {
             /** @description OK */
             200: {
@@ -4111,7 +4866,7 @@ export interface operations {
             path?: never;
             cookie?: never;
         };
-        requestBody?: components["requestBodies"]["main.SwaggerRequest"];
+        requestBody?: components["requestBodies"]["main.SwaggerRequest2"];
         responses: {
             /** @description OK */
             200: {
@@ -4292,6 +5047,118 @@ export interface operations {
             };
         };
     };
+    personal_profile_route_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: components["requestBodies"]["main.SwaggerRequest"];
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+        };
+    };
+    personal_profile_password_route_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: components["requestBodies"]["main.SwaggerRequest"];
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+        };
+    };
     personal_redeem_route_post: {
         parameters: {
             query?: never;
@@ -4299,7 +5166,7 @@ export interface operations {
             path?: never;
             cookie?: never;
         };
-        requestBody?: components["requestBodies"]["main.SwaggerRequest"];
+        requestBody?: components["requestBodies"]["main.SwaggerRequest2"];
         responses: {
             /** @description OK */
             200: {
@@ -4346,7 +5213,7 @@ export interface operations {
             path?: never;
             cookie?: never;
         };
-        requestBody?: components["requestBodies"]["main.SwaggerRequest"];
+        requestBody?: components["requestBodies"]["main.SwaggerRequest2"];
         responses: {
             /** @description OK */
             200: {
@@ -4393,7 +5260,7 @@ export interface operations {
             path?: never;
             cookie?: never;
         };
-        requestBody?: components["requestBodies"]["main.SwaggerRequest"];
+        requestBody?: components["requestBodies"]["main.SwaggerRequest2"];
         responses: {
             /** @description OK */
             200: {
@@ -4487,7 +5354,7 @@ export interface operations {
             path?: never;
             cookie?: never;
         };
-        requestBody?: components["requestBodies"]["main.SwaggerRequest"];
+        requestBody?: components["requestBodies"]["main.SwaggerRequest2"];
         responses: {
             /** @description OK */
             200: {
@@ -4584,7 +5451,7 @@ export interface operations {
             path?: never;
             cookie?: never;
         };
-        requestBody?: components["requestBodies"]["main.SwaggerRequest"];
+        requestBody?: components["requestBodies"]["main.SwaggerRequest2"];
         responses: {
             /** @description OK */
             200: {
@@ -4765,6 +5632,410 @@ export interface operations {
             };
         };
     };
+    scheduled_jobs_route_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+        };
+    };
+    scheduled_jobs_route_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: components["requestBodies"]["main.SwaggerRequest"];
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+        };
+    };
+    scheduled_jobs_id_route_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description id */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+        };
+    };
+    scheduled_jobs_id_route_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description id */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: components["requestBodies"]["main.SwaggerRequest"];
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+        };
+    };
+    scheduled_jobs_id_route_delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description id */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+        };
+    };
+    scheduled_jobs_id_run_route_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description id */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+        };
+    };
+    scheduled_jobs_tasks_route_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+        };
+    };
     stats_route_get: {
         parameters: {
             query?: never;
@@ -4916,7 +6187,7 @@ export interface operations {
             path?: never;
             cookie?: never;
         };
-        requestBody?: components["requestBodies"]["main.SwaggerRequest"];
+        requestBody?: components["requestBodies"]["main.SwaggerRequest2"];
         responses: {
             /** @description OK */
             200: {
@@ -5016,7 +6287,7 @@ export interface operations {
             };
             cookie?: never;
         };
-        requestBody?: components["requestBodies"]["main.SwaggerRequest"];
+        requestBody?: components["requestBodies"]["main.SwaggerRequest2"];
         responses: {
             /** @description OK */
             200: {
@@ -5160,7 +6431,7 @@ export interface operations {
             path?: never;
             cookie?: never;
         };
-        requestBody?: components["requestBodies"]["main.SwaggerRequest"];
+        requestBody?: components["requestBodies"]["main.SwaggerRequest2"];
         responses: {
             /** @description OK */
             200: {
@@ -5301,7 +6572,7 @@ export interface operations {
             path?: never;
             cookie?: never;
         };
-        requestBody?: components["requestBodies"]["main.SwaggerRequest"];
+        requestBody?: components["requestBodies"]["main.SwaggerRequest2"];
         responses: {
             /** @description OK */
             200: {
@@ -5442,7 +6713,7 @@ export interface operations {
             path?: never;
             cookie?: never;
         };
-        requestBody?: components["requestBodies"]["main.SwaggerRequest"];
+        requestBody?: components["requestBodies"]["main.SwaggerRequest2"];
         responses: {
             /** @description OK */
             200: {
@@ -5482,6 +6753,65 @@ export interface operations {
             };
         };
     };
+    tokens_id_route_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description id */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                };
+            };
+        };
+    };
     tokens_id_route_put: {
         parameters: {
             query?: never;
@@ -5492,7 +6822,7 @@ export interface operations {
             };
             cookie?: never;
         };
-        requestBody?: components["requestBodies"]["main.SwaggerRequest"];
+        requestBody?: components["requestBodies"]["main.SwaggerRequest2"];
         responses: {
             /** @description OK */
             200: {
@@ -5592,7 +6922,7 @@ export interface operations {
             };
             cookie?: never;
         };
-        requestBody?: components["requestBodies"]["main.SwaggerRequest"];
+        requestBody?: components["requestBodies"]["main.SwaggerRequest2"];
         responses: {
             /** @description OK */
             200: {
@@ -5686,7 +7016,7 @@ export interface operations {
             path?: never;
             cookie?: never;
         };
-        requestBody?: components["requestBodies"]["main.SwaggerRequest"];
+        requestBody?: components["requestBodies"]["main.SwaggerRequest2"];
         responses: {
             /** @description OK */
             200: {
@@ -5877,7 +7207,7 @@ export interface operations {
             path?: never;
             cookie?: never;
         };
-        requestBody?: components["requestBodies"]["main.SwaggerRequest"];
+        requestBody?: components["requestBodies"]["main.SwaggerRequest2"];
         responses: {
             /** @description OK */
             200: {
@@ -5977,7 +7307,7 @@ export interface operations {
             };
             cookie?: never;
         };
-        requestBody?: components["requestBodies"]["main.SwaggerRequest"];
+        requestBody?: components["requestBodies"]["main.SwaggerRequest2"];
         responses: {
             /** @description OK */
             200: {
@@ -6174,7 +7504,7 @@ export interface operations {
             };
             cookie?: never;
         };
-        requestBody?: components["requestBodies"]["main.SwaggerRequest"];
+        requestBody?: components["requestBodies"]["main.SwaggerRequest2"];
         responses: {
             /** @description OK */
             200: {
@@ -6224,7 +7554,7 @@ export interface operations {
             };
             cookie?: never;
         };
-        requestBody?: components["requestBodies"]["main.SwaggerRequest"];
+        requestBody?: components["requestBodies"]["main.SwaggerRequest2"];
         responses: {
             /** @description OK */
             200: {
@@ -6324,7 +7654,7 @@ export interface operations {
             };
             cookie?: never;
         };
-        requestBody?: components["requestBodies"]["main.SwaggerRequest"];
+        requestBody?: components["requestBodies"]["main.SwaggerRequest2"];
         responses: {
             /** @description OK */
             200: {
@@ -6374,7 +7704,7 @@ export interface operations {
             };
             cookie?: never;
         };
-        requestBody?: components["requestBodies"]["main.SwaggerRequest"];
+        requestBody?: components["requestBodies"]["main.SwaggerRequest2"];
         responses: {
             /** @description OK */
             200: {

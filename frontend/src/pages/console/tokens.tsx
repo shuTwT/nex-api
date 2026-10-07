@@ -4,10 +4,7 @@ import {
   Key,
   Plus,
   Search,
-  Copy,
   Trash2,
-  Eye,
-  EyeOff,
   Shield,
   AlertCircle,
   CheckCircle,
@@ -21,7 +18,7 @@ import { Pagination } from "@/components/pagination";
 interface Token {
   id: string;
   name: string;
-  token: string;
+  tokenMasked: string;
   permissions: string;
   lastUsedAt: string | null;
   expiresAt: string | null;
@@ -57,8 +54,6 @@ export default function TokensPage() {
   const [showTokenForm, setShowTokenForm] = useState(false);
   const [editingToken, setEditingToken] = useState<Token | null>(null);
   const [deletingToken, setDeletingToken] = useState<Token | null>(null);
-  const [showToken, setShowToken] = useState<string | null>(null);
-  const [copiedToken, setCopiedToken] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
   const loadTokens = useCallback(async () => {
@@ -151,20 +146,6 @@ export default function TokensPage() {
     });
   }
 
-  const handleCopyToken = (tokenId: string, token: string) => {
-    navigator.clipboard.writeText(token);
-    setCopiedToken(tokenId);
-    setTimeout(() => setCopiedToken(null), 2000);
-  };
-
-  const toggleShowToken = (tokenId: string) => {
-    setShowToken(showToken === tokenId ? null : tokenId);
-  };
-
-  const maskToken = (token: string) => {
-    return token.substring(0, 10) + "•".repeat(20) + token.substring(token.length - 10);
-  };
-
   const isTokenExpired = (expiresAt: string | null) => {
     if (!expiresAt) return false;
     return new Date(expiresAt) < new Date();
@@ -224,7 +205,6 @@ export default function TokensPage() {
 
           return (
             <Card key={stat.title} className="hover:shadow-md transition-shadow cursor-pointer">
-              <div className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-slate-500">{stat.title}</p>
@@ -234,14 +214,12 @@ export default function TokensPage() {
                     <Icon className="h-5 w-5" />
                   </div>
                 </div>
-              </div>
             </Card>
           );
         })}
       </div>
 
       <Card className="border-orange-200 bg-orange-50">
-        <div className="p-4">
           <div className="flex items-start gap-3">
             <Shield className="h-5 w-5 text-orange-600 flex-shrink-0 mt-0.5" />
             <div>
@@ -251,12 +229,10 @@ export default function TokensPage() {
                 如果令牌泄露，请立即删除并创建新令牌。
               </p>
             </div>
-          </div>
         </div>
       </Card>
 
       <Card>
-        <div className="p-4">
           <div className="flex flex-wrap items-end gap-3">
             <div className="relative flex-1 min-w-[200px]">
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
@@ -284,7 +260,6 @@ export default function TokensPage() {
               重置
             </Button>
           </div>
-        </div>
       </Card>
 
       {isLoading ? (
@@ -313,7 +288,6 @@ export default function TokensPage() {
 
               return (
                 <Card key={token.id} className="hover:shadow-md transition-shadow">
-                  <div className="p-6">
                     <div className="flex items-start justify-between">
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-3 mb-3">
@@ -345,37 +319,10 @@ export default function TokensPage() {
                         </div>
 
                         <div className="bg-slate-50 rounded-lg p-3 mb-3">
-                          <div className="flex items-center justify-between">
-                            <code className="text-sm text-slate-700 font-mono flex-1 overflow-x-auto">
-                              {showToken === token.id ? token.token : maskToken(token.token)}
-                            </code>
-                            <div className="flex items-center gap-2 ml-3">
-                              <Button
-                                type="text"
-                                size="small"
-                                onClick={() => toggleShowToken(token.id)}
-                                className="h-8 w-8 p-0 cursor-pointer"
-                              >
-                                {showToken === token.id ? (
-                                  <EyeOff className="h-4 w-4" />
-                                ) : (
-                                  <Eye className="h-4 w-4" />
-                                )}
-                              </Button>
-                              <Button
-                                type="text"
-                                size="small"
-                                onClick={() => handleCopyToken(token.id, token.token)}
-                                className="h-8 w-8 p-0 cursor-pointer"
-                              >
-                                {copiedToken === token.id ? (
-                                  <CheckCircle className="h-4 w-4 text-green-600" />
-                                ) : (
-                                  <Copy className="h-4 w-4" />
-                                )}
-                              </Button>
-                            </div>
-                          </div>
+                          {/* 后端只在创建时返回一次完整令牌，列表仅提供脱敏标识 */}
+                          <code className="text-sm text-slate-700 font-mono">
+                            {token.tokenMasked}
+                          </code>
                         </div>
 
                         <div className="grid grid-cols-3 gap-4 text-sm">
@@ -421,7 +368,6 @@ export default function TokensPage() {
                         </Button>
                       </div>
                     </div>
-                  </div>
                 </Card>
               );
             })}

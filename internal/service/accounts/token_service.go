@@ -218,8 +218,18 @@ func (s *TokenService) record(ctx context.Context, userID, action, resource, det
 	return nil
 }
 
+// maskToken keeps only the head and tail of the stored token so the list view
+// can identify a token without exposing the full secret; the plaintext value
+// is shown once at creation and never returned afterwards.
+func maskToken(token string) string {
+	if len(token) <= 14 {
+		return "…"
+	}
+	return token[:10] + "…" + token[len(token)-4:]
+}
+
 func tokenView(entity *ent.ApiToken) TokenView {
-	view := TokenView{ID: entity.ID, Name: entity.Name, Permissions: entity.Permissions, IsActive: entity.IsActive, CreatedAt: entity.CreatedAt, UpdatedAt: entity.UpdatedAt}
+	view := TokenView{ID: entity.ID, Name: entity.Name, TokenMasked: maskToken(entity.Token), Permissions: entity.Permissions, IsActive: entity.IsActive, CreatedAt: entity.CreatedAt, UpdatedAt: entity.UpdatedAt}
 	if !entity.LastUsedAt.IsZero() {
 		value := entity.LastUsedAt
 		view.LastUsedAt = &value

@@ -34,6 +34,17 @@ func RegisterRoutes(mux chi.Router, handler *Handler) error {
 	return nil
 }
 
+// listAPIs handles GET /api/marketplace/apis.
+//
+// @Summary GET /api/marketplace/apis
+// @ID marketplace_apis_route_get
+// @Tags marketplace
+// @Produce json
+// @Success 200 {object} main.SwaggerEnvelope
+// @Failure 400 {object} main.SwaggerEnvelope
+// @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 500 {object} main.SwaggerEnvelope
+// @Router /api/marketplace/apis [get]
 func (h *Handler) listAPIs(w http.ResponseWriter, r *http.Request) {
 	options, err := parsePage(r, 20, 20)
 	if err != nil {
@@ -51,6 +62,18 @@ func (h *Handler) listAPIs(w http.ResponseWriter, r *http.Request) {
 	handlerutils.WritePaginated(w, views, options.page, options.limit, total)
 }
 
+// getAPI handles GET /api/marketplace/apis/{id}.
+//
+// @Summary GET /api/marketplace/apis/{id}
+// @ID marketplace_apis_id_route_get
+// @Tags marketplace
+// @Produce json
+// @Param id path string true "id"
+// @Success 200 {object} main.SwaggerEnvelope
+// @Failure 400 {object} main.SwaggerEnvelope
+// @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 500 {object} main.SwaggerEnvelope
+// @Router /api/marketplace/apis/{id} [get]
 func (h *Handler) getAPI(w http.ResponseWriter, r *http.Request) {
 	view, err := h.service.GetAPI(r.Context(), chi.URLParam(r, "id"))
 	if err != nil {
@@ -60,6 +83,17 @@ func (h *Handler) getAPI(w http.ResponseWriter, r *http.Request) {
 	handlerutils.WriteData(w, http.StatusOK, view)
 }
 
+// apiStats handles GET /api/marketplace/stats.
+//
+// @Summary GET /api/marketplace/stats
+// @ID marketplace_stats_route_get
+// @Tags marketplace
+// @Produce json
+// @Success 200 {object} main.SwaggerEnvelope
+// @Failure 400 {object} main.SwaggerEnvelope
+// @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 500 {object} main.SwaggerEnvelope
+// @Router /api/marketplace/stats [get]
 func (h *Handler) apiStats(w http.ResponseWriter, r *http.Request) {
 	stats, err := h.service.APIStats(r.Context())
 	if err != nil {
@@ -69,6 +103,17 @@ func (h *Handler) apiStats(w http.ResponseWriter, r *http.Request) {
 	handlerutils.WriteData(w, http.StatusOK, stats)
 }
 
+// listMCP handles GET /api/marketplace/mcp-services.
+//
+// @Summary GET /api/marketplace/mcp-services
+// @ID marketplace_mcp_services_route_get
+// @Tags marketplace
+// @Produce json
+// @Success 200 {object} main.SwaggerEnvelope
+// @Failure 400 {object} main.SwaggerEnvelope
+// @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 500 {object} main.SwaggerEnvelope
+// @Router /api/marketplace/mcp-services [get]
 func (h *Handler) listMCP(w http.ResponseWriter, r *http.Request) {
 	options, err := parsePage(r, 20, 20)
 	if err != nil {
@@ -86,6 +131,17 @@ func (h *Handler) listMCP(w http.ResponseWriter, r *http.Request) {
 	handlerutils.WritePaginated(w, views, options.page, options.limit, total)
 }
 
+// getMCP handles GET /api/marketplace/mcp-services/{id}.
+//
+// @Summary GET /api/marketplace/mcp-services/{id}
+// @ID marketplace_mcp_services_id_route_get
+// @Tags marketplace
+// @Produce json
+// @Param id path string true "id"
+// @Success 200 {object} main.SwaggerEnvelope
+// @Failure 404 {object} main.SwaggerEnvelope
+// @Failure 500 {object} main.SwaggerEnvelope
+// @Router /api/marketplace/mcp-services/{id} [get]
 func (h *Handler) getMCP(w http.ResponseWriter, r *http.Request) {
 	view, err := h.service.GetMCP(r.Context(), chi.URLParam(r, "id"))
 	if err != nil {
@@ -95,6 +151,17 @@ func (h *Handler) getMCP(w http.ResponseWriter, r *http.Request) {
 	handlerutils.WriteData(w, http.StatusOK, view)
 }
 
+// listMCPTools handles GET /api/marketplace/mcp-services/{id}/tools.
+//
+// @Summary GET /api/marketplace/mcp-services/{id}/tools
+// @ID marketplace_mcp_services_id_tools_route_get
+// @Tags marketplace
+// @Produce json
+// @Param id path string true "id"
+// @Success 200 {object} main.SwaggerEnvelope
+// @Failure 404 {object} main.SwaggerEnvelope
+// @Failure 502 {object} main.SwaggerEnvelope
+// @Router /api/marketplace/mcp-services/{id}/tools [get]
 func (h *Handler) listMCPTools(w http.ResponseWriter, r *http.Request) {
 	tools, err := h.service.ListMCPTools(r.Context(), chi.URLParam(r, "id"))
 	if err != nil {
@@ -104,6 +171,17 @@ func (h *Handler) listMCPTools(w http.ResponseWriter, r *http.Request) {
 	handlerutils.WriteData(w, http.StatusOK, tools)
 }
 
+// mcpStats handles GET /api/marketplace/mcp-stats.
+//
+// @Summary GET /api/marketplace/mcp-stats
+// @ID marketplace_mcp_stats_route_get
+// @Tags marketplace
+// @Produce json
+// @Success 200 {object} main.SwaggerEnvelope
+// @Failure 400 {object} main.SwaggerEnvelope
+// @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 500 {object} main.SwaggerEnvelope
+// @Router /api/marketplace/mcp-stats [get]
 func (h *Handler) mcpStats(w http.ResponseWriter, r *http.Request) {
 	stats, err := h.service.MCPStats(r.Context())
 	if err != nil {

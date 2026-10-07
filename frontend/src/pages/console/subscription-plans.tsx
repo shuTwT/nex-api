@@ -163,7 +163,6 @@ export default function SubscriptionPlansPage() {
 
       <div>
         <Card>
-          <div className="p-4">
             <div className="flex flex-wrap items-end gap-3">
               <div className="relative flex-1 min-w-[200px]">
                 <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
@@ -200,7 +199,6 @@ export default function SubscriptionPlansPage() {
                 重置
               </Button>
             </div>
-          </div>
         </Card>
       </div>
       {plans.length === 0 ? (
@@ -222,7 +220,6 @@ export default function SubscriptionPlansPage() {
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {plans.map((plan) => (
               <Card key={plan.id} className="hover:shadow-md transition-shadow">
-                <div className="p-4">
                   <div className="flex items-start justify-between">
                     <Typography.Title level={5}>{plan.title}</Typography.Title>
                     <Badge
@@ -235,8 +232,7 @@ export default function SubscriptionPlansPage() {
                       {plan.isActive ? "启用" : "禁用"}
                     </Badge>
                   </div>
-                </div>
-                <div className="flex flex-col gap-4 px-4 pb-4">
+                <div className="flex flex-col gap-4">
                   <div className="flex items-baseline gap-1">
                     <DollarSign className="h-5 w-5 text-slate-400" />
                     <span className="text-3xl font-bold text-slate-900">

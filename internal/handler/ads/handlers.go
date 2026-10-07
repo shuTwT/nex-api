@@ -37,6 +37,18 @@ func RegisterRoutes(mux chi.Router, handler *Handler) error {
 	return nil
 }
 
+// list handles GET /api/advertisements.
+//
+// @Summary GET /api/advertisements
+// @ID advertisements_route_get
+// @Tags advertisements
+// @Produce json
+// @Security SessionCookie
+// @Success 200 {object} main.SwaggerEnvelope
+// @Failure 400 {object} main.SwaggerEnvelope
+// @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 500 {object} main.SwaggerEnvelope
+// @Router /api/advertisements [get]
 func (h *Handler) list(w http.ResponseWriter, r *http.Request) {
 	if !handlerutils.RequireAdmin(w, r) {
 		return
@@ -68,6 +80,20 @@ func (h *Handler) list(w http.ResponseWriter, r *http.Request) {
 	handlerutils.WritePaginated(w, result.Items, page, limit, result.Total)
 }
 
+// create handles POST /api/advertisements.
+//
+// @Summary POST /api/advertisements
+// @ID advertisements_route_post
+// @Tags advertisements
+// @Accept json
+// @Produce json
+// @Param body body main.SwaggerRequest false "JSON request payload"
+// @Security SessionCookie
+// @Success 200 {object} main.SwaggerEnvelope
+// @Failure 400 {object} main.SwaggerEnvelope
+// @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 500 {object} main.SwaggerEnvelope
+// @Router /api/advertisements [post]
 func (h *Handler) create(w http.ResponseWriter, r *http.Request) {
 	if !handlerutils.RequireAdmin(w, r) {
 		return
@@ -89,6 +115,19 @@ func (h *Handler) create(w http.ResponseWriter, r *http.Request) {
 	handlerutils.WriteData(w, http.StatusCreated, item)
 }
 
+// get handles GET /api/advertisements/{id}.
+//
+// @Summary GET /api/advertisements/{id}
+// @ID advertisements_id_route_get
+// @Tags advertisements
+// @Produce json
+// @Param id path string true "id"
+// @Security SessionCookie
+// @Success 200 {object} main.SwaggerEnvelope
+// @Failure 400 {object} main.SwaggerEnvelope
+// @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 500 {object} main.SwaggerEnvelope
+// @Router /api/advertisements/{id} [get]
 func (h *Handler) get(w http.ResponseWriter, r *http.Request) {
 	if !handlerutils.RequireAdmin(w, r) {
 		return
@@ -101,6 +140,21 @@ func (h *Handler) get(w http.ResponseWriter, r *http.Request) {
 	handlerutils.WriteData(w, http.StatusOK, item)
 }
 
+// update handles PUT /api/advertisements/{id}.
+//
+// @Summary PUT /api/advertisements/{id}
+// @ID advertisements_id_route_put
+// @Tags advertisements
+// @Accept json
+// @Produce json
+// @Param id path string true "id"
+// @Param body body main.SwaggerRequest false "JSON request payload"
+// @Security SessionCookie
+// @Success 200 {object} main.SwaggerEnvelope
+// @Failure 400 {object} main.SwaggerEnvelope
+// @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 500 {object} main.SwaggerEnvelope
+// @Router /api/advertisements/{id} [put]
 func (h *Handler) update(w http.ResponseWriter, r *http.Request) {
 	if !handlerutils.RequireAdmin(w, r) {
 		return
@@ -118,6 +172,19 @@ func (h *Handler) update(w http.ResponseWriter, r *http.Request) {
 	handlerutils.WriteData(w, http.StatusOK, item)
 }
 
+// delete handles DELETE /api/advertisements/{id}.
+//
+// @Summary DELETE /api/advertisements/{id}
+// @ID advertisements_id_route_delete
+// @Tags advertisements
+// @Produce json
+// @Param id path string true "id"
+// @Security SessionCookie
+// @Success 200 {object} main.SwaggerEnvelope
+// @Failure 400 {object} main.SwaggerEnvelope
+// @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 500 {object} main.SwaggerEnvelope
+// @Router /api/advertisements/{id} [delete]
 func (h *Handler) delete(w http.ResponseWriter, r *http.Request) {
 	if !handlerutils.RequireAdmin(w, r) {
 		return
@@ -129,6 +196,21 @@ func (h *Handler) delete(w http.ResponseWriter, r *http.Request) {
 	handlerutils.WriteData(w, http.StatusOK, map[string]string{"message": "广告已删除"})
 }
 
+// toggle handles PUT /api/advertisements/{id}/toggle.
+//
+// @Summary PUT /api/advertisements/{id}/toggle
+// @ID advertisements_id_toggle_route_put
+// @Tags advertisements
+// @Accept json
+// @Produce json
+// @Param id path string true "id"
+// @Param body body main.SwaggerRequest false "JSON request payload"
+// @Security SessionCookie
+// @Success 200 {object} main.SwaggerEnvelope
+// @Failure 400 {object} main.SwaggerEnvelope
+// @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 500 {object} main.SwaggerEnvelope
+// @Router /api/advertisements/{id}/toggle [put]
 func (h *Handler) toggle(w http.ResponseWriter, r *http.Request) {
 	if !handlerutils.RequireAdmin(w, r) {
 		return
@@ -141,6 +223,18 @@ func (h *Handler) toggle(w http.ResponseWriter, r *http.Request) {
 	handlerutils.WriteData(w, http.StatusOK, item)
 }
 
+// byPosition handles GET /api/advertisements/by-position/{position}.
+//
+// @Summary GET /api/advertisements/by-position/{position}
+// @ID advertisements_by_position_position_route_get
+// @Tags advertisements
+// @Produce json
+// @Param position path string true "position"
+// @Success 200 {object} main.SwaggerEnvelope
+// @Failure 400 {object} main.SwaggerEnvelope
+// @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 500 {object} main.SwaggerEnvelope
+// @Router /api/advertisements/by-position/{position} [get]
 func (h *Handler) byPosition(w http.ResponseWriter, r *http.Request) {
 	item, err := h.service.ByPosition(r.Context(), chi.URLParam(r, "position"))
 	if err != nil {
@@ -150,6 +244,17 @@ func (h *Handler) byPosition(w http.ResponseWriter, r *http.Request) {
 	handlerutils.WriteData(w, http.StatusOK, item)
 }
 
+// stats handles GET /api/advertisements/stats.
+//
+// @Summary GET /api/advertisements/stats
+// @ID advertisements_stats_route_get
+// @Tags advertisements
+// @Produce json
+// @Success 200 {object} main.SwaggerEnvelope
+// @Failure 400 {object} main.SwaggerEnvelope
+// @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 500 {object} main.SwaggerEnvelope
+// @Router /api/advertisements/stats [get]
 func (h *Handler) stats(w http.ResponseWriter, r *http.Request) {
 	if !handlerutils.RequireAdmin(w, r) {
 		return

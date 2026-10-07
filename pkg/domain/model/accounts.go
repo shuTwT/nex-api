@@ -69,6 +69,7 @@ type TokenUpdateReq struct {
 type TokenResp struct {
 	ID          string     `json:"id"`
 	Name        string     `json:"name"`
+	TokenMasked string     `json:"tokenMasked"`
 	Permissions string     `json:"permissions"`
 	LastUsedAt  *time.Time `json:"lastUsedAt,omitempty"`
 	ExpiresAt   *time.Time `json:"expiresAt,omitempty"`

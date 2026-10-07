@@ -34,6 +34,18 @@ func RegisterRoutes(mux chi.Router, handler *Handler) error {
 	return nil
 }
 
+// dashboardStats handles GET /api/dashboard/stats.
+//
+// @Summary GET /api/dashboard/stats
+// @ID dashboard_stats_route_get
+// @Tags dashboard
+// @Produce json
+// @Security SessionCookie
+// @Success 200 {object} main.SwaggerEnvelope
+// @Failure 400 {object} main.SwaggerEnvelope
+// @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 500 {object} main.SwaggerEnvelope
+// @Router /api/dashboard/stats [get]
 func (h *Handler) dashboardStats(w http.ResponseWriter, r *http.Request) {
 	principal, ok := h.requireUser(w, r)
 	if !ok {
@@ -47,6 +59,18 @@ func (h *Handler) dashboardStats(w http.ResponseWriter, r *http.Request) {
 	handlerutils.WriteData(w, http.StatusOK, stats)
 }
 
+// activity handles GET /api/dashboard/activity.
+//
+// @Summary GET /api/dashboard/activity
+// @ID dashboard_activity_route_get
+// @Tags dashboard
+// @Produce json
+// @Security SessionCookie
+// @Success 200 {object} main.SwaggerEnvelope
+// @Failure 400 {object} main.SwaggerEnvelope
+// @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 500 {object} main.SwaggerEnvelope
+// @Router /api/dashboard/activity [get]
 func (h *Handler) activity(w http.ResponseWriter, r *http.Request) {
 	principal, ok := h.requireUser(w, r)
 	if !ok {
@@ -60,6 +84,18 @@ func (h *Handler) activity(w http.ResponseWriter, r *http.Request) {
 	handlerutils.WriteData(w, http.StatusOK, activities)
 }
 
+// topAPIs handles GET /api/dashboard/top-apis.
+//
+// @Summary GET /api/dashboard/top-apis
+// @ID dashboard_top_apis_route_get
+// @Tags dashboard
+// @Produce json
+// @Security SessionCookie
+// @Success 200 {object} main.SwaggerEnvelope
+// @Failure 400 {object} main.SwaggerEnvelope
+// @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 500 {object} main.SwaggerEnvelope
+// @Router /api/dashboard/top-apis [get]
 func (h *Handler) topAPIs(w http.ResponseWriter, r *http.Request) {
 	principal, ok := h.requireUser(w, r)
 	if !ok {
@@ -73,6 +109,18 @@ func (h *Handler) topAPIs(w http.ResponseWriter, r *http.Request) {
 	handlerutils.WriteData(w, http.StatusOK, result)
 }
 
+// usageTrend handles GET /api/dashboard/usage-trend.
+//
+// @Summary GET /api/dashboard/usage-trend
+// @ID dashboard_usage_trend_route_get
+// @Tags dashboard
+// @Produce json
+// @Security SessionCookie
+// @Success 200 {object} main.SwaggerEnvelope
+// @Failure 400 {object} main.SwaggerEnvelope
+// @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 500 {object} main.SwaggerEnvelope
+// @Router /api/dashboard/usage-trend [get]
 func (h *Handler) usageTrend(w http.ResponseWriter, r *http.Request) {
 	principal, ok := h.requireUser(w, r)
 	if !ok {
@@ -86,6 +134,18 @@ func (h *Handler) usageTrend(w http.ResponseWriter, r *http.Request) {
 	handlerutils.WriteData(w, http.StatusOK, trend)
 }
 
+// usage handles GET /api/usage.
+//
+// @Summary GET /api/usage
+// @ID usage_route_get
+// @Tags usage
+// @Produce json
+// @Security SessionCookie
+// @Success 200 {object} main.SwaggerEnvelope
+// @Failure 400 {object} main.SwaggerEnvelope
+// @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 500 {object} main.SwaggerEnvelope
+// @Router /api/usage [get]
 func (h *Handler) usage(w http.ResponseWriter, r *http.Request) {
 	principal, ok := h.requireUser(w, r)
 	if !ok {
@@ -99,6 +159,18 @@ func (h *Handler) usage(w http.ResponseWriter, r *http.Request) {
 	handlerutils.WriteData(w, http.StatusOK, usage)
 }
 
+// globalStats handles GET /api/stats.
+//
+// @Summary GET /api/stats
+// @ID stats_route_get
+// @Tags stats
+// @Produce json
+// @Security SessionCookie
+// @Success 200 {object} main.SwaggerEnvelope
+// @Failure 400 {object} main.SwaggerEnvelope
+// @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 500 {object} main.SwaggerEnvelope
+// @Router /api/stats [get]
 func (h *Handler) globalStats(w http.ResponseWriter, r *http.Request) {
 	if _, ok := h.requireUser(w, r); !ok {
 		return
@@ -111,6 +183,19 @@ func (h *Handler) globalStats(w http.ResponseWriter, r *http.Request) {
 	handlerutils.WriteData(w, http.StatusOK, stats)
 }
 
+// apiStats handles GET /api/stats/{alias}.
+//
+// @Summary GET /api/stats/{alias}
+// @ID stats_alias_route_get
+// @Tags stats
+// @Produce json
+// @Param alias path string true "alias"
+// @Security SessionCookie
+// @Success 200 {object} main.SwaggerEnvelope
+// @Failure 400 {object} main.SwaggerEnvelope
+// @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 500 {object} main.SwaggerEnvelope
+// @Router /api/stats/{alias} [get]
 func (h *Handler) apiStats(w http.ResponseWriter, r *http.Request) {
 	principal, ok := h.requireUser(w, r)
 	if !ok {

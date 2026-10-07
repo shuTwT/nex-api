@@ -13,6 +13,7 @@ interface TokenFormProps {
   token?: Token;
   onClose: () => void;
   onSuccess: () => void;
+  onCreated?: () => void;
   formId?: string;
 }
 interface TokenFormValues {
@@ -25,13 +26,18 @@ interface TokenFormValues {
 function toDateTimeLocal(value: string | null | undefined) {
   if (!value) return "";
   const date = new Date(value);
-  return Number.isNaN(date.getTime()) ? "" : date.toISOString().slice(0, 16);
+  if (Number.isNaN(date.getTime())) return "";
+  const pad = (n: number) => String(n).padStart(2, "0");
+  // datetime-local 输入框按本地时区解析无时区标记的值，这里必须输出本地时间，
+  // 否则编辑回显会按 UTC 显示、原样保存会导致时间偏移。
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
 }
 
 export function TokenForm({
   token,
   onClose,
   onSuccess,
+  onCreated,
   formId,
 }: TokenFormProps) {
   const [isLoading, setIsLoading] = useState(false);
@@ -43,10 +49,14 @@ export function TokenForm({
     setIsLoading(true);
     setError(null);
     setCreatedToken(null);
-    const body: Record<string, string | boolean> = {
+    const body: Record<string, string | boolean | undefined> = {
       name: values.name,
       permissions: values.permissions,
-      expiresAt: values.expiresAt ?? "",
+      // 后端 expiresAt 是 *time.Time（RFC3339），空值必须省略字段而非传 ""；
+      // datetime-local 的值无时区标记，按本地时区转为 ISO 后再提交。
+      expiresAt: values.expiresAt
+        ? new Date(values.expiresAt).toISOString()
+        : undefined,
     };
     if (isEdit) body.isActive = values.isActive ?? false;
     try {
@@ -55,8 +65,10 @@ export function TokenForm({
         : await api.tokens_route_post(body);
       const data = responseData<{ token: string }>(result);
       if (result.success) {
-        if (!isEdit && data) setCreatedToken(data.token);
-        else {
+        if (!isEdit && data) {
+          setCreatedToken(data.token);
+          onCreated?.();
+        } else {
           onSuccess();
           onClose();
         }

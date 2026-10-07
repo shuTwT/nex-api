@@ -55,6 +55,20 @@ func (h *Handler) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
 	}
 }
 
+// UploadRoutePost handles POST /api/upload.
+//
+// @Summary POST /api/upload
+// @ID upload_route_post
+// @Tags upload
+// @Accept json
+// @Produce json
+// @Param body body main.SwaggerRequest false "JSON request payload"
+// @Security SessionCookie
+// @Success 200 {object} main.SwaggerEnvelope
+// @Failure 400 {object} main.SwaggerEnvelope
+// @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 500 {object} main.SwaggerEnvelope
+// @Router /api/upload [post]
 func (h *Handler) UploadRoutePost(writer http.ResponseWriter, request *http.Request) {
 	if h == nil || h.storage == nil {
 		writeUploadError(writer, request, errors.New("upload: storage is unavailable"))
@@ -93,6 +107,19 @@ func (h *Handler) UploadRoutePost(writer http.ResponseWriter, request *http.Requ
 	handlerutils.WriteData(writer, http.StatusOK, metadata)
 }
 
+// UploadFilenameRouteGet handles GET /api/upload/{filename}.
+//
+// @Summary GET /api/upload/{filename}
+// @ID upload_filename_route_get
+// @Tags upload
+// @Produce json
+// @Param filename path string true "filename"
+// @Success 200 {object} main.SwaggerEnvelope
+// @Failure 400 {object} main.SwaggerEnvelope
+// @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 500 {object} main.SwaggerEnvelope
+// @Router /api/upload/{filename} [get]
+func SwaggerUploadFilenameGET89() {}
 func (h *Handler) UploadFilenameRouteGet(writer http.ResponseWriter, request *http.Request, filename string) {
 	if h == nil || h.storage == nil {
 		writeUploadError(writer, request, errors.New("upload: storage is unavailable"))

@@ -65,6 +65,17 @@ func RegisterServiceRoutes(r chi.Router, plans *servicemembership.PlanService, m
 	return RegisterRoutes(r, handler)
 }
 
+// membershipPlans handles GET /api/membership/plans.
+//
+// @Summary GET /api/membership/plans
+// @ID membership_plans_route_get
+// @Tags membership
+// @Produce json
+// @Success 200 {object} main.SwaggerEnvelope
+// @Failure 400 {object} main.SwaggerEnvelope
+// @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 500 {object} main.SwaggerEnvelope
+// @Router /api/membership/plans [get]
 func (h *Handler) membershipPlans(w http.ResponseWriter, r *http.Request) {
 	plans, err := h.membership.ListPlans(r.Context())
 	if err != nil {
@@ -74,6 +85,18 @@ func (h *Handler) membershipPlans(w http.ResponseWriter, r *http.Request) {
 	handlerutils.WriteData(w, http.StatusOK, plans)
 }
 
+// currentMembership handles GET /api/membership/current.
+//
+// @Summary GET /api/membership/current
+// @ID membership_current_route_get
+// @Tags membership
+// @Produce json
+// @Security SessionCookie
+// @Success 200 {object} main.SwaggerEnvelope
+// @Failure 400 {object} main.SwaggerEnvelope
+// @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 500 {object} main.SwaggerEnvelope
+// @Router /api/membership/current [get]
 func (h *Handler) currentMembership(w http.ResponseWriter, r *http.Request) {
 	principal, err := serviceauthz.RequestPrincipal(r.Context())
 	if err != nil {
@@ -88,6 +111,20 @@ func (h *Handler) currentMembership(w http.ResponseWriter, r *http.Request) {
 	handlerutils.WriteData(w, http.StatusOK, current)
 }
 
+// subscribe handles POST /api/membership/subscribe.
+//
+// @Summary POST /api/membership/subscribe
+// @ID membership_subscribe_route_post
+// @Tags membership
+// @Accept json
+// @Produce json
+// @Param body body main.SwaggerRequest false "JSON request payload"
+// @Security SessionCookie
+// @Success 200 {object} main.SwaggerEnvelope
+// @Failure 400 {object} main.SwaggerEnvelope
+// @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 500 {object} main.SwaggerEnvelope
+// @Router /api/membership/subscribe [post]
 func (h *Handler) subscribe(w http.ResponseWriter, r *http.Request) {
 	body, err := handlerutils.DecodeJSONValue[model.MembershipSubscribeReq](r)
 	if err != nil {

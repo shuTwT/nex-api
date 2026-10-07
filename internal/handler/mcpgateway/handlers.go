@@ -123,11 +123,39 @@ func (h *Handler) V1McpIdentifierRoutePost(writer http.ResponseWriter, request *
 	h.postIdentifier(writer, request, identifier)
 }
 
+// optionsRoute handles OPTIONS /api/v1/mcp/{identifier}.
+//
+// @Summary OPTIONS /api/v1/mcp/{identifier}
+// @ID v1_mcp_identifier_route_options
+// @Tags gateway
+// @Produce json
+// @Param identifier path string true "identifier"
+// @Security ApiTokenAuth
+// @Success 200 {object} main.SwaggerEnvelope
+// @Failure 400 {object} main.SwaggerEnvelope
+// @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 500 {object} main.SwaggerEnvelope
+// @Router /api/v1/mcp/{identifier} [options]
 func (h *Handler) optionsRoute(writer http.ResponseWriter, _ *http.Request) {
 	setCORSHeaders(writer)
 	writer.WriteHeader(http.StatusNoContent)
 }
 
+// postRoute handles POST /api/v1/mcp/{identifier}.
+//
+// @Summary POST /api/v1/mcp/{identifier}
+// @ID v1_mcp_identifier_route_post
+// @Tags gateway
+// @Accept json
+// @Produce json
+// @Param identifier path string true "identifier"
+// @Param body body main.SwaggerRequest false "JSON request payload"
+// @Security ApiTokenAuth
+// @Success 200 {object} main.SwaggerEnvelope
+// @Failure 400 {object} main.SwaggerEnvelope
+// @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 500 {object} main.SwaggerEnvelope
+// @Router /api/v1/mcp/{identifier} [post]
 func (h *Handler) postRoute(writer http.ResponseWriter, request *http.Request) {
 	identifier := request.PathValue("identifier")
 	if identifier == "" {

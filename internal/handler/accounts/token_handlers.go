@@ -7,6 +7,18 @@ import (
 	"net/http"
 )
 
+// listTokens handles GET /api/tokens.
+//
+// @Summary GET /api/tokens
+// @ID tokens_route_get
+// @Tags tokens
+// @Produce json
+// @Security SessionCookie
+// @Success 200 {object} main.SwaggerEnvelope
+// @Failure 400 {object} main.SwaggerEnvelope
+// @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 500 {object} main.SwaggerEnvelope
+// @Router /api/tokens [get]
 func (h *Handler) listTokens(w http.ResponseWriter, r *http.Request) {
 	owner, err := principal(r.Context())
 	if err != nil {
@@ -26,6 +38,20 @@ func (h *Handler) listTokens(w http.ResponseWriter, r *http.Request) {
 	handlerutils.WritePaginated(w, views, info.Page, info.PageSize, info.Total)
 }
 
+// createToken handles POST /api/tokens.
+//
+// @Summary POST /api/tokens
+// @ID tokens_route_post
+// @Tags tokens
+// @Accept json
+// @Produce json
+// @Param body body main.SwaggerRequest false "JSON request payload"
+// @Security SessionCookie
+// @Success 200 {object} main.SwaggerEnvelope
+// @Failure 400 {object} main.SwaggerEnvelope
+// @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 500 {object} main.SwaggerEnvelope
+// @Router /api/tokens [post]
 func (h *Handler) createToken(w http.ResponseWriter, r *http.Request) {
 	owner, err := principal(r.Context())
 	if err != nil {
@@ -45,6 +71,20 @@ func (h *Handler) createToken(w http.ResponseWriter, r *http.Request) {
 	handlerutils.WriteData(w, http.StatusCreated, view)
 }
 
+// getToken handles GET /api/tokens/{id}.
+//
+// @Summary GET /api/tokens/{id}
+// @ID tokens_id_route_get
+// @Tags tokens
+// @Produce json
+// @Param id path string true "id"
+// @Security SessionCookie
+// @Success 200 {object} main.SwaggerEnvelope
+// @Failure 400 {object} main.SwaggerEnvelope
+// @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 403 {object} main.SwaggerEnvelope
+// @Failure 500 {object} main.SwaggerEnvelope
+// @Router /api/tokens/{id} [get]
 func (h *Handler) getToken(w http.ResponseWriter, r *http.Request) {
 	owner, err := principal(r.Context())
 	if err != nil {
@@ -59,6 +99,21 @@ func (h *Handler) getToken(w http.ResponseWriter, r *http.Request) {
 	handlerutils.WriteData(w, http.StatusOK, view)
 }
 
+// updateToken handles PUT /api/tokens/{id}.
+//
+// @Summary PUT /api/tokens/{id}
+// @ID tokens_id_route_put
+// @Tags tokens
+// @Accept json
+// @Produce json
+// @Param id path string true "id"
+// @Param body body main.SwaggerRequest false "JSON request payload"
+// @Security SessionCookie
+// @Success 200 {object} main.SwaggerEnvelope
+// @Failure 400 {object} main.SwaggerEnvelope
+// @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 500 {object} main.SwaggerEnvelope
+// @Router /api/tokens/{id} [put]
 func (h *Handler) updateToken(w http.ResponseWriter, r *http.Request) {
 	owner, err := principal(r.Context())
 	if err != nil {
@@ -78,6 +133,21 @@ func (h *Handler) updateToken(w http.ResponseWriter, r *http.Request) {
 	handlerutils.WriteData(w, http.StatusOK, view)
 }
 
+// toggleToken handles PUT /api/tokens/{id}/toggle.
+//
+// @Summary PUT /api/tokens/{id}/toggle
+// @ID tokens_id_toggle_route_put
+// @Tags tokens
+// @Accept json
+// @Produce json
+// @Param id path string true "id"
+// @Param body body main.SwaggerRequest false "JSON request payload"
+// @Security SessionCookie
+// @Success 200 {object} main.SwaggerEnvelope
+// @Failure 400 {object} main.SwaggerEnvelope
+// @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 500 {object} main.SwaggerEnvelope
+// @Router /api/tokens/{id}/toggle [put]
 func (h *Handler) toggleToken(w http.ResponseWriter, r *http.Request) {
 	owner, err := principal(r.Context())
 	if err != nil {
@@ -92,6 +162,19 @@ func (h *Handler) toggleToken(w http.ResponseWriter, r *http.Request) {
 	handlerutils.WriteData(w, http.StatusOK, view)
 }
 
+// deleteToken handles DELETE /api/tokens/{id}.
+//
+// @Summary DELETE /api/tokens/{id}
+// @ID tokens_id_route_delete
+// @Tags tokens
+// @Produce json
+// @Param id path string true "id"
+// @Security SessionCookie
+// @Success 200 {object} main.SwaggerEnvelope
+// @Failure 400 {object} main.SwaggerEnvelope
+// @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 500 {object} main.SwaggerEnvelope
+// @Router /api/tokens/{id} [delete]
 func (h *Handler) deleteToken(w http.ResponseWriter, r *http.Request) {
 	owner, err := principal(r.Context())
 	if err != nil {
@@ -105,6 +188,18 @@ func (h *Handler) deleteToken(w http.ResponseWriter, r *http.Request) {
 	handlerutils.WriteData(w, http.StatusOK, map[string]string{"message": "令牌已删除"})
 }
 
+// tokenStats handles GET /api/tokens/stats.
+//
+// @Summary GET /api/tokens/stats
+// @ID tokens_stats_route_get
+// @Tags tokens
+// @Produce json
+// @Security SessionCookie
+// @Success 200 {object} main.SwaggerEnvelope
+// @Failure 400 {object} main.SwaggerEnvelope
+// @Failure 401 {object} main.SwaggerEnvelope
+// @Failure 500 {object} main.SwaggerEnvelope
+// @Router /api/tokens/stats [get]
 func (h *Handler) tokenStats(w http.ResponseWriter, r *http.Request) {
 	owner, err := principal(r.Context())
 	if err != nil {
