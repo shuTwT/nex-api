@@ -31,7 +31,7 @@ func TestRegisterRoutesDoesNotExposeGenericPaymentCreation(t *testing.T) {
 }
 func TestRegisterRoutesKeepsBusinessPaymentCreationEndpoints(t *testing.T) {
 	mux := newPaymentMux(t)
-	for _, path := range []string{"/api/recharge", "/api/payment/methods"} {
+	for _, path := range []string{"/api/recharge", "/api/payment/orders"} {
 		t.Run(path, func(t *testing.T) {
 			response := httptest.NewRecorder()
 			mux.ServeHTTP(response, httptest.NewRequest(http.MethodPost, path, strings.NewReader(`{}`)))
@@ -39,6 +39,14 @@ func TestRegisterRoutesKeepsBusinessPaymentCreationEndpoints(t *testing.T) {
 				t.Fatalf("POST %s status = %d", path, response.Code)
 			}
 		})
+	}
+}
+func TestRegisterRoutesRejectsOrderCreationOnMethodsList(t *testing.T) {
+	mux := newPaymentMux(t)
+	response := httptest.NewRecorder()
+	mux.ServeHTTP(response, httptest.NewRequest(http.MethodPost, "/api/payment/methods", strings.NewReader(`{}`)))
+	if response.Code != http.StatusMethodNotAllowed {
+		t.Fatalf("POST /api/payment/methods status = %d, want 405", response.Code)
 	}
 }
 func newPaymentMux(t *testing.T) chi.Router {

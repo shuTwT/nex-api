@@ -30,7 +30,7 @@ export default function PaymentResultPage() {
 
     const loadPaymentInfo = async () => {
       try {
-        const result = await api.payment_outTradeNo_route_get({ outTradeNo });
+        const result = await api.payment_outtradeno_route_get({ outTradeNo });
         const data = responseData<PaymentInfo>(result);
         if (result.success && data) {
           setPayment(data);

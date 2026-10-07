@@ -864,8 +864,24 @@ export interface paths {
         /** GET /api/payment/methods */
         get: operations["payment_methods_route_get"];
         put?: never;
-        /** POST /api/payment/methods */
-        post: operations["payment_methods_route_post"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/payment/orders": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** POST /api/payment/orders */
+        post: operations["payment_orders_route_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -5894,7 +5910,7 @@ export interface operations {
             };
         };
     };
-    payment_methods_route_post: {
+    payment_orders_route_post: {
         parameters: {
             query?: never;
             header?: never;

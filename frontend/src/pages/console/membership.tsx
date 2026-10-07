@@ -24,8 +24,8 @@ interface Subscription {
   planName: string;
   credits: number;
   price: number;
-  startDate: Date;
-  endDate: Date;
+  startDate: string;
+  endDate: string;
   isActive: boolean;
   plan: SubscriptionPlan | null;
 }
@@ -60,8 +60,25 @@ export default function MembershipPage() {
     if (methodsData) setPaymentMethods(methodsData);
     setIsLoading(false);
   }
-  function handlePayment(plan: SubscriptionPlan) {
-    if (plan.price === 0) return toast.error("免费计划无需支付");
+  async function handlePayment(plan: SubscriptionPlan) {
+    // 免费计划不走支付下单，直接调用后端订阅接口开通
+    if (plan.price === 0) {
+      setIsProcessing(true);
+      try {
+        const result = await api.membership_subscribe_route_post({
+          planId: plan.id,
+        });
+        if (result.success) {
+          toast.success("订阅成功");
+          await loadData();
+        } else toast.error(result.error || "订阅失败");
+      } catch {
+        toast.error("订阅失败，请重试");
+      } finally {
+        setIsProcessing(false);
+      }
+      return;
+    }
     if (!paymentMethods.length)
       return toast.error("暂无可用支付方式，请先在系统设置中配置支付渠道");
     setPendingPlan(plan);
@@ -71,7 +88,7 @@ export default function MembershipPage() {
     if (!pendingPlan) return;
     setIsProcessing(true);
     try {
-      const result = await api.payment_methods_route_post({
+      const result = await api.payment_orders_route_post({
         planId: pendingPlan.id,
         method,
       });

@@ -563,7 +563,13 @@
           "auth": "user",
           "mediaType": "application/json",
           "responseClass": "json"
-        },
+        }
+      ],
+      "id": "payment/methods"
+    },
+    {
+      "path": "/api/payment/orders",
+      "handlers": [
         {
           "method": "POST",
           "auth": "user",
@@ -571,7 +577,7 @@
           "responseClass": "json"
         }
       ],
-      "id": "payment/methods"
+      "id": "payment/orders"
     },
     {
       "path": "/api/payment/settings",

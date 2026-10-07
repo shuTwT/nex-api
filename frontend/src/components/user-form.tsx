@@ -31,11 +31,11 @@ export function UserForm({ user, onClose, onSuccess, formId }: UserFormProps) {
   async function handleFinish(values: UserFormValues) {
     setIsLoading(true);
     setError(null);
-    const body: Record<string, string> = {
+    const body: Record<string, string | number> = {
       email: values.email,
       username: values.username,
       role: values.role,
-      credits: String(values.credits ?? 1000),
+      credits: values.credits ?? 1000,
     };
     if (!isEdit) body.password = values.password ?? "";
 

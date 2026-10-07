@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	wantRoutes   = 73
+	wantRoutes   = 74
 	wantHandlers = 102
 )
 

@@ -3,7 +3,8 @@ import { useSearchParams, useNavigate } from "react-router";
 import { Card, CardContent, CardHeader, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle2, XCircle, Clock, QrCode, ExternalLink, Loader2 } from "lucide-react";
+import { CheckCircle2, XCircle, Clock, ExternalLink, Loader2 } from "lucide-react";
+import { QRCodeSVG } from "qrcode.react";
 import { api, responseData } from "@/lib/api";
 
 interface PaymentState {
@@ -31,7 +32,7 @@ export default function PaymentPage() {
 
   const loadPaymentInfo = async () => {
     try {
-      const result = await api.payment_outTradeNo_route_get({ outTradeNo: outTradeNo ?? "" });
+      const result = await api.payment_outtradeno_route_get({ outTradeNo: outTradeNo ?? "" });
       const data = responseData<PaymentState>(result);
       if (result.success && data) {
         setPayment(data);
@@ -59,7 +60,7 @@ export default function PaymentPage() {
   useEffect(() => {
     if (payment && payment.status === "pending" && outTradeNo) {
       const interval = setInterval(async () => {
-        const result = await api.payment_outTradeNo_status_route_get({ outTradeNo });
+        const result = await api.payment_outtradeno_status_route_get({ outTradeNo });
         const data = responseData<PaymentState>(result);
         if (result.success && data) {
           if (data.status !== "pending") {
@@ -168,6 +169,7 @@ export default function PaymentPage() {
                 {payment?.method === "wechat" && "微信支付"}
                 {payment?.method === "alipay" && "支付宝"}
                 {payment?.method === "mock" && "模拟支付"}
+                {!["wechat", "alipay", "mock"].includes(payment?.method ?? "") && (payment?.method || "未知")}
               </span>
             </div>
             <div className="flex justify-between">
@@ -180,11 +182,13 @@ export default function PaymentPage() {
 
           {payment?.status === "pending" && (
             <>
-              {payment.method === "wechat" && payment.qrcodeUrl && (
+              {payment.qrcodeUrl && (
                 <div className="text-center space-y-4">
-                  <p className="text-sm text-slate-600">请使用微信扫描下方二维码完成支付</p>
+                  <p className="text-sm text-slate-600">
+                    请使用{payment.method === "alipay" ? "支付宝" : "微信"}扫描下方二维码完成支付
+                  </p>
                   <div className="bg-white p-4 rounded-lg inline-block border">
-                    <QrCode className="h-48 w-48 text-slate-900" />
+                    <QRCodeSVG value={payment.qrcodeUrl} size={192} />
                   </div>
                   <p className="text-xs text-slate-500">
                     二维码有效期至 {new Date(payment.expiredAt ?? Date.now()).toLocaleString("zh-CN")}

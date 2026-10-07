@@ -3053,8 +3053,9 @@ paths:
       summary: GET /api/payment/methods
       tags:
         - payment
+  /api/payment/orders:
     post:
-      operationId: payment_methods_route_post
+      operationId: payment_orders_route_post
       requestBody:
         content:
           application/json:
@@ -3100,7 +3101,7 @@ paths:
                 $ref: "#/components/schemas/main.SwaggerEnvelope"
       security:
         - SessionCookie: []
-      summary: POST /api/payment/methods
+      summary: POST /api/payment/orders
       tags:
         - payment
   /api/payment/settings:

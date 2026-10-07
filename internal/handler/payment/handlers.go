@@ -31,7 +31,7 @@ func RegisterRoutes(r chi.Router, handler *Handler) error {
 	}
 	user := func(next http.Handler) http.Handler { return middleware.RequireUser(next) }
 	r.Get("/api/payment/methods", handler.methods)
-	r.Method(http.MethodPost, "/api/payment/methods", user(http.HandlerFunc(handler.createSubscription)))
+	r.Method(http.MethodPost, "/api/payment/orders", user(http.HandlerFunc(handler.createOrder)))
 	r.Method(http.MethodGet, "/api/payment/user", user(http.HandlerFunc(handler.history)))
 	r.Method(http.MethodGet, "/api/payment/settings", user(http.HandlerFunc(handler.settings)))
 	r.Method(http.MethodGet, "/api/payment/{outTradeNo}/status", user(http.HandlerFunc(handler.status)))
@@ -92,10 +92,11 @@ func (h *Handler) methods(w http.ResponseWriter, r *http.Request) {
 	handlerutils.WriteData(w, http.StatusOK, methods)
 }
 
-// createSubscription handles POST /api/payment/methods.
+// createOrder handles POST /api/payment/orders: creates a payment order for a
+// subscription plan (recharge orders go through POST /api/recharge).
 //
-// @Summary POST /api/payment/methods
-// @ID payment_methods_route_post
+// @Summary POST /api/payment/orders
+// @ID payment_orders_route_post
 // @Tags payment
 // @Accept json
 // @Produce json
@@ -106,8 +107,8 @@ func (h *Handler) methods(w http.ResponseWriter, r *http.Request) {
 // @Failure 401 {object} main.SwaggerEnvelope
 // @Failure 403 {object} main.SwaggerEnvelope
 // @Failure 500 {object} main.SwaggerEnvelope
-// @Router /api/payment/methods [post]
-func (h *Handler) createSubscription(w http.ResponseWriter, r *http.Request) {
+// @Router /api/payment/orders [post]
+func (h *Handler) createOrder(w http.ResponseWriter, r *http.Request) {
 	request, err := handlerutils.DecodeJSONValue[model.SubscriptionPaymentCreateReq](r)
 	if err != nil {
 		handlerutils.WriteError(w, r, err)

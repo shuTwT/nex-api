@@ -83,6 +83,23 @@
 
 ---
 
+## 修复进展（2026-10-07 同日）
+
+| # | 状态 | 说明 |
+|---|------|------|
+| P0-1 | ✅ 已修复 | `payment.tsx` / `payment-result.tsx` / `payment-mock.tsx` 共 4 处 operation id 改为小写 |
+| P0-2 | ✅ 已修复 | `user-form.tsx` body 类型改为 `Record<string, string \| number>`，credits 直接传数字 |
+| P1-3 | ✅ 已修复 | 引入 `qrcode.react`（`QRCodeSVG`）渲染真实二维码；二维码分支不再限定 wechat，alipay 有 `qrcodeUrl` 时同样渲染 |
+| P1-4 | ✅ 已修复 | 免费计划点击后调用 `membership_subscribe_route_post({ planId })` 直接开通并刷新数据 |
+| P1-6 | ✅ 已修复 | 系统设置保存失败补 `toast.error(result.error \|\| "设置保存失败")` |
+| P2-10 | ✅ 已修复 | 支付方式列补兜底：未知 method 显示原始值 |
+| P2-11 | ✅ 已修复 | 删除 `lib/api.ts` 两条死注册 `payment_business_*` |
+| P2-12 | ✅ 已修复 | `console/membership.tsx` 的 `startDate/endDate` 类型改为 `string` |
+| P1-5 / P2-8 / P2-9 / P2-13 | ⏳ 未处理 | 属「规划」项，涉及后端语义变更或新页面，待后续排期 |
+| P1-7 | ✅ 已修复 | 创建订阅支付单拆到新路由 `POST /api/payment/orders`（`payment_orders_route_post`），`/api/payment/methods` 只保留 GET 查列表；测试断言 POST methods 返回 405 |
+
+---
+
 ## 建议修复顺序
 
 1. **立即**（一两行改动）：P0-1 operation id 改小写；P0-2 credits 去掉 `String()`。
