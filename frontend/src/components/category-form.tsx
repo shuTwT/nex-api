@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Alert, Form, Input } from "antd";
+import { IconPicker } from "@/components/icon-picker";
 import { api } from "@/lib/api";
 
 interface CategoryFormProps {
@@ -74,10 +75,10 @@ export function CategoryForm({
       </Form.Item>
       <Form.Item
         name="icon"
-        label="图标类名"
-        extra="填写 Lucide React 图标组件名称"
+        label="图标"
+        extra="从常用 Lucide 图标中挑选，用于前台分类展示"
       >
-        <Input placeholder="如：Zap, Settings, Users" />
+        <IconPicker />
       </Form.Item>
       {error && <Alert type="error" message={error} showIcon />}
     </Form>

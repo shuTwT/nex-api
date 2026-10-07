@@ -10,9 +10,9 @@ import {
   Activity,
   Pause,
   Database,
-  FolderOpen,
 } from "lucide-react";
 import { api, responseData } from "@/lib/api";
+import { getIcon } from "@/lib/lucide-icons";
 import { Pagination } from "@/components/pagination";
 import { ApiFormDialog } from "@/components/api-form-dialog";
 import { CategoryFormDialog } from "@/components/category-form-dialog";
@@ -499,7 +499,11 @@ export default function APIManagementPage() {
               >
                 <div className="flex items-center gap-3">
                   <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center">
-                    <FolderOpen className="h-5 w-5 text-white" />
+                    {(() => {
+                      // 分类卡片渲染各自存储的图标；未设置或名称失效时由 getIcon 兜底
+                      const CategoryIcon = getIcon(category.icon);
+                      return <CategoryIcon className="h-5 w-5 text-white" />;
+                    })()}
                   </div>
                   <div>
                     <p className="text-sm font-medium text-slate-900">
