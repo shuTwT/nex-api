@@ -33,6 +33,7 @@ generate:
 	go run github.com/swaggo/swag/cmd/swag@v1.16.6 init --generalInfo cmd/server/swagger.go --dir . --output openapi/swagger --outputTypes yaml --parseInternal
 	pnpm --package=swagger2openapi@7.0.8 dlx swagger2openapi openapi/swagger/swagger.yaml --patch --yaml --outfile openapi/openapi.yaml
 	cd frontend && npx openapi-typescript@7.13.0 ../openapi/openapi.yaml --output src/api/generated/schema.ts
+	go run ./tools/genoperations --in openapi/openapi.yaml --out frontend/src/api/generated/operations.ts
 
 openapi-lint:
 	pnpm --package=@redocly/cli@1.34.2 dlx redocly lint --config=openapi/redocly.yaml openapi/openapi.yaml

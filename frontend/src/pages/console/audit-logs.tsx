@@ -24,6 +24,7 @@ import {
   User,
 } from "lucide-react";
 import { api, responseData } from "@/lib/api";
+import { config } from "@/lib/config";
 import { DeleteAuditLogDialog } from "@/components/delete-audit-log-dialog";
 
 interface AuditLog {
@@ -147,21 +148,27 @@ export default function AuditLogsPage() {
     void loadStats();
   }
   async function handleExport() {
-    const result = await api.audit_logs_export_route_get({
-      level: levelFilter,
-      status: statusFilter,
-      startDate: toRFC3339(startDateInput),
-      endDate: toRFC3339(endDateInput),
-    });
-    if (!result.success) {
-      alert(result.error || "导出失败");
+    // 导出返回的是 text/csv 而非 JSON 信封，需直连下载而不是走 envelope 解析
+    const params = new URLSearchParams();
+    if (levelFilter) params.set("level", levelFilter);
+    if (statusFilter) params.set("status", statusFilter);
+    if (startDateInput) params.set("startDate", toRFC3339(startDateInput));
+    if (endDateInput) params.set("endDate", toRFC3339(endDateInput));
+    let response: Response;
+    try {
+      response = await fetch(`${config.apiUrl}/api/audit-logs/export?${params.toString()}`, {
+        credentials: "include",
+      });
+    } catch {
+      alert("导出失败");
       return;
     }
-    const data = responseData<string>(result);
-    if (data === null) return;
-    const url = URL.createObjectURL(
-      new Blob([data], { type: "text/csv;charset=utf-8;" }),
-    );
+    if (!response.ok) {
+      alert("导出失败");
+      return;
+    }
+    const data = await response.blob();
+    const url = URL.createObjectURL(data);
     const link = document.createElement("a");
     link.href = url;
     link.download = `audit-logs-${new Date().toISOString()}.csv`;

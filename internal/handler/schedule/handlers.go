@@ -98,7 +98,7 @@ func (h *Handler) get(w http.ResponseWriter, r *http.Request) {
 // @Tags schedule
 // @Accept json
 // @Produce json
-// @Param body body main.SwaggerRequest true "JSON request payload"
+// @Param body body model.ScheduleJobUpsertReq true "request payload"
 // @Security SessionCookie
 // @Success 200 {object} main.SwaggerEnvelope{data=model.ScheduleJobResp}
 // @Failure 400 {object} main.SwaggerEnvelope
@@ -128,7 +128,7 @@ func (h *Handler) create(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce json
 // @Param id path string true "id"
-// @Param body body main.SwaggerRequest true "JSON request payload"
+// @Param body body model.ScheduleJobUpsertReq true "request payload"
 // @Security SessionCookie
 // @Success 200 {object} main.SwaggerEnvelope{data=model.ScheduleJobResp}
 // @Failure 400 {object} main.SwaggerEnvelope

@@ -768,6 +768,31 @@ paths:
           name: limit
           schema:
             type: integer
+        - description: keyword search
+          in: query
+          name: search
+          schema:
+            type: string
+        - description: audit level filter
+          in: query
+          name: level
+          schema:
+            type: string
+        - description: audit status filter
+          in: query
+          name: status
+          schema:
+            type: string
+        - description: RFC3339 start time
+          in: query
+          name: startDate
+          schema:
+            type: string
+        - description: RFC3339 end time
+          in: query
+          name: endDate
+          schema:
+            type: string
       responses:
         "200":
           description: OK
@@ -808,12 +833,7 @@ paths:
     post:
       operationId: audit_logs_route_post
       requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/accounts.AuditEntry"
-        description: request payload
-        required: true
+        $ref: "#/components/requestBodies/accounts.AuditEntry"
       responses:
         "200":
           description: OK
@@ -962,7 +982,7 @@ paths:
           schema:
             type: string
       requestBody:
-        $ref: "#/components/requestBodies/main.SwaggerRequest"
+        $ref: "#/components/requestBodies/accounts.AuditEntry"
       responses:
         "200":
           description: OK
@@ -1008,39 +1028,54 @@ paths:
     get:
       operationId: audit_logs_export_route_get
       parameters:
-        - description: ids
+        - description: keyword search
           in: query
-          name: ids
+          name: search
+          schema:
+            type: string
+        - description: audit level filter
+          in: query
+          name: level
+          schema:
+            type: string
+        - description: audit status filter
+          in: query
+          name: status
+          schema:
+            type: string
+        - description: RFC3339 start time
+          in: query
+          name: startDate
+          schema:
+            type: string
+        - description: RFC3339 end time
+          in: query
+          name: endDate
           schema:
             type: string
       responses:
         "200":
-          description: OK
+          description: CSV document
           content:
-            application/json:
+            text/csv:
               schema:
-                allOf:
-                  - $ref: "#/components/schemas/main.SwaggerEnvelope"
-                  - properties:
-                      data:
-                        type: string
-                    type: object
+                type: string
         "400":
           description: Bad Request
           content:
-            application/json:
+            text/csv:
               schema:
                 $ref: "#/components/schemas/main.SwaggerEnvelope"
         "401":
           description: Unauthorized
           content:
-            application/json:
+            text/csv:
               schema:
                 $ref: "#/components/schemas/main.SwaggerEnvelope"
         "500":
           description: Internal Server Error
           content:
-            application/json:
+            text/csv:
               schema:
                 $ref: "#/components/schemas/main.SwaggerEnvelope"
       security:
@@ -1218,7 +1253,12 @@ paths:
     post:
       operationId: auth_login_route_post
       requestBody:
-        $ref: "#/components/requestBodies/main.SwaggerRequest"
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/main.SwaggerRequest"
+        description: JSON request payload
+        required: true
       responses:
         "200":
           description: OK
@@ -2826,7 +2866,7 @@ paths:
     get:
       operationId: payment_callback_alipay_route_get
       requestBody:
-        $ref: "#/components/requestBodies/main.SwaggerRequest2"
+        $ref: "#/components/requestBodies/main.SwaggerRequest"
       responses:
         "200":
           description: OK
@@ -2938,7 +2978,7 @@ paths:
     get:
       operationId: payment_callback_wechat_route_get
       requestBody:
-        $ref: "#/components/requestBodies/main.SwaggerRequest2"
+        $ref: "#/components/requestBodies/main.SwaggerRequest"
       responses:
         "200":
           description: OK
@@ -3233,7 +3273,12 @@ paths:
     put:
       operationId: personal_profile_route_put
       requestBody:
-        $ref: "#/components/requestBodies/main.SwaggerRequest"
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/model.ProfileUpdateReq"
+        description: request payload
+        required: true
       responses:
         "200":
           description: OK
@@ -3279,7 +3324,12 @@ paths:
     put:
       operationId: personal_profile_password_route_put
       requestBody:
-        $ref: "#/components/requestBodies/main.SwaggerRequest"
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/model.PasswordUpdateReq"
+        description: request payload
+        required: true
       responses:
         "200":
           description: OK
@@ -3681,7 +3731,11 @@ paths:
     post:
       operationId: redemption_codes_batch_route_post
       requestBody:
-        $ref: "#/components/requestBodies/main.SwaggerRequest3"
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/model.IDsReq"
+        description: request payload
       responses:
         "200":
           description: OK
@@ -3842,7 +3896,7 @@ paths:
     post:
       operationId: scheduled_jobs_route_post
       requestBody:
-        $ref: "#/components/requestBodies/main.SwaggerRequest"
+        $ref: "#/components/requestBodies/model.ScheduleJobUpsertReq"
       responses:
         "200":
           description: OK
@@ -3997,7 +4051,7 @@ paths:
           schema:
             type: string
       requestBody:
-        $ref: "#/components/requestBodies/main.SwaggerRequest"
+        $ref: "#/components/requestBodies/model.ScheduleJobUpsertReq"
       responses:
         "200":
           description: OK
@@ -5674,7 +5728,7 @@ paths:
           schema:
             type: string
       requestBody:
-        $ref: "#/components/requestBodies/main.SwaggerRequest3"
+        $ref: "#/components/requestBodies/main.SwaggerRequest2"
       responses:
         "200":
           description: OK
@@ -5715,7 +5769,7 @@ paths:
           schema:
             type: string
       requestBody:
-        $ref: "#/components/requestBodies/main.SwaggerRequest3"
+        $ref: "#/components/requestBodies/main.SwaggerRequest2"
       responses:
         "200":
           description: OK
@@ -5756,7 +5810,7 @@ paths:
           schema:
             type: string
       requestBody:
-        $ref: "#/components/requestBodies/main.SwaggerRequest3"
+        $ref: "#/components/requestBodies/main.SwaggerRequest2"
       responses:
         "200":
           description: OK
@@ -5837,7 +5891,7 @@ paths:
           schema:
             type: string
       requestBody:
-        $ref: "#/components/requestBodies/main.SwaggerRequest3"
+        $ref: "#/components/requestBodies/main.SwaggerRequest2"
       responses:
         "200":
           description: OK
@@ -5879,20 +5933,27 @@ components:
             $ref: "#/components/schemas/model.RedemptionCodeReq"
       description: request payload
       required: true
+    model.ScheduleJobUpsertReq:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/model.ScheduleJobUpsertReq"
+      description: request payload
+      required: true
+    accounts.AuditEntry:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/accounts.AuditEntry"
+      description: request payload
+      required: true
     main.SwaggerRequest:
       content:
         application/json:
           schema:
             $ref: "#/components/schemas/main.SwaggerRequest"
-      description: JSON request payload
-      required: true
-    main.SwaggerRequest2:
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/main.SwaggerRequest"
       description: Gateway notification parameters
-    main.SwaggerRequest3:
+    main.SwaggerRequest2:
       content:
         application/json:
           schema:
@@ -6417,6 +6478,13 @@ components:
         percentage:
           type: integer
       type: object
+    model.IDsReq:
+      properties:
+        ids:
+          items:
+            type: string
+          type: array
+      type: object
     model.MarketplaceAPIResp:
       properties:
         alias:
@@ -6500,6 +6568,13 @@ components:
         planId:
           type: string
       type: object
+    model.PasswordUpdateReq:
+      properties:
+        currentPassword:
+          type: string
+        newPassword:
+          type: string
+      type: object
     model.PaymentCreateResp:
       properties:
         outTradeNo:
@@ -6577,6 +6652,15 @@ components:
           type: integer
         totalRequests:
           type: integer
+        username:
+          type: string
+      type: object
+    model.ProfileUpdateReq:
+      properties:
+        email:
+          type: string
+        name:
+          type: string
         username:
           type: string
       type: object
@@ -6690,6 +6774,21 @@ components:
         taskKey:
           type: string
         updatedAt:
+          type: string
+      type: object
+    model.ScheduleJobUpsertReq:
+      properties:
+        description:
+          type: string
+        enabled:
+          type: boolean
+        expression:
+          type: string
+        name:
+          type: string
+        scheduleType:
+          type: string
+        taskKey:
           type: string
       type: object
     model.ScheduleRuntimeInfo:

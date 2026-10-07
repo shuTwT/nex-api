@@ -17,6 +17,11 @@ import (
 // @Security SessionCookie
 // @Param page query integer false "page"
 // @Param limit query integer false "limit"
+// @Param search query string false "keyword search"
+// @Param level query string false "audit level filter"
+// @Param status query string false "audit status filter"
+// @Param startDate query string false "RFC3339 start time"
+// @Param endDate query string false "RFC3339 end time"
 // @Success 200 {object} main.SwaggerEnvelope{data=[]model.AuditResp}
 // @Failure 400 {object} main.SwaggerEnvelope
 // @Failure 401 {object} main.SwaggerEnvelope
@@ -125,7 +130,7 @@ func (h *Handler) getAudit(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce json
 // @Param id path string true "id"
-// @Param body body main.SwaggerRequest true "JSON request payload"
+// @Param body body accounts.AuditEntry true "request payload"
 // @Security SessionCookie
 // @Success 200 {object} main.SwaggerEnvelope{data=model.AuditResp}
 // @Failure 400 {object} main.SwaggerEnvelope
@@ -202,10 +207,14 @@ func (h *Handler) deleteAudit(w http.ResponseWriter, r *http.Request) {
 // @Summary GET /api/audit-logs/export
 // @ID audit_logs_export_route_get
 // @Tags audit-logs
-// @Produce json
+// @Produce text/csv
 // @Security SessionCookie
-// @Param ids query string false "ids"
-// @Success 200 {object} main.SwaggerEnvelope{data=string}
+// @Param search query string false "keyword search"
+// @Param level query string false "audit level filter"
+// @Param status query string false "audit status filter"
+// @Param startDate query string false "RFC3339 start time"
+// @Param endDate query string false "RFC3339 end time"
+// @Success 200 {string} string "CSV document"
 // @Failure 400 {object} main.SwaggerEnvelope
 // @Failure 401 {object} main.SwaggerEnvelope
 // @Failure 500 {object} main.SwaggerEnvelope

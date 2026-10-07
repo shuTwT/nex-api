@@ -1809,6 +1809,9 @@ export interface components {
             name?: string;
             percentage?: number;
         };
+        "model.IDsReq": {
+            ids?: string[];
+        };
         "model.MarketplaceAPIResp": {
             alias?: string;
             category?: string;
@@ -1854,6 +1857,10 @@ export interface components {
         "model.MembershipSubscribeReq": {
             planId?: string;
         };
+        "model.PasswordUpdateReq": {
+            currentPassword?: string;
+            newPassword?: string;
+        };
         "model.PaymentCreateResp": {
             outTradeNo?: string;
             payUrl?: string;
@@ -1894,6 +1901,11 @@ export interface components {
             role?: string;
             totalCreditsSpent?: number;
             totalRequests?: number;
+            username?: string;
+        };
+        "model.ProfileUpdateReq": {
+            email?: string;
+            name?: string;
             username?: string;
         };
         "model.RechargePaymentCreateReq": {
@@ -1955,6 +1967,14 @@ export interface components {
             scheduleType?: string;
             taskKey?: string;
             updatedAt?: string;
+        };
+        "model.ScheduleJobUpsertReq": {
+            description?: string;
+            enabled?: boolean;
+            expression?: string;
+            name?: string;
+            scheduleType?: string;
+            taskKey?: string;
         };
         "model.ScheduleRuntimeInfo": {
             nextRun?: string;
@@ -2182,20 +2202,26 @@ export interface components {
                 "application/json": components["schemas"]["model.RedemptionCodeReq"];
             };
         };
-        /** @description JSON request payload */
+        /** @description request payload */
+        "model.ScheduleJobUpsertReq": {
+            content: {
+                "application/json": components["schemas"]["model.ScheduleJobUpsertReq"];
+            };
+        };
+        /** @description request payload */
+        "accounts.AuditEntry": {
+            content: {
+                "application/json": components["schemas"]["accounts.AuditEntry"];
+            };
+        };
+        /** @description Gateway notification parameters */
         "main.SwaggerRequest": {
             content: {
                 "application/json": components["schemas"]["main.SwaggerRequest"];
             };
         };
-        /** @description Gateway notification parameters */
-        "main.SwaggerRequest2": {
-            content: {
-                "application/json": components["schemas"]["main.SwaggerRequest"];
-            };
-        };
         /** @description JSON request payload */
-        "main.SwaggerRequest3": {
+        "main.SwaggerRequest2": {
             content: {
                 "application/json": components["schemas"]["main.SwaggerRequest"];
             };
@@ -3087,6 +3113,16 @@ export interface operations {
                 page?: number;
                 /** @description limit */
                 limit?: number;
+                /** @description keyword search */
+                search?: string;
+                /** @description audit level filter */
+                level?: string;
+                /** @description audit status filter */
+                status?: string;
+                /** @description RFC3339 start time */
+                startDate?: string;
+                /** @description RFC3339 end time */
+                endDate?: string;
             };
             header?: never;
             path?: never;
@@ -3141,12 +3177,7 @@ export interface operations {
             path?: never;
             cookie?: never;
         };
-        /** @description request payload */
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["accounts.AuditEntry"];
-            };
-        };
+        requestBody: components["requestBodies"]["accounts.AuditEntry"];
         responses: {
             /** @description OK */
             200: {
@@ -3259,7 +3290,7 @@ export interface operations {
             };
             cookie?: never;
         };
-        requestBody: components["requestBodies"]["main.SwaggerRequest"];
+        requestBody: components["requestBodies"]["accounts.AuditEntry"];
         responses: {
             /** @description OK */
             200: {
@@ -3376,8 +3407,16 @@ export interface operations {
     audit_logs_export_route_get: {
         parameters: {
             query?: {
-                /** @description ids */
-                ids?: string;
+                /** @description keyword search */
+                search?: string;
+                /** @description audit level filter */
+                level?: string;
+                /** @description audit status filter */
+                status?: string;
+                /** @description RFC3339 start time */
+                startDate?: string;
+                /** @description RFC3339 end time */
+                endDate?: string;
             };
             header?: never;
             path?: never;
@@ -3385,15 +3424,13 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description OK */
+            /** @description CSV document */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["main.SwaggerEnvelope"] & {
-                        data?: string;
-                    };
+                    "text/csv": string;
                 };
             };
             /** @description Bad Request */
@@ -3402,7 +3439,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                    "text/csv": components["schemas"]["main.SwaggerEnvelope"];
                 };
             };
             /** @description Unauthorized */
@@ -3411,7 +3448,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                    "text/csv": components["schemas"]["main.SwaggerEnvelope"];
                 };
             };
             /** @description Internal Server Error */
@@ -3420,7 +3457,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["main.SwaggerEnvelope"];
+                    "text/csv": components["schemas"]["main.SwaggerEnvelope"];
                 };
             };
         };
@@ -3646,7 +3683,12 @@ export interface operations {
             path?: never;
             cookie?: never;
         };
-        requestBody: components["requestBodies"]["main.SwaggerRequest"];
+        /** @description JSON request payload */
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["main.SwaggerRequest"];
+            };
+        };
         responses: {
             /** @description OK */
             200: {
@@ -5579,7 +5621,7 @@ export interface operations {
             path?: never;
             cookie?: never;
         };
-        requestBody?: components["requestBodies"]["main.SwaggerRequest2"];
+        requestBody?: components["requestBodies"]["main.SwaggerRequest"];
         responses: {
             /** @description OK */
             200: {
@@ -5747,7 +5789,7 @@ export interface operations {
             path?: never;
             cookie?: never;
         };
-        requestBody?: components["requestBodies"]["main.SwaggerRequest2"];
+        requestBody?: components["requestBodies"]["main.SwaggerRequest"];
         responses: {
             /** @description OK */
             200: {
@@ -6145,7 +6187,12 @@ export interface operations {
             path?: never;
             cookie?: never;
         };
-        requestBody: components["requestBodies"]["main.SwaggerRequest"];
+        /** @description request payload */
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["model.ProfileUpdateReq"];
+            };
+        };
         responses: {
             /** @description OK */
             200: {
@@ -6203,7 +6250,12 @@ export interface operations {
             path?: never;
             cookie?: never;
         };
-        requestBody: components["requestBodies"]["main.SwaggerRequest"];
+        /** @description request payload */
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["model.PasswordUpdateReq"];
+            };
+        };
         responses: {
             /** @description OK */
             200: {
@@ -6631,7 +6683,12 @@ export interface operations {
             path?: never;
             cookie?: never;
         };
-        requestBody?: components["requestBodies"]["main.SwaggerRequest3"];
+        /** @description request payload */
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["model.IDsReq"];
+            };
+        };
         responses: {
             /** @description OK */
             200: {
@@ -6907,7 +6964,7 @@ export interface operations {
             path?: never;
             cookie?: never;
         };
-        requestBody: components["requestBodies"]["main.SwaggerRequest"];
+        requestBody: components["requestBodies"]["model.ScheduleJobUpsertReq"];
         responses: {
             /** @description OK */
             200: {
@@ -7029,7 +7086,7 @@ export interface operations {
             };
             cookie?: never;
         };
-        requestBody: components["requestBodies"]["main.SwaggerRequest"];
+        requestBody: components["requestBodies"]["model.ScheduleJobUpsertReq"];
         responses: {
             /** @description OK */
             200: {
@@ -9057,7 +9114,7 @@ export interface operations {
             };
             cookie?: never;
         };
-        requestBody?: components["requestBodies"]["main.SwaggerRequest3"];
+        requestBody?: components["requestBodies"]["main.SwaggerRequest2"];
         responses: {
             /** @description OK */
             200: {
@@ -9107,7 +9164,7 @@ export interface operations {
             };
             cookie?: never;
         };
-        requestBody?: components["requestBodies"]["main.SwaggerRequest3"];
+        requestBody?: components["requestBodies"]["main.SwaggerRequest2"];
         responses: {
             /** @description OK */
             200: {
@@ -9207,7 +9264,7 @@ export interface operations {
             };
             cookie?: never;
         };
-        requestBody?: components["requestBodies"]["main.SwaggerRequest3"];
+        requestBody?: components["requestBodies"]["main.SwaggerRequest2"];
         responses: {
             /** @description OK */
             200: {
@@ -9257,7 +9314,7 @@ export interface operations {
             };
             cookie?: never;
         };
-        requestBody?: components["requestBodies"]["main.SwaggerRequest3"];
+        requestBody?: components["requestBodies"]["main.SwaggerRequest2"];
         responses: {
             /** @description OK */
             200: {

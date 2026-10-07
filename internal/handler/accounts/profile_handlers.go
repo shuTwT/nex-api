@@ -40,7 +40,7 @@ func (h *Handler) getProfile(w http.ResponseWriter, r *http.Request) {
 // @Tags personal
 // @Accept json
 // @Produce json
-// @Param body body main.SwaggerRequest true "JSON request payload"
+// @Param body body model.ProfileUpdateReq true "request payload"
 // @Security SessionCookie
 // @Success 200 {object} main.SwaggerEnvelope{data=model.ProfileResp}
 // @Failure 400 {object} main.SwaggerEnvelope
@@ -74,7 +74,7 @@ func (h *Handler) updateProfile(w http.ResponseWriter, r *http.Request) {
 // @Tags personal
 // @Accept json
 // @Produce json
-// @Param body body main.SwaggerRequest true "JSON request payload"
+// @Param body body model.PasswordUpdateReq true "request payload"
 // @Security SessionCookie
 // @Success 200 {object} main.SwaggerEnvelope{data=map[string]string}
 // @Failure 400 {object} main.SwaggerEnvelope

@@ -505,6 +505,13 @@ definitions:
       percentage:
         type: integer
     type: object
+  model.IDsReq:
+    properties:
+      ids:
+        items:
+          type: string
+        type: array
+    type: object
   model.MarketplaceAPIResp:
     properties:
       alias:
@@ -588,6 +595,13 @@ definitions:
       planId:
         type: string
     type: object
+  model.PasswordUpdateReq:
+    properties:
+      currentPassword:
+        type: string
+      newPassword:
+        type: string
+    type: object
   model.PaymentCreateResp:
     properties:
       outTradeNo:
@@ -665,6 +679,15 @@ definitions:
         type: integer
       totalRequests:
         type: integer
+      username:
+        type: string
+    type: object
+  model.ProfileUpdateReq:
+    properties:
+      email:
+        type: string
+      name:
+        type: string
       username:
         type: string
     type: object
@@ -778,6 +801,21 @@ definitions:
       taskKey:
         type: string
       updatedAt:
+        type: string
+    type: object
+  model.ScheduleJobUpsertReq:
+    properties:
+      description:
+        type: string
+      enabled:
+        type: boolean
+      expression:
+        type: string
+      name:
+        type: string
+      scheduleType:
+        type: string
+      taskKey:
         type: string
     type: object
   model.ScheduleRuntimeInfo:
@@ -1869,6 +1907,26 @@ paths:
         in: query
         name: limit
         type: integer
+      - description: keyword search
+        in: query
+        name: search
+        type: string
+      - description: audit level filter
+        in: query
+        name: level
+        type: string
+      - description: audit status filter
+        in: query
+        name: status
+        type: string
+      - description: RFC3339 start time
+        in: query
+        name: startDate
+        type: string
+      - description: RFC3339 end time
+        in: query
+        name: endDate
+        type: string
       produces:
       - application/json
       responses:
@@ -2035,12 +2093,12 @@ paths:
         name: id
         required: true
         type: string
-      - description: JSON request payload
+      - description: request payload
         in: body
         name: body
         required: true
         schema:
-          $ref: '#/definitions/main.SwaggerRequest'
+          $ref: '#/definitions/accounts.AuditEntry'
       produces:
       - application/json
       responses:
@@ -2078,22 +2136,33 @@ paths:
     get:
       operationId: audit_logs_export_route_get
       parameters:
-      - description: ids
+      - description: keyword search
         in: query
-        name: ids
+        name: search
+        type: string
+      - description: audit level filter
+        in: query
+        name: level
+        type: string
+      - description: audit status filter
+        in: query
+        name: status
+        type: string
+      - description: RFC3339 start time
+        in: query
+        name: startDate
+        type: string
+      - description: RFC3339 end time
+        in: query
+        name: endDate
         type: string
       produces:
-      - application/json
+      - text/csv
       responses:
         "200":
-          description: OK
+          description: CSV document
           schema:
-            allOf:
-            - $ref: '#/definitions/main.SwaggerEnvelope'
-            - properties:
-                data:
-                  type: string
-              type: object
+            type: string
         "400":
           description: Bad Request
           schema:
@@ -3964,12 +4033,12 @@ paths:
       - application/json
       operationId: personal_profile_route_put
       parameters:
-      - description: JSON request payload
+      - description: request payload
         in: body
         name: body
         required: true
         schema:
-          $ref: '#/definitions/main.SwaggerRequest'
+          $ref: '#/definitions/model.ProfileUpdateReq'
       produces:
       - application/json
       responses:
@@ -4009,12 +4078,12 @@ paths:
       - application/json
       operationId: personal_profile_password_route_put
       parameters:
-      - description: JSON request payload
+      - description: request payload
         in: body
         name: body
         required: true
         schema:
-          $ref: '#/definitions/main.SwaggerRequest'
+          $ref: '#/definitions/model.PasswordUpdateReq'
       produces:
       - application/json
       responses:
@@ -4368,11 +4437,11 @@ paths:
       - application/json
       operationId: redemption_codes_batch_route_post
       parameters:
-      - description: JSON request payload
+      - description: request payload
         in: body
         name: body
         schema:
-          $ref: '#/definitions/main.SwaggerRequest'
+          $ref: '#/definitions/model.IDsReq'
       produces:
       - application/json
       responses:
@@ -4506,12 +4575,12 @@ paths:
       - application/json
       operationId: scheduled_jobs_route_post
       parameters:
-      - description: JSON request payload
+      - description: request payload
         in: body
         name: body
         required: true
         schema:
-          $ref: '#/definitions/main.SwaggerRequest'
+          $ref: '#/definitions/model.ScheduleJobUpsertReq'
       produces:
       - application/json
       responses:
@@ -4640,12 +4709,12 @@ paths:
         name: id
         required: true
         type: string
-      - description: JSON request payload
+      - description: request payload
         in: body
         name: body
         required: true
         schema:
-          $ref: '#/definitions/main.SwaggerRequest'
+          $ref: '#/definitions/model.ScheduleJobUpsertReq'
       produces:
       - application/json
       responses:

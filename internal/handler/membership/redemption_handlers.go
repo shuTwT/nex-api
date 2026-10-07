@@ -143,7 +143,7 @@ func (h *Handler) deleteBatch(w http.ResponseWriter, r *http.Request) {
 // @Tags redemption-codes
 // @Accept json
 // @Produce json
-// @Param body body main.SwaggerRequest false "JSON request payload"
+// @Param body body model.IDsReq false "request payload"
 // @Security SessionCookie
 // @Success 200 {object} main.SwaggerEnvelope
 // @Failure 400 {object} main.SwaggerEnvelope
