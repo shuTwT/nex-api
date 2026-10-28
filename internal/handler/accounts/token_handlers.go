@@ -2,7 +2,7 @@ package accounts
 
 import (
 	"fmt"
-	handlerutils "github.com/shuTwT/nex-api/internal/pkg/utils"
+	"github.com/shuTwT/nex-api/internal/pkg/utils/httpkit"
 	serviceaccounts "github.com/shuTwT/nex-api/internal/service/accounts"
 	"net/http"
 )
@@ -40,7 +40,7 @@ func (h *Handler) listTokens(w http.ResponseWriter, r *http.Request) {
 		writeServiceError(w, r, err)
 		return
 	}
-	handlerutils.WritePaginated(w, views, info.Page, info.PageSize, info.Total)
+	httpkit.WritePaginated(w, views, info.Page, info.PageSize, info.Total)
 }
 
 // createToken handles POST /api/tokens.
@@ -65,7 +65,7 @@ func (h *Handler) createToken(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	var request serviceaccounts.TokenCreateRequest
-	if err := handlerutils.DecodeJSON(r, &request); err != nil {
+	if err := httpkit.DecodeJSON(r, &request); err != nil {
 		writeServiceError(w, r, fmt.Errorf("decode token: %w", serviceaccounts.ErrInvalidRequest))
 		return
 	}
@@ -74,7 +74,7 @@ func (h *Handler) createToken(w http.ResponseWriter, r *http.Request) {
 		writeServiceError(w, r, err)
 		return
 	}
-	handlerutils.WriteData(w, http.StatusCreated, view)
+	httpkit.WriteData(w, http.StatusCreated, view)
 }
 
 // getToken handles GET /api/tokens/{id}.
@@ -102,7 +102,7 @@ func (h *Handler) getToken(w http.ResponseWriter, r *http.Request) {
 		writeServiceError(w, r, err)
 		return
 	}
-	handlerutils.WriteData(w, http.StatusOK, view)
+	httpkit.WriteData(w, http.StatusOK, view)
 }
 
 // updateToken handles PUT /api/tokens/{id}.
@@ -128,7 +128,7 @@ func (h *Handler) updateToken(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	var request serviceaccounts.TokenUpdateRequest
-	if err := handlerutils.DecodeJSON(r, &request); err != nil {
+	if err := httpkit.DecodeJSON(r, &request); err != nil {
 		writeServiceError(w, r, fmt.Errorf("decode token: %w", serviceaccounts.ErrInvalidRequest))
 		return
 	}
@@ -137,7 +137,7 @@ func (h *Handler) updateToken(w http.ResponseWriter, r *http.Request) {
 		writeServiceError(w, r, err)
 		return
 	}
-	handlerutils.WriteData(w, http.StatusOK, view)
+	httpkit.WriteData(w, http.StatusOK, view)
 }
 
 // toggleToken handles PUT /api/tokens/{id}/toggle.
@@ -165,7 +165,7 @@ func (h *Handler) toggleToken(w http.ResponseWriter, r *http.Request) {
 		writeServiceError(w, r, err)
 		return
 	}
-	handlerutils.WriteData(w, http.StatusOK, view)
+	httpkit.WriteData(w, http.StatusOK, view)
 }
 
 // deleteToken handles DELETE /api/tokens/{id}.
@@ -192,7 +192,7 @@ func (h *Handler) deleteToken(w http.ResponseWriter, r *http.Request) {
 		writeServiceError(w, r, err)
 		return
 	}
-	handlerutils.WriteData(w, http.StatusOK, map[string]string{"message": "令牌已删除"})
+	httpkit.WriteData(w, http.StatusOK, map[string]string{"message": "令牌已删除"})
 }
 
 // tokenStats handles GET /api/tokens/stats.
@@ -219,5 +219,5 @@ func (h *Handler) tokenStats(w http.ResponseWriter, r *http.Request) {
 		writeServiceError(w, r, err)
 		return
 	}
-	handlerutils.WriteData(w, http.StatusOK, view)
+	httpkit.WriteData(w, http.StatusOK, view)
 }

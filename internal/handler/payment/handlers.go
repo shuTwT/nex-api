@@ -8,7 +8,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/shuTwT/nex-api/internal/middleware"
-	handlerutils "github.com/shuTwT/nex-api/internal/pkg/utils"
+	"github.com/shuTwT/nex-api/internal/pkg/utils/httpkit"
 	serviceauthz "github.com/shuTwT/nex-api/internal/service/authz"
 	servicepayment "github.com/shuTwT/nex-api/internal/service/payment"
 	"github.com/shuTwT/nex-api/pkg/domain/model"
@@ -86,10 +86,10 @@ func clientIP(r *http.Request) string {
 func (h *Handler) methods(w http.ResponseWriter, r *http.Request) {
 	methods, err := h.service.AvailableMethods(r.Context())
 	if err != nil {
-		handlerutils.WriteError(w, r, err)
+		httpkit.WriteError(w, r, err)
 		return
 	}
-	handlerutils.WriteData(w, http.StatusOK, methods)
+	httpkit.WriteData(w, http.StatusOK, methods)
 }
 
 // createOrder handles POST /api/payment/orders: creates a payment order for a
@@ -109,22 +109,22 @@ func (h *Handler) methods(w http.ResponseWriter, r *http.Request) {
 // @Failure 500 {object} main.SwaggerEnvelope
 // @Router /api/payment/orders [post]
 func (h *Handler) createOrder(w http.ResponseWriter, r *http.Request) {
-	request, err := handlerutils.DecodeJSONValue[model.SubscriptionPaymentCreateReq](r)
+	request, err := httpkit.DecodeJSONValue[model.SubscriptionPaymentCreateReq](r)
 	if err != nil {
-		handlerutils.WriteError(w, r, err)
+		httpkit.WriteError(w, r, err)
 		return
 	}
 	principal, err := serviceauthz.RequestPrincipal(r.Context())
 	if err != nil {
-		handlerutils.WriteError(w, r, err)
+		httpkit.WriteError(w, r, err)
 		return
 	}
 	result, err := h.service.CreateSubscriptionPaymentByMethod(r.Context(), principal.UserID, request.PlanID, request.Method, clientIP(r))
 	if err != nil {
-		handlerutils.WriteError(w, r, err)
+		httpkit.WriteError(w, r, err)
 		return
 	}
-	handlerutils.WriteData(w, http.StatusCreated, result)
+	httpkit.WriteData(w, http.StatusCreated, result)
 }
 
 // recharge handles POST /api/recharge.
@@ -143,22 +143,22 @@ func (h *Handler) createOrder(w http.ResponseWriter, r *http.Request) {
 // @Failure 500 {object} main.SwaggerEnvelope
 // @Router /api/recharge [post]
 func (h *Handler) recharge(w http.ResponseWriter, r *http.Request) {
-	request, err := handlerutils.DecodeJSONValue[model.RechargePaymentCreateReq](r)
+	request, err := httpkit.DecodeJSONValue[model.RechargePaymentCreateReq](r)
 	if err != nil {
-		handlerutils.WriteError(w, r, err)
+		httpkit.WriteError(w, r, err)
 		return
 	}
 	principal, err := serviceauthz.RequestPrincipal(r.Context())
 	if err != nil {
-		handlerutils.WriteError(w, r, err)
+		httpkit.WriteError(w, r, err)
 		return
 	}
 	result, err := h.service.CreateRechargePaymentByMethod(r.Context(), principal.UserID, request.Amount, request.Credits, request.Method, clientIP(r))
 	if err != nil {
-		handlerutils.WriteError(w, r, err)
+		httpkit.WriteError(w, r, err)
 		return
 	}
-	handlerutils.WriteData(w, http.StatusCreated, result)
+	httpkit.WriteData(w, http.StatusCreated, result)
 }
 
 // history handles GET /api/payment/user.
@@ -177,15 +177,15 @@ func (h *Handler) recharge(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) history(w http.ResponseWriter, r *http.Request) {
 	principal, err := serviceauthz.RequestPrincipal(r.Context())
 	if err != nil {
-		handlerutils.WriteError(w, r, err)
+		httpkit.WriteError(w, r, err)
 		return
 	}
 	payments, err := h.service.ListHistory(r.Context(), principal.UserID)
 	if err != nil {
-		handlerutils.WriteError(w, r, err)
+		httpkit.WriteError(w, r, err)
 		return
 	}
-	handlerutils.WriteData(w, http.StatusOK, payments)
+	httpkit.WriteData(w, http.StatusOK, payments)
 }
 
 // settings handles GET /api/payment/settings.
@@ -203,10 +203,10 @@ func (h *Handler) history(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) settings(w http.ResponseWriter, r *http.Request) {
 	settings, err := h.service.Settings(r.Context())
 	if err != nil {
-		handlerutils.WriteError(w, r, err)
+		httpkit.WriteError(w, r, err)
 		return
 	}
-	handlerutils.WriteData(w, http.StatusOK, settings)
+	httpkit.WriteData(w, http.StatusOK, settings)
 }
 
 // get handles GET /api/payment/{outTradeNo}.
@@ -253,19 +253,19 @@ func (h *Handler) respondOwnedPayment(w http.ResponseWriter, r *http.Request, lo
 	outTradeNo := r.PathValue("outTradeNo")
 	view, err := load(outTradeNo)
 	if err != nil {
-		handlerutils.WriteError(w, r, err)
+		httpkit.WriteError(w, r, err)
 		return
 	}
 	principal, err := serviceauthz.RequestPrincipal(r.Context())
 	if err != nil {
-		handlerutils.WriteError(w, r, err)
+		httpkit.WriteError(w, r, err)
 		return
 	}
 	if err := serviceauthz.CheckOwnership(principal, view.UserID); err != nil {
-		handlerutils.WriteError(w, r, err)
+		httpkit.WriteError(w, r, err)
 		return
 	}
-	handlerutils.WriteData(w, http.StatusOK, view)
+	httpkit.WriteData(w, http.StatusOK, view)
 }
 
 // cancel handles POST /api/payment/{outTradeNo}/cancel.
@@ -286,23 +286,23 @@ func (h *Handler) cancel(w http.ResponseWriter, r *http.Request) {
 	outTradeNo := r.PathValue("outTradeNo")
 	view, err := h.service.GetPayment(r.Context(), outTradeNo)
 	if err != nil {
-		handlerutils.WriteError(w, r, err)
+		httpkit.WriteError(w, r, err)
 		return
 	}
 	principal, err := serviceauthz.RequestPrincipal(r.Context())
 	if err != nil {
-		handlerutils.WriteError(w, r, err)
+		httpkit.WriteError(w, r, err)
 		return
 	}
 	if err := serviceauthz.CheckOwnership(principal, view.UserID); err != nil {
-		handlerutils.WriteError(w, r, err)
+		httpkit.WriteError(w, r, err)
 		return
 	}
 	if err := h.service.CancelPayment(r.Context(), outTradeNo); err != nil {
-		handlerutils.WriteError(w, r, err)
+		httpkit.WriteError(w, r, err)
 		return
 	}
-	handlerutils.WriteData(w, http.StatusOK, struct {
+	httpkit.WriteData(w, http.StatusOK, struct {
 		Message string `json:"message"`
 	}{Message: "payment cancelled"})
 }

@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"strings"
 
-	appRuntime "github.com/shuTwT/nex-api/internal/handler/httpkit"
 	handlerutils "github.com/shuTwT/nex-api/internal/pkg/utils"
+	appRuntime "github.com/shuTwT/nex-api/internal/pkg/utils/httpkit"
 	"github.com/shuTwT/nex-api/pkg/domain/model"
 )
 

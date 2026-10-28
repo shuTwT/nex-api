@@ -31,6 +31,23 @@ func RequestID(ctx context.Context) string {
 	return requestID
 }
 
+type loggerContextKey struct{}
+
+// WithLogger stores the server logger in the context so downstream helpers
+// emit through the same output, level and format.
+func WithLogger(ctx context.Context, loggerInstance *slog.Logger) context.Context {
+	return context.WithValue(ctx, loggerContextKey{}, loggerInstance)
+}
+
+// LoggerFrom returns the logger stored by WithLogger, falling back to
+// slog.Default() when none was injected (for example bare routers in tests).
+func LoggerFrom(ctx context.Context) *slog.Logger {
+	if loggerInstance, ok := ctx.Value(loggerContextKey{}).(*slog.Logger); ok && loggerInstance != nil {
+		return loggerInstance
+	}
+	return slog.Default()
+}
+
 // requestContextHandler attaches the current request ID to every log record
 // emitted while handling a request.
 type requestContextHandler struct{ slog.Handler }

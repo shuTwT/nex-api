@@ -16,7 +16,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/shuTwT/nex-api/internal/middleware"
-	handlerutils "github.com/shuTwT/nex-api/internal/pkg/utils"
+	"github.com/shuTwT/nex-api/internal/pkg/utils/httpkit"
 	serviceauth "github.com/shuTwT/nex-api/internal/service/auth"
 	"github.com/shuTwT/nex-api/pkg/domain/model"
 )
@@ -117,7 +117,7 @@ func (h *Handler) csrfToken(w http.ResponseWriter, r *http.Request) {
 // @Router /api/auth/login [post]
 func (h *Handler) login(w http.ResponseWriter, r *http.Request) {
 	var request model.AuthLoginReq
-	if err := handlerutils.DecodeJSON(r, &request); err != nil || strings.TrimSpace(request.Email) == "" || request.Password == "" {
+	if err := httpkit.DecodeJSON(r, &request); err != nil || strings.TrimSpace(request.Email) == "" || request.Password == "" {
 		if writeErr := writeError(w, http.StatusBadRequest, "invalid_request"); writeErr != nil {
 			return
 		}

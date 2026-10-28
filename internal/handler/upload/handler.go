@@ -10,9 +10,8 @@ import (
 	"strings"
 
 	"github.com/go-chi/chi/v5"
-	appRuntime "github.com/shuTwT/nex-api/internal/handler/httpkit"
 	"github.com/shuTwT/nex-api/internal/middleware"
-	handlerutils "github.com/shuTwT/nex-api/internal/pkg/utils"
+	appRuntime "github.com/shuTwT/nex-api/internal/pkg/utils/httpkit"
 	serviceupload "github.com/shuTwT/nex-api/internal/service/upload"
 )
 
@@ -105,7 +104,7 @@ func (h *Handler) UploadRoutePost(writer http.ResponseWriter, request *http.Requ
 		writeUploadError(writer, request, errors.Join(closeErr, removeErr))
 		return
 	}
-	handlerutils.WriteData(writer, http.StatusOK, metadata)
+	appRuntime.WriteData(writer, http.StatusOK, metadata)
 }
 
 // UploadFilenameRouteGet handles GET /api/upload/{filename}.
@@ -162,7 +161,7 @@ func removeMultipartForm(request *http.Request) error {
 
 func writeUploadError(writer http.ResponseWriter, request *http.Request, err error) {
 	apiError := classifyError(err)
-	handlerutils.WriteError(writer, request, apiError)
+	appRuntime.WriteError(writer, request, apiError)
 }
 
 func classifyError(err error) error {

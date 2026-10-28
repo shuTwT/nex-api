@@ -3,7 +3,7 @@ package catalog
 import (
 	"net/http"
 
-	handlerutils "github.com/shuTwT/nex-api/internal/pkg/utils"
+	"github.com/shuTwT/nex-api/internal/pkg/utils/httpkit"
 	servicecatalog "github.com/shuTwT/nex-api/internal/service/catalog"
 )
 
@@ -23,14 +23,14 @@ import (
 func (h *Handler) listCategories(w http.ResponseWriter, r *http.Request) {
 	items, err := h.categories.List(r.Context())
 	if err != nil {
-		handlerutils.WriteError(w, r, err)
+		httpkit.WriteError(w, r, err)
 		return
 	}
 	data := make([]categoryListData, len(items))
 	for index, item := range items {
 		data[index] = toCategoryListData(item)
 	}
-	handlerutils.WriteData(w, http.StatusOK, data)
+	httpkit.WriteData(w, http.StatusOK, data)
 }
 
 // createCategory handles POST /api/categories.
@@ -50,16 +50,16 @@ func (h *Handler) listCategories(w http.ResponseWriter, r *http.Request) {
 // @Router /api/categories [post]
 func (h *Handler) createCategory(w http.ResponseWriter, r *http.Request) {
 	var request categoryRequest
-	if err := handlerutils.DecodeJSON(r, &request); err != nil {
-		handlerutils.WriteError(w, r, err)
+	if err := httpkit.DecodeJSON(r, &request); err != nil {
+		httpkit.WriteError(w, r, err)
 		return
 	}
 	item, err := h.categories.Create(r.Context(), servicecatalog.CategoryInput{Name: request.Name, Description: request.Description, Icon: request.Icon})
 	if err != nil {
-		handlerutils.WriteError(w, r, err)
+		httpkit.WriteError(w, r, err)
 		return
 	}
-	handlerutils.WriteData(w, http.StatusCreated, toCategoryData(item))
+	httpkit.WriteData(w, http.StatusCreated, toCategoryData(item))
 }
 
 // getCategory handles GET /api/categories/{id}.
@@ -79,10 +79,10 @@ func (h *Handler) createCategory(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) getCategory(w http.ResponseWriter, r *http.Request) {
 	item, err := h.categories.Get(r.Context(), r.PathValue("id"))
 	if err != nil {
-		handlerutils.WriteError(w, r, err)
+		httpkit.WriteError(w, r, err)
 		return
 	}
-	handlerutils.WriteData(w, http.StatusOK, toCategoryData(item))
+	httpkit.WriteData(w, http.StatusOK, toCategoryData(item))
 }
 
 // updateCategory handles PUT /api/categories/{id}.
@@ -103,16 +103,16 @@ func (h *Handler) getCategory(w http.ResponseWriter, r *http.Request) {
 // @Router /api/categories/{id} [put]
 func (h *Handler) updateCategory(w http.ResponseWriter, r *http.Request) {
 	var request categoryUpdateRequest
-	if err := handlerutils.DecodeJSON(r, &request); err != nil {
-		handlerutils.WriteError(w, r, err)
+	if err := httpkit.DecodeJSON(r, &request); err != nil {
+		httpkit.WriteError(w, r, err)
 		return
 	}
 	item, err := h.categories.Update(r.Context(), r.PathValue("id"), servicecatalog.CategoryUpdateInput{Name: request.Name, Description: request.Description, Icon: request.Icon})
 	if err != nil {
-		handlerutils.WriteError(w, r, err)
+		httpkit.WriteError(w, r, err)
 		return
 	}
-	handlerutils.WriteData(w, http.StatusOK, toCategoryData(item))
+	httpkit.WriteData(w, http.StatusOK, toCategoryData(item))
 }
 
 // deleteCategory handles DELETE /api/categories/{id}.
@@ -131,8 +131,8 @@ func (h *Handler) updateCategory(w http.ResponseWriter, r *http.Request) {
 // @Router /api/categories/{id} [delete]
 func (h *Handler) deleteCategory(w http.ResponseWriter, r *http.Request) {
 	if err := h.categories.Delete(r.Context(), r.PathValue("id")); err != nil {
-		handlerutils.WriteError(w, r, err)
+		httpkit.WriteError(w, r, err)
 		return
 	}
-	handlerutils.WriteData(w, http.StatusOK, map[string]string{"message": "分类已删除"})
+	httpkit.WriteData(w, http.StatusOK, map[string]string{"message": "分类已删除"})
 }

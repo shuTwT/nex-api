@@ -5,8 +5,7 @@ import (
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
-	appRuntime "github.com/shuTwT/nex-api/internal/handler/httpkit"
-	handlerutils "github.com/shuTwT/nex-api/internal/pkg/utils"
+	appRuntime "github.com/shuTwT/nex-api/internal/pkg/utils/httpkit"
 	serviceauthz "github.com/shuTwT/nex-api/internal/service/authz"
 	servicedashboard "github.com/shuTwT/nex-api/internal/service/dashboard"
 )
@@ -53,10 +52,10 @@ func (h *Handler) dashboardStats(w http.ResponseWriter, r *http.Request) {
 	}
 	stats, err := h.service.DashboardStats(r.Context(), principal.UserID)
 	if err != nil {
-		handlerutils.WriteError(w, r, err)
+		appRuntime.WriteError(w, r, err)
 		return
 	}
-	handlerutils.WriteData(w, http.StatusOK, stats)
+	appRuntime.WriteData(w, http.StatusOK, stats)
 }
 
 // activity handles GET /api/dashboard/activity.
@@ -78,10 +77,10 @@ func (h *Handler) activity(w http.ResponseWriter, r *http.Request) {
 	}
 	activities, err := h.service.Activity(r.Context(), principal.UserID)
 	if err != nil {
-		handlerutils.WriteError(w, r, err)
+		appRuntime.WriteError(w, r, err)
 		return
 	}
-	handlerutils.WriteData(w, http.StatusOK, activities)
+	appRuntime.WriteData(w, http.StatusOK, activities)
 }
 
 // topAPIs handles GET /api/dashboard/top-apis.
@@ -103,10 +102,10 @@ func (h *Handler) topAPIs(w http.ResponseWriter, r *http.Request) {
 	}
 	result, err := h.service.TopAPIs(r.Context(), principal.UserID)
 	if err != nil {
-		handlerutils.WriteError(w, r, err)
+		appRuntime.WriteError(w, r, err)
 		return
 	}
-	handlerutils.WriteData(w, http.StatusOK, result)
+	appRuntime.WriteData(w, http.StatusOK, result)
 }
 
 // usageTrend handles GET /api/dashboard/usage-trend.
@@ -128,10 +127,10 @@ func (h *Handler) usageTrend(w http.ResponseWriter, r *http.Request) {
 	}
 	trend, err := h.service.UsageTrend(r.Context(), principal.UserID, principal.Role)
 	if err != nil {
-		handlerutils.WriteError(w, r, err)
+		appRuntime.WriteError(w, r, err)
 		return
 	}
-	handlerutils.WriteData(w, http.StatusOK, trend)
+	appRuntime.WriteData(w, http.StatusOK, trend)
 }
 
 // usage handles GET /api/usage.
@@ -153,10 +152,10 @@ func (h *Handler) usage(w http.ResponseWriter, r *http.Request) {
 	}
 	usage, err := h.service.Usage(r.Context(), principal.UserID)
 	if err != nil {
-		handlerutils.WriteError(w, r, err)
+		appRuntime.WriteError(w, r, err)
 		return
 	}
-	handlerutils.WriteData(w, http.StatusOK, usage)
+	appRuntime.WriteData(w, http.StatusOK, usage)
 }
 
 // globalStats handles GET /api/stats.
@@ -178,10 +177,10 @@ func (h *Handler) globalStats(w http.ResponseWriter, r *http.Request) {
 	}
 	stats, err := h.service.GlobalStats(r.Context(), r.URL.Query().Get("type"))
 	if err != nil {
-		handlerutils.WriteError(w, r, err)
+		appRuntime.WriteError(w, r, err)
 		return
 	}
-	handlerutils.WriteData(w, http.StatusOK, stats)
+	appRuntime.WriteData(w, http.StatusOK, stats)
 }
 
 // apiStats handles GET /api/stats/{alias}.
@@ -205,10 +204,10 @@ func (h *Handler) apiStats(w http.ResponseWriter, r *http.Request) {
 	}
 	stats, err := h.service.APIStats(r.Context(), principal.UserID, chi.URLParam(r, "alias"), r.URL.Query().Get("user") == "true")
 	if err != nil {
-		handlerutils.WriteError(w, r, err)
+		appRuntime.WriteError(w, r, err)
 		return
 	}
-	handlerutils.WriteData(w, http.StatusOK, stats)
+	appRuntime.WriteData(w, http.StatusOK, stats)
 }
 
 func (h *Handler) requireUser(w http.ResponseWriter, r *http.Request) (serviceauthz.Principal, bool) {
@@ -222,7 +221,7 @@ func (h *Handler) requireUser(w http.ResponseWriter, r *http.Request) (serviceau
 			code = "forbidden"
 			message = "access denied"
 		}
-		handlerutils.WriteError(w, r, appRuntime.NewAPIError(status, code, message, err))
+		appRuntime.WriteError(w, r, appRuntime.NewAPIError(status, code, message, err))
 		return serviceauthz.Principal{}, false
 	}
 	return principal, true

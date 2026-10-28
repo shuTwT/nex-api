@@ -2,7 +2,7 @@ package accounts
 
 import (
 	"fmt"
-	handlerutils "github.com/shuTwT/nex-api/internal/pkg/utils"
+	"github.com/shuTwT/nex-api/internal/pkg/utils/httpkit"
 	serviceaccounts "github.com/shuTwT/nex-api/internal/service/accounts"
 	"net/http"
 )
@@ -30,7 +30,7 @@ func (h *Handler) getProfile(w http.ResponseWriter, r *http.Request) {
 		writeServiceError(w, r, err)
 		return
 	}
-	handlerutils.WriteData(w, http.StatusOK, view)
+	httpkit.WriteData(w, http.StatusOK, view)
 }
 
 // updateProfile handles PUT /api/personal/profile.
@@ -55,7 +55,7 @@ func (h *Handler) updateProfile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	var request serviceaccounts.ProfileUpdateRequest
-	if err := handlerutils.DecodeJSON(r, &request); err != nil {
+	if err := httpkit.DecodeJSON(r, &request); err != nil {
 		writeServiceError(w, r, fmt.Errorf("decode profile: %w", serviceaccounts.ErrInvalidRequest))
 		return
 	}
@@ -64,7 +64,7 @@ func (h *Handler) updateProfile(w http.ResponseWriter, r *http.Request) {
 		writeServiceError(w, r, err)
 		return
 	}
-	handlerutils.WriteData(w, http.StatusOK, view)
+	httpkit.WriteData(w, http.StatusOK, view)
 }
 
 // updatePassword handles PUT /api/personal/profile/password.
@@ -89,7 +89,7 @@ func (h *Handler) updatePassword(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	var request serviceaccounts.PasswordUpdateRequest
-	if err := handlerutils.DecodeJSON(r, &request); err != nil {
+	if err := httpkit.DecodeJSON(r, &request); err != nil {
 		writeServiceError(w, r, fmt.Errorf("decode password: %w", serviceaccounts.ErrInvalidRequest))
 		return
 	}
@@ -97,5 +97,5 @@ func (h *Handler) updatePassword(w http.ResponseWriter, r *http.Request) {
 		writeServiceError(w, r, err)
 		return
 	}
-	handlerutils.WriteData(w, http.StatusOK, map[string]string{"message": "密码已更新"})
+	httpkit.WriteData(w, http.StatusOK, map[string]string{"message": "密码已更新"})
 }

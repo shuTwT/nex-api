@@ -1,11 +1,13 @@
 // Package apierror defines business errors produced by services. It deliberately
-// contains no HTTP concepts; handler/httpkit maps Kind to an HTTP response.
+// contains no HTTP concepts; pkg/utils/httpkit maps Kind to an HTTP response.
 package apierror
 
 import (
 	"context"
 	"errors"
 	"fmt"
+
+	"github.com/shuTwT/nex-api/pkg/constant"
 )
 
 var (
@@ -59,10 +61,9 @@ func (e *Error) Unwrap() error {
 	return e.Cause
 }
 
-type FieldError struct {
-	Field  string `json:"field"`
-	Reason string `json:"reason"`
-}
+// FieldError is defined in pkg/constant so the wire models can use it without
+// importing the service layer.
+type FieldError = constant.FieldError
 
 type ValidationError struct {
 	Fields []FieldError

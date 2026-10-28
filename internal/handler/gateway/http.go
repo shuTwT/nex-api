@@ -10,7 +10,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 
-	appRuntime "github.com/shuTwT/nex-api/internal/handler/httpkit"
+	appRuntime "github.com/shuTwT/nex-api/internal/pkg/utils/httpkit"
 	serviceaccounts "github.com/shuTwT/nex-api/internal/service/accounts"
 	serviceauthz "github.com/shuTwT/nex-api/internal/service/authz"
 	servicecatalog "github.com/shuTwT/nex-api/internal/service/catalog"

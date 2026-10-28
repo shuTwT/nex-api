@@ -5,7 +5,8 @@ import (
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
-	handlerutils "github.com/shuTwT/nex-api/internal/pkg/utils"
+	"github.com/shuTwT/nex-api/internal/middleware"
+	"github.com/shuTwT/nex-api/internal/pkg/utils/httpkit"
 	servicesettings "github.com/shuTwT/nex-api/internal/service/settings"
 	"github.com/shuTwT/nex-api/pkg/domain/model"
 )
@@ -23,8 +24,10 @@ func RegisterRoutes(mux chi.Router, handler *Handler) error {
 	if mux == nil || handler == nil {
 		return errors.New("settings: mux and handler are required")
 	}
-	mux.Get("/api/system-settings", handler.list)
-	mux.Put("/api/system-settings", handler.update)
+	admin := func(next http.HandlerFunc) http.Handler { return middleware.RequireAdmin(next) }
+	mux.Method(http.MethodGet, "/api/system-settings", admin(handler.list))
+	mux.Method(http.MethodPut, "/api/system-settings", admin(handler.update))
+	// Public: defaults and the announcement are shown to anonymous visitors.
 	mux.Get("/api/system-settings/defaults", handler.defaults)
 	mux.Get("/api/system-settings/announcement", handler.announcement)
 	return nil
@@ -46,15 +49,12 @@ func RegisterRoutes(mux chi.Router, handler *Handler) error {
 // @Failure 500 {object} main.SwaggerEnvelope
 // @Router /api/system-settings [get]
 func (h *Handler) list(w http.ResponseWriter, r *http.Request) {
-	if !handlerutils.RequireAdmin(w, r) {
-		return
-	}
 	items, err := h.service.List(r.Context(), r.URL.Query().Get("category"))
 	if err != nil {
-		handlerutils.WriteError(w, r, err)
+		httpkit.WriteError(w, r, err)
 		return
 	}
-	handlerutils.WriteData(w, http.StatusOK, items)
+	httpkit.WriteData(w, http.StatusOK, items)
 }
 
 // update handles PUT /api/system-settings.
@@ -72,19 +72,16 @@ func (h *Handler) list(w http.ResponseWriter, r *http.Request) {
 // @Failure 500 {object} main.SwaggerEnvelope
 // @Router /api/system-settings [put]
 func (h *Handler) update(w http.ResponseWriter, r *http.Request) {
-	if !handlerutils.RequireAdmin(w, r) {
-		return
-	}
 	var request model.SystemSettingsUpdateReq
-	if err := handlerutils.DecodeJSON(r, &request); err != nil {
-		handlerutils.WriteError(w, r, err)
+	if err := httpkit.DecodeJSON(r, &request); err != nil {
+		httpkit.WriteError(w, r, err)
 		return
 	}
 	if err := h.service.Update(r.Context(), request.Settings); err != nil {
-		handlerutils.WriteError(w, r, err)
+		httpkit.WriteError(w, r, err)
 		return
 	}
-	handlerutils.WriteData(w, http.StatusOK, map[string]string{"message": "设置已更新"})
+	httpkit.WriteData(w, http.StatusOK, map[string]string{"message": "设置已更新"})
 }
 
 // defaults handles GET /api/system-settings/defaults.
@@ -99,7 +96,7 @@ func (h *Handler) update(w http.ResponseWriter, r *http.Request) {
 // @Failure 500 {object} main.SwaggerEnvelope
 // @Router /api/system-settings/defaults [get]
 func (h *Handler) defaults(w http.ResponseWriter, _ *http.Request) {
-	handlerutils.WriteData(w, http.StatusOK, h.service.Defaults())
+	httpkit.WriteData(w, http.StatusOK, h.service.Defaults())
 }
 
 // announcement handles GET /api/system-settings/announcement.
@@ -116,8 +113,8 @@ func (h *Handler) defaults(w http.ResponseWriter, _ *http.Request) {
 func (h *Handler) announcement(w http.ResponseWriter, r *http.Request) {
 	values, err := h.service.Announcement(r.Context())
 	if err != nil {
-		handlerutils.WriteError(w, r, err)
+		httpkit.WriteError(w, r, err)
 		return
 	}
-	handlerutils.WriteData(w, http.StatusOK, values)
+	httpkit.WriteData(w, http.StatusOK, values)
 }

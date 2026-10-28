@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"github.com/go-chi/chi/v5"
-	handlerutils "github.com/shuTwT/nex-api/internal/pkg/utils"
+	"github.com/shuTwT/nex-api/internal/pkg/utils/httpkit"
 	servicesystem "github.com/shuTwT/nex-api/internal/service/system"
 	"github.com/shuTwT/nex-api/pkg/domain/model"
 	"net/http"
@@ -86,7 +86,7 @@ func (h *Handler) initialized(w http.ResponseWriter, r *http.Request) {
 // @Router /api/system/initialize [post]
 func (h *Handler) initialize(w http.ResponseWriter, r *http.Request) {
 	var request model.SystemInitializeReq
-	if err := handlerutils.DecodeJSON(r, &request); err != nil {
+	if err := httpkit.DecodeJSON(r, &request); err != nil {
 		writeJSON(w, http.StatusBadRequest, responseEnvelope{Success: false, Error: "invalid_request"})
 		return
 	}

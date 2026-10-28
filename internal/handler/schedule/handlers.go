@@ -6,7 +6,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/shuTwT/nex-api/internal/middleware"
-	handlerutils "github.com/shuTwT/nex-api/internal/pkg/utils"
+	"github.com/shuTwT/nex-api/internal/pkg/utils/httpkit"
 	serviceschedule "github.com/shuTwT/nex-api/internal/service/schedule"
 	"github.com/shuTwT/nex-api/pkg/domain/model"
 )
@@ -45,10 +45,10 @@ func RegisterRoutes(mux chi.Router, service *serviceschedule.Service) error {
 func (h *Handler) list(w http.ResponseWriter, r *http.Request) {
 	items, err := h.service.List(r.Context())
 	if err != nil {
-		handlerutils.WriteError(w, r, err)
+		httpkit.WriteError(w, r, err)
 		return
 	}
-	handlerutils.WriteData(w, http.StatusOK, items)
+	httpkit.WriteData(w, http.StatusOK, items)
 }
 
 // tasks handles GET /api/scheduled-jobs/tasks.
@@ -65,7 +65,7 @@ func (h *Handler) list(w http.ResponseWriter, r *http.Request) {
 // @Failure 500 {object} main.SwaggerEnvelope
 // @Router /api/scheduled-jobs/tasks [get]
 func (h *Handler) tasks(w http.ResponseWriter, _ *http.Request) {
-	handlerutils.WriteData(w, http.StatusOK, h.service.Tasks())
+	httpkit.WriteData(w, http.StatusOK, h.service.Tasks())
 }
 
 // get handles GET /api/scheduled-jobs/{id}.
@@ -85,10 +85,10 @@ func (h *Handler) tasks(w http.ResponseWriter, _ *http.Request) {
 func (h *Handler) get(w http.ResponseWriter, r *http.Request) {
 	item, err := h.service.Get(r.Context(), chi.URLParam(r, "id"))
 	if err != nil {
-		handlerutils.WriteError(w, r, err)
+		httpkit.WriteError(w, r, err)
 		return
 	}
-	handlerutils.WriteData(w, http.StatusOK, item)
+	httpkit.WriteData(w, http.StatusOK, item)
 }
 
 // create handles POST /api/scheduled-jobs.
@@ -108,16 +108,16 @@ func (h *Handler) get(w http.ResponseWriter, r *http.Request) {
 // @Router /api/scheduled-jobs [post]
 func (h *Handler) create(w http.ResponseWriter, r *http.Request) {
 	var input model.ScheduleJobUpsertReq
-	if err := handlerutils.DecodeJSON(r, &input); err != nil {
-		handlerutils.WriteError(w, r, err)
+	if err := httpkit.DecodeJSON(r, &input); err != nil {
+		httpkit.WriteError(w, r, err)
 		return
 	}
 	item, err := h.service.Create(r.Context(), input)
 	if err != nil {
-		handlerutils.WriteError(w, r, err)
+		httpkit.WriteError(w, r, err)
 		return
 	}
-	handlerutils.WriteData(w, http.StatusCreated, item)
+	httpkit.WriteData(w, http.StatusCreated, item)
 }
 
 // update handles PUT /api/scheduled-jobs/{id}.
@@ -138,16 +138,16 @@ func (h *Handler) create(w http.ResponseWriter, r *http.Request) {
 // @Router /api/scheduled-jobs/{id} [put]
 func (h *Handler) update(w http.ResponseWriter, r *http.Request) {
 	var input model.ScheduleJobUpsertReq
-	if err := handlerutils.DecodeJSON(r, &input); err != nil {
-		handlerutils.WriteError(w, r, err)
+	if err := httpkit.DecodeJSON(r, &input); err != nil {
+		httpkit.WriteError(w, r, err)
 		return
 	}
 	item, err := h.service.Update(r.Context(), chi.URLParam(r, "id"), input)
 	if err != nil {
-		handlerutils.WriteError(w, r, err)
+		httpkit.WriteError(w, r, err)
 		return
 	}
-	handlerutils.WriteData(w, http.StatusOK, item)
+	httpkit.WriteData(w, http.StatusOK, item)
 }
 
 // delete handles DELETE /api/scheduled-jobs/{id}.
@@ -166,10 +166,10 @@ func (h *Handler) update(w http.ResponseWriter, r *http.Request) {
 // @Router /api/scheduled-jobs/{id} [delete]
 func (h *Handler) delete(w http.ResponseWriter, r *http.Request) {
 	if err := h.service.Delete(r.Context(), chi.URLParam(r, "id")); err != nil {
-		handlerutils.WriteError(w, r, err)
+		httpkit.WriteError(w, r, err)
 		return
 	}
-	handlerutils.WriteData(w, http.StatusOK, map[string]string{"message": "scheduled job deleted"})
+	httpkit.WriteData(w, http.StatusOK, map[string]string{"message": "scheduled job deleted"})
 }
 
 // runNow handles POST /api/scheduled-jobs/{id}/run.
@@ -189,8 +189,8 @@ func (h *Handler) delete(w http.ResponseWriter, r *http.Request) {
 // @Router /api/scheduled-jobs/{id}/run [post]
 func (h *Handler) runNow(w http.ResponseWriter, r *http.Request) {
 	if err := h.service.RunNow(r.Context(), chi.URLParam(r, "id")); err != nil {
-		handlerutils.WriteError(w, r, err)
+		httpkit.WriteError(w, r, err)
 		return
 	}
-	handlerutils.WriteData(w, http.StatusAccepted, map[string]string{"message": "scheduled job triggered"})
+	httpkit.WriteData(w, http.StatusAccepted, map[string]string{"message": "scheduled job triggered"})
 }

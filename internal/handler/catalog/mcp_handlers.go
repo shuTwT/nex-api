@@ -3,7 +3,7 @@ package catalog
 import (
 	"net/http"
 
-	handlerutils "github.com/shuTwT/nex-api/internal/pkg/utils"
+	"github.com/shuTwT/nex-api/internal/pkg/utils/httpkit"
 	servicecatalog "github.com/shuTwT/nex-api/internal/service/catalog"
 )
 
@@ -28,19 +28,19 @@ import (
 func (h *Handler) listMCP(w http.ResponseWriter, r *http.Request) {
 	options, err := parseMCPListOptions(r)
 	if err != nil {
-		handlerutils.WriteError(w, r, err)
+		httpkit.WriteError(w, r, err)
 		return
 	}
 	result, err := h.mcp.List(r.Context(), options)
 	if err != nil {
-		handlerutils.WriteError(w, r, err)
+		httpkit.WriteError(w, r, err)
 		return
 	}
 	data := make([]mcpData, len(result.Items))
 	for index, item := range result.Items {
 		data[index] = toMCPData(item)
 	}
-	handlerutils.WritePaginated(w, data, options.Page, options.Limit, result.Total)
+	httpkit.WritePaginated(w, data, options.Page, options.Limit, result.Total)
 }
 
 // createMCP handles POST /api/mcp-services.
@@ -59,16 +59,16 @@ func (h *Handler) listMCP(w http.ResponseWriter, r *http.Request) {
 // @Router /api/mcp-services [post]
 func (h *Handler) createMCP(w http.ResponseWriter, r *http.Request) {
 	var request mcpRequest
-	if err := handlerutils.DecodeJSON(r, &request); err != nil {
-		handlerutils.WriteError(w, r, err)
+	if err := httpkit.DecodeJSON(r, &request); err != nil {
+		httpkit.WriteError(w, r, err)
 		return
 	}
 	item, err := h.mcp.Create(r.Context(), servicecatalog.MCPInput{Name: request.Name, Identifier: request.Identifier, CategoryID: request.CategoryID, Description: request.Description, Documentation: request.Documentation, Type: request.Type, Command: request.Command, Endpoint: request.Endpoint, EnvVars: request.EnvVars, Pricing: intValue(request.Pricing), IsActive: boolValue(request.IsActive, true)})
 	if err != nil {
-		handlerutils.WriteError(w, r, err)
+		httpkit.WriteError(w, r, err)
 		return
 	}
-	handlerutils.WriteData(w, http.StatusCreated, toMCPData(item))
+	httpkit.WriteData(w, http.StatusCreated, toMCPData(item))
 }
 
 // getMCP handles GET /api/mcp-services/{id}.
@@ -88,10 +88,10 @@ func (h *Handler) createMCP(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) getMCP(w http.ResponseWriter, r *http.Request) {
 	item, err := h.mcp.GetByIdentifier(r.Context(), r.PathValue("id"))
 	if err != nil {
-		handlerutils.WriteError(w, r, err)
+		httpkit.WriteError(w, r, err)
 		return
 	}
-	handlerutils.WriteData(w, http.StatusOK, toMCPData(item))
+	httpkit.WriteData(w, http.StatusOK, toMCPData(item))
 }
 
 // updateMCP handles PUT /api/mcp-services/{id}.
@@ -111,16 +111,16 @@ func (h *Handler) getMCP(w http.ResponseWriter, r *http.Request) {
 // @Router /api/mcp-services/{id} [put]
 func (h *Handler) updateMCP(w http.ResponseWriter, r *http.Request) {
 	var request mcpUpdateRequest
-	if err := handlerutils.DecodeJSON(r, &request); err != nil {
-		handlerutils.WriteError(w, r, err)
+	if err := httpkit.DecodeJSON(r, &request); err != nil {
+		httpkit.WriteError(w, r, err)
 		return
 	}
 	item, err := h.mcp.Update(r.Context(), r.PathValue("id"), servicecatalog.MCPUpdateInput{Name: request.Name, Identifier: request.Identifier, CategoryID: request.CategoryID, Description: request.Description, Documentation: request.Documentation, Type: request.Type, Command: request.Command, Endpoint: request.Endpoint, EnvVars: request.EnvVars, Pricing: request.Pricing, IsActive: request.IsActive})
 	if err != nil {
-		handlerutils.WriteError(w, r, err)
+		httpkit.WriteError(w, r, err)
 		return
 	}
-	handlerutils.WriteData(w, http.StatusOK, toMCPData(item))
+	httpkit.WriteData(w, http.StatusOK, toMCPData(item))
 }
 
 // deleteMCP handles DELETE /api/mcp-services/{id}.
@@ -138,10 +138,10 @@ func (h *Handler) updateMCP(w http.ResponseWriter, r *http.Request) {
 // @Router /api/mcp-services/{id} [delete]
 func (h *Handler) deleteMCP(w http.ResponseWriter, r *http.Request) {
 	if err := h.mcp.Delete(r.Context(), r.PathValue("id")); err != nil {
-		handlerutils.WriteError(w, r, err)
+		httpkit.WriteError(w, r, err)
 		return
 	}
-	handlerutils.WriteData(w, http.StatusOK, map[string]string{"message": "MCP 服务已删除"})
+	httpkit.WriteData(w, http.StatusOK, map[string]string{"message": "MCP 服务已删除"})
 }
 
 // toggleMCP handles PUT /api/mcp-services/{id}/toggle.
@@ -161,10 +161,10 @@ func (h *Handler) deleteMCP(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) toggleMCP(w http.ResponseWriter, r *http.Request) {
 	item, err := h.mcp.Toggle(r.Context(), r.PathValue("id"))
 	if err != nil {
-		handlerutils.WriteError(w, r, err)
+		httpkit.WriteError(w, r, err)
 		return
 	}
-	handlerutils.WriteData(w, http.StatusOK, toMCPData(item))
+	httpkit.WriteData(w, http.StatusOK, toMCPData(item))
 }
 
 // mcpStats handles GET /api/mcp-services/stats.
@@ -182,8 +182,8 @@ func (h *Handler) toggleMCP(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) mcpStats(w http.ResponseWriter, r *http.Request) {
 	stats, err := h.mcp.Stats(r.Context())
 	if err != nil {
-		handlerutils.WriteError(w, r, err)
+		httpkit.WriteError(w, r, err)
 		return
 	}
-	handlerutils.WriteData(w, http.StatusOK, stats)
+	httpkit.WriteData(w, http.StatusOK, stats)
 }

@@ -3,7 +3,7 @@ package catalog
 import (
 	"net/http"
 
-	handlerutils "github.com/shuTwT/nex-api/internal/pkg/utils"
+	"github.com/shuTwT/nex-api/internal/pkg/utils/httpkit"
 	servicecatalog "github.com/shuTwT/nex-api/internal/service/catalog"
 )
 
@@ -24,19 +24,19 @@ import (
 func (h *Handler) listAPIs(w http.ResponseWriter, r *http.Request) {
 	options, err := parseAPIListOptions(r)
 	if err != nil {
-		handlerutils.WriteError(w, r, err)
+		httpkit.WriteError(w, r, err)
 		return
 	}
 	result, err := h.apis.List(r.Context(), options)
 	if err != nil {
-		handlerutils.WriteError(w, r, err)
+		httpkit.WriteError(w, r, err)
 		return
 	}
 	data := make([]apiData, len(result.Items))
 	for index, item := range result.Items {
 		data[index] = toAPIData(item, false)
 	}
-	handlerutils.WritePaginated(w, data, options.Page, options.Limit, result.Total)
+	httpkit.WritePaginated(w, data, options.Page, options.Limit, result.Total)
 }
 
 // createAPI handles POST /api/apis.
@@ -55,17 +55,17 @@ func (h *Handler) listAPIs(w http.ResponseWriter, r *http.Request) {
 // @Router /api/apis [post]
 func (h *Handler) createAPI(w http.ResponseWriter, r *http.Request) {
 	var request apiRequest
-	if err := handlerutils.DecodeJSON(r, &request); err != nil {
-		handlerutils.WriteError(w, r, err)
+	if err := httpkit.DecodeJSON(r, &request); err != nil {
+		httpkit.WriteError(w, r, err)
 		return
 	}
 	input := servicecatalog.APIInput{Name: request.Name, Alias: request.Alias, Description: request.Description, Endpoint: request.Endpoint, Method: request.Method, CategoryID: request.CategoryID, Documentation: request.Documentation, PreScript: request.PreScript, PostScript: request.PostScript, Pricing: intValue(request.Pricing), IsActive: boolValue(request.IsActive, true)}
 	item, err := h.apis.Create(r.Context(), input)
 	if err != nil {
-		handlerutils.WriteError(w, r, err)
+		httpkit.WriteError(w, r, err)
 		return
 	}
-	handlerutils.WriteData(w, http.StatusCreated, toAPIData(item, true))
+	httpkit.WriteData(w, http.StatusCreated, toAPIData(item, true))
 }
 
 // getAPI handles GET /api/apis/{id}.
@@ -84,10 +84,10 @@ func (h *Handler) createAPI(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) getAPI(w http.ResponseWriter, r *http.Request) {
 	item, err := h.apis.GetByIdentifier(r.Context(), r.PathValue("id"))
 	if err != nil {
-		handlerutils.WriteError(w, r, err)
+		httpkit.WriteError(w, r, err)
 		return
 	}
-	handlerutils.WriteData(w, http.StatusOK, toAPIData(item, true))
+	httpkit.WriteData(w, http.StatusOK, toAPIData(item, true))
 }
 
 // updateAPI handles PUT /api/apis/{id}.
@@ -107,16 +107,16 @@ func (h *Handler) getAPI(w http.ResponseWriter, r *http.Request) {
 // @Router /api/apis/{id} [put]
 func (h *Handler) updateAPI(w http.ResponseWriter, r *http.Request) {
 	var request apiUpdateRequest
-	if err := handlerutils.DecodeJSON(r, &request); err != nil {
-		handlerutils.WriteError(w, r, err)
+	if err := httpkit.DecodeJSON(r, &request); err != nil {
+		httpkit.WriteError(w, r, err)
 		return
 	}
 	item, err := h.apis.Update(r.Context(), r.PathValue("id"), servicecatalog.APIUpdateInput{Name: request.Name, Alias: request.Alias, Description: request.Description, Endpoint: request.Endpoint, Method: request.Method, CategoryID: request.CategoryID, Pricing: request.Pricing, Documentation: request.Documentation, PreScript: request.PreScript, PostScript: request.PostScript, IsActive: request.IsActive})
 	if err != nil {
-		handlerutils.WriteError(w, r, err)
+		httpkit.WriteError(w, r, err)
 		return
 	}
-	handlerutils.WriteData(w, http.StatusOK, toAPIData(item, false))
+	httpkit.WriteData(w, http.StatusOK, toAPIData(item, false))
 }
 
 // deleteAPI handles DELETE /api/apis/{id}.
@@ -134,10 +134,10 @@ func (h *Handler) updateAPI(w http.ResponseWriter, r *http.Request) {
 // @Router /api/apis/{id} [delete]
 func (h *Handler) deleteAPI(w http.ResponseWriter, r *http.Request) {
 	if err := h.apis.Delete(r.Context(), r.PathValue("id")); err != nil {
-		handlerutils.WriteError(w, r, err)
+		httpkit.WriteError(w, r, err)
 		return
 	}
-	handlerutils.WriteData(w, http.StatusOK, map[string]string{"message": "API 已删除"})
+	httpkit.WriteData(w, http.StatusOK, map[string]string{"message": "API 已删除"})
 }
 
 // toggleAPI handles PUT /api/apis/{id}/toggle.
@@ -157,10 +157,10 @@ func (h *Handler) deleteAPI(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) toggleAPI(w http.ResponseWriter, r *http.Request) {
 	item, err := h.apis.Toggle(r.Context(), r.PathValue("id"))
 	if err != nil {
-		handlerutils.WriteError(w, r, err)
+		httpkit.WriteError(w, r, err)
 		return
 	}
-	handlerutils.WriteData(w, http.StatusOK, toAPIData(item, false))
+	httpkit.WriteData(w, http.StatusOK, toAPIData(item, false))
 }
 
 // apiStats handles GET /api/apis/stats.
@@ -178,8 +178,8 @@ func (h *Handler) toggleAPI(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) apiStats(w http.ResponseWriter, r *http.Request) {
 	stats, err := h.apis.Stats(r.Context())
 	if err != nil {
-		handlerutils.WriteError(w, r, err)
+		httpkit.WriteError(w, r, err)
 		return
 	}
-	handlerutils.WriteData(w, http.StatusOK, stats)
+	httpkit.WriteData(w, http.StatusOK, stats)
 }

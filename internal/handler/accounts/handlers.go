@@ -11,8 +11,7 @@ import (
 	"time"
 
 	"github.com/go-chi/chi/v5"
-	appRuntime "github.com/shuTwT/nex-api/internal/handler/httpkit"
-	handlerutils "github.com/shuTwT/nex-api/internal/pkg/utils"
+	appRuntime "github.com/shuTwT/nex-api/internal/pkg/utils/httpkit"
 	serviceaccounts "github.com/shuTwT/nex-api/internal/service/accounts"
 	"github.com/shuTwT/nex-api/internal/service/authz"
 )
@@ -146,5 +145,5 @@ func requestMetadata(r *http.Request) serviceaccounts.AuditMetadata {
 }
 
 func writeServiceError(w http.ResponseWriter, r *http.Request, err error) {
-	handlerutils.WriteError(w, r, err)
+	appRuntime.WriteError(w, r, err)
 }

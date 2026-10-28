@@ -1,7 +1,7 @@
 package membership
 
 import (
-	handlerutils "github.com/shuTwT/nex-api/internal/pkg/utils"
+	"github.com/shuTwT/nex-api/internal/pkg/utils/httpkit"
 	servicemembership "github.com/shuTwT/nex-api/internal/service/membership"
 	"github.com/shuTwT/nex-api/pkg/domain/model"
 	"net/http"
@@ -27,15 +27,15 @@ import (
 func (h *Handler) listPlans(w http.ResponseWriter, r *http.Request) {
 	filter, err := planFilter(r)
 	if err != nil {
-		handlerutils.WriteError(w, r, err)
+		httpkit.WriteError(w, r, err)
 		return
 	}
 	page, err := h.plans.List(r.Context(), filter)
 	if err != nil {
-		handlerutils.WriteError(w, r, err)
+		httpkit.WriteError(w, r, err)
 		return
 	}
-	handlerutils.WritePaginated(w, page.Items, page.Page, page.PageSize, page.Total)
+	httpkit.WritePaginated(w, page.Items, page.Page, page.PageSize, page.Total)
 }
 
 // getPlan handles GET /api/subscription-plans/{id}.
@@ -55,10 +55,10 @@ func (h *Handler) listPlans(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) getPlan(w http.ResponseWriter, r *http.Request) {
 	plan, err := h.plans.Get(r.Context(), r.PathValue("id"))
 	if err != nil {
-		handlerutils.WriteError(w, r, err)
+		httpkit.WriteError(w, r, err)
 		return
 	}
-	handlerutils.WriteData(w, http.StatusOK, plan)
+	httpkit.WriteData(w, http.StatusOK, plan)
 }
 
 // createPlan handles POST /api/subscription-plans.
@@ -77,14 +77,14 @@ func (h *Handler) getPlan(w http.ResponseWriter, r *http.Request) {
 // @Failure 500 {object} main.SwaggerEnvelope
 // @Router /api/subscription-plans [post]
 func (h *Handler) createPlan(w http.ResponseWriter, r *http.Request) {
-	body, err := handlerutils.DecodeJSONValue[model.SubscriptionPlanCreateReq](r)
+	body, err := httpkit.DecodeJSONValue[model.SubscriptionPlanCreateReq](r)
 	if err != nil {
-		handlerutils.WriteError(w, r, err)
+		httpkit.WriteError(w, r, err)
 		return
 	}
 	principal, err := authz.RequestPrincipal(r.Context())
 	if err != nil {
-		handlerutils.WriteError(w, r, err)
+		httpkit.WriteError(w, r, err)
 		return
 	}
 	input := servicemembership.PlanCreateInput{Title: body.Title, IsActive: false}
@@ -108,10 +108,10 @@ func (h *Handler) createPlan(w http.ResponseWriter, r *http.Request) {
 	}
 	plan, err := h.plans.Create(r.Context(), principal.UserID, input)
 	if err != nil {
-		handlerutils.WriteError(w, r, err)
+		httpkit.WriteError(w, r, err)
 		return
 	}
-	handlerutils.WriteData(w, http.StatusCreated, plan)
+	httpkit.WriteData(w, http.StatusCreated, plan)
 }
 
 // updatePlan handles PUT /api/subscription-plans/{id}.
@@ -131,22 +131,22 @@ func (h *Handler) createPlan(w http.ResponseWriter, r *http.Request) {
 // @Failure 500 {object} main.SwaggerEnvelope
 // @Router /api/subscription-plans/{id} [put]
 func (h *Handler) updatePlan(w http.ResponseWriter, r *http.Request) {
-	input, err := handlerutils.DecodeJSONValue[servicemembership.PlanUpdateInput](r)
+	input, err := httpkit.DecodeJSONValue[servicemembership.PlanUpdateInput](r)
 	if err != nil {
-		handlerutils.WriteError(w, r, err)
+		httpkit.WriteError(w, r, err)
 		return
 	}
 	principal, err := authz.RequestPrincipal(r.Context())
 	if err != nil {
-		handlerutils.WriteError(w, r, err)
+		httpkit.WriteError(w, r, err)
 		return
 	}
 	plan, err := h.plans.Update(r.Context(), principal.UserID, r.PathValue("id"), input)
 	if err != nil {
-		handlerutils.WriteError(w, r, err)
+		httpkit.WriteError(w, r, err)
 		return
 	}
-	handlerutils.WriteData(w, http.StatusOK, plan)
+	httpkit.WriteData(w, http.StatusOK, plan)
 }
 
 // deletePlan handles DELETE /api/subscription-plans/{id}.
@@ -166,12 +166,12 @@ func (h *Handler) updatePlan(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) deletePlan(w http.ResponseWriter, r *http.Request) {
 	principal, err := authz.RequestPrincipal(r.Context())
 	if err != nil {
-		handlerutils.WriteError(w, r, err)
+		httpkit.WriteError(w, r, err)
 		return
 	}
 	if err := h.plans.Delete(r.Context(), principal.UserID, r.PathValue("id")); err != nil {
-		handlerutils.WriteError(w, r, err)
+		httpkit.WriteError(w, r, err)
 		return
 	}
-	handlerutils.WriteData(w, http.StatusOK, map[string]string{"message": "订阅计划已删除"})
+	httpkit.WriteData(w, http.StatusOK, map[string]string{"message": "订阅计划已删除"})
 }

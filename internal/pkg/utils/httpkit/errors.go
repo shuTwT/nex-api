@@ -1,6 +1,6 @@
 // Package httpkit provides the unified JSON envelope, pagination and error
 // response helpers for the handler layer, plus mapping for business errors
-// defined by service/apierror.
+// defined by service/apierror. The wire types live in pkg/domain/model.
 package httpkit
 
 import (
@@ -11,15 +11,20 @@ import (
 	"log/slog"
 	"net/http"
 
-	"github.com/shuTwT/nex-api/internal/middleware"
+	"github.com/shuTwT/nex-api/internal/infra/logger"
 	serviceerror "github.com/shuTwT/nex-api/internal/service/apierror"
+	"github.com/shuTwT/nex-api/pkg/domain/model"
 )
 
 // Business error types, re-exported for callers that used to import them from
-// the old runtime package.
+// the old runtime package. The HTTP wire types are aliases of pkg/domain/model.
 type (
 	FieldError      = serviceerror.FieldError
 	ValidationError = serviceerror.ValidationError
+	APIError        = model.APIError
+	ErrorBody       = model.ErrorBody
+	Pagination      = model.Pagination
+	Envelope[T any] = model.Envelope[T]
 )
 
 var (
@@ -29,14 +34,6 @@ var (
 	ErrConflict     = serviceerror.ErrConflict
 	ErrValidation   = serviceerror.ErrValidation
 )
-
-// APIError is the HTTP-layer projection of a service business error.
-type APIError struct {
-	StatusCode int
-	Code       string
-	Message    string
-	Cause      error
-}
 
 func NewAPIError(statusCode int, code string, message string, cause error) *APIError {
 	return &APIError{StatusCode: statusCode, Code: code, Message: message, Cause: cause}
@@ -82,23 +79,6 @@ func FromError(err error) *APIError {
 	return NewAPIError(http.StatusInternalServerError, "internal_error", "internal server error", err)
 }
 
-func (e *APIError) Error() string {
-	if e == nil {
-		return ""
-	}
-	if e.Cause == nil {
-		return e.Code + ": " + e.Message
-	}
-	return fmt.Sprintf("%s: %s: %v", e.Code, e.Message, e.Cause)
-}
-
-func (e *APIError) Unwrap() error {
-	if e == nil {
-		return nil
-	}
-	return e.Cause
-}
-
 func statusForKind(kind serviceerror.Kind) int {
 	switch kind {
 	case serviceerror.KindInvalidInput:
@@ -118,35 +98,6 @@ func statusForKind(kind serviceerror.Kind) int {
 	}
 }
 
-// ErrorBody is serialized as a plain string (its message) to keep the wire
-// contract stable; request_id is only echoed through the header.
-type ErrorBody struct {
-	Code      string       `json:"code"`
-	Message   string       `json:"message"`
-	RequestID string       `json:"request_id,omitempty"`
-	Fields    []FieldError `json:"fields,omitempty"`
-}
-
-func (e ErrorBody) MarshalJSON() ([]byte, error) {
-	return json.Marshal(e.Message)
-}
-
-// Pagination describes the paged result envelope fields.
-type Pagination struct {
-	Page       int `json:"page"`
-	PageSize   int `json:"limit"`
-	Total      int `json:"total"`
-	TotalPages int `json:"totalPages"`
-}
-
-// Envelope is the uniform success/error response wrapper.
-type Envelope[T any] struct {
-	Success    bool        `json:"success"`
-	Data       *T          `json:"data,omitempty"`
-	Error      *ErrorBody  `json:"error,omitempty"`
-	Pagination *Pagination `json:"pagination,omitempty"`
-}
-
 func NewSuccessEnvelope[T any](data T) Envelope[T] {
 	return Envelope[T]{Success: true, Data: &data}
 }
@@ -161,22 +112,39 @@ func NewErrorEnvelope(apiError *APIError) Envelope[struct{}] {
 	}
 }
 
-// WriteData writes a success envelope with the given status.
-func WriteData[T any](w http.ResponseWriter, status int, data T) error {
-	return WriteEnvelope(w, status, NewSuccessEnvelope(data))
+// WriteData writes a success envelope with the given status. A failed write
+// (typically a disconnected client) has nobody to report to, so none is returned.
+func WriteData[T any](w http.ResponseWriter, status int, data T) {
+	_ = WriteEnvelope(w, status, NewSuccessEnvelope(data))
+}
+
+// WritePaginated writes a successful HTTP 200 envelope with pagination metadata.
+func WritePaginated[T any](w http.ResponseWriter, data T, page, limit, total int) {
+	pages := 0
+	if limit > 0 {
+		pages = total / limit
+		if total%limit != 0 {
+			pages++
+		}
+	}
+	_ = WriteEnvelope(w, http.StatusOK, Envelope[T]{
+		Success:    true,
+		Data:       &data,
+		Pagination: &Pagination{Page: page, PageSize: limit, Total: total, TotalPages: pages},
+	})
 }
 
 // WriteError maps err to a compatible error envelope and writes it. Errors
 // mapped to a 5xx response are logged with their full cause chain — without
 // this the client only sees "internal server error" and the root cause is
 // lost.
-func WriteError(w http.ResponseWriter, r *http.Request, err error) error {
+func WriteError(w http.ResponseWriter, r *http.Request, err error) {
 	apiError := FromError(err)
 	if apiError == nil {
 		apiError = NewAPIError(http.StatusInternalServerError, "internal_error", "internal server error", nil)
 	}
 	if apiError.StatusCode >= http.StatusInternalServerError {
-		middleware.LoggerFrom(r.Context()).ErrorContext(r.Context(), "request failed",
+		logger.LoggerFrom(r.Context()).ErrorContext(r.Context(), "request failed",
 			slog.String("method", r.Method),
 			slog.String("path", r.URL.Path),
 			slog.Int("status", apiError.StatusCode),
@@ -184,14 +152,14 @@ func WriteError(w http.ResponseWriter, r *http.Request, err error) error {
 		)
 	}
 	envelope := NewErrorEnvelope(apiError)
-	if requestID := middleware.RequestID(r.Context()); requestID != "" {
-		w.Header().Set(middleware.RequestIDHeader, requestID)
+	if requestID := logger.RequestID(r.Context()); requestID != "" {
+		w.Header().Set(logger.RequestIDHeader, requestID)
 	}
-	envelope.Error.RequestID = middleware.RequestID(r.Context())
+	envelope.Error.RequestID = logger.RequestID(r.Context())
 	if validationError := asValidationError(err); validationError != nil {
 		envelope.Error.Fields = append([]FieldError(nil), validationError.Fields...)
 	}
-	return WriteEnvelope(w, apiError.StatusCode, envelope)
+	_ = WriteEnvelope(w, apiError.StatusCode, envelope)
 }
 
 // WriteEnvelope serializes the envelope as the JSON response body.

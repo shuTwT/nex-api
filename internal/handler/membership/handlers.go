@@ -6,9 +6,8 @@ import (
 	"strconv"
 
 	"github.com/go-chi/chi/v5"
-	appRuntime "github.com/shuTwT/nex-api/internal/handler/httpkit"
 	"github.com/shuTwT/nex-api/internal/middleware"
-	handlerutils "github.com/shuTwT/nex-api/internal/pkg/utils"
+	appRuntime "github.com/shuTwT/nex-api/internal/pkg/utils/httpkit"
 	serviceauthz "github.com/shuTwT/nex-api/internal/service/authz"
 	servicemembership "github.com/shuTwT/nex-api/internal/service/membership"
 	"github.com/shuTwT/nex-api/pkg/domain/model"
@@ -79,10 +78,10 @@ func RegisterServiceRoutes(r chi.Router, plans *servicemembership.PlanService, m
 func (h *Handler) membershipPlans(w http.ResponseWriter, r *http.Request) {
 	plans, err := h.membership.ListPlans(r.Context())
 	if err != nil {
-		handlerutils.WriteError(w, r, err)
+		appRuntime.WriteError(w, r, err)
 		return
 	}
-	handlerutils.WriteData(w, http.StatusOK, plans)
+	appRuntime.WriteData(w, http.StatusOK, plans)
 }
 
 // currentMembership handles GET /api/membership/current.
@@ -100,15 +99,15 @@ func (h *Handler) membershipPlans(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) currentMembership(w http.ResponseWriter, r *http.Request) {
 	principal, err := serviceauthz.RequestPrincipal(r.Context())
 	if err != nil {
-		handlerutils.WriteError(w, r, err)
+		appRuntime.WriteError(w, r, err)
 		return
 	}
 	current, err := h.membership.Current(r.Context(), principal.UserID)
 	if err != nil {
-		handlerutils.WriteError(w, r, err)
+		appRuntime.WriteError(w, r, err)
 		return
 	}
-	handlerutils.WriteData(w, http.StatusOK, current)
+	appRuntime.WriteData(w, http.StatusOK, current)
 }
 
 // subscribe handles POST /api/membership/subscribe.
@@ -126,22 +125,22 @@ func (h *Handler) currentMembership(w http.ResponseWriter, r *http.Request) {
 // @Failure 500 {object} main.SwaggerEnvelope
 // @Router /api/membership/subscribe [post]
 func (h *Handler) subscribe(w http.ResponseWriter, r *http.Request) {
-	body, err := handlerutils.DecodeJSONValue[model.MembershipSubscribeReq](r)
+	body, err := appRuntime.DecodeJSONValue[model.MembershipSubscribeReq](r)
 	if err != nil {
-		handlerutils.WriteError(w, r, err)
+		appRuntime.WriteError(w, r, err)
 		return
 	}
 	principal, err := serviceauthz.RequestPrincipal(r.Context())
 	if err != nil {
-		handlerutils.WriteError(w, r, err)
+		appRuntime.WriteError(w, r, err)
 		return
 	}
 	subscription, err := h.membership.Subscribe(r.Context(), principal.UserID, body.PlanID)
 	if err != nil {
-		handlerutils.WriteError(w, r, err)
+		appRuntime.WriteError(w, r, err)
 		return
 	}
-	handlerutils.WriteData(w, http.StatusCreated, subscription)
+	appRuntime.WriteData(w, http.StatusCreated, subscription)
 }
 
 func planFilter(r *http.Request) (servicemembership.PlanListFilter, error) {

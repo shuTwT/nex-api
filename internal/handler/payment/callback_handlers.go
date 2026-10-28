@@ -6,7 +6,7 @@ import (
 	"net/url"
 	"strings"
 
-	handlerutils "github.com/shuTwT/nex-api/internal/pkg/utils"
+	"github.com/shuTwT/nex-api/internal/pkg/utils/httpkit"
 )
 
 // wechatCallback handles GET /api/payment/callback/wechat.
@@ -136,11 +136,11 @@ func (h *Handler) mockCallback(w http.ResponseWriter, r *http.Request) {
 		h.callbackError(w, r, err)
 		return
 	}
-	handlerutils.WriteData(w, http.StatusOK, struct {
+	httpkit.WriteData(w, http.StatusOK, struct {
 		Success bool `json:"success"`
 	}{Success: true})
 }
 
 func (h *Handler) callbackError(w http.ResponseWriter, r *http.Request, err error) {
-	handlerutils.WriteError(w, r, err)
+	httpkit.WriteError(w, r, err)
 }

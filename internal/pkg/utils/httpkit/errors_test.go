@@ -11,14 +11,11 @@ import (
 
 	"github.com/shuTwT/nex-api/internal/infra/config"
 	"github.com/shuTwT/nex-api/internal/infra/logger"
-	"github.com/shuTwT/nex-api/internal/middleware"
 )
 
 func TestWriteData_writes_contract_success_response(t *testing.T) {
 	rec := httptest.NewRecorder()
-	if err := WriteData(rec, http.StatusOK, map[string]any{"name": "nex", "enabled": true}); err != nil {
-		t.Fatal(err)
-	}
+	WriteData(rec, http.StatusOK, map[string]any{"name": "nex", "enabled": true})
 	var payload struct {
 		Success bool            `json:"success"`
 		Data    map[string]any  `json:"data"`
@@ -67,9 +64,7 @@ func TestWriteError_writes_message_without_internal_cause(t *testing.T) {
 	req := httptest.NewRequest(http.MethodGet, "/resource", nil)
 	req = req.WithContext(logger.WithRequestID(req.Context(), "test-request-id"))
 	apiError := NewAPIError(http.StatusBadRequest, "invalid_request", "request is invalid", errors.New("database secret"))
-	if err := WriteError(rec, req, apiError); err != nil {
-		t.Fatal(err)
-	}
+	WriteError(rec, req, apiError)
 	var payload struct {
 		Success bool            `json:"success"`
 		Error   json.RawMessage `json:"error"`
@@ -91,9 +86,7 @@ func TestWriteError_writes_message_without_internal_cause(t *testing.T) {
 func TestWriteError_preserves_validation_status_and_contract_shape(t *testing.T) {
 	rec := httptest.NewRecorder()
 	req := httptest.NewRequest(http.MethodPost, "/resource", nil)
-	if err := WriteError(rec, req, NewValidationError(FieldError{Field: "name", Reason: "required"})); err != nil {
-		t.Fatal(err)
-	}
+	WriteError(rec, req, NewValidationError(FieldError{Field: "name", Reason: "required"}))
 	var payload struct {
 		Success bool            `json:"success"`
 		Error   json.RawMessage `json:"error"`
@@ -117,12 +110,10 @@ func TestWriteError_logsInternalCauseWithRequestID(t *testing.T) {
 		t.Fatal(err)
 	}
 	req := httptest.NewRequest(http.MethodGet, "/api/payment/methods", nil)
-	req = req.WithContext(middleware.WithLogger(logger.WithRequestID(req.Context(), "req-500"), testLogger))
+	req = req.WithContext(logger.WithLogger(logger.WithRequestID(req.Context(), "req-500"), testLogger))
 	cause := errors.New("get payment settings: database is locked")
 	rec := httptest.NewRecorder()
-	if err := WriteError(rec, req, cause); err != nil {
-		t.Fatal(err)
-	}
+	WriteError(rec, req, cause)
 	if rec.Code != http.StatusInternalServerError {
 		t.Fatalf("status = %d", rec.Code)
 	}
@@ -139,11 +130,9 @@ func TestWriteError_doesNotLogBusinessErrors(t *testing.T) {
 		t.Fatal(err)
 	}
 	req := httptest.NewRequest(http.MethodGet, "/resource", nil)
-	req = req.WithContext(middleware.WithLogger(req.Context(), testLogger))
+	req = req.WithContext(logger.WithLogger(req.Context(), testLogger))
 	rec := httptest.NewRecorder()
-	if err := WriteError(rec, req, NewAPIError(http.StatusNotFound, "not_found", "resource not found", errors.New("hidden detail"))); err != nil {
-		t.Fatal(err)
-	}
+	WriteError(rec, req, NewAPIError(http.StatusNotFound, "not_found", "resource not found", errors.New("hidden detail")))
 	if buffer.Len() != 0 {
 		t.Fatalf("business errors must not be logged, got %q", buffer.String())
 	}

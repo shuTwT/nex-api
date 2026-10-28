@@ -1,12 +1,10 @@
-package utils
+package httpkit
 
 import (
 	"encoding/json"
 	"errors"
 	"io"
 	"net/http"
-
-	"github.com/shuTwT/nex-api/internal/handler/httpkit"
 )
 
 const maxJSONBodyBytes = 1 << 20
@@ -26,7 +24,7 @@ func DecodeJSON(r *http.Request, destination any) error {
 
 	var extra json.RawMessage
 	if err := decoder.Decode(&extra); !errors.Is(err, io.EOF) {
-		return httpkit.NewValidationError(httpkit.FieldError{
+		return NewValidationError(FieldError{
 			Field:  "body",
 			Reason: "must contain exactly one JSON value",
 		})
@@ -42,7 +40,7 @@ func DecodeJSONValue[T any](r *http.Request) (T, error) {
 }
 
 func invalidJSONError() error {
-	return httpkit.NewValidationError(httpkit.FieldError{
+	return NewValidationError(FieldError{
 		Field:  "body",
 		Reason: "invalid JSON",
 	})

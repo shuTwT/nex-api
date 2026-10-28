@@ -54,7 +54,7 @@ infra/
 - Ent Schema、生成入口和生成代码统一位于后端根目录 `ent/`；`infra/database` 只负责创建数据库连接和 Ent Client 实例。
 - `infra/pay` 维护支付客户端所需的基础类型，`service/payment` 直接依赖该包，避免反向依赖和循环引用。
 - `infra/schedule` 不包含具体业务任务，只负责注册、启停、触发和关闭。
-- 将原 `runtime` 拆分：Server/health 进入 `infra/httpserver`，logger 进入 `infra/logger`，HTTP 错误输出进入 `handler/httpkit`，HTTP 中间件进入 `middleware`。
+- 将原 `runtime` 拆分：Server/health 进入 `infra/httpserver`，logger 进入 `infra/logger`，HTTP 错误输出进入 `internal/pkg/utils/httpkit`（线上结构体位于 `pkg/domain/model/http.go`），HTTP 中间件进入 `middleware`。
 - OpenAPI 文档由 `cmd/server/swagger.go` 中的 Swaggo 注释生成；再通过标准 `swagger2openapi` 转为 OpenAPI 3，前端使用 `openapi-typescript` 消费该文档。
 
 ### 2. Service 层
@@ -88,7 +88,7 @@ settings,stats,system,upload}
 增加：
 
 ```text
-handler/httpkit/     # 统一 JSON、分页、错误响应、请求元数据
+internal/pkg/utils/httpkit/  # 统一 JSON、分页、错误响应、请求元数据（结构体在 pkg/domain/model）
 handler/router/      # 根路由装配，不创建 Service
 ```
 
