@@ -12,6 +12,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/redis/go-redis/v9"
 	"github.com/shuTwT/nex-api/internal/infra/config"
 	"github.com/shuTwT/nex-api/ent"
 	"github.com/shuTwT/nex-api/ent/session"
@@ -81,6 +82,7 @@ type serviceOptions struct {
 	loginLimit     int
 	loginWindow    time.Duration
 	secureCookies  bool
+	redis          redis.Cmdable
 }
 
 func WithClock(clock Clock) Option {
@@ -107,6 +109,14 @@ func WithLoginRateLimit(maxAttempts int, window time.Duration) Option {
 		if window > 0 {
 			options.loginWindow = window
 		}
+	}
+}
+
+// WithRedis 提供登录限流使用的 Redis。未提供时限流器不可用,
+// AllowLogin 会返回 ErrRateLimiterUnavailable,登录请求因此被拒绝(fail closed)。
+func WithRedis(client redis.Cmdable) Option {
+	return func(options *serviceOptions) {
+		options.redis = client
 	}
 }
 
@@ -140,6 +150,10 @@ func NewService(client *ent.Client, authConfig config.Auth, options ...Option) (
 	if cookieName == "" {
 		cookieName = defaultSessionCookieName
 	}
+	var limiter *loginRateLimiter
+	if serviceOptions.redis != nil {
+		limiter = newLoginRateLimiter(serviceOptions.redis, serviceOptions.loginLimit, serviceOptions.loginWindow)
+	}
 	return &Service{
 		client:            client,
 		sessionSecret:     []byte(authConfig.SessionSecret),
@@ -149,7 +163,7 @@ func NewService(client *ent.Client, authConfig config.Auth, options ...Option) (
 		clock:             serviceOptions.clock,
 		tokenGenerator:    serviceOptions.tokenGenerator,
 		secureCookies:     serviceOptions.secureCookies,
-		rateLimiter:       newLoginRateLimiter(serviceOptions.loginLimit, serviceOptions.loginWindow, serviceOptions.clock),
+		rateLimiter:       limiter,
 	}, nil
 }
 

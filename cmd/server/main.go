@@ -81,7 +81,7 @@ func run(ctx context.Context, cfg config.Config, loggerInstance *slog.Logger) er
 
 	// Redis 未就绪时只告警、不阻止启动;readyz 会持续暴露该状态。
 	if err := deps.Redis.Ping(runCtx).Err(); err != nil {
-		loggerInstance.Warn("redis is unreachable; usage statistics and rate limiting will be unavailable", slog.Any("err", err))
+		loggerInstance.Warn("redis is unreachable; usage statistics will be unavailable and logins will be rejected until it recovers", slog.Any("err", err))
 	}
 
 	pool, err := newWorkerPool(runCtx, loggerInstance)

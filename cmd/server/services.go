@@ -79,6 +79,7 @@ func buildServices(ctx context.Context, cfg config.Config, logger *slog.Logger) 
 
 	authService, err := serviceauth.NewService(client, cfg.Auth,
 		serviceauth.WithSecureCookies(isProduction(cfg.Environment)),
+		serviceauth.WithRedis(redisClient),
 	)
 	if err != nil {
 		return deps, nil, fmt.Errorf("create auth service: %w", err)

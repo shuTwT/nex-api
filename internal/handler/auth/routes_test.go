@@ -9,7 +9,9 @@ import (
 	"time"
 
 	_ "github.com/mattn/go-sqlite3"
+	"github.com/redis/go-redis/v9"
 	"github.com/shuTwT/nex-api/internal/infra/config"
+	"github.com/shuTwT/nex-api/internal/infra/database/redistest"
 	"github.com/shuTwT/nex-api/ent"
 	"github.com/shuTwT/nex-api/ent/enttest"
 	"github.com/shuTwT/nex-api/internal/middleware"
@@ -86,9 +88,56 @@ func TestHandler_rateLimitsFailedLogins(t *testing.T) {
 	if limited.Code != http.StatusTooManyRequests {
 		t.Fatalf("rate-limited status = %d", limited.Code)
 	}
+	if limited.Header().Get("Retry-After") == "" {
+		t.Fatal("rate-limited response is missing Retry-After")
+	}
 }
 
+func TestHandler_successfulLoginResetsRateLimit(t *testing.T) {
+	service, _, csrf := newHandlerTestService(t, "user", serviceauth.WithLoginRateLimit(2, time.Minute))
+	handler := NewHandler(service)
+	wrong := `{"email":"user@example.com","password":"wrong"}`
+	right := `{"email":"user@example.com","password":"correct horse battery staple"}`
+	if r := doJSONRequest(t, handler, http.MethodPost, "/api/auth/login", wrong, csrf, csrf.Value); r.Code != http.StatusUnauthorized {
+		t.Fatalf("failed attempt status = %d", r.Code)
+	}
+	if r := doJSONRequest(t, handler, http.MethodPost, "/api/auth/login", right, csrf, csrf.Value); r.Code != http.StatusOK {
+		t.Fatalf("successful login status = %d", r.Code)
+	}
+	// Without the reset the counter would already be at 2 and the second
+	// failure below would be rate limited.
+	for attempt := 0; attempt < 2; attempt++ {
+		if r := doJSONRequest(t, handler, http.MethodPost, "/api/auth/login", wrong, csrf, csrf.Value); r.Code != http.StatusUnauthorized {
+			t.Fatalf("post-reset attempt %d status = %d", attempt, r.Code)
+		}
+	}
+}
+
+func TestHandler_loginFailsClosedWhenRedisIsDown(t *testing.T) {
+	// Needs no running Redis: the client points at a closed port.
+	service, _, csrf := newHandlerTestServiceWithRedis(t, "user", redistest.Unreachable(t))
+	handler := NewHandler(service)
+	// Correct credentials must still be rejected: no rate-limit decision, no login.
+	response := doJSONRequest(t, handler, http.MethodPost, "/api/auth/login", `{"email":"user@example.com","password":"correct horse battery staple"}`, csrf, csrf.Value)
+	if response.Code != http.StatusServiceUnavailable {
+		t.Fatalf("status = %d, want 503; body = %s", response.Code, response.Body.String())
+	}
+	if !strings.Contains(response.Body.String(), "login_unavailable") {
+		t.Fatalf("body = %s", response.Body.String())
+	}
+	if responseCookie(response, service.SessionCookieName()) != nil {
+		t.Fatal("a session cookie was issued while the limiter was unavailable")
+	}
+}
+
+// newHandlerTestService uses the development Redis; the test is skipped when it
+// is unreachable.
 func newHandlerTestService(t *testing.T, role string, options ...serviceauth.Option) (*serviceauth.Service, *ent.Client, *http.Cookie) {
+	t.Helper()
+	return newHandlerTestServiceWithRedis(t, role, redistest.New(t), options...)
+}
+
+func newHandlerTestServiceWithRedis(t *testing.T, role string, redisClient redis.Cmdable, options ...serviceauth.Option) (*serviceauth.Service, *ent.Client, *http.Cookie) {
 	t.Helper()
 	client := enttest.Open(t, "sqlite3", "file:"+t.TempDir()+"/auth.db?_fk=1")
 	t.Cleanup(func() { _ = client.Close() })
@@ -99,11 +148,17 @@ func newHandlerTestService(t *testing.T, role string, options ...serviceauth.Opt
 	if _, err = client.User.Create().SetID("user-1").SetEmail("user@example.com").SetUsername("user").SetPassword(hash).SetRole(role).SetCredits(100).Save(context.Background()); err != nil {
 		t.Fatal(err)
 	}
-	options = append([]serviceauth.Option{serviceauth.WithSecureCookies(true)}, options...)
+	options = append([]serviceauth.Option{serviceauth.WithSecureCookies(true), serviceauth.WithRedis(redisClient)}, options...)
 	service, err := serviceauth.NewService(client, config.Auth{SessionSecret: "test-session-secret"}, options...)
 	if err != nil {
 		t.Fatal(err)
 	}
+	// Every test logs in as the same email from the same httptest address, so the
+	// counter lives in the shared dev Redis under one key. Clear it before and
+	// after so tests (and leftovers from a crashed run) cannot affect each other.
+	limitKey := loginRateLimitKey(httptest.NewRequest(http.MethodPost, "/api/auth/login", nil), "user@example.com")
+	_ = service.ResetLogin(context.Background(), limitKey)
+	t.Cleanup(func() { _ = service.ResetLogin(context.Background(), limitKey) })
 	csrfResponse := httptest.NewRecorder()
 	NewHandler(service).ServeHTTP(csrfResponse, httptest.NewRequest(http.MethodGet, "/api/auth/csrf", nil))
 	csrf := responseCookie(csrfResponse, service.CSRFTokenCookieName())

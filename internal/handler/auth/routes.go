@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"log/slog"
 	"net"
 	"net/http"
 	"strings"
@@ -123,7 +124,15 @@ func (h *Handler) login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	key := loginRateLimitKey(r, request.Email)
-	allowed, retryAfter := h.service.AllowLogin(key)
+	allowed, retryAfter, err := h.service.AllowLogin(r.Context(), key)
+	if err != nil {
+		// Fail closed: without a rate-limit decision the attempt is rejected.
+		slog.ErrorContext(r.Context(), "login rate limiter unavailable", slog.Any("err", err))
+		if writeErr := writeError(w, http.StatusServiceUnavailable, "login_unavailable"); writeErr != nil {
+			return
+		}
+		return
+	}
 	if !allowed {
 		w.Header().Set("Retry-After", fmt.Sprintf("%d", maxAgeSeconds(retryAfter)))
 		if writeErr := writeError(w, http.StatusTooManyRequests, "login_rate_limited"); writeErr != nil {
@@ -144,7 +153,11 @@ func (h *Handler) login(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
-	h.service.ResetLogin(key)
+	// The login already succeeded; a failed reset only leaves the counter to
+	// expire on its own, so it must not turn this response into an error.
+	if err := h.service.ResetLogin(r.Context(), key); err != nil {
+		slog.WarnContext(r.Context(), "login rate limit reset failed", slog.Any("err", err))
+	}
 	h.setSessionCookie(w, authContext)
 	if _, err := h.csrf.EnsureToken(w, r); err != nil {
 		if writeErr := writeError(w, http.StatusInternalServerError, "csrf_unavailable"); writeErr != nil {
