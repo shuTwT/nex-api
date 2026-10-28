@@ -67,13 +67,13 @@ func TestCatalogResponseShape_includesEnvelope(t *testing.T) {
 	response := httptest.NewRecorder()
 	mux.ServeHTTP(response, adminRequest(http.MethodGet, "/api/categories", ""))
 	var body struct {
-		Success bool            `json:"success"`
-		Data    json.RawMessage `json:"data"`
+		Code int             `json:"code"`
+		Data json.RawMessage `json:"data"`
 	}
 	if err := json.NewDecoder(response.Body).Decode(&body); err != nil {
 		t.Fatal(err)
 	}
-	if !body.Success || string(body.Data) != "[]" {
+	if body.Code != 0 || string(body.Data) != "[]" {
 		t.Fatalf("body = %s", body.Data)
 	}
 }

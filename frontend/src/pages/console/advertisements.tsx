@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState, useTransition } from "react";
 import { Button, Card, Flex, Image, Input, Modal, Select, Space, Statistic, Table, Tag, Typography } from "antd";
 import { Edit, ExternalLink, Eye, Image as ImageIcon, Megaphone, Plus, Power, Search, Trash2 } from "lucide-react";
-import { api, responseData } from "@/lib/api";
+import { api, responseData, isOk, pageData } from "@/lib/api";
 import { AdvertisementForm } from "@/components/advertisement-form";
 import { DeleteAdvertisementDialog } from "@/components/delete-advertisement-dialog";
 import { AdPositionLabels, AdPosition, AdPositionOptions } from "@/types/ad-position";
@@ -46,10 +46,12 @@ export default function AdvertisementsPage() {
     if (appliedPosition !== "all") query.position = appliedPosition;
     if (appliedStatus !== "all") query.isActive = appliedStatus === "active";
     const result = await api.advertisements_route_get(query);
-    if (result.success) {
-      const data = responseData<Advertisement[]>(result);
-      if (data) setAdvertisements(data);
-      if (result.pagination) setPagination(result.pagination);
+    if (isOk(result)) {
+      const page = pageData<Advertisement>(result);
+      if (page) {
+        setAdvertisements(page.list);
+        setPagination(page);
+      }
     }
     setIsLoading(false);
   }, [appliedPosition, appliedSearch, appliedStatus, currentPage, pageSize]);
@@ -66,7 +68,7 @@ export default function AdvertisementsPage() {
   function handleQuery() { setAppliedSearch(searchInput); setAppliedPosition(positionFilter); setAppliedStatus(statusFilter); setCurrentPage(1); }
   function handleReset() { setSearchInput(""); setPositionFilter("all"); setStatusFilter("all"); setAppliedSearch(""); setAppliedPosition("all"); setAppliedStatus("all"); setCurrentPage(1); }
   function getPositionLabel(position: string) { return AdPositionLabels[position as AdPosition] || position; }
-  async function handleToggleStatus(ad: Advertisement) { const result = await api.advertisements_id_toggle_route_put({ id: ad.id }); if (result.success) refresh(); }
+  async function handleToggleStatus(ad: Advertisement) { const result = await api.advertisements_id_toggle_route_put({ id: ad.id }); if (isOk(result)) refresh(); }
 
   const statsCards = [
     { title: "总广告数", value: stats?.totalAds || 0, icon: <Megaphone size={20} />, color: "#1677ff" },

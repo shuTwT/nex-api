@@ -39,7 +39,7 @@ func RegisterRoutes(mux chi.Router, handler *Handler) error {
 // @ID marketplace_apis_route_get
 // @Tags marketplace
 // @Produce json
-// @Success 200 {object} main.SwaggerEnvelope{data=[]model.MarketplaceAPIResp}
+// @Success 200 {object} main.SwaggerEnvelope{data=main.SwaggerPage{list=[]model.MarketplaceAPIResp}}
 // @Param page query integer false "page"
 // @Param limit query integer false "limit"
 // @Param search query string false "search"
@@ -112,7 +112,7 @@ func (h *Handler) apiStats(w http.ResponseWriter, r *http.Request) {
 // @ID marketplace_mcp_services_route_get
 // @Tags marketplace
 // @Produce json
-// @Success 200 {object} main.SwaggerEnvelope{data=[]model.MarketplaceMCPResp}
+// @Success 200 {object} main.SwaggerEnvelope{data=main.SwaggerPage{list=[]model.MarketplaceMCPResp}}
 // @Param page query integer false "page"
 // @Param limit query integer false "limit"
 // @Param category query string false "category"

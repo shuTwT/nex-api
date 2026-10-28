@@ -5,21 +5,28 @@ import { operations } from "@/api/generated/operations";
 import type { OperationName } from "@/api/generated/operations";
 import { config } from "@/lib/config";
 
-type GeneratedEnvelope = components["schemas"]["main.SwaggerEnvelope"];
+/** Response code meaning success; every other value is an entry of the backend error code table. */
+export const CODE_OK = 0;
 
-// Swaggo's schema marks JSON fields optional; the HTTP envelope guarantees
-// success and uses the following stable pagination shape at runtime.
-export type ApiResponse = Omit<GeneratedEnvelope, "success" | "data" | "error" | "pagination"> & {
-  success: boolean;
+/** Uniform response body: `{ code, msg, data }`. HTTP statuses stay real; `code` refines them. */
+export type ApiResponse = {
+  code: number;
+  msg: string;
   data?: unknown;
-  error?: string | null;
-  pagination?: {
-    page: number;
-    limit: number;
-    total: number;
-    totalPages: number;
-  } | null;
 };
+
+/** The `data` payload of a paginated endpoint. */
+export type PageData<T> = {
+  list: T[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+};
+
+export function isOk(res: ApiResponse): boolean {
+  return res.code === CODE_OK;
+}
 
 type JsonObject = Record<string, unknown>;
 
@@ -79,7 +86,7 @@ function isObject(value: unknown): value is Record<string, unknown> {
 }
 
 function isEnvelope(value: unknown): value is ApiResponse {
-  return isObject(value) && typeof value.success === "boolean";
+  return isObject(value) && typeof value.code === "number";
 }
 
 function expandPath(template: string, parameters: JsonObject | undefined): string {
@@ -101,7 +108,7 @@ async function invoke(operation: OperationName, args: unknown[]): Promise<ApiRes
   const response = await (typedApi as unknown as Record<string, (route: string, options: unknown) => Promise<{ data?: unknown; error?: unknown }>>)[method.toUpperCase()](path, options);
   if (isEnvelope(response.data)) return response.data;
   if (isEnvelope(response.error)) return response.error;
-  return { success: false, error: "API request failed" };
+  return { code: -1, msg: "API request failed" };
 }
 
 /**
@@ -116,10 +123,15 @@ export const api: ApiClient = new Proxy({} as ApiClient, {
 });
 
 export function unwrap<T>(res: ApiResponse): T {
-  if (!res.success) throw new Error(res.error ?? "API request failed");
+  if (!isOk(res)) throw new Error(res.msg || "API request failed");
   return (res.data ?? null) as T;
 }
 
 export function responseData<T>(res: ApiResponse): T | null {
-  return res.success ? ((res.data ?? null) as T) : null;
+  return isOk(res) ? ((res.data ?? null) as T) : null;
+}
+
+/** Returns the paginated payload of a successful response, or null. */
+export function pageData<T>(res: ApiResponse): PageData<T> | null {
+  return isOk(res) ? ((res.data ?? null) as PageData<T> | null) : null;
 }

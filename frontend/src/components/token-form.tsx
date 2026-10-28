@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Alert, Button, Checkbox, Form, Input, Select } from "antd";
-import { api, responseData } from "@/lib/api";
+import { api, responseData, isOk } from "@/lib/api";
 
 interface Token {
   id: string;
@@ -64,7 +64,7 @@ export function TokenForm({
         ? await api.tokens_id_route_put({ id: token!.id }, body)
         : await api.tokens_route_post(body);
       const data = responseData<{ token: string }>(result);
-      if (result.success) {
+      if (isOk(result)) {
         if (!isEdit && data) {
           setCreatedToken(data.token);
           onCreated?.();
@@ -72,7 +72,7 @@ export function TokenForm({
           onSuccess();
           onClose();
         }
-      } else setError(result.error || "操作失败");
+      } else setError(result.msg || "操作失败");
     } catch {
       setError("操作失败，请重试");
     } finally {

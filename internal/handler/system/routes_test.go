@@ -26,16 +26,16 @@ func TestHandler_Initialized_returnsAPIEnvelope(t *testing.T) {
 		t.Fatalf("status = %d, want %d", response.Code, http.StatusOK)
 	}
 	var body struct {
-		Success bool `json:"success"`
-		Data    struct {
+		Code int `json:"code"`
+		Data struct {
 			Initialized bool `json:"initialized"`
 		} `json:"data"`
 	}
 	if err := json.NewDecoder(response.Body).Decode(&body); err != nil {
 		t.Fatal(err)
 	}
-	if !body.Success {
-		t.Fatal("success = false, want true")
+	if body.Code != 0 {
+		t.Fatalf("code = %d, want 0", body.Code)
 	}
 	if body.Data.Initialized {
 		t.Fatal("initialized = true, want false")

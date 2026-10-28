@@ -60,18 +60,17 @@ definitions:
     type: object
   main.SwaggerEnvelope:
     properties:
+      code:
+        type: integer
       data: {}
-      error:
+      msg:
         type: string
-      pagination:
-        $ref: '#/definitions/main.SwaggerPagination'
-      success:
-        type: boolean
     type: object
-  main.SwaggerPagination:
+  main.SwaggerPage:
     properties:
       limit:
         type: integer
+      list: {}
       page:
         type: integer
       total:
@@ -1297,9 +1296,14 @@ paths:
             - $ref: '#/definitions/main.SwaggerEnvelope'
             - properties:
                 data:
-                  items:
-                    $ref: '#/definitions/model.AdvertisementResp'
-                  type: array
+                  allOf:
+                  - $ref: '#/definitions/main.SwaggerPage'
+                  - properties:
+                      list:
+                        items:
+                          $ref: '#/definitions/model.AdvertisementResp'
+                        type: array
+                    type: object
               type: object
         "400":
           description: Bad Request
@@ -1640,9 +1644,14 @@ paths:
             - $ref: '#/definitions/main.SwaggerEnvelope'
             - properties:
                 data:
-                  items:
-                    $ref: '#/definitions/model.CatalogAPIDTO'
-                  type: array
+                  allOf:
+                  - $ref: '#/definitions/main.SwaggerPage'
+                  - properties:
+                      list:
+                        items:
+                          $ref: '#/definitions/model.CatalogAPIDTO'
+                        type: array
+                    type: object
               type: object
         "400":
           description: Bad Request
@@ -1937,9 +1946,14 @@ paths:
             - $ref: '#/definitions/main.SwaggerEnvelope'
             - properties:
                 data:
-                  items:
-                    $ref: '#/definitions/model.AuditResp'
-                  type: array
+                  allOf:
+                  - $ref: '#/definitions/main.SwaggerPage'
+                  - properties:
+                      list:
+                        items:
+                          $ref: '#/definitions/model.AuditResp'
+                        type: array
+                    type: object
               type: object
         "400":
           description: Bad Request
@@ -2893,9 +2907,14 @@ paths:
             - $ref: '#/definitions/main.SwaggerEnvelope'
             - properties:
                 data:
-                  items:
-                    $ref: '#/definitions/model.MarketplaceAPIResp'
-                  type: array
+                  allOf:
+                  - $ref: '#/definitions/main.SwaggerPage'
+                  - properties:
+                      list:
+                        items:
+                          $ref: '#/definitions/model.MarketplaceAPIResp'
+                        type: array
+                    type: object
               type: object
         "400":
           description: Bad Request
@@ -2978,9 +2997,14 @@ paths:
             - $ref: '#/definitions/main.SwaggerEnvelope'
             - properties:
                 data:
-                  items:
-                    $ref: '#/definitions/model.MarketplaceMCPResp'
-                  type: array
+                  allOf:
+                  - $ref: '#/definitions/main.SwaggerPage'
+                  - properties:
+                      list:
+                        items:
+                          $ref: '#/definitions/model.MarketplaceMCPResp'
+                        type: array
+                    type: object
               type: object
         "400":
           description: Bad Request
@@ -3167,9 +3191,14 @@ paths:
             - $ref: '#/definitions/main.SwaggerEnvelope'
             - properties:
                 data:
-                  items:
-                    $ref: '#/definitions/model.CatalogMCPDTO'
-                  type: array
+                  allOf:
+                  - $ref: '#/definitions/main.SwaggerPage'
+                  - properties:
+                      list:
+                        items:
+                          $ref: '#/definitions/model.CatalogMCPDTO'
+                        type: array
+                    type: object
               type: object
         "400":
           description: Bad Request
@@ -4247,9 +4276,14 @@ paths:
             - $ref: '#/definitions/main.SwaggerEnvelope'
             - properties:
                 data:
-                  items:
-                    $ref: '#/definitions/model.RedemptionCodeResp'
-                  type: array
+                  allOf:
+                  - $ref: '#/definitions/main.SwaggerPage'
+                  - properties:
+                      list:
+                        items:
+                          $ref: '#/definitions/model.RedemptionCodeResp'
+                        type: array
+                    type: object
               type: object
         "400":
           description: Bad Request
@@ -4902,9 +4936,14 @@ paths:
             - $ref: '#/definitions/main.SwaggerEnvelope'
             - properties:
                 data:
-                  items:
-                    $ref: '#/definitions/model.SubscriptionPlanResp'
-                  type: array
+                  allOf:
+                  - $ref: '#/definitions/main.SwaggerPage'
+                  - properties:
+                      list:
+                        items:
+                          $ref: '#/definitions/model.SubscriptionPlanResp'
+                        type: array
+                    type: object
               type: object
         "400":
           description: Bad Request
@@ -5354,9 +5393,14 @@ paths:
             - $ref: '#/definitions/main.SwaggerEnvelope'
             - properties:
                 data:
-                  items:
-                    $ref: '#/definitions/model.TokenResp'
-                  type: array
+                  allOf:
+                  - $ref: '#/definitions/main.SwaggerPage'
+                  - properties:
+                      list:
+                        items:
+                          $ref: '#/definitions/model.TokenResp'
+                        type: array
+                    type: object
               type: object
         "400":
           description: Bad Request
@@ -5777,9 +5821,14 @@ paths:
             - $ref: '#/definitions/main.SwaggerEnvelope'
             - properties:
                 data:
-                  items:
-                    $ref: '#/definitions/model.UserResp'
-                  type: array
+                  allOf:
+                  - $ref: '#/definitions/main.SwaggerPage'
+                  - properties:
+                      list:
+                        items:
+                          $ref: '#/definitions/model.UserResp'
+                        type: array
+                    type: object
               type: object
         "400":
           description: Bad Request

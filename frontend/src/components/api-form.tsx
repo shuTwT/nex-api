@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Alert, Checkbox, Form, Input, InputNumber, Select, Tabs } from "antd";
 import { MonacoEditor } from "@/components/monaco-editor";
-import { api } from "@/lib/api";
+import { api, isOk } from "@/lib/api";
 
 interface Api {
   id: string;
@@ -81,11 +81,11 @@ export function ApiForm({
         ? await api.apis_id_route_put({ id: apiItem!.id }, body)
         : await api.apis_route_post(body);
 
-      if (result.success) {
+      if (isOk(result)) {
         onSuccess();
         onClose();
       } else {
-        setError(result.error || "操作失败");
+        setError(result.msg || "操作失败");
       }
     } catch {
       setError("操作失败，请重试");

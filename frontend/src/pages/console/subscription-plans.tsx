@@ -10,7 +10,7 @@ import {
   ArrowUpDown,
   Search,
 } from "lucide-react";
-import { api, responseData } from "@/lib/api";
+import { api, responseData, isOk, pageData } from "@/lib/api";
 import { SubscriptionPlanForm } from "@/components/subscription-plan-form";
 import { DeleteSubscriptionPlanDialog } from "@/components/delete-subscription-plan-dialog";
 import { Pagination } from "@/components/pagination";
@@ -64,11 +64,11 @@ export default function SubscriptionPlansPage() {
       query.isActive = appliedStatus;
     }
     const result = await api.subscription_plans_route_get(query);
-    if (result.success) {
-      const data = responseData<SubscriptionPlan[]>(result);
-      if (data) setPlans(data);
-      if (result.pagination) {
-        setPagination(result.pagination);
+    if (isOk(result)) {
+      const page = pageData<SubscriptionPlan>(result);
+      if (page) {
+        setPlans(page.list);
+        setPagination(page);
       }
     }
     setIsLoading(false);

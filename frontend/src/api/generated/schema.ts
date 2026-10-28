@@ -1557,13 +1557,13 @@ export interface components {
             totalServices?: number;
         };
         "main.SwaggerEnvelope": {
+            code?: number;
             data?: unknown;
-            error?: string;
-            pagination?: components["schemas"]["main.SwaggerPagination"];
-            success?: boolean;
+            msg?: string;
         };
-        "main.SwaggerPagination": {
+        "main.SwaggerPage": {
             limit?: number;
+            list?: unknown;
             page?: number;
             total?: number;
             totalPages?: number;
@@ -2242,7 +2242,9 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["main.SwaggerEnvelope"] & {
-                        data?: components["schemas"]["model.AdvertisementResp"][];
+                        data?: components["schemas"]["main.SwaggerPage"] & {
+                            list?: components["schemas"]["model.AdvertisementResp"][];
+                        };
                     };
                 };
             };
@@ -2738,7 +2740,9 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["main.SwaggerEnvelope"] & {
-                        data?: components["schemas"]["model.CatalogAPIDTO"][];
+                        data?: components["schemas"]["main.SwaggerPage"] & {
+                            list?: components["schemas"]["model.CatalogAPIDTO"][];
+                        };
                     };
                 };
             };
@@ -3120,7 +3124,9 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["main.SwaggerEnvelope"] & {
-                        data?: components["schemas"]["model.AuditResp"][];
+                        data?: components["schemas"]["main.SwaggerPage"] & {
+                            list?: components["schemas"]["model.AuditResp"][];
+                        };
                     };
                 };
             };
@@ -4493,7 +4499,9 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["main.SwaggerEnvelope"] & {
-                        data?: components["schemas"]["model.MarketplaceAPIResp"][];
+                        data?: components["schemas"]["main.SwaggerPage"] & {
+                            list?: components["schemas"]["model.MarketplaceAPIResp"][];
+                        };
                     };
                 };
             };
@@ -4603,7 +4611,9 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["main.SwaggerEnvelope"] & {
-                        data?: components["schemas"]["model.MarketplaceMCPResp"][];
+                        data?: components["schemas"]["main.SwaggerPage"] & {
+                            list?: components["schemas"]["model.MarketplaceMCPResp"][];
+                        };
                     };
                 };
             };
@@ -4853,7 +4863,9 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["main.SwaggerEnvelope"] & {
-                        data?: components["schemas"]["model.CatalogMCPDTO"][];
+                        data?: components["schemas"]["main.SwaggerPage"] & {
+                            list?: components["schemas"]["model.CatalogMCPDTO"][];
+                        };
                     };
                 };
             };
@@ -6444,7 +6456,9 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["main.SwaggerEnvelope"] & {
-                        data?: components["schemas"]["model.RedemptionCodeResp"][];
+                        data?: components["schemas"]["main.SwaggerPage"] & {
+                            list?: components["schemas"]["model.RedemptionCodeResp"][];
+                        };
                     };
                 };
             };
@@ -7385,7 +7399,9 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["main.SwaggerEnvelope"] & {
-                        data?: components["schemas"]["model.SubscriptionPlanResp"][];
+                        data?: components["schemas"]["main.SwaggerPage"] & {
+                            list?: components["schemas"]["model.SubscriptionPlanResp"][];
+                        };
                     };
                 };
             };
@@ -8020,7 +8036,9 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["main.SwaggerEnvelope"] & {
-                        data?: components["schemas"]["model.TokenResp"][];
+                        data?: components["schemas"]["main.SwaggerPage"] & {
+                            list?: components["schemas"]["model.TokenResp"][];
+                        };
                     };
                 };
             };
@@ -8637,7 +8655,9 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["main.SwaggerEnvelope"] & {
-                        data?: components["schemas"]["model.UserResp"][];
+                        data?: components["schemas"]["main.SwaggerPage"] & {
+                            list?: components["schemas"]["model.UserResp"][];
+                        };
                     };
                 };
             };

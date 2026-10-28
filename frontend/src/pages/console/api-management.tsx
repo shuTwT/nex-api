@@ -11,7 +11,7 @@ import {
   Pause,
   Database,
 } from "lucide-react";
-import { api, responseData } from "@/lib/api";
+import { api, responseData, isOk, pageData } from "@/lib/api";
 import { getIcon } from "@/lib/lucide-icons";
 import { Pagination } from "@/components/pagination";
 import { ApiFormDialog } from "@/components/api-form-dialog";
@@ -91,11 +91,11 @@ export default function APIManagementPage() {
     };
     const result = await api.apis_route_get(query);
 
-    if (result.success) {
-      const data = responseData<Api[]>(result);
-      if (data) setApis(data);
-      if (result.pagination) {
-        setPagination(result.pagination);
+    if (isOk(result)) {
+      const page = pageData<Api>(result);
+      if (page) {
+        setApis(page.list);
+        setPagination(page);
       }
     }
     setIsLoading(false);
@@ -152,11 +152,11 @@ export default function APIManagementPage() {
   async function handleToggleStatus(id: string) {
     startTransition(async () => {
       const result = await api.apis_id_toggle_route_put({ id });
-      if (result.success) {
+      if (isOk(result)) {
         loadApis();
         loadStats();
       } else {
-        alert(result.error || "切换状态失败");
+        alert(result.msg || "切换状态失败");
       }
     });
   }
@@ -168,11 +168,11 @@ export default function APIManagementPage() {
 
     startTransition(async () => {
       const result = await api.apis_id_route_delete({ id });
-      if (result.success) {
+      if (isOk(result)) {
         loadApis();
         loadStats();
       } else {
-        alert(result.error || "删除失败");
+        alert(result.msg || "删除失败");
       }
     });
   }

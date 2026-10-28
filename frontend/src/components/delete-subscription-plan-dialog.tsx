@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Modal } from "antd";
-import { api } from "@/lib/api";
+import { api, isOk } from "@/lib/api";
 import { toast } from "sonner";
 
 interface DeleteSubscriptionPlanDialogProps {
@@ -24,12 +24,12 @@ export function DeleteSubscriptionPlanDialog({
     setIsDeleting(true);
     const result = await api.subscription_plans_id_route_delete({ id: planId });
 
-    if (result.success) {
+    if (isOk(result)) {
       toast.success("订阅计划已删除");
       onSuccess();
       onOpenChange(false);
     } else {
-      toast.error(result.error || "删除订阅计划失败");
+      toast.error(result.msg || "删除订阅计划失败");
     }
 
     setIsDeleting(false);

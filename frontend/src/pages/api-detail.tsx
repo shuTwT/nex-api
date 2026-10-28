@@ -498,12 +498,8 @@ Content-Type: application/json`}</pre>
                   <h3 className="font-semibold">成功响应</h3>
                   <div className="bg-slate-900 text-white p-4 rounded-md overflow-x-auto">
                     <pre className="text-sm font-mono">
-{`{
-  "success": true,
-  "data": {
-    // 具体返回数据根据接口而定
-  }
-}`}</pre>
+{`// 调用成功时，网关原样返回上游接口的响应（状态码和响应体都不改动），
+// 具体结构由上游接口决定，不会被包装成 { code, msg, data }。`}</pre>
                   </div>
                 </div>
 
@@ -511,9 +507,11 @@ Content-Type: application/json`}</pre>
                   <h3 className="font-semibold">失败响应</h3>
                   <div className="bg-slate-900 text-white p-4 rounded-md overflow-x-auto">
                     <pre className="text-sm font-mono">
-{`{
-  "success": false,
-  "error": "错误信息描述"
+{`// HTTP 状态码保持真实，code 前三位与状态码一致（如 40100 对应 401）
+{
+  "code": 40100,
+  "msg": "错误信息描述",
+  "data": null
 }`}</pre>
                   </div>
                 </div>

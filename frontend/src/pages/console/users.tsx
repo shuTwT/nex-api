@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState, useTransition } from "react";
 import { Avatar, Button, Card, Flex, Input, Modal, Select, Space, Statistic, Table, Tag, Typography } from "antd";
 import { Calendar, Crown, Edit, Key, Plus, Search, Shield, Trash2, UserIcon, Users as UsersIcon } from "lucide-react";
-import { api, responseData } from "@/lib/api";
+import { api, responseData, isOk, pageData } from "@/lib/api";
 import { UserForm } from "@/components/user-form";
 import { DeleteUserDialog } from "@/components/delete-user-dialog";
 
@@ -48,10 +48,12 @@ export default function UsersPage() {
   const loadUsers = useCallback(async () => {
     setIsLoading(true);
     const result = await api.users_route_get({ role: appliedRole, search: appliedSearch, page: currentPage, limit: pageSize });
-    if (result.success) {
-      const data = responseData<User[]>(result);
-      if (data) setUsers(data);
-      if (result.pagination) setPagination(result.pagination);
+    if (isOk(result)) {
+      const page = pageData<User>(result);
+      if (page) {
+        setUsers(page.list);
+        setPagination(page);
+      }
     }
     setIsLoading(false);
   }, [appliedRole, appliedSearch, currentPage, pageSize]);

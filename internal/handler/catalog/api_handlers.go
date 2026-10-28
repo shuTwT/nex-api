@@ -16,7 +16,7 @@ import (
 // @Security SessionCookie
 // @Param page query integer false "page"
 // @Param limit query integer false "limit"
-// @Success 200 {object} main.SwaggerEnvelope{data=[]model.CatalogAPIDTO}
+// @Success 200 {object} main.SwaggerEnvelope{data=main.SwaggerPage{list=[]model.CatalogAPIDTO}}
 // @Failure 400 {object} main.SwaggerEnvelope
 // @Failure 401 {object} main.SwaggerEnvelope
 // @Failure 500 {object} main.SwaggerEnvelope

@@ -20,7 +20,7 @@ import (
 // @Param type query string false "type"
 // @Param category query string false "category"
 // @Param status query string false "status"
-// @Success 200 {object} main.SwaggerEnvelope{data=[]model.CatalogMCPDTO}
+// @Success 200 {object} main.SwaggerEnvelope{data=main.SwaggerPage{list=[]model.CatalogMCPDTO}}
 // @Failure 400 {object} main.SwaggerEnvelope
 // @Failure 401 {object} main.SwaggerEnvelope
 // @Failure 500 {object} main.SwaggerEnvelope

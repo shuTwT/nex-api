@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button, Modal, Typography } from "antd";
-import { api } from "@/lib/api";
+import { api, isOk } from "@/lib/api";
 
 interface DeleteAdvertisementDialogProps {
   open: boolean;
@@ -23,7 +23,7 @@ export function DeleteAdvertisementDialog({
     setIsLoading(true);
     try {
       const result = await api.advertisements_id_route_delete({ id: advertisementId });
-      if (result.success) {
+      if (isOk(result)) {
         onSuccess();
         onOpenChange(false);
       }

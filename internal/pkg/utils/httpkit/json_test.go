@@ -39,7 +39,7 @@ func TestWritePaginated(t *testing.T) {
 	if recorder.Code != http.StatusOK {
 		t.Fatalf("status = %d", recorder.Code)
 	}
-	for _, expected := range []string{`"success":true`, `"total":21`, `"totalPages":3`} {
+	for _, expected := range []string{`"code":0`, `"total":21`, `"totalPages":3`, `"list":["item"]`} {
 		if !strings.Contains(recorder.Body.String(), expected) {
 			t.Fatalf("body = %s", recorder.Body.String())
 		}

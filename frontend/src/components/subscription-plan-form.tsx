@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Alert, Card, Checkbox, Form, Input, InputNumber, Select } from "antd";
-import { api } from "@/lib/api";
+import { api, isOk } from "@/lib/api";
 
 interface SubscriptionPlan {
   id?: string;
@@ -46,8 +46,8 @@ export function SubscriptionPlanForm({
       const result = isEdit
         ? await api.subscription_plans_id_route_put({ id: plan!.id! }, body)
         : await api.subscription_plans_route_post(body);
-      if (result.success) onSuccess();
-      else setError(result.error || "操作失败");
+      if (isOk(result)) onSuccess();
+      else setError(result.msg || "操作失败");
     } catch {
       setError("操作失败，请重试");
     } finally {

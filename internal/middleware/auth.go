@@ -92,7 +92,7 @@ func (p *CSRFProtector) Middleware(next http.Handler) http.Handler {
 			return
 		}
 		if err := p.Validate(r); err != nil {
-			writeErrorResponse(w, r, http.StatusForbidden, "csrf_failed")
+			writeErrorResponse(w, r, http.StatusForbidden, "csrf_failed", "csrf_failed", err)
 			return
 		}
 		next.ServeHTTP(w, r)

@@ -2,6 +2,7 @@ import { useCallback, useState } from "react";
 import { Alert, Button, Image, Upload } from "antd";
 import { Upload as UploadIcon, X } from "lucide-react";
 import { uploadFile } from "@/lib/raw";
+import { isOk } from "@/lib/api";
 
 interface ImageUploadProps {
   value?: string;
@@ -41,12 +42,12 @@ export function ImageUpload({
       try {
         const result = await uploadFile(file);
         if (
-          result.success &&
+          isOk(result) &&
           (result.data as { url?: string } | undefined)?.url
         ) {
           onChange((result.data as { url: string }).url);
         } else {
-          setError(result.error || "上传失败");
+          setError(result.msg || "上传失败");
         }
       } catch {
         setError("上传失败，请重试");

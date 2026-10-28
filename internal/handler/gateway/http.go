@@ -244,7 +244,7 @@ func (h *Handler) serve(w http.ResponseWriter, r *http.Request, alias string) {
 		requestData, err = h.transforms.PreTransform(ctx, api.PreScript, requestData)
 		if err != nil {
 			h.refund(ctx, reservation, r, api.Name, principal.UserID, "pre-transform failed")
-			h.writeError(w, http.StatusInternalServerError, "transform_error", "request transform failed")
+			h.writeError(w, r, http.StatusInternalServerError, "transform_error", "request transform failed")
 			return
 		}
 	}
@@ -255,21 +255,21 @@ func (h *Handler) serve(w http.ResponseWriter, r *http.Request, alias string) {
 		if errors.Is(err, context.DeadlineExceeded) || errors.Is(ctx.Err(), context.DeadlineExceeded) {
 			status, code, message = http.StatusGatewayTimeout, "upstream_timeout", "upstream request timed out"
 		}
-		h.writeError(w, status, code, message)
+		h.writeError(w, r, status, code, message)
 		return
 	}
 	if api.PostScript != "" {
 		response, err = h.transforms.PostTransform(ctx, api.PostScript, response)
 		if err != nil {
 			h.refund(ctx, reservation, r, api.Name, principal.UserID, "post-transform failed")
-			h.writeError(w, http.StatusInternalServerError, "transform_error", "response transform failed")
+			h.writeError(w, r, http.StatusInternalServerError, "transform_error", "response transform failed")
 			return
 		}
 	}
 	if err := h.accounting.Finalize(ctx, reservation); err != nil {
 		h.refund(ctx, reservation, r, api.Name, principal.UserID, "accounting finalization failed")
 		h.logger.ErrorContext(ctx, "gateway accounting finalize failed", slog.Any("err", err), slog.String("reservation_id", reservation.ID))
-		h.writeError(w, http.StatusInternalServerError, "accounting_error", "request accounting failed")
+		h.writeError(w, r, http.StatusInternalServerError, "accounting_error", "request accounting failed")
 		return
 	}
 	if h.usage != nil {
@@ -292,7 +292,7 @@ func (h *Handler) refund(ctx context.Context, reservation servicegateway.CreditR
 
 func (h *Handler) fail(w http.ResponseWriter, r *http.Request, resource, userID string, status int, code, message string) {
 	h.recordAudit(r.Context(), r, userID, resource, message, "error")
-	h.writeError(w, status, code, message)
+	h.writeError(w, r, status, code, message)
 }
 
 func (h *Handler) recordAudit(ctx context.Context, r *http.Request, userID, resource, details, status string) {

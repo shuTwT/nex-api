@@ -1,13 +1,14 @@
 package model
 
 import (
-	"encoding/json"
 	"fmt"
 
 	"github.com/shuTwT/nex-api/pkg/constant"
 )
 
-// APIError is the HTTP projection of a service business error.
+// APIError is the HTTP projection of a service business error. Code is the
+// string slug used inside the code base; the numeric response code is derived
+// from it (and the status) by constant.CodeFor when the response is written.
 type APIError struct {
 	StatusCode int
 	Code       string
@@ -32,31 +33,25 @@ func (e *APIError) Unwrap() error {
 	return e.Cause
 }
 
-// ErrorBody is serialized as a plain string (its message) to keep the wire
-// contract stable; request_id is only echoed through the header.
-type ErrorBody struct {
-	Code      string                `json:"code"`
-	Message   string                `json:"message"`
-	RequestID string                `json:"request_id,omitempty"`
-	Fields    []constant.FieldError `json:"fields,omitempty"`
+// ErrorData is the optional `data` payload of an error response. It is only
+// present when there is structured detail, such as per-field validation errors.
+type ErrorData struct {
+	Fields []constant.FieldError `json:"fields,omitempty"`
 }
 
-func (e ErrorBody) MarshalJSON() ([]byte, error) {
-	return json.Marshal(e.Message)
-}
-
-// Pagination describes the paged result envelope fields.
-type Pagination struct {
-	Page       int `json:"page"`
-	PageSize   int `json:"limit"`
+// PageData is the `data` payload of a paginated response.
+type PageData[T any] struct {
+	List       T   `json:"list"`
 	Total      int `json:"total"`
+	Page       int `json:"page"`
+	Limit      int `json:"limit"`
 	TotalPages int `json:"totalPages"`
 }
 
-// Envelope is the uniform success/error response wrapper.
+// Envelope is the uniform response wrapper: Code 0 means success, any other
+// value is an entry of the table in pkg/constant (HTTP status * 100 + sequence).
 type Envelope[T any] struct {
-	Success    bool        `json:"success"`
-	Data       *T          `json:"data,omitempty"`
-	Error      *ErrorBody  `json:"error,omitempty"`
-	Pagination *Pagination `json:"pagination,omitempty"`
+	Code int    `json:"code"`
+	Msg  string `json:"msg"`
+	Data *T     `json:"data"`
 }

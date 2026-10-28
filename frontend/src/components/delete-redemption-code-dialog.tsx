@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Modal } from "antd";
-import { api } from "@/lib/api";
+import { api, isOk } from "@/lib/api";
 import { toast } from "sonner";
 
 interface DeleteRedemptionCodeDialogProps {
@@ -30,12 +30,12 @@ export function DeleteRedemptionCodeDialog({
       ? await api.redemption_codes_batch_route_delete({ batchId: batchId! })
       : await api.redemption_codes_id_route_delete({ id: codeId ?? "" });
 
-    if (result.success) {
+    if (isOk(result)) {
       toast.success("兑换码已删除");
       onSuccess();
       onOpenChange(false);
     } else {
-      toast.error(result.error || "删除兑换码失败");
+      toast.error(result.msg || "删除兑换码失败");
     }
 
     setIsDeleting(false);

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Alert, Button, Modal, Typography } from "antd";
-import { api } from "@/lib/api";
+import { api, isOk } from "@/lib/api";
 import { AlertCircle } from "lucide-react";
 
 interface DeleteUserDialogProps {
@@ -26,11 +26,11 @@ export function DeleteUserDialog({
     try {
       const result = await api.users_id_route_delete({ id: userId });
 
-      if (result.success) {
+      if (isOk(result)) {
         onSuccess();
         onOpenChange(false);
       } else {
-        alert(result.error || "删除失败");
+        alert(result.msg || "删除失败");
       }
     } catch {
       alert("删除失败，请重试");

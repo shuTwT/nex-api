@@ -115,7 +115,7 @@ func serveWithPrincipal(next http.Handler, w http.ResponseWriter, r *http.Reques
 
 func writeAuthorizationError(w http.ResponseWriter, r *http.Request, err error) {
 	status := http.StatusInternalServerError
-	message := "internal server error"
+	code, message := "internal_error", "internal server error"
 	switch {
 	case errors.Is(err, serviceauthz.ErrUnauthenticated),
 		errors.Is(err, serviceauthz.ErrInvalidBearer),
@@ -123,11 +123,9 @@ func writeAuthorizationError(w http.ResponseWriter, r *http.Request, err error) 
 		errors.Is(err, serviceauthz.ErrInactiveToken),
 		errors.Is(err, serviceauthz.ErrExpiredToken),
 		errors.Is(err, serviceauthz.ErrInvalidPermissions):
-		status = http.StatusUnauthorized
-		message = "authentication required"
+		status, code, message = http.StatusUnauthorized, "unauthorized", "authentication required"
 	case errors.Is(err, serviceauthz.ErrForbidden):
-		status = http.StatusForbidden
-		message = "access denied"
+		status, code, message = http.StatusForbidden, "forbidden", "access denied"
 	}
-	writeErrorResponse(w, r, status, message)
+	writeErrorResponse(w, r, status, code, message, err)
 }

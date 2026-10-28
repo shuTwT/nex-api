@@ -23,7 +23,7 @@ import {
   Trash2,
   User,
 } from "lucide-react";
-import { api, responseData } from "@/lib/api";
+import { api, responseData, isOk, pageData } from "@/lib/api";
 import { config } from "@/lib/config";
 import { DeleteAuditLogDialog } from "@/components/delete-audit-log-dialog";
 
@@ -94,10 +94,12 @@ export default function AuditLogsPage() {
       page: currentPage,
       limit: pageSize,
     });
-    if (result.success) {
-      const data = responseData<AuditLog[]>(result);
-      if (data) setLogs(data);
-      if (result.pagination) setPagination(result.pagination);
+    if (isOk(result)) {
+      const page = pageData<AuditLog>(result);
+      if (page) {
+        setLogs(page.list);
+        setPagination(page);
+      }
     }
     setIsLoading(false);
   }, [

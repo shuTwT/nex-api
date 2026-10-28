@@ -18,7 +18,7 @@ import (
 // @Param search query string false "search"
 // @Param status query string false "status"
 // @Security SessionCookie
-// @Success 200 {object} main.SwaggerEnvelope{data=[]model.TokenResp}
+// @Success 200 {object} main.SwaggerEnvelope{data=main.SwaggerPage{list=[]model.TokenResp}}
 // @Failure 400 {object} main.SwaggerEnvelope
 // @Failure 401 {object} main.SwaggerEnvelope
 // @Failure 403 {object} main.SwaggerEnvelope

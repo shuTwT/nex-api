@@ -19,7 +19,7 @@ func TestServer_recovery_returns_typed_error_envelope_and_request_id(t *testing.
 	if rec.Header().Get(RequestIDHeader) != "test-request-id" {
 		t.Fatalf("request ID = %q", rec.Header().Get(RequestIDHeader))
 	}
-	if !strings.Contains(rec.Body.String(), `"error":"internal server error"`) {
+	if !strings.Contains(rec.Body.String(), `"code":50000`) || !strings.Contains(rec.Body.String(), `"msg":"internal server error"`) {
 		t.Fatalf("body = %s", rec.Body.String())
 	}
 }

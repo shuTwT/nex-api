@@ -25,7 +25,7 @@ import {
   Database,
 } from "lucide-react";
 import { toast } from "sonner";
-import { api, responseData } from "@/lib/api";
+import { api, responseData, isOk, pageData } from "@/lib/api";
 import { McpFormDialog, type McpServiceData } from "@/components/mcp-form-dialog";
 
 interface PaginationInfo {
@@ -96,16 +96,16 @@ export default function McpServicesPage() {
     };
     const result = await api.mcp_services_route_get(query);
 
-    if (result.success) {
-      const data = responseData<McpServiceData[]>(result);
-      if (data) setServices(data);
-      if (result.pagination) {
-        setPagination(result.pagination);
+    if (isOk(result)) {
+      const page = pageData<McpServiceData>(result);
+      if (page) {
+        setServices(page.list);
+        setPagination(page);
       }
     } else {
       setServices([]);
       setPagination(null);
-      setLoadError(result.error || "MCP 服务列表加载失败");
+      setLoadError(result.msg || "MCP 服务列表加载失败");
     }
     setIsLoading(false);
   }, [currentPage, pageSize, appliedSearch, appliedType, appliedCategory, appliedStatus]);
@@ -166,11 +166,11 @@ export default function McpServicesPage() {
     setTogglingId(service.id);
     startTransition(async () => {
       const result = await api.mcp_services_id_toggle_route_put({ id: service.id });
-      if (result.success) {
+      if (isOk(result)) {
         loadServices();
         loadStats();
       } else {
-        toast.error(result.error || "切换状态失败");
+        toast.error(result.msg || "切换状态失败");
       }
       setTogglingId(null);
     });
@@ -179,12 +179,12 @@ export default function McpServicesPage() {
   function handleDelete(service: McpServiceData) {
     startTransition(async () => {
       const result = await api.mcp_services_id_route_delete({ id: service.id });
-      if (result.success) {
+      if (isOk(result)) {
         toast.success("MCP 服务已删除");
         loadServices();
         loadStats();
       } else {
-        toast.error(result.error || "删除失败");
+        toast.error(result.msg || "删除失败");
       }
     });
   }

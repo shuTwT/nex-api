@@ -19,7 +19,7 @@ import (
 // @Param page query integer false "page"
 // @Param limit query integer false "limit"
 // @Security SessionCookie
-// @Success 200 {object} main.SwaggerEnvelope{data=[]model.RedemptionCodeResp}
+// @Success 200 {object} main.SwaggerEnvelope{data=main.SwaggerPage{list=[]model.RedemptionCodeResp}}
 // @Failure 400 {object} main.SwaggerEnvelope
 // @Failure 401 {object} main.SwaggerEnvelope
 // @Failure 403 {object} main.SwaggerEnvelope

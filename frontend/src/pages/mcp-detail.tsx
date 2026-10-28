@@ -128,7 +128,7 @@ export default function McpDetailPage() {
     if (data) {
       setTools(data);
     } else {
-      setToolsError(result.error || "暂时无法连接服务端点，请稍后重试。");
+      setToolsError(result.msg || "暂时无法连接服务端点，请稍后重试。");
     }
     setIsLoadingTools(false);
   }, [mcpId]);

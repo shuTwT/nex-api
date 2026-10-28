@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { CheckCircle2, XCircle, Clock, ExternalLink, Loader2 } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
-import { api, responseData } from "@/lib/api";
+import { api, responseData, isOk } from "@/lib/api";
 
 interface PaymentState {
   outTradeNo: string;
@@ -34,10 +34,10 @@ export default function PaymentPage() {
     try {
       const result = await api.payment_outtradeno_route_get({ outTradeNo: outTradeNo ?? "" });
       const data = responseData<PaymentState>(result);
-      if (result.success && data) {
+      if (isOk(result) && data) {
         setPayment(data);
       } else {
-        setError(result.error || "加载支付信息失败");
+        setError(result.msg || "加载支付信息失败");
       }
     } catch {
       setError("加载支付信息失败");
@@ -62,7 +62,7 @@ export default function PaymentPage() {
       const interval = setInterval(async () => {
         const result = await api.payment_outtradeno_status_route_get({ outTradeNo });
         const data = responseData<PaymentState>(result);
-        if (result.success && data) {
+        if (isOk(result) && data) {
           if (data.status !== "pending") {
             setPayment(data);
             if (data.status === "paid") {

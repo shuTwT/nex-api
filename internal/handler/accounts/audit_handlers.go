@@ -21,7 +21,7 @@ import (
 // @Param status query string false "audit status filter"
 // @Param startDate query string false "RFC3339 start time"
 // @Param endDate query string false "RFC3339 end time"
-// @Success 200 {object} main.SwaggerEnvelope{data=[]model.AuditResp}
+// @Success 200 {object} main.SwaggerEnvelope{data=main.SwaggerPage{list=[]model.AuditResp}}
 // @Failure 400 {object} main.SwaggerEnvelope
 // @Failure 401 {object} main.SwaggerEnvelope
 // @Failure 500 {object} main.SwaggerEnvelope

@@ -14,8 +14,3 @@ type SystemInitializeResp struct {
 	Credits  int    `json:"credits"`
 	Password string `json:"password,omitempty"`
 }
-type EnvelopeResp struct {
-	Success bool   `json:"success"`
-	Data    any    `json:"data,omitempty"`
-	Error   string `json:"error,omitempty"`
-}

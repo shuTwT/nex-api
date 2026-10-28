@@ -3,6 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Megaphone } from "lucide-react";
 import { AdPosition } from "@/types/ad-position";
 import { rawGet } from "@/lib/raw";
+import { isOk } from "@/lib/api";
 
 interface BannerAdProps {
   className?: string;
@@ -27,11 +28,11 @@ export function BannerAd({ className = "", position }: BannerAdProps) {
     let cancelled = false;
     async function loadAd() {
       try {
-        const result = await rawGet<{ success: boolean; data?: Advertisement }>(
+        const result = await rawGet<{ code: number; msg: string; data?: Advertisement }>(
           `/api/advertisements/by-position/${position}`,
         );
         if (!cancelled) {
-          setAd(result.success && result.data ? result.data : null);
+          setAd(isOk(result) && result.data ? result.data : null);
         }
       } catch {
         if (!cancelled) setAd(null);

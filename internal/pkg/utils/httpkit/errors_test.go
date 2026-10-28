@@ -11,95 +11,113 @@ import (
 
 	"github.com/shuTwT/nex-api/internal/infra/config"
 	"github.com/shuTwT/nex-api/internal/infra/logger"
+	"github.com/shuTwT/nex-api/pkg/constant"
 )
+
+type testBody struct {
+	Code int             `json:"code"`
+	Msg  string          `json:"msg"`
+	Data json.RawMessage `json:"data"`
+}
+
+func decodeBody(t *testing.T, body []byte) testBody {
+	t.Helper()
+	var payload testBody
+	if err := json.Unmarshal(body, &payload); err != nil {
+		t.Fatalf("decode %s: %v", body, err)
+	}
+	return payload
+}
 
 func TestWriteData_writes_contract_success_response(t *testing.T) {
 	rec := httptest.NewRecorder()
 	WriteData(rec, http.StatusOK, map[string]any{"name": "nex", "enabled": true})
-	var payload struct {
-		Success bool            `json:"success"`
-		Data    map[string]any  `json:"data"`
-		Error   json.RawMessage `json:"error"`
-	}
-	if err := json.Unmarshal(rec.Body.Bytes(), &payload); err != nil {
+	payload := decodeBody(t, rec.Body.Bytes())
+	var data map[string]any
+	if err := json.Unmarshal(payload.Data, &data); err != nil {
 		t.Fatal(err)
 	}
-	if rec.Code != http.StatusOK || !payload.Success || payload.Data["name"] != "nex" || payload.Data["enabled"] != true {
-		t.Fatalf("unexpected payload %#v", payload)
-	}
-	if len(payload.Error) != 0 && string(payload.Error) != "null" {
-		t.Fatalf("expected omitted error, got %s", payload.Error)
+	if rec.Code != http.StatusOK || payload.Code != 0 || payload.Msg != SuccessMsg || data["name"] != "nex" || data["enabled"] != true {
+		t.Fatalf("unexpected response: %d %s", rec.Code, rec.Body.String())
 	}
 }
-func TestWriteEnvelope_writes_contract_pagination_response(t *testing.T) {
+
+func TestWritePaginated_putsPaginationInsideData(t *testing.T) {
 	rec := httptest.NewRecorder()
-	envelope := NewSuccessEnvelope([]string{"first", "second"})
-	envelope.Pagination = &Pagination{Page: 2, PageSize: 25, Total: 51, TotalPages: 3}
-	if err := WriteEnvelope(rec, http.StatusPartialContent, envelope); err != nil {
+	WritePaginated(rec, []string{"first", "second"}, 2, 25, 51)
+	payload := decodeBody(t, rec.Body.Bytes())
+	var data struct {
+		List       []string `json:"list"`
+		Total      int      `json:"total"`
+		Page       int      `json:"page"`
+		Limit      int      `json:"limit"`
+		TotalPages int      `json:"totalPages"`
+	}
+	if err := json.Unmarshal(payload.Data, &data); err != nil {
 		t.Fatal(err)
 	}
-	var payload struct {
-		Success    bool                       `json:"success"`
-		Data       []string                   `json:"data"`
-		Pagination map[string]json.RawMessage `json:"pagination"`
+	if rec.Code != http.StatusOK || payload.Code != 0 || len(data.List) != 2 || data.Total != 51 || data.Page != 2 || data.Limit != 25 || data.TotalPages != 3 {
+		t.Fatalf("unexpected response: %d %s", rec.Code, rec.Body.String())
 	}
-	if err := json.Unmarshal(rec.Body.Bytes(), &payload); err != nil {
-		t.Fatal(err)
-	}
-	if rec.Code != http.StatusPartialContent || !payload.Success || len(payload.Data) != 2 {
-		t.Fatalf("unexpected payload %#v", payload)
-	}
-	for field, want := range map[string]int{"page": 2, "limit": 25, "total": 51, "totalPages": 3} {
-		var got int
-		if err := json.Unmarshal(payload.Pagination[field], &got); err != nil || got != want {
-			t.Fatalf("pagination %s = %d, %v", field, got, err)
-		}
-	}
-	if _, ok := payload.Pagination["page_size"]; ok {
-		t.Fatal("pagination must not contain page_size")
+	if strings.Contains(rec.Body.String(), `"pagination"`) {
+		t.Fatalf("pagination must live inside data: %s", rec.Body.String())
 	}
 }
-func TestWriteError_writes_message_without_internal_cause(t *testing.T) {
+
+func TestWriteError_writesCodeAndMessageWithoutInternalCause(t *testing.T) {
 	rec := httptest.NewRecorder()
 	req := httptest.NewRequest(http.MethodGet, "/resource", nil)
 	req = req.WithContext(logger.WithRequestID(req.Context(), "test-request-id"))
 	apiError := NewAPIError(http.StatusBadRequest, "invalid_request", "request is invalid", errors.New("database secret"))
 	WriteError(rec, req, apiError)
-	var payload struct {
-		Success bool            `json:"success"`
-		Error   json.RawMessage `json:"error"`
-	}
-	if err := json.Unmarshal(rec.Body.Bytes(), &payload); err != nil {
-		t.Fatal(err)
-	}
-	var message string
-	if err := json.Unmarshal(payload.Error, &message); err != nil {
-		t.Fatal(err)
-	}
-	if rec.Code != http.StatusBadRequest || payload.Success || message != apiError.Message || strings.Contains(message, "database secret") {
+	payload := decodeBody(t, rec.Body.Bytes())
+	if rec.Code != http.StatusBadRequest || payload.Code != constant.CodeBadRequest || payload.Msg != apiError.Message || strings.Contains(rec.Body.String(), "database secret") {
 		t.Fatalf("unexpected error response: %d %s", rec.Code, rec.Body.String())
+	}
+	if string(payload.Data) != "null" {
+		t.Fatalf("data = %s, want null", payload.Data)
 	}
 	if rec.Header().Get(logger.RequestIDHeader) != "test-request-id" {
 		t.Fatalf("request ID = %q", rec.Header().Get(logger.RequestIDHeader))
 	}
 }
-func TestWriteError_preserves_validation_status_and_contract_shape(t *testing.T) {
+
+func TestWriteError_validationCarriesFieldsInData(t *testing.T) {
 	rec := httptest.NewRecorder()
 	req := httptest.NewRequest(http.MethodPost, "/resource", nil)
 	WriteError(rec, req, NewValidationError(FieldError{Field: "name", Reason: "required"}))
-	var payload struct {
-		Success bool            `json:"success"`
-		Error   json.RawMessage `json:"error"`
+	payload := decodeBody(t, rec.Body.Bytes())
+	var data struct {
+		Fields []FieldError `json:"fields"`
 	}
-	if err := json.Unmarshal(rec.Body.Bytes(), &payload); err != nil {
+	if err := json.Unmarshal(payload.Data, &data); err != nil {
 		t.Fatal(err)
 	}
-	var message string
-	if err := json.Unmarshal(payload.Error, &message); err != nil {
-		t.Fatal(err)
-	}
-	if rec.Code != http.StatusBadRequest || payload.Success || message != "request validation failed" {
+	if rec.Code != http.StatusBadRequest || payload.Code != constant.CodeValidation || payload.Msg != "request validation failed" {
 		t.Fatalf("unexpected validation response: %d %s", rec.Code, rec.Body.String())
+	}
+	if len(data.Fields) != 1 || data.Fields[0].Field != "name" || data.Fields[0].Reason != "required" {
+		t.Fatalf("fields = %+v", data.Fields)
+	}
+}
+
+func TestWriteError_codeAlwaysAgreesWithStatus(t *testing.T) {
+	for _, status := range []int{http.StatusBadRequest, http.StatusUnauthorized, http.StatusTeapot, http.StatusBadGateway} {
+		rec := httptest.NewRecorder()
+		WriteError(rec, httptest.NewRequest(http.MethodGet, "/", nil), NewAPIError(status, "slug_without_a_code", "msg", nil))
+		payload := decodeBody(t, rec.Body.Bytes())
+		if payload.Code/100 != status {
+			t.Fatalf("status %d produced code %d", status, payload.Code)
+		}
+	}
+}
+
+func TestWriteFail_usesSlugCode(t *testing.T) {
+	rec := httptest.NewRecorder()
+	WriteFail(rec, httptest.NewRequest(http.MethodPost, "/", nil), http.StatusUnauthorized, "invalid_credentials", "邮箱或密码错误", nil)
+	payload := decodeBody(t, rec.Body.Bytes())
+	if rec.Code != http.StatusUnauthorized || payload.Code != constant.CodeInvalidCredentials || payload.Msg != "邮箱或密码错误" {
+		t.Fatalf("unexpected response: %d %s", rec.Code, rec.Body.String())
 	}
 }
 
@@ -116,6 +134,9 @@ func TestWriteError_logsInternalCauseWithRequestID(t *testing.T) {
 	WriteError(rec, req, cause)
 	if rec.Code != http.StatusInternalServerError {
 		t.Fatalf("status = %d", rec.Code)
+	}
+	if strings.Contains(rec.Body.String(), cause.Error()) {
+		t.Fatalf("response leaked the cause: %s", rec.Body.String())
 	}
 	logged := buffer.String()
 	if !strings.Contains(logged, "request failed") || !strings.Contains(logged, cause.Error()) || !strings.Contains(logged, "req-500") || !strings.Contains(logged, "/api/payment/methods") {

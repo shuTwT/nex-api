@@ -9,7 +9,7 @@ import {
   Modal,
   Select,
 } from "antd";
-import { api } from "@/lib/api";
+import { api, isOk } from "@/lib/api";
 
 export interface McpServiceData {
   id: string;
@@ -107,10 +107,10 @@ export function McpFormDialog({
       const result = isEdit
         ? await api.mcp_services_id_route_put({ id: service!.id }, body)
         : await api.mcp_services_route_post(body);
-      if (result.success) {
+      if (isOk(result)) {
         onSuccess();
         onOpenChange(false);
-      } else setError(result.error || "操作失败");
+      } else setError(result.msg || "操作失败");
     } catch {
       setError("操作失败，请重试");
     } finally {

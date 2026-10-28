@@ -87,8 +87,8 @@ func NewHandler(services Services, options ...HandlerOptions) http.Handler {
 	}
 	handler, err := New(services, handlerOptions)
 	if err != nil {
-		return http.HandlerFunc(func(writer http.ResponseWriter, _ *http.Request) {
-			writeError(writer, http.StatusInternalServerError, "mcp_gateway_unavailable")
+		return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
+			writeError(writer, request, http.StatusInternalServerError, "mcp_gateway_unavailable")
 		})
 	}
 	return handler
@@ -171,48 +171,48 @@ func (h *Handler) postIdentifier(writer http.ResponseWriter, request *http.Reque
 	principal, err := h.services.Authenticator.AuthenticateBearer(ctx, request.Header.Get("Authorization"))
 	if err != nil {
 		h.auditFailure(ctx, "", identifier, "invalid API token", request)
-		writeError(writer, http.StatusUnauthorized, "invalid_api_token")
+		writeError(writer, request, http.StatusUnauthorized, "invalid_api_token")
 		return
 	}
 	service, err := h.services.Catalog.GatewayMCPService(ctx, identifier)
 	if err != nil {
 		if errors.Is(err, serviceerror.ErrNotFound) {
 			h.auditFailure(ctx, principal.UserID, identifier, "MCP service not found", request)
-			writeError(writer, http.StatusNotFound, "mcp_service_not_found")
+			writeError(writer, request, http.StatusNotFound, "mcp_service_not_found")
 			return
 		}
 		h.auditFailure(ctx, principal.UserID, identifier, "MCP service lookup failed", request)
-		writeError(writer, http.StatusInternalServerError, "mcp_service_lookup_failed")
+		writeError(writer, request, http.StatusInternalServerError, "mcp_service_lookup_failed")
 		return
 	}
 	if !service.IsActive {
-		writeError(writer, http.StatusForbidden, "mcp_service_disabled")
+		writeError(writer, request, http.StatusForbidden, "mcp_service_disabled")
 		return
 	}
 	if service.Pricing < 0 {
-		writeError(writer, http.StatusInternalServerError, "invalid_mcp_service")
+		writeError(writer, request, http.StatusInternalServerError, "invalid_mcp_service")
 		return
 	}
 	if err := h.executor.Validate(service); err != nil {
 		if errors.Is(err, servicemcpgateway.ErrUnsupportedType) {
-			writeError(writer, http.StatusBadRequest, "unsupported_mcp_service_type")
+			writeError(writer, request, http.StatusBadRequest, "unsupported_mcp_service_type")
 			return
 		}
-		writeError(writer, http.StatusInternalServerError, "invalid_mcp_service")
+		writeError(writer, request, http.StatusInternalServerError, "invalid_mcp_service")
 		return
 	}
 	body, err := readRequestBody(request, h.options.MaxRequestBytes)
 	if err != nil {
-		writeError(writer, http.StatusRequestEntityTooLarge, "request_body_too_large")
+		writeError(writer, request, http.StatusRequestEntityTooLarge, "request_body_too_large")
 		return
 	}
 	if err := h.services.Credits.Reserve(ctx, principal.UserID, service.ID, service.Pricing); err != nil {
 		if errors.Is(err, servicemcpgateway.ErrInsufficientCredits) {
-			writeError(writer, http.StatusPaymentRequired, "insufficient_credits")
+			writeError(writer, request, http.StatusPaymentRequired, "insufficient_credits")
 			return
 		}
 		h.auditFailure(ctx, principal.UserID, service.Identifier, "credit reservation failed", request)
-		writeError(writer, http.StatusInternalServerError, "credit_reservation_failed")
+		writeError(writer, request, http.StatusInternalServerError, "credit_reservation_failed")
 		return
 	}
 	h.recordUsage(ctx, principal.UserID, service.Identifier, service.Pricing, request)
@@ -220,7 +220,7 @@ func (h *Handler) postIdentifier(writer http.ResponseWriter, request *http.Reque
 	defer cancel()
 	response, err := h.executor.Invoke(callContext, service, servicemcpgateway.Invocation{Headers: request.Header, Body: body})
 	if err != nil {
-		writeError(writer, http.StatusBadGateway, "mcp_upstream_failed")
+		writeError(writer, request, http.StatusBadGateway, "mcp_upstream_failed")
 		return
 	}
 	defer response.Body.Close()

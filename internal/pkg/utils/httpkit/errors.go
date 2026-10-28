@@ -13,6 +13,7 @@ import (
 
 	"github.com/shuTwT/nex-api/internal/infra/logger"
 	serviceerror "github.com/shuTwT/nex-api/internal/service/apierror"
+	"github.com/shuTwT/nex-api/pkg/constant"
 	"github.com/shuTwT/nex-api/pkg/domain/model"
 )
 
@@ -22,8 +23,8 @@ type (
 	FieldError      = serviceerror.FieldError
 	ValidationError = serviceerror.ValidationError
 	APIError        = model.APIError
-	ErrorBody       = model.ErrorBody
-	Pagination      = model.Pagination
+	ErrorData       = model.ErrorData
+	PageData[T any] = model.PageData[T]
 	Envelope[T any] = model.Envelope[T]
 )
 
@@ -98,18 +99,18 @@ func statusForKind(kind serviceerror.Kind) int {
 	}
 }
 
+// SuccessMsg is the msg of every successful response.
+const SuccessMsg = "success"
+
 func NewSuccessEnvelope[T any](data T) Envelope[T] {
-	return Envelope[T]{Success: true, Data: &data}
+	return Envelope[T]{Code: constant.CodeOK, Msg: SuccessMsg, Data: &data}
 }
 
-func NewErrorEnvelope(apiError *APIError) Envelope[struct{}] {
+func NewErrorEnvelope(apiError *APIError) Envelope[ErrorData] {
 	if apiError == nil {
-		return Envelope[struct{}]{Success: false, Error: &ErrorBody{}}
+		return Envelope[ErrorData]{Code: constant.CodeInternal, Msg: "internal server error"}
 	}
-	return Envelope[struct{}]{
-		Success: false,
-		Error:   &ErrorBody{Code: apiError.Code, Message: apiError.Message},
-	}
+	return Envelope[ErrorData]{Code: constant.CodeFor(apiError.Code, apiError.StatusCode), Msg: apiError.Message}
 }
 
 // WriteData writes a success envelope with the given status. A failed write
@@ -118,8 +119,9 @@ func WriteData[T any](w http.ResponseWriter, status int, data T) {
 	_ = WriteEnvelope(w, status, NewSuccessEnvelope(data))
 }
 
-// WritePaginated writes a successful HTTP 200 envelope with pagination metadata.
-func WritePaginated[T any](w http.ResponseWriter, data T, page, limit, total int) {
+// WritePaginated writes a successful HTTP 200 envelope whose data is
+// {list, total, page, limit, totalPages}.
+func WritePaginated[T any](w http.ResponseWriter, list T, page, limit, total int) {
 	pages := 0
 	if limit > 0 {
 		pages = total / limit
@@ -127,11 +129,14 @@ func WritePaginated[T any](w http.ResponseWriter, data T, page, limit, total int
 			pages++
 		}
 	}
-	_ = WriteEnvelope(w, http.StatusOK, Envelope[T]{
-		Success:    true,
-		Data:       &data,
-		Pagination: &Pagination{Page: page, PageSize: limit, Total: total, TotalPages: pages},
-	})
+	WriteData(w, http.StatusOK, PageData[T]{List: list, Total: total, Page: page, Limit: limit, TotalPages: pages})
+}
+
+// WriteFail writes an error response from a status, a slug and a message, for
+// handlers that have no error value to map. Slugs map to numeric codes through
+// constant.CodeFor.
+func WriteFail(w http.ResponseWriter, r *http.Request, status int, slug, message string, cause error) {
+	WriteError(w, r, NewAPIError(status, slug, message, cause))
 }
 
 // WriteError maps err to a compatible error envelope and writes it. Errors
@@ -151,13 +156,12 @@ func WriteError(w http.ResponseWriter, r *http.Request, err error) {
 			slog.Any("error", err),
 		)
 	}
-	envelope := NewErrorEnvelope(apiError)
 	if requestID := logger.RequestID(r.Context()); requestID != "" {
 		w.Header().Set(logger.RequestIDHeader, requestID)
 	}
-	envelope.Error.RequestID = logger.RequestID(r.Context())
+	envelope := NewErrorEnvelope(apiError)
 	if validationError := asValidationError(err); validationError != nil {
-		envelope.Error.Fields = append([]FieldError(nil), validationError.Fields...)
+		envelope.Data = &ErrorData{Fields: append([]FieldError(nil), validationError.Fields...)}
 	}
 	_ = WriteEnvelope(w, apiError.StatusCode, envelope)
 }

@@ -20,4 +20,3 @@ func AuthFromContext(ctx context.Context) (AuthContext, bool) {
 	authContext, ok := ctx.Value(authContextKey{}).(AuthContext)
 	return authContext, ok
 }
-

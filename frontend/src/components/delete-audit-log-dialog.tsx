@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Alert, Button, Modal, Typography } from "antd";
-import { api } from "@/lib/api";
+import { api, isOk } from "@/lib/api";
 
 interface DeleteAuditLogDialogProps {
   open: boolean;
@@ -26,11 +26,11 @@ export function DeleteAuditLogDialog({
 
     try {
       const result = await api.audit_logs_id_route_delete({ id: auditLogId });
-      if (result.success) {
+      if (isOk(result)) {
         onSuccess();
         onOpenChange(false);
       } else {
-        setError(result.error || "删除失败");
+        setError(result.msg || "删除失败");
       }
     } catch {
       setError("删除失败，请重试");

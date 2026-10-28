@@ -17,7 +17,7 @@ import {
 } from "antd";
 import { CalendarClock, Edit, Play, Plus, RefreshCw, Trash2 } from "lucide-react";
 import { toast } from "sonner";
-import { api, responseData } from "@/lib/api";
+import { api, responseData, isOk } from "@/lib/api";
 
 interface RuntimeInfo {
   scheduled: boolean;
@@ -112,16 +112,16 @@ export default function ScheduledJobsPage() {
       api.scheduled_jobs_tasks_route_get(),
     ]);
 
-    if (jobsResult.success) {
+    if (isOk(jobsResult)) {
       setJobs(responseData<ScheduledJob[]>(jobsResult) ?? []);
     } else {
-      toast.error(jobsResult.error || "加载定时任务失败");
+      toast.error(jobsResult.msg || "加载定时任务失败");
     }
 
-    if (tasksResult.success) {
+    if (isOk(tasksResult)) {
       setTasks(responseData<TaskDescriptor[]>(tasksResult) ?? []);
     } else {
-      toast.error(tasksResult.error || "加载可用任务失败");
+      toast.error(tasksResult.msg || "加载可用任务失败");
     }
     setLoading(false);
   }, []);
@@ -159,8 +159,8 @@ export default function ScheduledJobsPage() {
       : await api.scheduled_jobs_route_post(values);
     setSaving(false);
 
-    if (!result.success) {
-      toast.error(result.error || "保存定时任务失败");
+    if (!isOk(result)) {
+      toast.error(result.msg || "保存定时任务失败");
       return;
     }
     toast.success(editingJob ? "定时任务已更新" : "定时任务已创建");
@@ -175,8 +175,8 @@ export default function ScheduledJobsPage() {
       { ...inputFromJob(job), enabled },
     );
     setActionJobID(null);
-    if (!result.success) {
-      toast.error(result.error || "更新任务状态失败");
+    if (!isOk(result)) {
+      toast.error(result.msg || "更新任务状态失败");
       return;
     }
     toast.success(enabled ? "任务已启用" : "任务已停用");
@@ -187,8 +187,8 @@ export default function ScheduledJobsPage() {
     setActionJobID(job.id);
     const result = await api.scheduled_jobs_id_run_route_post({ id: job.id });
     setActionJobID(null);
-    if (!result.success) {
-      toast.error(result.error || "触发任务失败");
+    if (!isOk(result)) {
+      toast.error(result.msg || "触发任务失败");
       return;
     }
     toast.success("任务已触发，请稍后刷新查看结果");
@@ -199,8 +199,8 @@ export default function ScheduledJobsPage() {
     setActionJobID(job.id);
     const result = await api.scheduled_jobs_id_route_delete({ id: job.id });
     setActionJobID(null);
-    if (!result.success) {
-      toast.error(result.error || "删除定时任务失败");
+    if (!isOk(result)) {
+      toast.error(result.msg || "删除定时任务失败");
       return;
     }
     toast.success("定时任务已删除");

@@ -1,12 +1,12 @@
 // Package middleware holds the HTTP request middleware: request ID, panic
 // recovery, access logging, body limits and development CORS. It depends only
-// on service and infra packages; error responses are written inline so the
-// package never depends on the handler layer.
+// on service, infra and pkg packages; error responses go through
+// pkg/utils/httpkit, which never depends back on this package.
 package middleware
 
 import (
 	"context"
-	"encoding/json"
+	"fmt"
 	"io"
 	"log/slog"
 	"net/http"
@@ -18,6 +18,7 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/shuTwT/nex-api/internal/infra/logger"
+	"github.com/shuTwT/nex-api/internal/pkg/utils/httpkit"
 )
 
 // RequestIDHeader is the HTTP correlation header exposed to handlers without
@@ -65,7 +66,7 @@ func Recovery(loggerInstance *slog.Logger) func(http.Handler) http.Handler {
 						slog.Any("panic", recovered),
 						slog.String("stack", string(debug.Stack())),
 					)
-					writeErrorResponse(w, r, http.StatusInternalServerError, "internal server error")
+					writeErrorResponse(w, r, http.StatusInternalServerError, "internal_error", "internal server error", fmt.Errorf("panic: %v", recovered))
 				}
 			}()
 			next.ServeHTTP(w, r.WithContext(WithLogger(r.Context(), loggerInstance)))
@@ -105,7 +106,7 @@ func MaxBodySize(maxBytes int64) func(http.Handler) http.Handler {
 				return
 			}
 			if maxBytes > 0 && r.ContentLength > maxBytes {
-				writeErrorResponse(w, r, http.StatusRequestEntityTooLarge, "request body is too large")
+				writeErrorResponse(w, r, http.StatusRequestEntityTooLarge, "request_too_large", "request body is too large", nil)
 				return
 			}
 			r.Body = http.MaxBytesReader(w, r.Body, maxBytes)
@@ -135,15 +136,10 @@ func DevelopmentCORS(origins []string) func(http.Handler) http.Handler {
 	}
 }
 
-// writeErrorResponse emits the same envelope shape as the handler layer's
-// WriteError without depending on it: {"success":false,"error":"<message>"}.
-func writeErrorResponse(w http.ResponseWriter, r *http.Request, status int, message string) {
-	if requestID := logger.RequestID(r.Context()); requestID != "" {
-		w.Header().Set(logger.RequestIDHeader, requestID)
-	}
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(status)
-	_ = json.NewEncoder(w).Encode(map[string]any{"success": false, "error": message})
+// writeErrorResponse writes the shared error envelope through httpkit, so the
+// middleware and the handlers emit the same shape and 5xx causes get logged.
+func writeErrorResponse(w http.ResponseWriter, r *http.Request, status int, code, message string, cause error) {
+	httpkit.WriteError(w, r, httpkit.NewAPIError(status, code, message, cause))
 }
 
 func loggerOrDiscard(loggerInstance *slog.Logger) *slog.Logger {

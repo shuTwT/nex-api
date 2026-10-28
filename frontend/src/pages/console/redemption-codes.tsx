@@ -11,7 +11,7 @@ import {
   Download,
   Search,
 } from "lucide-react";
-import { api, responseData } from "@/lib/api";
+import { api, responseData, isOk, pageData } from "@/lib/api";
 import { RedemptionCodeForm } from "@/components/redemption-code-form";
 import { DeleteRedemptionCodeDialog } from "@/components/delete-redemption-code-dialog";
 import { Pagination } from "@/components/pagination";
@@ -81,11 +81,11 @@ export default function RedemptionCodesPage() {
     if (appliedType !== "all") query.type = appliedType;
     if (appliedStatus !== "all") query.isUsed = appliedStatus;
     const result = await api.redemption_codes_route_get(query);
-    if (result.success) {
-      const data = responseData<RedemptionCode[]>(result);
-      if (data) setCodes(data);
-      if (result.pagination) {
-        setPagination(result.pagination);
+    if (isOk(result)) {
+      const page = pageData<RedemptionCode>(result);
+      if (page) {
+        setCodes(page.list);
+        setPagination(page);
       }
     }
     setIsLoading(false);
@@ -160,11 +160,11 @@ export default function RedemptionCodesPage() {
       return;
     }
     const result = await api.redemption_codes_batch_route_post({ ids: Array.from(selectedIds) });
-    if (result.success) {
+    if (isOk(result)) {
       toast.success("删除成功");
       handleDeleteSuccess();
     } else {
-      toast.error(result.error || "删除失败");
+      toast.error(result.msg || "删除失败");
     }
   }
 
@@ -172,7 +172,7 @@ export default function RedemptionCodesPage() {
     const ids = selectedIds.size > 0 ? Array.from(selectedIds) : undefined;
     const query = ids ? { ids: ids.join(",") } : undefined;
     const result = await api.redemption_codes_export_route_get(query);
-    if (result.success) {
+    if (isOk(result)) {
       const data = responseData<string>(result);
       if (data !== null) {
         const blob = new Blob([data], {
@@ -189,7 +189,7 @@ export default function RedemptionCodesPage() {
         toast.error("导出失败");
       }
     } else {
-      toast.error(result.error || "导出失败");
+      toast.error(result.msg || "导出失败");
     }
   }
 

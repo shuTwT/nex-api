@@ -3,7 +3,7 @@ import { useSearchParams, useNavigate } from "react-router";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { CheckCircle2, XCircle, Loader2 } from "lucide-react";
-import { api, responseData } from "@/lib/api";
+import { api, responseData, isOk } from "@/lib/api";
 import { rawPost } from "@/lib/raw";
 
 interface PaymentInfo {
@@ -32,7 +32,7 @@ export default function PaymentMockPage() {
       try {
         const result = await api.payment_outtradeno_route_get({ outTradeNo });
         const data = responseData<PaymentInfo>(result);
-        if (result.success && data) {
+        if (isOk(result) && data) {
           setPayment(data);
         } else {
           navigate("/pricing", { replace: true });
@@ -56,7 +56,7 @@ export default function PaymentMockPage() {
         success,
       });
 
-      if (result.success) {
+      if (isOk(result)) {
         navigate(`/payment/result?outTradeNo=${outTradeNo}&status=${success ? "success" : "failed"}`);
       } else {
         alert("处理失败，请重试");

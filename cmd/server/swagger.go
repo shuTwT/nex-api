@@ -20,18 +20,21 @@ package main
 type SwaggerDocument struct{}
 
 // SwaggerEnvelope is the standard JSON response envelope returned by the API.
+// Code 0 means success; any other value is an entry of the error code table in
+// pkg/constant (HTTP status * 100 + sequence). List endpoints put their items
+// and paging metadata inside data (see SwaggerPage).
 type SwaggerEnvelope struct {
-	Success    bool               `json:"success"`
-	Data       any                `json:"data,omitempty"`
-	Error      string             `json:"error,omitempty"`
-	Pagination *SwaggerPagination `json:"pagination,omitempty"`
+	Code int    `json:"code"`
+	Msg  string `json:"msg"`
+	Data any    `json:"data"`
 }
 
-// SwaggerPagination is the pagination metadata carried by list responses.
-type SwaggerPagination struct {
+// SwaggerPage is the data payload of a paginated response.
+type SwaggerPage struct {
+	List       any `json:"list"`
+	Total      int `json:"total"`
 	Page       int `json:"page"`
 	Limit      int `json:"limit"`
-	Total      int `json:"total"`
 	TotalPages int `json:"totalPages"`
 }
 

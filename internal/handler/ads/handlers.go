@@ -52,7 +52,7 @@ func RegisterRoutes(mux chi.Router, handler *Handler) error {
 // @Param position query string false "position"
 // @Param isActive query string false "isActive"
 // @Security SessionCookie
-// @Success 200 {object} main.SwaggerEnvelope{data=[]model.AdvertisementResp}
+// @Success 200 {object} main.SwaggerEnvelope{data=main.SwaggerPage{list=[]model.AdvertisementResp}}
 // @Failure 400 {object} main.SwaggerEnvelope
 // @Failure 401 {object} main.SwaggerEnvelope
 // @Failure 403 {object} main.SwaggerEnvelope

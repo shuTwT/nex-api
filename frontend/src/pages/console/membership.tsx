@@ -3,7 +3,7 @@ import { Badge, Button, Card, Col, Modal, Row, Tag, Typography } from "antd";
 import { useNavigate } from "react-router";
 import { useAuth } from "@/hooks/use-auth";
 import { Crown, Check, Calendar, CreditCard, Zap, Loader2 } from "lucide-react";
-import { api, responseData } from "@/lib/api";
+import { api, responseData, isOk } from "@/lib/api";
 import { ConsolePageLoading } from "@/components/console-page-loading";
 import { toast } from "sonner";
 
@@ -68,10 +68,10 @@ export default function MembershipPage() {
         const result = await api.membership_subscribe_route_post({
           planId: plan.id,
         });
-        if (result.success) {
+        if (isOk(result)) {
           toast.success("订阅成功");
           await loadData();
-        } else toast.error(result.error || "订阅失败");
+        } else toast.error(result.msg || "订阅失败");
       } catch {
         toast.error("订阅失败，请重试");
       } finally {
@@ -93,11 +93,11 @@ export default function MembershipPage() {
         method,
       });
       const data = responseData<{ outTradeNo: string }>(result);
-      if (result.success && data) {
+      if (isOk(result) && data) {
         setShowPaymentDialog(false);
         toast.success("支付订单已创建");
         navigate(`/payment?outTradeNo=${data.outTradeNo}`);
-      } else toast.error(result.error || "创建支付订单失败");
+      } else toast.error(result.msg || "创建支付订单失败");
     } catch {
       toast.error("支付失败，请重试");
     } finally {

@@ -20,8 +20,8 @@ import (
 )
 
 type uploadEnvelope struct {
-	Success bool `json:"success"`
-	Data    struct {
+	Code int `json:"code"`
+	Data struct {
 		URL      string `json:"url"`
 		Filename string `json:"filename"`
 		Size     int64  `json:"size"`
@@ -41,7 +41,7 @@ func TestUploadAcceptsPNGAndServesBytesWithCacheHeaders(t *testing.T) {
 	if err := json.Unmarshal(rec.Body.Bytes(), &response); err != nil {
 		t.Fatal(err)
 	}
-	if !response.Success || response.Data.URL == "" || response.Data.Filename == "" || response.Data.Size != int64(len(png)) || response.Data.Type != "image/png" {
+	if response.Code != 0 || response.Data.URL == "" || response.Data.Filename == "" || response.Data.Size != int64(len(png)) || response.Data.Type != "image/png" {
 		t.Fatalf("response = %+v", response)
 	}
 	served := httptest.NewRecorder()

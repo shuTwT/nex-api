@@ -52,15 +52,15 @@ func TestRegisterRoutes_subscribeReturnsSuccessEnvelope(t *testing.T) {
 		t.Fatalf("status = %d, body = %s", recorder.Code, recorder.Body.String())
 	}
 	var envelope struct {
-		Success bool `json:"success"`
-		Data    struct {
+		Code int `json:"code"`
+		Data struct {
 			PlanID string `json:"planId"`
 		} `json:"data"`
 	}
 	if err := json.Unmarshal(recorder.Body.Bytes(), &envelope); err != nil {
 		t.Fatal(err)
 	}
-	if !envelope.Success || envelope.Data.PlanID != "plan-1" {
+	if envelope.Code != 0 || envelope.Data.PlanID != "plan-1" {
 		t.Fatalf("response = %s", recorder.Body.String())
 	}
 }
@@ -101,16 +101,18 @@ func TestRegisterRoutes_listPlansIncludesZeroPrice(t *testing.T) {
 	}
 
 	var envelope struct {
-		Success bool                         `json:"success"`
-		Data    []map[string]json.RawMessage `json:"data"`
+		Code int `json:"code"`
+		Data struct {
+			List []map[string]json.RawMessage `json:"list"`
+		} `json:"data"`
 	}
 	if err := json.Unmarshal(recorder.Body.Bytes(), &envelope); err != nil {
 		t.Fatal(err)
 	}
-	if !envelope.Success || len(envelope.Data) != 1 {
+	if envelope.Code != 0 || len(envelope.Data.List) != 1 {
 		t.Fatalf("response = %s", recorder.Body.String())
 	}
-	if price, exists := envelope.Data[0]["price"]; !exists || string(price) != "0" {
+	if price, exists := envelope.Data.List[0]["price"]; !exists || string(price) != "0" {
 		t.Fatalf("price = %s, want JSON value 0; body = %s", price, recorder.Body.String())
 	}
 }

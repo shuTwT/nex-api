@@ -5,7 +5,6 @@
 package auth
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
 	"log/slog"
@@ -26,8 +25,6 @@ type Handler struct {
 	csrf    *middleware.CSRFProtector
 	mux     chi.Router
 }
-
-type responseEnvelope = model.EnvelopeResp
 
 func NewHandler(service *serviceauth.Service) http.Handler {
 	return newHandler(service)
@@ -68,9 +65,7 @@ func (h *Handler) registerRoutes(r chi.Router) {
 
 func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if h.service == nil {
-		if err := writeError(w, http.StatusInternalServerError, "auth_unavailable"); err != nil {
-			return
-		}
+		httpkit.WriteFail(w, r, http.StatusInternalServerError, "auth_unavailable", "认证服务不可用", nil)
 		return
 	}
 	h.csrf.Middleware(h.mux).ServeHTTP(w, r)
@@ -91,14 +86,10 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) csrfToken(w http.ResponseWriter, r *http.Request) {
 	token, err := h.csrf.EnsureToken(w, r)
 	if err != nil {
-		if writeErr := writeError(w, http.StatusInternalServerError, "csrf_unavailable"); writeErr != nil {
-			return
-		}
+		httpkit.WriteFail(w, r, http.StatusInternalServerError, "csrf_unavailable", "无法生成 CSRF 令牌", nil)
 		return
 	}
-	if err := writeJSON(w, http.StatusOK, responseEnvelope{Success: true, Data: map[string]string{"token": token}}); err != nil {
-		return
-	}
+	httpkit.WriteData(w, http.StatusOK, map[string]string{"token": token})
 }
 
 // login handles POST /api/auth/login.
@@ -118,9 +109,7 @@ func (h *Handler) csrfToken(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) login(w http.ResponseWriter, r *http.Request) {
 	var request model.AuthLoginReq
 	if err := httpkit.DecodeJSON(r, &request); err != nil || strings.TrimSpace(request.Email) == "" || request.Password == "" {
-		if writeErr := writeError(w, http.StatusBadRequest, "invalid_request"); writeErr != nil {
-			return
-		}
+		httpkit.WriteFail(w, r, http.StatusBadRequest, "invalid_request", "请求参数无效", nil)
 		return
 	}
 	key := loginRateLimitKey(r, request.Email)
@@ -128,29 +117,21 @@ func (h *Handler) login(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		// Fail closed: without a rate-limit decision the attempt is rejected.
 		slog.ErrorContext(r.Context(), "login rate limiter unavailable", slog.Any("err", err))
-		if writeErr := writeError(w, http.StatusServiceUnavailable, "login_unavailable"); writeErr != nil {
-			return
-		}
+		httpkit.WriteFail(w, r, http.StatusServiceUnavailable, "login_unavailable", "登录服务暂时不可用，请稍后重试", nil)
 		return
 	}
 	if !allowed {
 		w.Header().Set("Retry-After", fmt.Sprintf("%d", maxAgeSeconds(retryAfter)))
-		if writeErr := writeError(w, http.StatusTooManyRequests, "login_rate_limited"); writeErr != nil {
-			return
-		}
+		httpkit.WriteFail(w, r, http.StatusTooManyRequests, "login_rate_limited", "登录尝试过于频繁，请稍后再试", nil)
 		return
 	}
 	authContext, err := h.service.Login(r.Context(), request.Email, request.Password, h.tokenFromRequest(r))
 	if err != nil {
 		if errors.Is(err, serviceauth.ErrInvalidCredentials) {
-			if writeErr := writeError(w, http.StatusUnauthorized, "invalid_credentials"); writeErr != nil {
-				return
-			}
+			httpkit.WriteFail(w, r, http.StatusUnauthorized, "invalid_credentials", "邮箱或密码错误", nil)
 			return
 		}
-		if writeErr := writeError(w, http.StatusInternalServerError, "login_failed"); writeErr != nil {
-			return
-		}
+		httpkit.WriteFail(w, r, http.StatusInternalServerError, "login_failed", "登录失败，请稍后重试", err)
 		return
 	}
 	// The login already succeeded; a failed reset only leaves the counter to
@@ -160,14 +141,10 @@ func (h *Handler) login(w http.ResponseWriter, r *http.Request) {
 	}
 	h.setSessionCookie(w, authContext)
 	if _, err := h.csrf.EnsureToken(w, r); err != nil {
-		if writeErr := writeError(w, http.StatusInternalServerError, "csrf_unavailable"); writeErr != nil {
-			return
-		}
+		httpkit.WriteFail(w, r, http.StatusInternalServerError, "csrf_unavailable", "无法生成 CSRF 令牌", nil)
 		return
 	}
-	if err := writeJSON(w, http.StatusOK, responseEnvelope{Success: true, Data: authContext.User}); err != nil {
-		return
-	}
+	httpkit.WriteData(w, http.StatusOK, authContext.User)
 }
 
 // me handles GET /api/auth/me.
@@ -186,14 +163,10 @@ func (h *Handler) login(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) me(w http.ResponseWriter, r *http.Request) {
 	authContext, err := h.service.Authenticate(r.Context(), h.tokenFromRequest(r))
 	if err != nil {
-		if writeErr := writeError(w, http.StatusUnauthorized, "unauthorized"); writeErr != nil {
-			return
-		}
+		httpkit.WriteFail(w, r, http.StatusUnauthorized, "unauthorized", "未登录或登录已过期", nil)
 		return
 	}
-	if err := writeJSON(w, http.StatusOK, responseEnvelope{Success: true, Data: authContext.User}); err != nil {
-		return
-	}
+	httpkit.WriteData(w, http.StatusOK, authContext.User)
 }
 
 // logout handles POST /api/auth/logout.
@@ -212,16 +185,12 @@ func (h *Handler) me(w http.ResponseWriter, r *http.Request) {
 // @Router /api/auth/logout [post]
 func (h *Handler) logout(w http.ResponseWriter, r *http.Request) {
 	if err := h.service.Logout(r.Context(), h.tokenFromRequest(r)); err != nil {
-		if writeErr := writeError(w, http.StatusInternalServerError, "logout_failed"); writeErr != nil {
-			return
-		}
+		httpkit.WriteFail(w, r, http.StatusInternalServerError, "logout_failed", "退出登录失败，请稍后重试", err)
 		return
 	}
 	h.clearSessionCookie(w)
 	h.csrf.ClearCookie(w)
-	if err := writeJSON(w, http.StatusOK, responseEnvelope{Success: true, Data: map[string]string{"message": "logged out"}}); err != nil {
-		return
-	}
+	httpkit.WriteData(w, http.StatusOK, map[string]string{"message": "logged out"})
 }
 
 func (h *Handler) tokenFromRequest(r *http.Request) string {
@@ -230,16 +199,6 @@ func (h *Handler) tokenFromRequest(r *http.Request) string {
 		return ""
 	}
 	return cookie.Value
-}
-
-func writeJSON(w http.ResponseWriter, status int, value responseEnvelope) error {
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(status)
-	return json.NewEncoder(w).Encode(value)
-}
-
-func writeError(w http.ResponseWriter, status int, code string) error {
-	return writeJSON(w, status, responseEnvelope{Success: false, Error: code})
 }
 
 func loginRateLimitKey(r *http.Request, email string) string {

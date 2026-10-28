@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Alert, Form, Input, InputNumber, Select } from "antd";
-import { api, responseData } from "@/lib/api";
+import { api, responseData, isOk } from "@/lib/api";
 
 interface RedemptionCodeFormProps {
   onSuccess: () => void;
@@ -49,8 +49,8 @@ export function RedemptionCodeForm({
       body.expiresAt = new Date(values.expiresAt).toISOString();
     try {
       const result = await api.redemption_codes_route_post(body);
-      if (result.success) onSuccess();
-      else setError(result.error || "操作失败");
+      if (isOk(result)) onSuccess();
+      else setError(result.msg || "操作失败");
     } catch {
       setError("操作失败，请重试");
     } finally {

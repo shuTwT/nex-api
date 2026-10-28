@@ -1,7 +1,7 @@
 import { useState, type FormEvent } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { api } from "@/lib/api";
+import { api, isOk } from "@/lib/api";
 import { Zap, Shield, Users, Sparkles, CheckCircle2 } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 
@@ -33,7 +33,7 @@ export function InitializationForm() {
       const result = await api.system_initialize_route_post(body);
       const data = result.data as unknown as InitResult | undefined;
 
-      if (result.success && data) {
+      if (isOk(result) && data) {
         const loginSuccess = await login(data.email, body.password);
         if (loginSuccess) {
           window.location.href = "/console";
@@ -44,7 +44,7 @@ export function InitializationForm() {
           }, 2000);
         }
       } else {
-        setError(result.error || "初始化失败");
+        setError(result.msg || "初始化失败");
       }
     } catch {
       setError("初始化失败，请重试");

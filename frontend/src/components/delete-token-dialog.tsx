@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Alert, Modal } from "antd";
-import { api } from "@/lib/api";
+import { api, isOk } from "@/lib/api";
 
 interface DeleteTokenDialogProps {
   open: boolean;
@@ -16,7 +16,7 @@ export function DeleteTokenDialog({ open, onOpenChange, tokenId, tokenName, onSu
     setIsLoading(true);
     try {
       const result = await api.tokens_id_route_delete({ id: tokenId });
-      if (result.success) { onSuccess(); onOpenChange(false); } else alert(result.error || "删除失败");
+      if (isOk(result)) { onSuccess(); onOpenChange(false); } else alert(result.msg || "删除失败");
     } catch { alert("删除失败，请重试"); } finally { setIsLoading(false); }
   }
   return (

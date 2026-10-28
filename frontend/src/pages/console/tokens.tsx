@@ -10,7 +10,7 @@ import {
   CheckCircle,
   Edit,
 } from "lucide-react";
-import { api, responseData } from "@/lib/api";
+import { api, responseData, isOk, pageData } from "@/lib/api";
 import { TokenFormDialog } from "@/components/token-form-dialog";
 import { DeleteTokenDialog } from "@/components/delete-token-dialog";
 import { Pagination } from "@/components/pagination";
@@ -66,11 +66,11 @@ export default function TokensPage() {
     };
     const result = await api.tokens_route_get(query);
 
-    if (result.success) {
-      const data = responseData<Token[]>(result);
-      if (data) setTokens(data);
-      if (result.pagination) {
-        setPagination(result.pagination);
+    if (isOk(result)) {
+      const page = pageData<Token>(result);
+      if (page) {
+        setTokens(page.list);
+        setPagination(page);
       }
     }
     setIsLoading(false);
@@ -137,11 +137,11 @@ export default function TokensPage() {
   async function handleToggleStatus(id: string) {
     startTransition(async () => {
       const result = await api.tokens_id_toggle_route_put({ id });
-      if (result.success) {
+      if (isOk(result)) {
         loadTokens();
         loadStats();
       } else {
-        alert(result.error || "切换状态失败");
+        alert(result.msg || "切换状态失败");
       }
     });
   }

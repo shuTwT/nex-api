@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { rawGet } from "@/lib/raw";
+import { isOk } from "@/lib/api";
 
 export interface OAuthProvider {
   id: string;
@@ -7,7 +8,8 @@ export interface OAuthProvider {
 }
 
 interface OAuthProvidersResponse {
-  success: boolean;
+  code: number;
+  msg: string;
   data?: OAuthProvider[] | null;
 }
 
@@ -20,7 +22,7 @@ export function useOAuthProviders() {
 
     void rawGet<OAuthProvidersResponse>("/api/auth/providers")
       .then((result) => {
-        if (active && result.success && Array.isArray(result.data)) {
+        if (active && isOk(result) && Array.isArray(result.data)) {
           setProviders(result.data);
         }
       })

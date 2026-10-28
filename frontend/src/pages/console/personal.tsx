@@ -14,7 +14,7 @@ import {
   Tag,
   Typography,
 } from "antd";
-import { api, responseData } from "@/lib/api";
+import { api, responseData, isOk } from "@/lib/api";
 import {
   CreditCard,
   Activity,
@@ -58,7 +58,7 @@ export default function PersonalPage() {
     setIsLoading(true);
     const result = await api.personal_profile_route_get();
     const data = responseData<UserProfile>(result);
-    if (result.success && data) setProfile(data);
+    if (isOk(result) && data) setProfile(data);
     setIsLoading(false);
   }
   useEffect(() => {
@@ -75,20 +75,20 @@ export default function PersonalPage() {
       planName: string | null;
       credits: number | null;
     }>(result);
-    if (result.success && data)
+    if (isOk(result) && data)
       setConfirmDialog({
         open: true,
         type: data.type,
         planName: data.planName,
         credits: data.credits,
       });
-    else toast.error(result.error || "查询失败");
+    else toast.error(result.msg || "查询失败");
     setIsRedeeming(false);
   }
   async function handleConfirmRedeem() {
     setIsRedeeming(true);
     const result = await api.personal_redeem_route_post({ code: redeemInput });
-    if (result.success) {
+    if (isOk(result)) {
       toast.success("兑换成功");
       setRedeemInput("");
       setConfirmDialog({
@@ -98,7 +98,7 @@ export default function PersonalPage() {
         credits: null,
       });
       loadProfile();
-    } else toast.error(result.error || "兑换失败");
+    } else toast.error(result.msg || "兑换失败");
     setIsRedeeming(false);
   }
   if (isLoading) return <ConsolePageLoading />;

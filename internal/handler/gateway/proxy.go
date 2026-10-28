@@ -1,11 +1,11 @@
 package gateway
 
 import (
-	"encoding/json"
 	"io"
 	"net/http"
 	"strings"
 
+	"github.com/shuTwT/nex-api/internal/pkg/utils/httpkit"
 	servicegateway "github.com/shuTwT/nex-api/internal/service/gateway"
 )
 
@@ -22,23 +22,8 @@ func writeResponse(w http.ResponseWriter, response servicegateway.ResponseData) 
 	}
 }
 
-func (h *Handler) writeError(w http.ResponseWriter, status int, code, message string) {
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(status)
-	payload, err := json.Marshal(errorEnvelope{Success: false, Error: message, Code: code})
-	if err != nil {
-		h.logger.Error("gateway error response encoding failed", "err", err)
-		return
-	}
-	if _, err := w.Write(append(payload, '\n')); err != nil {
-		h.logger.Error("gateway error response write failed", "err", err)
-	}
-}
-
-type errorEnvelope struct {
-	Success bool   `json:"success"`
-	Error   string `json:"error"`
-	Code    string `json:"code,omitempty"`
+func (h *Handler) writeError(w http.ResponseWriter, r *http.Request, status int, code, message string) {
+	httpkit.WriteFail(w, r, status, code, message, nil)
 }
 
 func methodAllowed(configured, method string) bool {

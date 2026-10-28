@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Alert, Card, Checkbox, Form, Input, InputNumber, Select } from "antd";
-import { api } from "@/lib/api";
+import { api, isOk } from "@/lib/api";
 import { ImageUpload } from "@/components/image-upload";
 import { AdPositionOptions } from "@/types/ad-position";
 
@@ -53,8 +53,8 @@ export function AdvertisementForm({
             body,
           )
         : await api.advertisements_route_post(body);
-      if (result.success) onSuccess();
-      else setError(result.error || "操作失败");
+      if (isOk(result)) onSuccess();
+      else setError(result.msg || "操作失败");
     } catch {
       setError("操作失败，请重试");
     } finally {

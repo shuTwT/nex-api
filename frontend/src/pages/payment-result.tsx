@@ -3,7 +3,7 @@ import { useSearchParams, useNavigate } from "react-router";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { CheckCircle2, XCircle, Loader2 } from "lucide-react";
-import { api, responseData } from "@/lib/api";
+import { api, responseData, isOk } from "@/lib/api";
 
 interface PaymentInfo {
   outTradeNo: string;
@@ -32,7 +32,7 @@ export default function PaymentResultPage() {
       try {
         const result = await api.payment_outtradeno_route_get({ outTradeNo });
         const data = responseData<PaymentInfo>(result);
-        if (result.success && data) {
+        if (isOk(result) && data) {
           setPayment(data);
         }
       } catch {

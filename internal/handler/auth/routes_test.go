@@ -122,7 +122,7 @@ func TestHandler_loginFailsClosedWhenRedisIsDown(t *testing.T) {
 	if response.Code != http.StatusServiceUnavailable {
 		t.Fatalf("status = %d, want 503; body = %s", response.Code, response.Body.String())
 	}
-	if !strings.Contains(response.Body.String(), "login_unavailable") {
+	if !strings.Contains(response.Body.String(), `"code":50301`) {
 		t.Fatalf("body = %s", response.Body.String())
 	}
 	if responseCookie(response, service.SessionCookieName()) != nil {

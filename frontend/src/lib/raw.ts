@@ -4,10 +4,10 @@ type Envelope = ApiResponse;
 
 async function readEnvelope(response: Response): Promise<Envelope> {
   const payload: unknown = await response.json();
-  if (typeof payload === "object" && payload !== null && typeof (payload as Record<string, unknown>).success === "boolean") {
+  if (typeof payload === "object" && payload !== null && typeof (payload as Record<string, unknown>).code === "number") {
     return payload as Envelope;
   }
-  return { success: response.ok, error: response.ok ? null : "非标准响应" };
+  return { code: response.ok ? 0 : -1, msg: response.ok ? "success" : "非标准响应" };
 }
 
 export async function rawGet<T = Envelope>(
