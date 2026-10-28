@@ -1732,39 +1732,6 @@ paths:
       summary: PUT /api/categories/{id}
       tags:
         - categories
-  /api/cron/sync-stats:
-    post:
-      operationId: cron_sync_stats_route_post
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/main.SwaggerEnvelope"
-        "400":
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/main.SwaggerEnvelope"
-        "401":
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/main.SwaggerEnvelope"
-        "500":
-          description: Internal Server Error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/main.SwaggerEnvelope"
-      security:
-        - CronSecretAuth: []
-      summary: POST /api/cron/sync-stats
-      tags:
-        - cron
   /api/dashboard/activity:
     get:
       operationId: dashboard_activity_route_get
@@ -5961,10 +5928,6 @@ components:
       description: JSON request payload
   securitySchemes:
     ApiTokenAuth:
-      in: header
-      name: Authorization
-      type: apiKey
-    CronSecretAuth:
       in: header
       name: Authorization
       type: apiKey

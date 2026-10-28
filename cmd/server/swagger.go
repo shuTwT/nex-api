@@ -17,9 +17,6 @@ package main
 // @securityDefinitions.apikey ApiTokenAuth
 // @in header
 // @name Authorization
-// @securityDefinitions.apikey CronSecretAuth
-// @in header
-// @name Authorization
 type SwaggerDocument struct{}
 
 // SwaggerEnvelope is the standard JSON response envelope returned by the API.

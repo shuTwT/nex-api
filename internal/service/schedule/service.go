@@ -212,7 +212,13 @@ func (s *Service) RunNow(ctx context.Context, id string) error {
 	if !item.Enabled {
 		return appRuntime.NewError(appRuntime.KindConflict, "scheduled_job_disabled", "scheduled job is disabled", nil)
 	}
-	return s.manager.RunNow(item.ID)
+	if err := s.manager.RunNow(item.ID); err != nil {
+		if errors.Is(err, infraschedule.ErrNotStarted) {
+			return appRuntime.NewError(appRuntime.KindConflict, "scheduler_not_running", "the scheduler is disabled (CRON_ENABLED=false)", err)
+		}
+		return err
+	}
+	return nil
 }
 
 func (s *Service) Tasks() []infraschedule.TaskDescriptor { return s.manager.Tasks() }

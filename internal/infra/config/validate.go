@@ -123,11 +123,6 @@ func validate(cfg Config, requireExternal bool, externalValue func(string) bool)
 	if cfg.Upload.MaxBytes <= 0 {
 		add("upload.max_bytes", "must be positive")
 	}
-	if cfg.Cron.Enabled {
-		if strings.TrimSpace(cfg.Cron.Secret) == "" {
-			add("cron.secret", "is required when cron is enabled")
-		}
-	}
 	if !validLogLevel(cfg.Log.Level) {
 		add("log.level", "must be debug, info, warn, or error")
 	}

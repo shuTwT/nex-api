@@ -266,19 +266,6 @@
       "id": "categories"
     },
     {
-      "path": "/api/cron/sync-stats",
-      "authScheme": "cron-secret",
-      "handlers": [
-        {
-          "method": "POST",
-          "auth": "none",
-          "mediaType": "application/json",
-          "responseClass": "json"
-        }
-      ],
-      "id": "cron/sync-stats"
-    },
-    {
       "path": "/api/dashboard/activity",
       "handlers": [
         {

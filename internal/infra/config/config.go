@@ -58,7 +58,6 @@ var envBindings = []envBinding{
 	{key: "upload.allowed_types", names: []string{"UPLOAD_ALLOWED_TYPES"}},
 	{key: "upload.create_on_start", names: []string{"UPLOAD_CREATE_ON_START"}},
 	{key: "cron.enabled", names: []string{"CRON_ENABLED"}},
-	{key: "cron.secret", names: []string{"CRON_SECRET"}},
 	{key: "log.level", names: []string{"LOG_LEVEL"}},
 	{key: "log.format", names: []string{"LOG_FORMAT"}},
 	{key: "log.add_source", names: []string{"LOG_ADD_SOURCE"}},

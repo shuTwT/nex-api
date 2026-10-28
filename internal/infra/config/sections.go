@@ -63,9 +63,10 @@ type Upload struct {
 	CreateOnStart bool     `mapstructure:"create_on_start"`
 }
 
+// Cron is the master switch for the in-process scheduler. When Enabled is
+// false no scheduled job fires.
 type Cron struct {
-	Enabled bool   `mapstructure:"enabled"`
-	Secret  string `mapstructure:"secret"`
+	Enabled bool `mapstructure:"enabled"`
 }
 
 type Log struct {
@@ -85,7 +86,6 @@ func (c Config) Redacted() map[string]string {
 		"redis.password":      RedactSecret(c.Redis.Password),
 		"auth.session_secret": RedactSecret(c.Auth.SessionSecret),
 		"auth.jwt_secret":     RedactSecret(c.Auth.JWTSecret),
-		"cron.secret":         RedactSecret(c.Cron.Secret),
 	}
 }
 

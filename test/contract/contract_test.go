@@ -10,8 +10,8 @@ import (
 )
 
 const (
-	wantRoutes   = 74
-	wantHandlers = 102
+	wantRoutes   = 73
+	wantHandlers = 101
 )
 
 type manifestDocument struct {

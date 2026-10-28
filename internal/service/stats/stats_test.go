@@ -1,13 +1,8 @@
 package stats
 
 import (
-	"context"
-	"net/http"
-	"net/http/httptest"
 	"testing"
 	"time"
-
-	"github.com/shuTwT/nex-api/internal/handler/cron"
 )
 
 func TestKeyMatrix_usesVersionedNamespaces_andPreservesLegacyAPIKeys(t *testing.T) {
@@ -57,38 +52,5 @@ func TestSyncToDatabase_intCount_rejects_negative_counts(t *testing.T) {
 	}
 	if value, err := intCount(42); err != nil || value != 42 {
 		t.Fatalf("positive count = (%d, %v)", value, err)
-	}
-}
-
-func TestSyncStatsHandler_requiresBearerSecret_whenEnabled(t *testing.T) {
-	called := false
-	handler, err := cron.NewSyncStatsHandler(cron.Config{Enabled: true, Secret: "cron-secret"}, func(context.Context) error {
-		called = true
-		return nil
-	})
-	if err != nil {
-		t.Fatalf("create handler: %v", err)
-	}
-
-	unauthorized := httptest.NewRecorder()
-	request := httptest.NewRequest(http.MethodPost, "/api/cron/sync-stats", nil)
-	handler.ServeHTTP(unauthorized, request)
-	if unauthorized.Code != http.StatusUnauthorized || called {
-		t.Fatalf("unauthorized response = %d, sync called = %t", unauthorized.Code, called)
-	}
-
-	authorized := httptest.NewRecorder()
-	request = httptest.NewRequest(http.MethodPost, "/api/cron/sync-stats", nil)
-	request.Header.Set("Authorization", "Bearer cron-secret")
-	handler.ServeHTTP(authorized, request)
-	if authorized.Code != http.StatusOK || !called {
-		t.Fatalf("authorized response = %d, sync called = %t", authorized.Code, called)
-	}
-}
-
-func TestSyncStatsHandler_rejectsEnabledConfig_withoutSecret(t *testing.T) {
-	_, err := cron.NewSyncStatsHandler(cron.Config{Enabled: true}, func(context.Context) error { return nil })
-	if err == nil {
-		t.Fatal("enabled cron accepted an empty secret")
 	}
 }

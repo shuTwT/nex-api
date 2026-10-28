@@ -16,6 +16,10 @@ import (
 
 type TaskFunc func(context.Context) error
 
+// ErrNotStarted is returned by RunNow when the scheduler was not started, for
+// example because CRON_ENABLED is false.
+var ErrNotStarted = errors.New("schedule: scheduler is not running")
+
 const (
 	TaskKeyStatsSync      = "stats_sync"
 	TaskKeyExpirePayments = "expire_payments"
@@ -207,9 +211,15 @@ func (m *ScheduleManager) removeLocked(jobID string) error {
 func (m *ScheduleManager) RunNow(jobID string) error {
 	m.mu.RLock()
 	job, exists := m.jobs[jobID]
+	started := m.started
 	m.mu.RUnlock()
 	if !exists {
 		return fmt.Errorf("schedule: job %q is not enabled", jobID)
+	}
+	if !started {
+		// gocron blocks for about a second and then fails when the scheduler
+		// was never started, so report it up front.
+		return ErrNotStarted
 	}
 	if err := job.RunNow(); err != nil {
 		return fmt.Errorf("schedule: run job %q: %w", jobID, err)

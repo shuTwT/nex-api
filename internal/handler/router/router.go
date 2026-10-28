@@ -14,7 +14,6 @@ import (
 	"github.com/shuTwT/nex-api/internal/handler/ads"
 	"github.com/shuTwT/nex-api/internal/handler/auth"
 	"github.com/shuTwT/nex-api/internal/handler/catalog"
-	"github.com/shuTwT/nex-api/internal/handler/cron"
 	"github.com/shuTwT/nex-api/internal/handler/dashboard"
 	"github.com/shuTwT/nex-api/internal/handler/gateway"
 	"github.com/shuTwT/nex-api/internal/handler/marketplace"
@@ -55,7 +54,6 @@ type Dependencies struct {
 	APIService    *servicecatalog.APIService
 	MCPService    *servicecatalog.MCPService
 	Payment       *servicepayment.Service
-	StatsSync     *stats.SyncService
 	Schedule      *serviceschedule.Service
 	Transforms    servicegateway.Transformer
 	Accountant    servicegateway.Accountant
@@ -77,7 +75,6 @@ type Dependencies struct {
 }
 
 type Config struct {
-	Cron  cron.Config
 	OAuth oauth.Config
 }
 
@@ -159,7 +156,7 @@ func BuildRouter(ctx context.Context, cfg Config, deps Dependencies) (chi.Router
 		return nil, fmt.Errorf("router: oauth: %w", err)
 	}
 
-	// --- API 网关 / MCP 网关 / cron ---
+	// --- API 网关 / MCP 网关 ---
 	gatewayHandler, err := gateway.New(gateway.Options{
 		APIs:       deps.APIService,
 		Tokens:     deps.APITokens,
@@ -183,14 +180,6 @@ func BuildRouter(ctx context.Context, cfg Config, deps Dependencies) (chi.Router
 		Stats:         deps.StatsStore,
 	}, mcpgateway.HandlerOptions{Logger: deps.Logger}); err != nil {
 		return nil, fmt.Errorf("router: mcp gateway routes: %w", err)
-	}
-	cronHandler, err := cron.NewSyncStatsHandler(cfg.Cron, deps.StatsSync.Sync)
-	if err != nil {
-		return nil, fmt.Errorf("router: cron: %w", err)
-	}
-
-	if err := cronHandler.RegisterRoutes(mux); err != nil {
-		return nil, fmt.Errorf("router: cron routes: %w", err)
 	}
 
 	return mux, nil

@@ -12,7 +12,6 @@ import (
 
 	"github.com/go-chi/chi/v5"
 
-	"github.com/shuTwT/nex-api/internal/handler/cron"
 	"github.com/shuTwT/nex-api/internal/handler/oauth"
 	"github.com/shuTwT/nex-api/internal/handler/router"
 	"github.com/shuTwT/nex-api/internal/infra/config"
@@ -50,7 +49,6 @@ func TestBuildRouterUsesChiForHandwrittenAndOpenAPIRoutes(t *testing.T) {
 	deps.Accountant = servicegateway.NewEntAccountant(deps.Client)
 
 	handler, err := router.BuildRouter(ctx, router.Config{
-		Cron: cron.Config{Enabled: true, Secret: "cron-secret"},
 		OAuth: oauth.Config{
 			AppURL:        cfg.AppURL,
 			SessionSecret: []byte(cfg.Auth.SessionSecret),
@@ -72,7 +70,7 @@ func TestBuildRouterUsesChiForHandwrittenAndOpenAPIRoutes(t *testing.T) {
 		{name: "handwritten", method: http.MethodGet, path: "/api/system/initialized", status: http.StatusOK},
 		{name: "oauth alongside auth", method: http.MethodGet, path: "/api/auth/providers", status: http.StatusOK},
 		{name: "generated gateway", method: http.MethodGet, path: "/api/v1/missing", status: http.StatusUnauthorized},
-		{name: "generated cron", method: http.MethodPost, path: "/api/cron/sync-stats", status: http.StatusUnauthorized},
+		{name: "removed cron endpoint", method: http.MethodPost, path: "/api/cron/sync-stats", status: http.StatusNotFound},
 		{name: "method not allowed", method: http.MethodPost, path: "/api/system/initialized", status: http.StatusMethodNotAllowed},
 	}
 	for _, check := range checks {

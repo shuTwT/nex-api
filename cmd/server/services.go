@@ -118,7 +118,6 @@ func buildServices(ctx context.Context, cfg config.Config, logger *slog.Logger) 
 	if err != nil {
 		return deps, nil, fmt.Errorf("create stats sync service: %w", err)
 	}
-	deps.StatsSync = statsSync
 
 	// --- scheduled jobs ---
 	scheduleManager, err = schedule.NewScheduleManager(logger)

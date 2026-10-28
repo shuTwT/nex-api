@@ -13,7 +13,6 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/shuTwT/nex-api/internal/handler/cron"
 	"github.com/shuTwT/nex-api/internal/handler/oauth"
 	"github.com/shuTwT/nex-api/internal/handler/router"
 	"github.com/shuTwT/nex-api/internal/infra/config"
@@ -95,7 +94,6 @@ func run(ctx context.Context, cfg config.Config, loggerInstance *slog.Logger) er
 	deps.Accountant = servicegateway.NewEntAccountant(deps.Client)
 
 	routerConfig := router.Config{
-		Cron: cron.Config{Enabled: cfg.Cron.Enabled, Secret: cfg.Cron.Secret},
 		OAuth: oauth.Config{
 			AppURL:        cfg.AppURL,
 			SessionSecret: []byte(cfg.Auth.SessionSecret),
@@ -111,7 +109,13 @@ func run(ctx context.Context, cfg config.Config, loggerInstance *slog.Logger) er
 	if err != nil {
 		return err
 	}
-	scheduleManager.Start()
+	// CRON_ENABLED is the master switch for every scheduled job. When it is off
+	// the jobs stay configured but nothing fires.
+	if cfg.Cron.Enabled {
+		scheduleManager.Start()
+	} else {
+		loggerInstance.Warn("scheduled jobs are disabled (CRON_ENABLED=false); statistics sync and payment expiration will not run")
+	}
 
 	loggerInstance.Info("server starting",
 		slog.String("addr", server.Addr()),

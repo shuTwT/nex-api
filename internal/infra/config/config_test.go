@@ -93,20 +93,20 @@ func TestLoad_readsDotEnvWithoutOverridingProcessEnvironment(t *testing.T) {
 	}
 }
 
-func TestLoad_cronEndpointDoesNotReadInterval(t *testing.T) {
-	// CRON_INTERVAL used to bootstrap the stats_sync scheduled job. Scheduling
-	// is now configured by ScheduledJob, so this legacy environment variable
-	// must not affect configuration loading or endpoint validation.
+func TestLoad_cronEnabledIsSchedulerSwitchAndIgnoresLegacyVariables(t *testing.T) {
+	// CRON_INTERVAL and CRON_SECRET belonged to the removed bootstrap interval
+	// and the removed /api/cron/sync-stats endpoint. Scheduling is configured by
+	// ScheduledJob, so they must not affect loading or validation.
 	t.Setenv("CRON_ENABLED", "true")
-	t.Setenv("CRON_SECRET", "cron-secret")
+	t.Setenv("CRON_SECRET", "")
 	t.Setenv("CRON_INTERVAL", "not-a-duration")
 
 	cfg, err := Load()
 	if err != nil {
 		t.Fatalf("load config: %v", err)
 	}
-	if !cfg.Cron.Enabled || cfg.Cron.Secret != "cron-secret" {
-		t.Fatalf("cron endpoint config = %#v, want enabled endpoint with configured secret", cfg.Cron)
+	if !cfg.Cron.Enabled {
+		t.Fatalf("cron config = %#v, want scheduler enabled", cfg.Cron)
 	}
 }
 

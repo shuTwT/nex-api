@@ -110,7 +110,7 @@ handler/router/      # 根路由装配，不创建 Service
 - Redis API/MCP 统计同步；
 - Pending 支付订单过期。
 
-具体任务调用 `service/stats` 与 `service/payment`，通过 `infra/schedule` 注册。原 `/api/cron/*` HTTP 入口属于 `handler/cron`，不放入 `job`。
+具体任务调用 `service/stats` 与 `service/payment`，通过 `infra/schedule` 注册。原 `/api/cron/*` HTTP 入口已移除，定时任务总开关为 `CRON_ENABLED`。
 
 `cmd/server` 最终只负责：
 

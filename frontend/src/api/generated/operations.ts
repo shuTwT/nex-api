@@ -43,7 +43,6 @@ export const operations = {
   categories_id_route_put: ["put", "/api/categories/{id}"],
   categories_route_get: ["get", "/api/categories"],
   categories_route_post: ["post", "/api/categories"],
-  cron_sync_stats_route_post: ["post", "/api/cron/sync-stats"],
   dashboard_activity_route_get: ["get", "/api/dashboard/activity"],
   dashboard_stats_route_get: ["get", "/api/dashboard/stats"],
   dashboard_top_apis_route_get: ["get", "/api/dashboard/top-apis"],
